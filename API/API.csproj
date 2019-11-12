@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>Tayra.API</RootNamespace>
+    <AssemblyName>Tayra.API</AssemblyName>
+  </PropertyGroup>
+    
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App">
+      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc2" />
+    <PackageReference Include="Firdaws.Core" Version="1.0.0-*" />
+    <PackageReference Include="Firdaws.DAL" Version="1.0.0-*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
+    <ProjectReference Include="..\DAL\CoreModel\CoreModel.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
+    <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+    <Folder Include="Filters\" />
+    <Folder Include="Controllers\BaseControllers\" />
+  </ItemGroup>
+</Project>

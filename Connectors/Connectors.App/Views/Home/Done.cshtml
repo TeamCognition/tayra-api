@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Done!";
+}
+
+<div class="card">
+    <h5 class="card-header">@Model.ServiceType</h5>
+    <div class="card-body">
+        <h5>Account Information</h5>
+        <ul>
+            @foreach (var field in Model.Fields)
+            {
+                <li><b>@field.Key</b>: @field.Value</li>
+            }
+        </ul>
+    </div>
+</div>
