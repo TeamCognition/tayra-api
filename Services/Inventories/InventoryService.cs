@@ -205,14 +205,15 @@ namespace Tayra.Services
 
         public void Give(int profileId, InventoryGiveDTO dto)
         {
-            var item = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);
+            var shopItem = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);
 
-            item.EnsureNotNull(profileId, dto.ItemId);
+            shopItem.EnsureNotNull(profileId, dto.ItemId);
 
             DbContext.Add(new ProfileInventoryItem
             {
-                ItemId = item.ItemId,
+                ItemId = shopItem.ItemId,
                 ProfileId = dto.ReceiverId,
+                ItemType = shopItem.Item.Type,
                 AcquireMethod = InventoryAcquireMethods.ManagerGift
             });
         }
