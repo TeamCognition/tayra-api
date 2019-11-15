@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
-    <ProjectReference Include="..\DAL\CoreModel\CoreModel.csproj" />
+    <ProjectReference Include="..\DAL\CatalogModel\CatalogModel.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
     <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />

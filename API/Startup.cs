@@ -12,7 +12,7 @@ using Tayra.API.Helpers;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
 using Tayra.Helpers;
-using Tayra.Models.Core;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -30,7 +30,7 @@ namespace Tayra.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CoreDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("core-dev")));
+            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("core-dev")));
 
             services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-dev")));
             //services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-local")));

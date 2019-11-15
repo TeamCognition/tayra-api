@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Tayra.Models.Core;
+using Tayra.Models.Catalog;
 
 namespace Tayra.SyncServices.Common
 {
@@ -10,16 +10,16 @@ namespace Tayra.SyncServices.Common
         #region Protected Members
 
         protected LogService LogService;
-        protected CoreDbContext CoreDbContext;
+        protected CatalogDbContext CatalogDbContext;
 
         #endregion
 
         #region Constructors
 
-        protected BaseLoader(LogService logService, CoreDbContext coreDb)
+        protected BaseLoader(LogService logService, CatalogDbContext catalogDb)
         {
             LogService = logService;
-            CoreDbContext = coreDb;
+            CatalogDbContext = catalogDb;
         }
 
         #endregion
@@ -40,7 +40,7 @@ namespace Tayra.SyncServices.Common
         {
             var timezones = timezoneInfo.Select(t => t.Id).ToList();
 
-            var organizations = CoreDbContext.Organizations
+            var organizations = CatalogDbContext.Organizations
                 .AsNoTracking();
 
             if (timezones.Count > 0)
@@ -54,7 +54,7 @@ namespace Tayra.SyncServices.Common
 
         protected Organization GetOrganization(string organizationKey)
         {
-            return CoreDbContext.Organizations.AsNoTracking().FirstOrDefault(x => x.Key == organizationKey);
+            return CatalogDbContext.Organizations.AsNoTracking().FirstOrDefault(x => x.Key == organizationKey);
         }
 
         #endregion

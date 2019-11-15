@@ -5,7 +5,7 @@ using Firdaws.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MoreLinq;
-using Tayra.Models.Core;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
 
@@ -19,7 +19,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Constructor
 
-        public GenerateProfileReportsWeeklyLoader(LogService logService, CoreDbContext coreDb) : base(logService, coreDb)
+        public GenerateProfileReportsWeeklyLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
 
         }

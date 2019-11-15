@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +8,7 @@ using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Mailer;
-using Tayra.Models.Core;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.API.Controllers
@@ -73,7 +71,7 @@ namespace Tayra.API.Controllers
                             "New Contact (Landing Page Contact Form)",
                             JsonConvert.SerializeObject(dto));
 
-                using (var db = new CoreDbContext(_configuration.GetConnectionString("dev-core")))
+                using (var db = new CatalogDbContext(_configuration.GetConnectionString("dev-core")))
                 {
                     db.LandingPageContacts.Add(new LandingPageContact
                     {

@@ -3,7 +3,7 @@ using System.Linq;
 using Firdaws.Core;
 using Microsoft.Extensions.Logging;
 using Tayra.Common;
-using Tayra.Models.Core;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.SyncServices.Common;
@@ -18,7 +18,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Constructor
 
-        public SyncCompetitionsLoader(LogService logService, CoreDbContext coreDb) : base(logService, coreDb)
+        public SyncCompetitionsLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
 
         }

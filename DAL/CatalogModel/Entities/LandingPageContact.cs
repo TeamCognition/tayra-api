@@ -1,4 +1,4 @@
-﻿namespace Tayra.Models.Core
+﻿namespace Tayra.Models.Catalog
 {
     public class LandingPageContact
     {

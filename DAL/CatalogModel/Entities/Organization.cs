@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Tayra.Models.Core
+namespace Tayra.Models.Catalog
 {
     public class Organization
     {

@@ -1,22 +1,22 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tayra.Models.Core
+namespace Tayra.Models.Catalog
 {
-    public class CoreDbContext : DbContext
+    public class CatalogDbContext : DbContext
     {
         #region Constructor
 
-        public CoreDbContext(DbContextOptions<CoreDbContext> options) : base(options)
+        public CatalogDbContext(DbContextOptions<CatalogDbContext> options) : base(options)
         {
         }
 
-        public CoreDbContext(string connectionString, DbContextOptions<CoreDbContext> options) : base(options)
+        public CatalogDbContext(string connectionString, DbContextOptions<CatalogDbContext> options) : base(options)
         {
             ConnectionString = connectionString;
         }
 
-        public CoreDbContext(string connectionString) : this(connectionString, new DbContextOptions<CoreDbContext>())
+        public CatalogDbContext(string connectionString) : this(connectionString, new DbContextOptions<CatalogDbContext>())
         {
         }
 

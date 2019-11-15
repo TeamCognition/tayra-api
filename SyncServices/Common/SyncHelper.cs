@@ -7,7 +7,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Tayra.Models.Core;
+using Tayra.Models.Catalog;
 using Tayra.SyncServices.Tayra;
 
 namespace Tayra.SyncServices.Common
@@ -60,7 +60,7 @@ namespace Tayra.SyncServices.Common
         {
             var config = LoadSettings(context);
             //var logger = CreateApplicationInsightsLogger($"{serviceType}Loader", config["ApplicationInsights:InstrumentationKey"]);
-            var coreDatabase = new CoreDbContext(config["ConnectionStrings:core"]);
+            var coreDatabase = new CatalogDbContext(config["ConnectionStrings:core"]);
             var logService = new LogService(logger);
 
             switch (jobTypes)

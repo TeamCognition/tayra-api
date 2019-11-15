@@ -5,7 +5,7 @@ using Firdaws.Core;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Tayra.Common;
-using Tayra.Models.Core;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
 
@@ -15,7 +15,7 @@ namespace Tayra.SyncServices.Tayra
     {
         #region Constructor
 
-        public GenerateReportsLoader(LogService logService, CoreDbContext coreDb) : base(logService, coreDb)
+        public GenerateReportsLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
 
         }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MoreLinq;
 using Tayra.Common;
-using Tayra.Models.Core;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
 
@@ -20,7 +20,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Constructor
 
-        public GenerateProfileReportsDailyLoader(LogService logService, CoreDbContext coreDb) : base(logService, coreDb)
+        public GenerateProfileReportsDailyLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
 
         }

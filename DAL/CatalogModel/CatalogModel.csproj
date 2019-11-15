@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <RootNamespace>Tayra.Models.Core</RootNamespace>
-    <AssemblyName>Tayra.Models.Core</AssemblyName>
+    <RootNamespace>Tayra.Models.Catalog</RootNamespace>
+    <AssemblyName>Tayra.Models.Catalog</AssemblyName>
   </PropertyGroup>
   
   <ItemGroup>
