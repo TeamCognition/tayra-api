@@ -1,10 +1,7 @@
-﻿using System;
-namespace Tayra.Services
+﻿namespace Tayra.Services
 {
-    public class ITenantRepository
+    public interface ITenantRepository
     {
-        public ITenantRepository()
-        {
-        }
+        OrganizationModel GetVenueDetails(int tenantId);
     }
 }

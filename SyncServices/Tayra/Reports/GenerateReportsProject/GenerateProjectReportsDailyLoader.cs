@@ -23,7 +23,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Public Methods
 
-        public override void Execute(DateTime date, params Organization[] organizations)
+        public override void Execute(DateTime date, params Tenant[] organizations)
         {
             foreach (var org in organizations)
             {
@@ -38,13 +38,13 @@ namespace Tayra.SyncServices.Tayra
         public static void GenerateProjectReports(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null)
         {
             var dateId = DateHelper2.ToDateId(fromDay);
-            
+
             if (profileReportsDaily == null)
             {
                 profileReportsDaily = organizationDb.ProfileReportsDaily.Where(x => x.DateId == dateId).ToList();
             }
 
-            
+
             var reportsToInsert = new List<ProjectReportDaily>();
 
             var projects = (from t in organizationDb.Projects

@@ -1,10 +1,9 @@
-﻿using System;
-namespace Tayra.Services
+﻿namespace Tayra.Services
 {
-    public class IUtils
+    public interface IUtilities
     {
-        public IUtils()
-        {
-        }
+        void RegisterTenantShard(TenantServerConfig tenantServerConfig, DatabaseConfig databaseConfig, CatalogConfig catalogConfig, bool resetEventDate);
+
+        byte[] ConvertIntKeyToBytesArray(int key);
     }
 }

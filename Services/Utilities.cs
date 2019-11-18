@@ -6,9 +6,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic.CompilerServices;
-using Tayra.Models.Organizations;
 
 namespace Tayra.Services
 {
@@ -16,7 +13,7 @@ namespace Tayra.Services
     /// The Utilities class for doing common methods
     /// </summary>
     /// <seealso cref="Tayra.Services.IUtilities" />
-    public class Utils : IUtilities
+    public class Utilities : IUtilities
     {
 
         #region Public methods
@@ -37,7 +34,7 @@ namespace Tayra.Services
             {
                 UserID = databaseConfig.DatabaseUser,
                 Password = databaseConfig.DatabasePassword,
-                ApplicationName = "EntityFramework",
+                ApplicationName = "Tayra",
                 ConnectTimeout = databaseConfig.ConnectionTimeOut
             };
 
@@ -47,28 +44,6 @@ namespace Tayra.Services
             {
                 var tenantId = GetTenantKey(tenant);
                 var result = Sharding.RegisterNewShard(tenantId, catalogConfig.ServicePlan, shard);
-                if (result)
-                {
-                    // resets all tenants' event dates
-                    if (resetEventDate)
-                    {
-                        #region EF6
-                        //use EF6 since execution of Stored Procedure in EF Core for anonymous return type is not supported yet
-                        using (var context = new OrganizationDbContext(Sharding.ShardMap, tenantId, connectionString.ConnectionString))
-                        {
-                            context.Database.ExecuteSqlCommand("sp_ResetEventDates");
-                        }
-                        #endregion
-
-                        #region EF core
-                        //https://github.com/aspnet/EntityFramework/issues/7032
-                        //using (var context = new TenantDbContext(Sharding.ShardMap, tenantId, connectionString))
-                        //{
-                        //     context.Database.ExecuteSqlCommand("sp_ResetEventDates");
-                        //}
-                        #endregion
-                    }
-                }
             }
         }
 
@@ -107,7 +82,7 @@ namespace Tayra.Services
             {
                 con.Open();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT VenueName from Venues", con))
+                using (SqlCommand cmd = new SqlCommand("SELECT Name from Organizations", con))
                 {
                     using (IDataReader dr = cmd.ExecuteReader())
                     {

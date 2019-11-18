@@ -34,7 +34,7 @@ namespace Tayra.Models.Organizations
 
         public DateTime? ArchivedAt { get; set; }
 
-        public virtual OrganizationMeta Organization { get; set; }
+        public virtual Organization Organization { get; set; }
 
         public virtual ICollection<Challenge> Challenges { get; set; }
         public virtual ICollection<ProjectMember> Members { get; set; }

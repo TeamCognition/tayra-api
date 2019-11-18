@@ -27,7 +27,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Public Methods
 
-        public override void Execute(DateTime date, params Organization[] organizations)
+        public override void Execute(DateTime date, params Tenant[] organizations)
         {
             foreach (var org in organizations)
             {
@@ -49,7 +49,7 @@ namespace Tayra.SyncServices.Tayra
                 return;
 
             var dateId = DateHelper2.ToDateId(fromDay);
-            
+
             if (profileReportsDaily == null)
             {
                 profileReportsDaily = organizationDb.ProfileReportsDaily.Where(x => x.DateId == dateId).ToList();
@@ -61,19 +61,19 @@ namespace Tayra.SyncServices.Tayra
             }
 
 
-            
-            var reportsToInsert = new List<TeamReportWeekly>();
-            
-            var teams = (from t in organizationDb.Teams
-                                where t.ArchivedAt == null
-                                select new
-                                {
-                                    TeamId = t.Id,
-                                    MemberIds = t.Members.Select(x => x.ProfileId).ToList()
-                                }).ToList();
 
-            foreach(var t in teams)
-            {   
+            var reportsToInsert = new List<TeamReportWeekly>();
+
+            var teams = (from t in organizationDb.Teams
+                         where t.ArchivedAt == null
+                         select new
+                         {
+                             TeamId = t.Id,
+                             MemberIds = t.Members.Select(x => x.ProfileId).ToList()
+                         }).ToList();
+
+            foreach (var t in teams)
+            {
                 var drs = profileReportsDaily.Where(x => t.MemberIds.Contains(x.ProfileId)).ToList();
                 var drsCount = drs.Count();
 
@@ -83,7 +83,7 @@ namespace Tayra.SyncServices.Tayra
                 if (drsCount == 0)
                     continue;
 
-                
+
                 reportsToInsert.Add(new TeamReportWeekly
                 {
                     TeamId = t.TeamId,

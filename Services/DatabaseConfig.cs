@@ -1,6 +1,6 @@
 ﻿using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 
-namespace Tayra.Common
+namespace Tayra.Services
 {
     /// <summary>
     /// Common database settings

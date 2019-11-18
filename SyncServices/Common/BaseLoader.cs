@@ -30,13 +30,13 @@ namespace Tayra.SyncServices.Common
 
         public void Execute(DateTime date, string organizationKey) => Execute(date, GetOrganization(organizationKey));
 
-        public abstract void Execute(DateTime date, params Organization[] organizations);
+        public abstract void Execute(DateTime date, params Tenant[] organizations);
 
         #endregion
 
         #region Protected Methods
 
-        protected Organization[] GetOrganizations(params TimeZoneDTO[] timezoneInfo)
+        protected Tenant[] GetOrganizations(params TimeZoneDTO[] timezoneInfo)
         {
             var timezones = timezoneInfo.Select(t => t.Id).ToList();
 
@@ -52,7 +52,7 @@ namespace Tayra.SyncServices.Common
             return orgs;
         }
 
-        protected Organization GetOrganization(string organizationKey)
+        protected Tenant GetOrganization(string organizationKey)
         {
             return CatalogDbContext.Organizations.AsNoTracking().FirstOrDefault(x => x.Key == organizationKey);
         }

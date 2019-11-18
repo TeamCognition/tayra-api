@@ -1,10 +1,12 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using Tayra.Models.Catalog;
+
 namespace Tayra.Services
 {
-    public class ICatalogRepository
+    public interface ICatalogRepository
     {
-        public ICatalogRepository()
-        {
-        }
+        List<TenantModel> GetAllTenants();
+        TenantModel GetTenant(string tenantName);
+        bool Add(Tenant tenant);
     }
 }

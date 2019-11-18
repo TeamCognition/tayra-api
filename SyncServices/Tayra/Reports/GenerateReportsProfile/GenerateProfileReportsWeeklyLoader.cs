@@ -28,7 +28,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Public Methods
 
-        public override void Execute(DateTime date, params Organization[] organizations)
+        public override void Execute(DateTime date, params Tenant[] organizations)
         {
             foreach (var org in organizations)
             {
@@ -51,89 +51,89 @@ namespace Tayra.SyncServices.Tayra
             if (!CommonHelper.IsMonday(fromDay))
                 return null;
 
-            
+
             var reportsToInsert = new List<ProfileReportWeekly>();
 
             var iterationDays = 7;
             var dateId = DateHelper2.ToDateId(fromDay);
             var dateId1ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays));
-            var dateId2ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays*2));
-            var dateId4ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays*4));
-            
+            var dateId2ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 2));
+            var dateId4ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 4));
+
             reportsToInsert = (from d in organizationDb.ProfileReportsDaily
-                                where d.DateId <= dateId
-                                group d by d.ProfileId into dg
-                                let dgCount = dg.Count()
-                                //let dgCountWorked = dg.Count()
-                                let last1 = dg.Where(x => x.DateId > dateId1ago) //last 1 iteration
-                                let last4 = dg.Where(x => x.DateId > dateId4ago)
-                                let ic = (dgCount + 7 - 1) / 7
-                                let icMax4 = Math.Min(4, ic)
-                                select new ProfileReportWeekly
-                                {
-                                    ProfileId = dg.Key,
-                                    DateId = dateId,
-                                    IterationCount = ic,
-                                    TaskCategoryId = 1,
-                                    
-                                    ComplexityChange = last1.Sum(x => x.ComplexityChange),
-                                    ComplexityTotalAverage = (float)dg.Sum(c => c.ComplexityChange) / ic,
+                               where d.DateId <= dateId
+                               group d by d.ProfileId into dg
+                               let dgCount = dg.Count()
+                               //let dgCountWorked = dg.Count()
+                               let last1 = dg.Where(x => x.DateId > dateId1ago) //last 1 iteration
+                               let last4 = dg.Where(x => x.DateId > dateId4ago)
+                               let ic = (dgCount + 7 - 1) / 7
+                               let icMax4 = Math.Min(4, ic)
+                               select new ProfileReportWeekly
+                               {
+                                   ProfileId = dg.Key,
+                                   DateId = dateId,
+                                   IterationCount = ic,
+                                   TaskCategoryId = 1,
 
-                                    CompanyTokensChange = last1.Sum(x => x.CompanyTokensChange),
-                                    CompanyTokensTotalAverage = dg.Sum(c => c.CompanyTokensChange) / ic,
+                                   ComplexityChange = last1.Sum(x => x.ComplexityChange),
+                                   ComplexityTotalAverage = (float)dg.Sum(c => c.ComplexityChange) / ic,
 
-                                    EffortScoreChange = last1.Sum(x => x.EffortScoreChange),
-                                    EffortScoreTotalAverage = dg.Sum(c => c.EffortScoreChange) / ic,
+                                   CompanyTokensChange = last1.Sum(x => x.CompanyTokensChange),
+                                   CompanyTokensTotalAverage = dg.Sum(c => c.CompanyTokensChange) / ic,
 
-                                    OneUpsGivenChange = last1.Sum(x => x.OneUpsGivenChange),
-                                    OneUpsGivenTotalAverage = (float)dg.Sum(c => c.OneUpsGivenChange) / ic,
+                                   EffortScoreChange = last1.Sum(x => x.EffortScoreChange),
+                                   EffortScoreTotalAverage = dg.Sum(c => c.EffortScoreChange) / ic,
 
-                                    OneUpsReceivedChange = last1.Sum(x => x.OneUpsReceivedChange),
-                                    OneUpsReceivedTotalAverage = (float)dg.Sum(c => c.OneUpsReceivedChange) / ic,
+                                   OneUpsGivenChange = last1.Sum(x => x.OneUpsGivenChange),
+                                   OneUpsGivenTotalAverage = (float)dg.Sum(c => c.OneUpsGivenChange) / ic,
 
-                                    AssistsChange = last1.Sum(x => x.AssistsChange),
-                                    AssistsTotalAverage = (float)dg.Sum(c => c.AssistsChange) / ic,
+                                   OneUpsReceivedChange = last1.Sum(x => x.OneUpsReceivedChange),
+                                   OneUpsReceivedTotalAverage = (float)dg.Sum(c => c.OneUpsReceivedChange) / ic,
 
-                                    TasksCompletedChange = last1.Sum(x => x.TasksCompletedChange),
-                                    TasksCompletedTotalAverage = (float)dg.Sum(c => c.TasksCompletedChange) / ic,
+                                   AssistsChange = last1.Sum(x => x.AssistsChange),
+                                   AssistsTotalAverage = (float)dg.Sum(c => c.AssistsChange) / ic,
 
-                                    TurnoverChange = last1.Sum(x => x.TurnoverChange),
-                                    TurnoverTotalAverage = (float)dg.Sum(c => c.TurnoverChange) / ic,
+                                   TasksCompletedChange = last1.Sum(x => x.TasksCompletedChange),
+                                   TasksCompletedTotalAverage = (float)dg.Sum(c => c.TasksCompletedChange) / ic,
 
-                                    ErrorChange = last1.Sum(x => x.ErrorChange),
-                                    ErrorTotalAverage = dg.Sum(c => c.ErrorChange) / ic,
+                                   TurnoverChange = last1.Sum(x => x.TurnoverChange),
+                                   TurnoverTotalAverage = (float)dg.Sum(c => c.TurnoverChange) / ic,
 
-                                    ContributionChange = last1.Sum(x => x.ContributionChange),
-                                    ContributionTotalAverage = dg.Sum(c => c.ContributionChange) / ic,
+                                   ErrorChange = last1.Sum(x => x.ErrorChange),
+                                   ErrorTotalAverage = dg.Sum(c => c.ErrorChange) / ic,
 
-                                    SavesChange = last1.Sum(x => x.SavesChange),
-                                    SavesTotalAverage = (float)dg.Sum(c => c.SavesChange) / ic,
+                                   ContributionChange = last1.Sum(x => x.ContributionChange),
+                                   ContributionTotalAverage = dg.Sum(c => c.ContributionChange) / ic,
 
-                                    TacklesChange = last1.Sum(x => x.TacklesChange),
-                                    TacklesTotalAverage = (float)dg.Sum(c => c.TacklesChange) / ic,
+                                   SavesChange = last1.Sum(x => x.SavesChange),
+                                   SavesTotalAverage = (float)dg.Sum(c => c.SavesChange) / ic,
 
-                                    OImpactAverage = (float)last4.Sum(x => x.ComplexityChange + x.TasksCompletedChange + x.AssistsChange) / icMax4,
-                                    OImpactTotalAverage = (float)dg.Sum(x => x.ComplexityChange + x.TasksCompletedChange + x.AssistsChange) / ic,
+                                   TacklesChange = last1.Sum(x => x.TacklesChange),
+                                   TacklesTotalAverage = (float)dg.Sum(c => c.TacklesChange) / ic,
 
-                                    DImpactAverage = (float)last4.Sum(x => x.SavesChange + x.TacklesChange) / icMax4,
-                                    DImpactTotalAverage = (float)dg.Sum(x => x.SavesChange + x.TacklesChange) / ic,
+                                   OImpactAverage = (float)last4.Sum(x => x.ComplexityChange + x.TasksCompletedChange + x.AssistsChange) / icMax4,
+                                   OImpactTotalAverage = (float)dg.Sum(x => x.ComplexityChange + x.TasksCompletedChange + x.AssistsChange) / ic,
 
-                                    PowerAverage = last4.Sum(x => x.ComplexityChange / (float)x.TasksCompletedChange) / icMax4,
-                                    PowerTotalAverage = dg.Sum(x => x.ComplexityChange / (float)x.TasksCompletedChange) / ic,
+                                   DImpactAverage = (float)last4.Sum(x => x.SavesChange + x.TacklesChange) / icMax4,
+                                   DImpactTotalAverage = (float)dg.Sum(x => x.SavesChange + x.TacklesChange) / ic,
 
-                                    SpeedAverage = last4.Sum(x => x.ComplexityChange) / icMax4,
-                                    SpeedTotalAverage = (float)dg.Sum(x => x.ComplexityChange) / ic,
+                                   PowerAverage = last4.Sum(x => x.ComplexityChange / (float)x.TasksCompletedChange) / icMax4,
+                                   PowerTotalAverage = dg.Sum(x => x.ComplexityChange / (float)x.TasksCompletedChange) / ic,
 
-                                    HeatIndex = last1.Sum(x => x.ComplexityChange) / (float)dg.Where(x => x.DateId > dateId2ago && x.DateId <= dateId1ago).Sum(x => x.ComplexityChange)
-                                }).ToList();
+                                   SpeedAverage = last4.Sum(x => x.ComplexityChange) / icMax4,
+                                   SpeedTotalAverage = (float)dg.Sum(x => x.ComplexityChange) / ic,
+
+                                   HeatIndex = last1.Sum(x => x.ComplexityChange) / (float)dg.Where(x => x.DateId > dateId2ago && x.DateId <= dateId1ago).Sum(x => x.ComplexityChange)
+                               }).ToList();
 
             var lastReportsHeat = (from r in organizationDb.ProfileReportsWeekly
-                                    where r.DateId == dateId1ago
-                                    select new
-                                    {
-                                        r.ProfileId,
-                                        r.Heat
-                                    })
+                                   where r.DateId == dateId1ago
+                                   select new
+                                   {
+                                       r.ProfileId,
+                                       r.Heat
+                                   })
                                     .DistinctBy(x => x.ProfileId).ToList(); //ProjectArea is ignored cuz we are only taking 'Totals'
 
 
@@ -145,7 +145,7 @@ namespace Tayra.SyncServices.Tayra
 
                 var lastHeat = lastReportsHeat.FirstOrDefault(x => x.ProfileId == r.ProfileId)?.Heat;
 
-                if(!lastHeat.HasValue)
+                if (!lastHeat.HasValue)
                 {
                     r.Heat = 22f;
                 }
@@ -165,7 +165,7 @@ namespace Tayra.SyncServices.Tayra
 
             organizationDb.ProfileReportsWeekly.AddRange(reportsToInsert);
             organizationDb.SaveChanges();
-            
+
             logService.Log<GenerateReportsLoader>($"{reportsToInsert.Count} new profile reports saved to database.");
             return reportsToInsert;
         }

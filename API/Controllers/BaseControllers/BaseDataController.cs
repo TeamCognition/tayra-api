@@ -17,6 +17,7 @@ namespace Tayra.API.Controllers
 
         public Project CurrentProject { get; set; }
 
-        public OrganizationDbContext OrganizationContext => _organizationContext ?? (_organizationContext = new OrganizationDbContext(CurrentProject.DataWarehouse));
+        //public OrganizationDbContext OrganizationContext => _organizationContext ?? (_organizationContext = new OrganizationDbContext(CurrentProject.DataWarehouse));
+        public OrganizationDbContext OrganizationContext => _organizationContext;
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Data.SqlClient;
+using System.Linq;
 using Firdaws.DAL;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 
@@ -10,27 +12,12 @@ namespace Tayra.Models.Organizations
     {
         #region Constructor
 
-        public OrganizationDbContext(IHttpContextAccessor httpContext, DbContextOptions<OrganizationDbContext> options) : base(httpContext, options)
+        public OrganizationDbContext(IHttpContextAccessor httpContext, ShardMap shardMap, int shardingKey, string connectionStr) : base(httpContext, CreateDdrConnection(shardMap, shardingKey, connectionStr))
         {
         }
 
-        public OrganizationDbContext(string connectionString, DbContextOptions<OrganizationDbContext> options) : base(options)
+        public OrganizationDbContext(ShardMap shardMap, int shardingKey, string connectionStr) : base(CreateDdrConnection(shardMap, shardingKey, connectionStr))
         {
-            ConnectionString = connectionString;
-        }
-
-        public OrganizationDbContext(IHttpContextAccessor httpContext, string connectionString, DbContextOptions<OrganizationDbContext> options) : base(httpContext, options)
-        {
-            ConnectionString = connectionString;
-        }
-
-        public OrganizationDbContext(string connectionString) : this(connectionString, new DbContextOptions<OrganizationDbContext>())
-        {
-        }
-
-        public OrganizationDbContext(string connectionString, bool seed) : this(connectionString, new DbContextOptions<OrganizationDbContext>())
-        {
-            ShouldSeed = seed;
         }
 
         public OrganizationDbContext(DbContextOptions<OrganizationDbContext> options) : base(options)
@@ -40,9 +27,6 @@ namespace Tayra.Models.Organizations
         #endregion
 
         #region Properties
-
-        public string ConnectionString { get; set; }
-        public bool ShouldSeed { get; set; } = true;
 
         #endregion
 
@@ -69,7 +53,7 @@ namespace Tayra.Models.Organizations
         public DbSet<ItemDisenchant> ItemDisenchants { get; set; }
         public DbSet<ItemGift> ItemGifts { get; set; }
         public DbSet<Log> Logs { get; set; }
-        public DbSet<OrganizationMeta> OrganizationsMeta { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<ProfileInventoryItem> ProfileInventoryItems { get; set; }
         public DbSet<ProfileLog> ProfileLogs { get; set; }
@@ -114,15 +98,28 @@ namespace Tayra.Models.Organizations
 
         #region Protected Methods
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        /// <summary>
+        /// Creates the DDR (Data Dependent Routing) connection.
+        /// </summary>
+        /// <param name="shardMap">The shard map.</param>
+        /// <param name="shardingKey">The sharding key.</param>
+        /// <param name="connectionStr">The connection string.</param>
+        /// <returns></returns>
+        private static DbContextOptions CreateDdrConnection(ShardMap shardMap, int shardingKey, string connectionStr)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder
-                    .UseSqlServer(ConnectionString);
-            }
+            // Ask shard map to broker a validated connection for the given key
+            SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
 
-            base.OnConfiguring(optionsBuilder);
+            // Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
+            SqlCommand cmd = sqlConn.CreateCommand();
+            cmd.CommandText = @"exec sp_set_session_context @key=N'TenantId', @value=@shardingKey";
+            cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
+            cmd.ExecuteNonQuery();
+
+            var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
+            var options = optionsBuilder.UseSqlServer(sqlConn).Options;
+
+            return options;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -166,6 +163,12 @@ namespace Tayra.Models.Organizations
             {
                 entity.HasKey(x => new { x.IdentityId, x.IntegrationType });
                 entity.HasIndex(x => x.ExternalId).IsUnique();
+            });
+
+            modelBuilder.Entity<Organization>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).ValueGeneratedNever();
             });
 
             modelBuilder.Entity<ProfileInventoryItem>(entity =>
@@ -248,10 +251,9 @@ namespace Tayra.Models.Organizations
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
-            if (ShouldSeed)
-            {
-                Seed(modelBuilder);
-            }
+            
+            Seed(modelBuilder);
+            
 
             base.OnModelCreating(modelBuilder);
         }

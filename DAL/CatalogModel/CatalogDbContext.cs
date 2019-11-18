@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Tayra.Models.Catalog
 {
@@ -16,10 +15,6 @@ namespace Tayra.Models.Catalog
             ConnectionString = connectionString;
         }
 
-        public CatalogDbContext(string connectionString) : this(connectionString, new DbContextOptions<CatalogDbContext>())
-        {
-        }
-
         #endregion
 
         #region Properties
@@ -30,7 +25,7 @@ namespace Tayra.Models.Catalog
 
         #region Datasets
 
-        public DbSet<Organization> Organizations { get; set; }
+        public DbSet<Tenant> Tenants { get; set; }
         public DbSet<LandingPageContact> LandingPageContacts { get; set; }
 
         #endregion
@@ -50,13 +45,23 @@ namespace Tayra.Models.Catalog
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Organization>().HasIndex(e => e.Key).IsUnique();
+            modelBuilder.Entity<Tenant>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasIndex(e => e.Name);
+
+                entity.Property(e => e.Id).HasMaxLength(128);
+
+                entity.Property(e => e.ServicePlan)
+                    .IsRequired()
+                    .HasColumnType("char(10)")
+                    .HasDefaultValueSql("'standard'");
+            });
 
             Seed(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
-
-            Database.SetCommandTimeout(TimeSpan.FromMinutes(30));
         }
 
         #endregion

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -33,6 +34,12 @@ namespace Tayra.API.Controllers
 
         private Profile _currentUser;
 
+        #region OvoOno
+
+        public readonly ITenantRepository TenantRepository;
+        public readonly IConfiguration Configuration;
+
+        #endregion
         #endregion
 
         #region Constructor
@@ -41,6 +48,8 @@ namespace Tayra.API.Controllers
         {
             ServiceProvider = serviceProvider;
             _currentUser = LoadCurrentUser();
+            TenantRepository = Resolve<ITenantRepository>();
+            Configuration = Resolve<IConfiguration>();
         }
 
         #endregion
@@ -76,6 +85,8 @@ namespace Tayra.API.Controllers
 
 
         public Profile CurrentUser => _currentUser ?? (_currentUser = LoadCurrentUser());
+
+        public object MyProperty { get; set; }
 
         #endregion
 

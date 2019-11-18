@@ -18,11 +18,11 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public ExternalController(IConfiguration config, IServiceProvider serviceProvider, IConnectorResolver connectorResolver, OrganizationDbContext db) : base(serviceProvider)
+        public ExternalController(CatalogDbContext catalogDb, IServiceProvider serviceProvider, IConnectorResolver connectorResolver, OrganizationDbContext db) : base(serviceProvider)
         {
             ConnectorResolver = connectorResolver;
             _db = db;
-            _configuration = config;
+            _catalogContext = catalogDb;
         }
 
         #endregion
@@ -31,7 +31,7 @@ namespace Tayra.API.Controllers
 
         private OrganizationDbContext _db;
 
-        private IConfiguration _configuration { get; }
+        private CatalogDbContext _catalogContext { get; }
 
         #region Public Methods
 
@@ -71,18 +71,17 @@ namespace Tayra.API.Controllers
                             "New Contact (Landing Page Contact Form)",
                             JsonConvert.SerializeObject(dto));
 
-                using (var db = new CatalogDbContext(_configuration.GetConnectionString("dev-core")))
-                {
-                    db.LandingPageContacts.Add(new LandingPageContact
-                    {
-                        Name = dto.Name,
-                        EmailAddresss = dto.Email,
-                        PhoneNumber = dto.PhoneNumber,
-                        Message = dto.Message
-                    });
 
-                    db.SaveChanges();
-                }
+                _catalogContext.LandingPageContacts.Add(new LandingPageContact
+                {
+                    Name = dto.Name,
+                    EmailAddresss = dto.Email,
+                    PhoneNumber = dto.PhoneNumber,
+                    Message = dto.Message
+                });
+
+                _catalogContext.SaveChanges();
+                
 
             }
             catch (Exception)

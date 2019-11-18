@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Data.SqlClient;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,16 +26,29 @@ namespace Tayra.API
         public Startup(IConfiguration config, IHostingEnvironment env)
         {
             Configuration = config;
+
+            //read config settigs from appsettings.json
+            ReadAppConfig();
         }
 
+        #region Private fields
+        private IUtilities _utilities;
+        private ICatalogRepository _catalogRepository;
+        private ITenantRepository _tenantRepository;
+        #endregion
+
+
+        public static DatabaseConfig DatabaseConfig { get; set; }
+        public static CatalogConfig CatalogConfig { get; set; }
+        public static TenantServerConfig TenantServerConfig { get; set; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("core-dev")));
+            //services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("core-dev")));
 
-            services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-dev")));
+            //services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-dev")));
             //services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-local")));
 
             services.AddAuthentication("Bearer")
@@ -66,6 +82,26 @@ namespace Tayra.API
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ILogger, DebugLogger>();
 
+            // Adds a default in-memory implementation of IDistributedCache.
+            services.AddDistributedMemoryCache();
+            services.AddSession();
+
+            //register catalog DB
+            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString(CatalogConfig, DatabaseConfig)));
+            //services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(GetOrgConnectionString(TenantServerConfig, DatabaseConfig)));
+
+            //Add Application services
+            services.AddTransient<ICatalogRepository, CatalogRepository>();
+            services.AddTransient<ITenantRepository, TenantRepository>();
+            services.AddSingleton<ITenantRepository>(p => new TenantRepository(GetBasicSqlConnectionString()));
+
+            //create instance of utilities class
+            services.AddTransient<IUtilities, Utilities>();
+            var provider = services.BuildServiceProvider();
+            _utilities = provider.GetService<IUtilities>();
+            _catalogRepository = provider.GetService<ICatalogRepository>();
+            _tenantRepository = provider.GetService<ITenantRepository>();
+
             services.AddCors(c =>
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
@@ -91,6 +127,8 @@ namespace Tayra.API
                 app.UseMiddleware<ExceptionMiddleware>();
                 app.UseHsts();
             }
+
+            //app.UseSession(); probably not needed
 
             app.UseSwagger();
 
@@ -127,9 +165,94 @@ namespace Tayra.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tayra API V1");
                 c.RoutePrefix = string.Empty;
             });
+
+            //shard management
+            InitialiseShardMapManager();
+            _utilities.RegisterTenantShard(TenantServerConfig, DatabaseConfig, CatalogConfig, TenantServerConfig.ResetEventDates);
+
         }
 
         #region Private Methods
+
+        /// <summary>
+        ///  Gets the catalog connection string using the app settings
+        /// </summary>
+        /// <param name="catalogConfig">The catalog configuration.</param>
+        /// <param name="databaseConfig">The database configuration.</param>
+        /// <returns></returns>
+        private string GetCatalogConnectionString(CatalogConfig catalogConfig, DatabaseConfig databaseConfig)
+        {
+            return
+                $"Server=tcp:{catalogConfig.CatalogServer},1433;Database={catalogConfig.CatalogDatabase};User ID={databaseConfig.DatabaseUser};Password={databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;";
+        }
+
+        private string GetOrgConnectionString(TenantServerConfig tenantConfig, DatabaseConfig databaseConfig)
+        {
+            return
+                $"Server=tcp:{tenantConfig.TenantServer},1433;Database={tenantConfig.TenantDatabase};User ID={databaseConfig.DatabaseUser};Password={databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;";
+        }
+
+        /// <summary>
+        /// Reads the application settings from appsettings.json
+        /// </summary>
+        private void ReadAppConfig()
+        {
+            DatabaseConfig = new DatabaseConfig
+            {
+                DatabasePassword = Configuration["DatabasePassword"],
+                DatabaseUser = Configuration["DatabaseUser"],
+                DatabaseServerPort = Convert.ToInt32(Configuration["DatabaseServerPort"]),
+                SqlProtocol = SqlProtocol.Tcp,
+                ConnectionTimeOut = Convert.ToInt32(Configuration["ConnectionTimeOut"]),
+                LearnHowFooterUrl = Configuration["LearnHowFooterUrl"]
+            };
+
+            CatalogConfig = new CatalogConfig
+            {
+                ServicePlan = Configuration["ServicePlan"],
+                CatalogDatabase = Configuration["CatalogDatabase"],
+                CatalogServer = Configuration["CatalogServer"] + ".database.windows.net"
+            };
+            TenantServerConfig = new TenantServerConfig
+            {
+                TenantServer = Configuration["TenantServer"] + ".database.windows.net",
+                TenantDatabase = Configuration["TenantDatabase"],
+
+            };
+        }
+
+        /// <summary>
+        /// Initialises the shard map manager and shard map 
+        /// <para>Also does all tasks related to sharding</para>
+        /// </summary>
+        private void InitialiseShardMapManager()
+        {
+            var basicConnectionString = GetBasicSqlConnectionString();
+            SqlConnectionStringBuilder connectionString = new SqlConnectionStringBuilder(basicConnectionString)
+            {
+                DataSource = DatabaseConfig.SqlProtocol + ":" + CatalogConfig.CatalogServer + "," + DatabaseConfig.DatabaseServerPort,
+                InitialCatalog = CatalogConfig.CatalogDatabase
+            };
+
+            _ = new Sharding(CatalogConfig.CatalogDatabase, connectionString.ConnectionString, _catalogRepository, _tenantRepository, _utilities);
+        }
+
+        /// <summary>
+        /// Gets the basic SQL connection string.
+        /// </summary>
+        /// <returns></returns>
+        private string GetBasicSqlConnectionString()
+        {
+            var connStrBldr = new SqlConnectionStringBuilder
+            {
+                UserID = DatabaseConfig.DatabaseUser,
+                Password = DatabaseConfig.DatabasePassword,
+                ApplicationName = "Tayra",
+                ConnectTimeout = DatabaseConfig.ConnectionTimeOut
+            };
+
+            return connStrBldr.ConnectionString;
+        }
 
         private void ConfigureSwagger(IServiceCollection services)
         {
