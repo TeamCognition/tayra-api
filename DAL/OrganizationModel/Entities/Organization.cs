@@ -3,7 +3,7 @@ using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class OrganizationMeta : IAuditedEntity
+    public class Organization : IAuditedEntity
     {
         public int Id { get; set; }
         

@@ -106,11 +106,10 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrganizationsMeta",
+                name: "Organizations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Address = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
@@ -120,7 +119,7 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrganizationsMeta", x => x.Id);
+                    table.PrimaryKey("PK_Organizations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -378,9 +377,9 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     table.PrimaryKey("PK_Projects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Projects_OrganizationsMeta_OrganizationId",
+                        name: "FK_Projects_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
-                        principalTable: "OrganizationsMeta",
+                        principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -2170,7 +2169,7 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Projects");
 
             migrationBuilder.DropTable(
-                name: "OrganizationsMeta");
+                name: "Organizations");
         }
     }
 }

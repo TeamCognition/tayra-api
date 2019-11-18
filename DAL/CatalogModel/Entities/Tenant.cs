@@ -2,7 +2,7 @@
 
 namespace Tayra.Models.Catalog
 {
-    public class Organization
+    public class Tenant
     {
         [Key]
         public int Id { get; set; }

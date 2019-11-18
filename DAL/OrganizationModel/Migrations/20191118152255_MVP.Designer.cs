@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191118152255_MVP")]
+    partial class MVP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -616,11 +618,9 @@ namespace Tayra.Models.Organizations.Migrations
                     b.ToTable("Logs");
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.OrganizationMeta", b =>
+            modelBuilder.Entity("Tayra.Models.Organizations.Organization", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("Id");
 
                     b.Property<string>("Address");
 
@@ -636,7 +636,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrganizationsMeta");
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Profile", b =>
@@ -2132,7 +2132,7 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Project", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.OrganizationMeta", "Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", "Organization")
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Restrict);
