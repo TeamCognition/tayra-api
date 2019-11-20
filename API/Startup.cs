@@ -32,7 +32,7 @@ namespace Tayra.API
         {
             services.AddDbContext<CoreDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("core-dev")));
 
-            services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-dev")));
+            services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-mop")));
             //services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-local")));
 
             services.AddAuthentication("Bearer")

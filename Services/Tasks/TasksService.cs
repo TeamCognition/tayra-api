@@ -42,7 +42,7 @@ namespace Tayra.Services
             task.BugSeverity = dto.Type == TaskTypes.Task ? (int?)null : TayraPersonalPerformance.MapPriorityToSeverity(dto.Priority);
             task.IsProductionBugFixing = task.BugSeverity > 3; //jira workaround
             task.Priority = dto.Priority;
-            task.EffortScore = (float) dto.EffortScore;
+            task.EffortScore = (float?) dto?.EffortScore;
             task.Labels = string.Join(',', dto.Labels);
             task.AssigneeProfileId = dto.AssigneeProfileId;
             task.TeamId = dto.TeamId;
