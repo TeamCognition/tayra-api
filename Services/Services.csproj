@@ -37,6 +37,8 @@
     <Folder Include="Shops\" />
     <Folder Include="Shops\DTO\" />
     <Folder Include="Inventories\" />
+    <Folder Include="Organizations\" />
+    <Folder Include="Organizations\DTO\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

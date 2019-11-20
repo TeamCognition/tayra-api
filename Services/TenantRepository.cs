@@ -32,9 +32,9 @@ namespace Tayra.Services
                 string databaseName, databaseServerName;
                 PointMapping<int> mapping;
 
-                if (Sharding.ShardMap.TryGetMappingForKey(tenantId, out mapping))
+                if (NewSharding.ShardMap.TryGetMappingForKey(tenantId, out mapping))
                 {
-                    using (SqlConnection sqlConn = Sharding.ShardMap.OpenConnectionForKey(tenantId, _connectionString))
+                    using (SqlConnection sqlConn = NewSharding.ShardMap.OpenConnectionForKey(tenantId, _connectionString))
                     {
                         databaseName = sqlConn.Database;
                         databaseServerName = sqlConn.DataSource.Split(':').Last().Split(',').First();
@@ -64,7 +64,7 @@ namespace Tayra.Services
 
         private OrganizationDbContext CreateContext(int tenantId)
         {
-            return new OrganizationDbContext(Sharding.ShardMap, tenantId, _connectionString);
+            return new OrganizationDbContext(NewSharding.ShardMap, tenantId, _connectionString);
         }
 
         #endregion

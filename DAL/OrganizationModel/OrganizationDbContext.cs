@@ -12,17 +12,34 @@ namespace Tayra.Models.Organizations
     {
         #region Constructor
 
-        public OrganizationDbContext(IHttpContextAccessor httpContext, ShardMap shardMap, int shardingKey, string connectionStr) : base(httpContext, CreateDdrConnection(shardMap, shardingKey, connectionStr))
+        // C'tor to deploy schema and migrations to a new shard
+        /// <summary>
+        /// Use the protected c'tor with the connection string parameter
+        /// to intialize a new shard. 
+        /// </summary>
+        protected internal OrganizationDbContext(string connectionString)
+            : base(ConfigureDbContextOptions(connectionString))
         {
         }
 
-        public OrganizationDbContext(ShardMap shardMap, int shardingKey, string connectionStr) : base(CreateDdrConnection(shardMap, shardingKey, connectionStr))
+        // C'tor for data dependent routing. This call will open a validated connection routed to the proper
+        // shard by the shard map manager. Note that the base class c'tor call will fail for an open connection
+        // if migrations need to be done and SQL credentials are used. This is the reason for the 
+        // separation of c'tors into the DDR case (this c'tor) and the internal c'tor for new shards.
+        /// <summary>
+        /// Use this public c'tor with the shard map parameter in
+        // the regular application calls with a tenant id.
+        /// </summary>
+        public OrganizationDbContext(ShardMap shardMap, int shardingKey, string connectionString)
+            : base(CreateDDRConnection(shardMap, shardingKey, connectionString))
         {
         }
 
-        public OrganizationDbContext(DbContextOptions<OrganizationDbContext> options) : base(options)
+        public OrganizationDbContext(IHttpContextAccessor httpContext, ShardMap shardMap, int shardingKey, string connectionStr)
+            : base(httpContext, CreateDDRConnection(shardMap, shardingKey, connectionStr))
         {
         }
+
 
         #endregion
 
@@ -97,30 +114,6 @@ namespace Tayra.Models.Organizations
         #endregion
 
         #region Protected Methods
-
-        /// <summary>
-        /// Creates the DDR (Data Dependent Routing) connection.
-        /// </summary>
-        /// <param name="shardMap">The shard map.</param>
-        /// <param name="shardingKey">The sharding key.</param>
-        /// <param name="connectionStr">The connection string.</param>
-        /// <returns></returns>
-        private static DbContextOptions CreateDdrConnection(ShardMap shardMap, int shardingKey, string connectionStr)
-        {
-            // Ask shard map to broker a validated connection for the given key
-            SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
-
-            // Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
-            SqlCommand cmd = sqlConn.CreateCommand();
-            cmd.CommandText = @"exec sp_set_session_context @key=N'TenantId', @value=@shardingKey";
-            cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
-            cmd.ExecuteNonQuery();
-
-            var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
-            var options = optionsBuilder.UseSqlServer(sqlConn).Options;
-
-            return options;
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -279,6 +272,37 @@ namespace Tayra.Models.Organizations
             modelBuilder.Entity<TaskCategory>().HasData(taskCategory);
 
             #endregion
+        }
+
+        /// <summary>
+        /// Creates the DDR (Data Dependent Routing) connection.
+        /// </summary>
+        /// <param name="shardMap">The shard map.</param>
+        /// <param name="shardingKey">The sharding key.</param>
+        /// <param name="connectionStr">The connection string.</param>
+        /// <returns></returns>
+        // Only static methods are allowed in calls into base class c'tors
+        private static DbContextOptions CreateDDRConnection(ShardMap shardMap, int shardingKey, string connectionStr)
+        {
+            // Ask shard map to broker a validated connection for the given key
+            SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
+
+            // Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
+            SqlCommand cmd = sqlConn.CreateCommand();
+            cmd.CommandText = @"exec sp_set_session_context @key=N'TenantId', @value=@shardingKey";
+            cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
+            cmd.ExecuteNonQuery();
+
+            var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
+            var options = optionsBuilder.UseSqlServer(sqlConn).Options;
+
+            return options;
+        }
+
+        private static DbContextOptions ConfigureDbContextOptions(string connectionString)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
+            return optionsBuilder.UseSqlServer(connectionString).Options;
         }
     }
 }

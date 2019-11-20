@@ -32,7 +32,6 @@ namespace Tayra.API
         }
 
         #region Private fields
-        private IUtilities _utilities;
         private ICatalogRepository _catalogRepository;
         private ITenantRepository _tenantRepository;
         #endregion
@@ -40,7 +39,6 @@ namespace Tayra.API
 
         public static DatabaseConfig DatabaseConfig { get; set; }
         public static CatalogConfig CatalogConfig { get; set; }
-        public static TenantServerConfig TenantServerConfig { get; set; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -88,7 +86,6 @@ namespace Tayra.API
 
             //register catalog DB
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString(CatalogConfig, DatabaseConfig)));
-            //services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(GetOrgConnectionString(TenantServerConfig, DatabaseConfig)));
 
             //Add Application services
             services.AddTransient<ICatalogRepository, CatalogRepository>();
@@ -96,9 +93,7 @@ namespace Tayra.API
             services.AddSingleton<ITenantRepository>(p => new TenantRepository(GetBasicSqlConnectionString()));
 
             //create instance of utilities class
-            services.AddTransient<IUtilities, Utilities>();
             var provider = services.BuildServiceProvider();
-            _utilities = provider.GetService<IUtilities>();
             _catalogRepository = provider.GetService<ICatalogRepository>();
             _tenantRepository = provider.GetService<ITenantRepository>();
 
@@ -168,8 +163,6 @@ namespace Tayra.API
 
             //shard management
             InitialiseShardMapManager();
-            _utilities.RegisterTenantShard(TenantServerConfig, DatabaseConfig, CatalogConfig, TenantServerConfig.ResetEventDates);
-
         }
 
         #region Private Methods
@@ -186,12 +179,6 @@ namespace Tayra.API
                 $"Server=tcp:{catalogConfig.CatalogServer},1433;Database={catalogConfig.CatalogDatabase};User ID={databaseConfig.DatabaseUser};Password={databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;";
         }
 
-        private string GetOrgConnectionString(TenantServerConfig tenantConfig, DatabaseConfig databaseConfig)
-        {
-            return
-                $"Server=tcp:{tenantConfig.TenantServer},1433;Database={tenantConfig.TenantDatabase};User ID={databaseConfig.DatabaseUser};Password={databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;";
-        }
-
         /// <summary>
         /// Reads the application settings from appsettings.json
         /// </summary>
@@ -204,7 +191,6 @@ namespace Tayra.API
                 DatabaseServerPort = Convert.ToInt32(Configuration["DatabaseServerPort"]),
                 SqlProtocol = SqlProtocol.Tcp,
                 ConnectionTimeOut = Convert.ToInt32(Configuration["ConnectionTimeOut"]),
-                LearnHowFooterUrl = Configuration["LearnHowFooterUrl"]
             };
 
             CatalogConfig = new CatalogConfig
@@ -212,12 +198,6 @@ namespace Tayra.API
                 ServicePlan = Configuration["ServicePlan"],
                 CatalogDatabase = Configuration["CatalogDatabase"],
                 CatalogServer = Configuration["CatalogServer"] + ".database.windows.net"
-            };
-            TenantServerConfig = new TenantServerConfig
-            {
-                TenantServer = Configuration["TenantServer"] + ".database.windows.net",
-                TenantDatabase = Configuration["TenantDatabase"],
-
             };
         }
 
@@ -234,7 +214,7 @@ namespace Tayra.API
                 InitialCatalog = CatalogConfig.CatalogDatabase
             };
 
-            _ = new Sharding(CatalogConfig.CatalogDatabase, connectionString.ConnectionString, _catalogRepository, _tenantRepository, _utilities);
+            NewSharding.InitShardMap(CatalogConfig.CatalogDatabase, connectionString.ConnectionString);
         }
 
         /// <summary>
