@@ -1,20 +1,16 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using Firdaws.DAL;
-using Tayra.Common;
 
-namespace Tayra.Models.Organizations
+namespace Tayra.Models.Catalog
 {
-    public class IdentityExternalId : ITimeStampedEntity
+    public class TenantIdentity : ITimeStampedEntity
     {
         //Composite Key
+        public byte[] TenantId { get; set; }
+        public virtual Tenant Tenant { get; set; }
+
         public int IdentityId { get; set; }
         public virtual Identity Identity { get; set; }
-
-        public IntegrationType IntegrationType { get; set; }
-
-        [MaxLength(100)]
-        public string ExternalId { get; set; }
 
         #region ITimeStampedEntity
 

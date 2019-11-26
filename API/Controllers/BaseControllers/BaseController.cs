@@ -86,8 +86,6 @@ namespace Tayra.API.Controllers
 
         public Profile CurrentUser => _currentUser ?? (_currentUser = LoadCurrentUser());
 
-        public object MyProperty { get; set; }
-
         #endregion
 
         #region Helper Methods

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -24,7 +25,7 @@ namespace Tayra.Auth
         {
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
-            services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-dev")));
+            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("catalog")));
 
             var identityServer = services.AddIdentityServer()
                     .AddInMemoryPersistedGrants()

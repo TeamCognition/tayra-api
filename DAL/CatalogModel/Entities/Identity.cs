@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Firdaws.DAL;
 
-namespace Tayra.Models.Organizations
+namespace Tayra.Models.Catalog
 {
     public class Identity : IAuditedEntity
     {
@@ -19,7 +19,6 @@ namespace Tayra.Models.Organizations
         [Required]
         public byte[] Salt { get; set; }
 
-        public virtual ICollection<Profile> Profiles { get; set; }
         public virtual ICollection<IdentityEmail> Emails { get; set; }
 
         #region IAuditedEntity

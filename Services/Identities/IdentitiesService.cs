@@ -1,81 +1,81 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 
 namespace Tayra.Services
 {
-    public class IdentitiesService : BaseService<OrganizationDbContext>, IIdentitiesService
+    public class IdentitiesService : IIdentitiesService
     {
+        protected CatalogDbContext CatalogDb { get; set; }
+
         #region Constructor
 
-        public IdentitiesService(OrganizationDbContext dbContext) : base(dbContext)
+        public IdentitiesService(CatalogDbContext catalogDb)
         {
+            CatalogDb = catalogDb;
         }
 
         #endregion
 
         #region Public Methods 
 
-        public void Create(IdentityCreateDTO dto)
+        public void InternalCreateWithProfile(IdentityCreateDTO dto)
         {
-            var doesExist = DbContext.Identities.Any(x => x.Username == dto.Username);
+            var doesExist = CatalogDb.Identities.Any(x => x.Username == dto.Username);
 
-            if(doesExist)
+            if (doesExist)
             {
                 throw new ApplicationException("Identity with same username already exists");
             }
 
             var salt = PasswordHelper.GenerateSalt();
 
-            var identity = DbContext.Add(new Identity
+            var identity = CatalogDb.Add(new Identity
             {
                 Username = dto.Username,
                 Salt = salt,
                 Password = PasswordHelper.Hash(dto.Password, salt),
-                Profiles = new List<Profile>
-                {
-                    new Profile
-                    {
-                        FirstName = dto.Profile.FirstName,
-                        LastName = dto.Profile.LastName,
-                        Nickname = dto.Profile.Nickname,
-                        Role = dto.Profile.Role,
-                        Avatar = dto.Profile.Avatar
-                    }
-                }
             }).Entity;
 
-            var project = DbContext.Projects.FirstOrDefault();
-            DbContext.Add(new ProjectMember
+            //get identity Id
+            CatalogDb.SaveChanges();
+            var tenant = CatalogDb.Tenants.FirstOrDefault();
+
+            var shardingKey = TenantUtilities.GenerateShardingKey(tenant.Name);
+
+
+            using (var DbContext = new OrganizationDbContext(NewSharding.ShardMap, shardingKey, "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"))
             {
-                Profile = identity.Profiles.First(),
-                ProjectId = project.Id,
-                
-            });
-        }
+                var profile = DbContext.Add(new Profile
+                {
+                    FirstName = dto.Profile.FirstName,
+                    LastName = dto.Profile.LastName,
+                    Nickname = dto.Profile.Nickname,
+                    Role = dto.Profile.Role,
+                    Avatar = dto.Profile.Avatar,
+                    IdentityId = identity.Id
+                }).Entity;
 
-        public Identity GetById(int identityId)
-        {
-            return DbContext.Identities
-                .Include(x => x.Profiles)
-                .FirstOrDefault(x => x.Id == identityId);
-        }
+                //var project = DbContext.Projects.FirstOrDefault();
+                //DbContext.Add(new ProjectMember
+                //{
+                //    Profile = profile,
+                //    ProjectId = project.Id,
 
-        public Identity GetByUsername(string username)
-        {
-            return DbContext.Identities
-               .Include(x => x.Profiles)
-               .FirstOrDefault(x => x.Username == username);
+                //});
+
+                DbContext.SaveChanges();
+            }
         }
 
         public Identity GetByEmail(string email)
         {
-            return DbContext.IdentityEmails
+            return CatalogDb.IdentityEmails
                 .Include(x => x.Identity)
                 .FirstOrDefault(x => x.Email == email)
                 .Identity;
@@ -83,13 +83,14 @@ namespace Tayra.Services
 
         public GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams)
         {
-            var identity = DbContext.Profiles
+            var DbContext = new OrganizationDbContext(NewSharding.ShardMap, 1, "");
+            var identityId = DbContext.Profiles
                 .Where(x => x.Id == profileId)
-                .Select(x => x.Identity)
+                .Select(x => x.IdentityId)
                 .FirstOrDefault();
 
-            var scope = DbContext.IdentityEmails
-                .Where(x => x.IdentityId == identity.Id);
+            var scope = CatalogDb.IdentityEmails
+                .Where(x => x.IdentityId == identityId);
 
             IQueryable<IdentityEmailsGridDTO> query = from e in scope
                                                       select new IdentityEmailsGridDTO
@@ -105,7 +106,7 @@ namespace Tayra.Services
 
         public void AddEmail(int identityId, string email)
         {
-            var scope = DbContext.IdentityEmails.Where(x => x.DeletedAt != null);
+            var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt != null);
 
             if (scope.Where(x => x.Email == email).Any())
             {
@@ -119,15 +120,15 @@ namespace Tayra.Services
                 IsPrimary = !scope.Where(x => x.IdentityId == identityId).Any()
             };
 
-            DbContext.IdentityEmails.Add(emailEntry);
-            DbContext.SaveChanges();
+            CatalogDb.IdentityEmails.Add(emailEntry);
+            CatalogDb.SaveChanges();
         }
 
         #region Email Methods 
 
         public void SetPrimaryEmail(int identityId, string email)
         {
-            var scope = DbContext.IdentityEmails.Where(x => x.DeletedAt != null);
+            var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt != null);
 
             var emails = scope
                 .Where(x => x.IdentityId == identityId)
@@ -142,16 +143,16 @@ namespace Tayra.Services
             emails.ForEach(x => x.IsPrimary = false);
             emailEntry.IsPrimary = true;
 
-            DbContext.SaveChanges();
+            CatalogDb.SaveChanges();
         }
 
         public bool RemoveEmail(int identityId, string email)
         {
-            var scope = DbContext.IdentityEmails.Where(x => x.DeletedAt != null);
+            var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt != null);
             var emailEntry = scope.Where(x => x.IdentityId == identityId && x.Email == email).FirstOrDefault();
 
-            DbContext.IdentityEmails.Remove(emailEntry);
-            var affectedRecords = DbContext.SaveChanges();
+            CatalogDb.IdentityEmails.Remove(emailEntry);
+            var affectedRecords = CatalogDb.SaveChanges();
             return affectedRecords > 0;
         }
 

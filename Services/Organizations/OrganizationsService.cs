@@ -25,7 +25,7 @@ namespace Tayra.Services
                 throw new Exception("Shard map not initialized");
 
             Shard shard;
-            ShardLocation shardLocation = new ShardLocation(dto.DataBaseServer, dto.DatabaseName, SqlProtocol.Tcp);
+            ShardLocation shardLocation = new ShardLocation(dto.DatabaseServer, dto.DatabaseName, SqlProtocol.Tcp, 1433); //port number is necessary, otherwise shard can't be found
 
             if (!NewSharding.ShardMap.TryGetShard(shardLocation, out shard))
             {
@@ -33,7 +33,7 @@ namespace Tayra.Services
             }
 
             SqlConnectionStringBuilder connStrBldr = new SqlConnectionStringBuilder(dto.TemplateConnectionString);
-            connStrBldr.DataSource = dto.DataBaseServer;
+            connStrBldr.DataSource = dto.DatabaseServer;
             connStrBldr.InitialCatalog = dto.DatabaseName;
 
             // Go into a DbContext to trigger migrations and schema deployment for the new shard.
@@ -47,7 +47,12 @@ namespace Tayra.Services
             PointMapping<int> mapping;
             if (!NewSharding.ShardMap.TryGetMappingForKey(key, out mapping))
             {
-                NewSharding.ShardMap.CreatePointMapping(key, shard);
+                mapping = NewSharding.ShardMap.CreatePointMapping(key, shard);
+            }
+            else
+            {
+                //mapping.value
+                throw new Exception($"Tenant with {dto.Key} already exists in shard point mapping");
             }
 
             //convert from int to byte[] as tenantId has been set as byte[] in Tenants entity
@@ -60,6 +65,8 @@ namespace Tayra.Services
                 DisplayName = dto.Name,
                 Timezone = dto.Timezone
             });
+
+            CatalogDb.SaveChanges();
         }
     }
 }

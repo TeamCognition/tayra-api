@@ -1,14 +1,12 @@
 ﻿using Firdaws.Core;
-using Tayra.Models.Organizations;
+using Tayra.Models.Catalog;
 
 namespace Tayra.Services
 {
     public interface IIdentitiesService
     {
-        void Create(IdentityCreateDTO dto);
+        void InternalCreateWithProfile(IdentityCreateDTO dto);
 
-        Identity GetById(int identityId);
-        Identity GetByUsername(string username);
         Identity GetByEmail(string email);
 
         GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams);

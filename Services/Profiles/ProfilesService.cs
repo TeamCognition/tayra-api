@@ -6,19 +6,23 @@ using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
 {
     public class ProfilesService : BaseService<OrganizationDbContext>, IProfilesService
     {
+        protected CatalogDbContext CatalogDb { get; set; }
+
         #region Constructor
         protected ILogsService LogsService { get; set; }
 
-        public ProfilesService(ITokensService tokensService, ILogsService logsService, OrganizationDbContext dbContext) : base(dbContext)
+        public ProfilesService(ITokensService tokensService, ILogsService logsService, CatalogDbContext catalogDb, OrganizationDbContext dbContext) : base(dbContext)
         {
             LogsService = logsService;
             TokensService = tokensService;
+            CatalogDb = catalogDb;
         }
 
         #endregion
@@ -29,20 +33,17 @@ namespace Tayra.Services
 
         public Profile Get(int identityId)
         {
-            return DbContext.Identities
-                .Include(x => x.Profiles)
-                .FirstOrDefault(x => x.Id == identityId)
-                .Profiles
-                .FirstOrDefault();
+            return DbContext.Profiles
+                .FirstOrDefault(x => x.IdentityId == identityId);
         }
 
-        public Profile GetByUsername(string username)
+        public Profile GetByUsername(string username) //by email
         {
-            return DbContext.Identities
-                .Include(x => x.Profiles)
-                .FirstOrDefault(x => x.Username == username)
-                .Profiles
-                .FirstOrDefault();
+            var identity = CatalogDb.Identities.FirstOrDefault(x => x.Username == username);
+
+            identity.EnsureNotNull(username);
+
+            return DbContext.Profiles.FirstOrDefault(x => x.IdentityId == identity.Id);
         }
 
         public Profile GetByNickname(string nickname)
@@ -53,24 +54,20 @@ namespace Tayra.Services
 
         public Profile GetByEmail(string email)
         {
-            return DbContext.IdentityEmails
-                .Include(x => x.Identity)
-                .ThenInclude(x => x.Profiles)
-                .FirstOrDefault(x => x.Email == email)
-                .Identity
-                .Profiles
-                .FirstOrDefault();
+            var ie = CatalogDb.IdentityEmails.FirstOrDefault(x => x.Email == email);
+
+            ie.EnsureNotNull(email);
+
+            return DbContext.Profiles.FirstOrDefault(x => x.IdentityId == ie.IdentityId);
         }
 
         public Profile GetByExternalId(string externalId, IntegrationType integrationType)
         {
-            return DbContext.IdentityExternalIds
-                .Include(x => x.Identity)
-                .ThenInclude(x => x.Profiles)
-                .FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType)
-                .Identity
-                .Profiles
-                .FirstOrDefault();
+            var ie = CatalogDb.IdentityExternalIds.FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType);
+
+            ie.EnsureNotNull(externalId, integrationType);
+
+            return DbContext.Profiles.FirstOrDefault(x => x.IdentityId == ie.IdentityId);
         }
 
         public int OneUpProfile(int profileId, ProfileOneUpDTO dto)

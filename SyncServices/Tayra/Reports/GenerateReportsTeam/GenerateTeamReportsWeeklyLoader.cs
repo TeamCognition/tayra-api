@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Firdaws.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;

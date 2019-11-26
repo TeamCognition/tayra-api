@@ -25,7 +25,13 @@ namespace Tayra.Models.Catalog
 
         #region Datasets
 
+        public DbSet<Identity> Identities { get; set; }
+        public DbSet<IdentityEmail> IdentityEmails { get; set; }
+        public DbSet<IdentityExternalId> IdentityExternalIds { get; set; }
+
         public DbSet<Tenant> Tenants { get; set; }
+        public DbSet<TenantIdentity> TenantIdentities { get; set; }
+
         public DbSet<LandingPageContact> LandingPageContacts { get; set; }
 
         #endregion
@@ -45,6 +51,21 @@ namespace Tayra.Models.Catalog
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Identity>().HasIndex(x => x.Username).IsUnique();
+
+            modelBuilder.Entity<IdentityEmail>(entity =>
+            {
+                entity.HasKey(x => new { x.IdentityId, x.Email });
+                entity.HasIndex(x => x.Email).IsUnique();
+                entity.HasIndex(x => new { x.IdentityId, x.IsPrimary }).IsUnique();
+            });
+
+            modelBuilder.Entity<IdentityExternalId>(entity =>
+            {
+                entity.HasKey(x => new { x.IdentityId, x.IntegrationType });
+                entity.HasIndex(x => x.ExternalId).IsUnique();
+            });
+
             modelBuilder.Entity<Tenant>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -57,6 +78,11 @@ namespace Tayra.Models.Catalog
                     .IsRequired()
                     .HasColumnType("char(10)")
                     .HasDefaultValueSql("'standard'");
+            });
+
+            modelBuilder.Entity<TenantIdentity>(entity =>
+            {
+                entity.HasKey(x => new { x.TenantId, x.IdentityId});
             });
 
             Seed(modelBuilder);

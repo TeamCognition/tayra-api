@@ -1,5 +1,6 @@
 ﻿using System;
 using Firdaws.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -10,26 +11,34 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public IdentitiesController(OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
+        public IdentitiesController(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            DbContext = dbContext;
         }
 
         #endregion
 
         #region Properties
 
-        protected OrganizationDbContext DbContext;
-
         #endregion
 
         #region Action Methods
 
-        [HttpPost("create")]
+        [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {
-            IdentitiesService.Create(dto);
-            DbContext.SaveChanges();
+            //var o = Resolve<IOrganizationsService>();
+            //o.Create(new OrganizationCreateDTO
+            //{
+            //    Key = "mop2",
+            //    Name = "Ministry of Programming2",
+            //    Timezone = "Europe Central",
+            //    DatabaseServer = "sqlserver-tayra.database.windows.net",
+            //    DatabaseName = "sqldb-tayra-tenants_free-prod",
+            //    TemplateConnectionString = "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
+            //});
+
+            IdentitiesService.InternalCreateWithProfile(dto);
+            //DbContext.SaveChanges();
 
             return Ok();
         }

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Firdaws.DAL;
 
-namespace Tayra.Models.Organizations
+namespace Tayra.Models.Catalog
 {
     public class IdentityEmail : ITimeStampedEntity
     {

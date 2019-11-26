@@ -75,6 +75,9 @@ namespace Tayra.API
             services.AddTransient<ICompetitionsService, CompetitionsService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
 
+            services.AddTransient<IOrganizationsService, OrganizationsService>();
+
+
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();

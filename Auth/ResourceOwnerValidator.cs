@@ -13,7 +13,7 @@ namespace Tayra.Auth
     {
         private readonly IIdentitiesService _identitiesService;
 
-        public ResourceOwnerValidator(OrganizationDbContext context, IIdentitiesService identitiesService)
+        public ResourceOwnerValidator(IIdentitiesService identitiesService)
         {
             _identitiesService = identitiesService;
         }
@@ -25,7 +25,7 @@ namespace Tayra.Auth
         /// <returns></returns>
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            var identity = _identitiesService.GetByUsername(context.UserName);
+            var identity = _identitiesService.GetByEmail(context.UserName);
             if (identity == null)
             {
                 context.Result = new GrantValidationResult(

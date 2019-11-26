@@ -21,7 +21,9 @@ namespace Tayra.Models.Organizations
             : base(ConfigureDbContextOptions(connectionString))
         {
         }
-
+        public OrganizationDbContext(DbContextOptions<OrganizationDbContext> options) : base(options)
+        {//delete this after done with migrations
+        }
         // C'tor for data dependent routing. This call will open a validated connection routed to the proper
         // shard by the shard map manager. Note that the base class c'tor call will fail for an open connection
         // if migrations need to be done and SQL credentials are used. This is the reason for the 
@@ -60,9 +62,6 @@ namespace Tayra.Models.Organizations
         public DbSet<CompetitionReward> CompetitionRewards { get; set; }
         public DbSet<Competitor> Competitors { get; set; }
         public DbSet<CompetitorScore> CompetitorScores { get; set; }
-        public DbSet<Identity> Identities { get; set; }
-        public DbSet<IdentityEmail> IdentityEmails { get; set; }
-        public DbSet<IdentityExternalId> IdentityExternalIds { get; set; }
         public DbSet<Integration> Integrations { get; set; }
         public DbSet<IntegrationField> IntegrationFields { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
@@ -117,7 +116,6 @@ namespace Tayra.Models.Organizations
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Identity>().HasIndex(x => x.Username).IsUnique();
             modelBuilder.Entity<Profile>().HasIndex(x => x.Nickname).IsUnique();
 
             modelBuilder.Entity<ChallengeCompletion>().HasKey(x => new { x.ChallengeId, x.ProfileId });
@@ -143,19 +141,6 @@ namespace Tayra.Models.Organizations
                 entity.HasIndex(x => new { x.CompetitorId, x.ProfileId });
                 entity.HasIndex(x => x.ProfileId);
                 entity.HasIndex(x => new { x.CompetitorId, x.TeamId });
-            });
-
-            modelBuilder.Entity<IdentityEmail>(entity =>
-            {
-                entity.HasKey(x => new { x.IdentityId, x.Email });
-                entity.HasIndex(x => x.Email).IsUnique();
-                entity.HasIndex(x => new { x.IdentityId, x.IsPrimary }).IsUnique();
-            });
-
-            modelBuilder.Entity<IdentityExternalId>(entity =>
-            {
-                entity.HasKey(x => new { x.IdentityId, x.IntegrationType });
-                entity.HasIndex(x => x.ExternalId).IsUnique();
             });
 
             modelBuilder.Entity<Organization>(entity =>
@@ -289,7 +274,7 @@ namespace Tayra.Models.Organizations
 
             // Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
             SqlCommand cmd = sqlConn.CreateCommand();
-            cmd.CommandText = @"exec sp_set_session_context @key=N'TenantId', @value=@shardingKey";
+            cmd.CommandText = @"exec sp_set_session_context @key=N'OrganizationId', @value=@shardingKey";
             cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
             cmd.ExecuteNonQuery();
 

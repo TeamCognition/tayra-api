@@ -20,7 +20,6 @@ namespace Tayra.Models.Organizations
         public ProfileRoles Role { get; set; }
 
         public int IdentityId { get; set; }
-        public virtual Identity Identity { get; set; }
 
         public virtual ICollection<ProfileInventoryItem> InventoryItems { get; set; }
         public virtual ICollection<ProjectMember> Projects { get; set; }
