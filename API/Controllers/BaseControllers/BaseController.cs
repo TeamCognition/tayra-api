@@ -36,7 +36,6 @@ namespace Tayra.API.Controllers
 
         #region OvoOno
 
-        public readonly ITenantRepository TenantRepository;
         public readonly IConfiguration Configuration;
 
         #endregion
@@ -48,7 +47,6 @@ namespace Tayra.API.Controllers
         {
             ServiceProvider = serviceProvider;
             _currentUser = LoadCurrentUser();
-            TenantRepository = Resolve<ITenantRepository>();
             Configuration = Resolve<IConfiguration>();
         }
 

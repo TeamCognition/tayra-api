@@ -26,18 +26,18 @@ namespace Tayra.API.Controllers
         [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {
-            //var o = Resolve<IOrganizationsService>();
-            //o.Create(new OrganizationCreateDTO
-            //{
-            //    Key = "mop2",
-            //    Name = "Ministry of Programming2",
-            //    Timezone = "Europe Central",
-            //    DatabaseServer = "sqlserver-tayra.database.windows.net",
-            //    DatabaseName = "sqldb-tayra-tenants_free-prod",
-            //    TemplateConnectionString = "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
-            //});
+            var o = Resolve<IOrganizationsService>();
+            o.Create(new OrganizationCreateDTO
+            {
+                Key = "localhost:5001",
+                Name = "Localhost 5001",
+                Timezone = "Europe Central",
+                DatabaseServer = "sqlserver-tayra.database.windows.net",
+                DatabaseName = "sqldb-tayra-tenants_free-prod",
+                TemplateConnectionString = "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
+            });
 
-            IdentitiesService.InternalCreateWithProfile(dto);
+            //IdentitiesService.InternalCreateWithProfile(dto);
             //DbContext.SaveChanges();
 
             return Ok();

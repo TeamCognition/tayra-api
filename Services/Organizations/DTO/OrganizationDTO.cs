@@ -1,6 +1,6 @@
 ﻿namespace Tayra.Services
 {
-    public class OrganizationModel
+    public class OrganizationDTO
     {
         public int Id { get; set; }
 

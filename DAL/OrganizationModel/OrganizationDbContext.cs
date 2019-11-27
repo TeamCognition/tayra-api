@@ -1,15 +1,18 @@
 ﻿using System.Data.SqlClient;
 using System.Linq;
+using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
-using Tayra.Common;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Tayra.Models.Organizations
 {
     public class OrganizationDbContext : FirdawsDbContext, IAuditPersistenceStore
     {
+        private readonly TenantDTO _tenant;
+
         #region Constructor
 
         // C'tor to deploy schema and migrations to a new shard
@@ -21,9 +24,11 @@ namespace Tayra.Models.Organizations
             : base(ConfigureDbContextOptions(connectionString))
         {
         }
-        public OrganizationDbContext(DbContextOptions<OrganizationDbContext> options) : base(options)
-        {//delete this after done with migrations
+        protected internal OrganizationDbContext(DbContextOptions<OrganizationDbContext> options) : base(options)
+        {//deliete this after done with migrations
         }
+
+
         // C'tor for data dependent routing. This call will open a validated connection routed to the proper
         // shard by the shard map manager. Note that the base class c'tor call will fail for an open connection
         // if migrations need to be done and SQL credentials are used. This is the reason for the 
@@ -32,20 +37,29 @@ namespace Tayra.Models.Organizations
         /// Use this public c'tor with the shard map parameter in
         // the regular application calls with a tenant id.
         /// </summary>
-        public OrganizationDbContext(ShardMap shardMap, int shardingKey, string connectionString)
-            : base(CreateDDRConnection(shardMap, shardingKey, connectionString))
+        public OrganizationDbContext(IHttpContextAccessor httpContext, ITenantProvider tenantProvider)
+            : base(httpContext, CreateDDRConnection(tenantProvider.GetShardMap(), tenantProvider.GetTenant().ShardingKey, tenantProvider.GetTemplateConnectionString()))
         {
-        }
-
-        public OrganizationDbContext(IHttpContextAccessor httpContext, ShardMap shardMap, int shardingKey, string connectionStr)
-            : base(httpContext, CreateDDRConnection(shardMap, shardingKey, connectionStr))
-        {
+            _tenant = tenantProvider.GetTenant();
         }
 
 
         #endregion
 
         #region Properties
+
+        public int OrganizationId
+        {
+            get
+            {
+                if (_tenant == null)
+                {
+                    return -1;
+                }
+
+                return _tenant.ShardingKey;
+            }
+        }
 
         #endregion
 
@@ -229,7 +243,17 @@ namespace Tayra.Models.Organizations
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
-            
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
+            {
+                var ro = modelBuilder.Model.FindEntityType(typeof(Organization));
+
+                var o = relationship.GetOrAddProperty("OrganizationId", typeof(int));
+
+                relationship.GetOrAddForeignKey(o, ro.FindPrimaryKey(), ro);
+                relationship.SetPrimaryKey(relationship.FindPrimaryKey().Properties.Append(o).ToList());
+            }
+
+
             Seed(modelBuilder);
             
 
@@ -242,19 +266,19 @@ namespace Tayra.Models.Organizations
 
         private void Seed(ModelBuilder modelBuilder)
         {
-            var cToken = new Token { Id = 1, Name = "Company Token", Symbol = "CT", Type = TokenType.CompanyToken };
-            var expToken = new Token { Id = 2, Symbol = "EXP", Name = nameof(TokenType.Experience), Type = TokenType.Experience };
-            var p1Token = new Token { Id = 3, Symbol = "1Up", Name = nameof(TokenType.OneUp), Type = TokenType.OneUp };
+            //var cToken = new Token { Id = 1, Name = "Company Token", Symbol = "CT", Type = TokenType.CompanyToken };
+            //var expToken = new Token { Id = 2, Symbol = "EXP", Name = nameof(TokenType.Experience), Type = TokenType.Experience };
+            //var p1Token = new Token { Id = 3, Symbol = "1Up", Name = nameof(TokenType.OneUp), Type = TokenType.OneUp };
 
-            modelBuilder.Entity<Token>().HasData(cToken);
-            modelBuilder.Entity<Token>().HasData(expToken);
-            modelBuilder.Entity<Token>().HasData(p1Token);
+            //modelBuilder.Entity<Token>().HasData(cToken);
+            //modelBuilder.Entity<Token>().HasData(expToken);
+            //modelBuilder.Entity<Token>().HasData(p1Token);
 
-            var shop = new Shop { Id = 1, Name = "Employee Shop" };
-            modelBuilder.Entity<Shop>().HasData(shop);
+            //var shop = new Shop { Id = 1, Name = "Employee Shop" };
+            //modelBuilder.Entity<Shop>().HasData(shop);
 
-            var taskCategory = new TaskCategory { Id = 1, Name = "Undefined" };
-            modelBuilder.Entity<TaskCategory>().HasData(taskCategory);
+            //var taskCategory = new TaskCategory { Id = 1, Name = "Undefined" };
+            //modelBuilder.Entity<TaskCategory>().HasData(taskCategory);
 
             #endregion
         }
@@ -280,6 +304,7 @@ namespace Tayra.Models.Organizations
 
             var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
             var options = optionsBuilder.UseSqlServer(sqlConn).Options;
+            optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>();
 
             return options;
         }
@@ -289,5 +314,6 @@ namespace Tayra.Models.Organizations
             var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
             return optionsBuilder.UseSqlServer(connectionString).Options;
         }
+        //TODO: convert these two to use OnConfiguring, what will happen to migrations?
     }
 }

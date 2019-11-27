@@ -9,13 +9,13 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.Services
 {
-    public class IdentitiesService : IIdentitiesService
+    public class IdentitiesService : BaseService<OrganizationDbContext>, IIdentitiesService
     {
         protected CatalogDbContext CatalogDb { get; set; }
 
         #region Constructor
 
-        public IdentitiesService(CatalogDbContext catalogDb)
+        public IdentitiesService(CatalogDbContext catalogDb, OrganizationDbContext dbContext): base(dbContext)
         {
             CatalogDb = catalogDb;
         }
@@ -48,29 +48,26 @@ namespace Tayra.Services
 
             var shardingKey = TenantUtilities.GenerateShardingKey(tenant.Name);
 
-
-            using (var DbContext = new OrganizationDbContext(NewSharding.ShardMap, shardingKey, "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"))
+            var profile = DbContext.Add(new Profile
             {
-                var profile = DbContext.Add(new Profile
-                {
-                    FirstName = dto.Profile.FirstName,
-                    LastName = dto.Profile.LastName,
-                    Nickname = dto.Profile.Nickname,
-                    Role = dto.Profile.Role,
-                    Avatar = dto.Profile.Avatar,
-                    IdentityId = identity.Id
-                }).Entity;
+                FirstName = dto.Profile.FirstName,
+                LastName = dto.Profile.LastName,
+                Nickname = dto.Profile.Nickname,
+                Role = dto.Profile.Role,
+                Avatar = dto.Profile.Avatar,
+                IdentityId = identity.Id
+            }).Entity;
 
-                //var project = DbContext.Projects.FirstOrDefault();
-                //DbContext.Add(new ProjectMember
-                //{
-                //    Profile = profile,
-                //    ProjectId = project.Id,
+            //var project = DbContext.Projects.FirstOrDefault();
+            //DbContext.Add(new ProjectMember
+            //{
+            //    Profile = profile,
+            //    ProjectId = project.Id,
 
-                //});
+            //});
 
-                DbContext.SaveChanges();
-            }
+            DbContext.SaveChanges();
+            
         }
 
         public Identity GetByEmail(string email)
@@ -83,7 +80,6 @@ namespace Tayra.Services
 
         public GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams)
         {
-            var DbContext = new OrganizationDbContext(NewSharding.ShardMap, 1, "");
             var identityId = DbContext.Profiles
                 .Where(x => x.Id == profileId)
                 .Select(x => x.IdentityId)

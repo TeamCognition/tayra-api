@@ -32,8 +32,9 @@ namespace Tayra.API
         }
 
         #region Private fields
+
         private ICatalogRepository _catalogRepository;
-        private ITenantRepository _tenantRepository;
+
         #endregion
 
 
@@ -75,7 +76,7 @@ namespace Tayra.API
             services.AddTransient<ICompetitionsService, CompetitionsService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
 
-            services.AddTransient<IOrganizationsService, OrganizationsService>();
+            services.AddTransient<IOrganizationsService, Services.OrganizationsService>();
 
 
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
@@ -89,16 +90,15 @@ namespace Tayra.API
 
             //register catalog DB
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString(CatalogConfig, DatabaseConfig)));
+            services.AddDbContext<OrganizationDbContext>(options => { });
 
             //Add Application services
             services.AddTransient<ICatalogRepository, CatalogRepository>();
-            services.AddTransient<ITenantRepository, TenantRepository>();
-            services.AddSingleton<ITenantRepository>(p => new TenantRepository(GetBasicSqlConnectionString()));
+            services.AddScoped<ITenantProvider, ShardTenantProvider>();
 
             //create instance of utilities class
             var provider = services.BuildServiceProvider();
             _catalogRepository = provider.GetService<ICatalogRepository>();
-            _tenantRepository = provider.GetService<ITenantRepository>();
 
             services.AddCors(c =>
             {
@@ -163,9 +163,6 @@ namespace Tayra.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tayra API V1");
                 c.RoutePrefix = string.Empty;
             });
-
-            //shard management
-            InitialiseShardMapManager();
         }
 
         #region Private Methods
@@ -180,6 +177,7 @@ namespace Tayra.API
         {
             return
                 $"Server=tcp:{catalogConfig.CatalogServer},1433;Database={catalogConfig.CatalogDatabase};User ID={databaseConfig.DatabaseUser};Password={databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;";
+                //$"Server=tcp:sqlserver-tayra.database.windows.net,1433;Database=sqldb-tayra-tenants_free-prod;User ID={databaseConfig.DatabaseUser};Password={databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;";
         }
 
         /// <summary>
@@ -202,22 +200,6 @@ namespace Tayra.API
                 CatalogDatabase = Configuration["CatalogDatabase"],
                 CatalogServer = Configuration["CatalogServer"] + ".database.windows.net"
             };
-        }
-
-        /// <summary>
-        /// Initialises the shard map manager and shard map 
-        /// <para>Also does all tasks related to sharding</para>
-        /// </summary>
-        private void InitialiseShardMapManager()
-        {
-            var basicConnectionString = GetBasicSqlConnectionString();
-            SqlConnectionStringBuilder connectionString = new SqlConnectionStringBuilder(basicConnectionString)
-            {
-                DataSource = DatabaseConfig.SqlProtocol + ":" + CatalogConfig.CatalogServer + "," + DatabaseConfig.DatabaseServerPort,
-                InitialCatalog = CatalogConfig.CatalogDatabase
-            };
-
-            NewSharding.InitShardMap(CatalogConfig.CatalogDatabase, connectionString.ConnectionString);
         }
 
         /// <summary>

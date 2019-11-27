@@ -21,6 +21,7 @@
     <Folder Include="Entities\StatEntities\" />
     <Folder Include="Entities\LogEntities\" />
     <Folder Include="Contracts\" />
+    <Folder Include="FirdawsDAL\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Migrations\20190613173857_initial.cs" />

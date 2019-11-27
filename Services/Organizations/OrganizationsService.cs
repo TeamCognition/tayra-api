@@ -9,10 +9,12 @@ namespace Tayra.Services
     public class OrganizationsService : IOrganizationsService
     {
         protected readonly CatalogDbContext CatalogDb;
+        protected readonly ListShardMap<int> ShardMap;
 
-        public OrganizationsService(CatalogDbContext catalogDb)
+        public OrganizationsService(CatalogDbContext catalogDb, ITenantProvider tenantProvider)
         {
             CatalogDb = catalogDb;
+            ShardMap = tenantProvider.GetShardMap() as ListShardMap<int>;
         }
 
         // Enter a new shard - i.e. an empty database - to the shard map, allocate a first tenant to it 
@@ -21,15 +23,14 @@ namespace Tayra.Services
 
         public void Create(OrganizationCreateDTO dto)
         {
-            if (NewSharding.ShardMap == null)
+            if (ShardMap == null)
                 throw new Exception("Shard map not initialized");
 
-            Shard shard;
             ShardLocation shardLocation = new ShardLocation(dto.DatabaseServer, dto.DatabaseName, SqlProtocol.Tcp, 1433); //port number is necessary, otherwise shard can't be found
 
-            if (!NewSharding.ShardMap.TryGetShard(shardLocation, out shard))
+            if (!ShardMap.TryGetShard(shardLocation, out Shard shard))
             {
-                shard = NewSharding.ShardMap.CreateShard(shardLocation);
+                shard = ShardMap.CreateShard(shardLocation);
             }
 
             SqlConnectionStringBuilder connStrBldr = new SqlConnectionStringBuilder(dto.TemplateConnectionString);
@@ -38,16 +39,15 @@ namespace Tayra.Services
 
             // Go into a DbContext to trigger migrations and schema deployment for the new shard.
             // This requires an un-opened connection.
-            TenantUtilities.DatabaseEnsureCreatedAndMigrated(connStrBldr.ConnectionString);
+            TenantUtilities.DatabaseEnsureCreatedAndMigrated(connStrBldr.ConnectionString); //TODO: move this to program.cs or somewhere
 
-            var key = TenantUtilities.GenerateShardingKey(dto.Key);
+            var shardingKey = TenantUtilities.GenerateShardingKey(dto.Key);
 
             // Register the mapping of the tenant to the shard in the shard map.
             // After this step, DDR on the shard map can be used
-            PointMapping<int> mapping;
-            if (!NewSharding.ShardMap.TryGetMappingForKey(key, out mapping))
+            if (!ShardMap.TryGetMappingForKey(shardingKey, out PointMapping<int> mapping))
             {
-                mapping = NewSharding.ShardMap.CreatePointMapping(key, shard);
+                mapping = ShardMap.CreatePointMapping(shardingKey, shard);
             }
             else
             {
@@ -67,6 +67,44 @@ namespace Tayra.Services
             });
 
             CatalogDb.SaveChanges();
+
+            Models.Organizations.OrganizationsService.InsertOrganization(connStrBldr.ConnectionString, new Organization
+            {
+                Id = shardingKey,
+                Address = "Burch",
+                Name = dto.Name
+            });
+        }
+
+        public OrganizationDTO GetVenueDetails(int tenantId)
+        {
+            //get database name
+            //string databaseName, databaseServerName;
+            //PointMapping<int> mapping;
+
+            //if (ShardMap.TryGetMappingForKey(tenantId, out mapping))
+            //{
+            //    using (SqlConnection sqlConn = ShardMap.OpenConnectionForKey(tenantId, _connectionString))
+            //    {
+            //        databaseName = sqlConn.Database;
+            //        databaseServerName = sqlConn.DataSource.Split(':').Last().Split(',').First();
+            //    }
+            //    var venue = DbContext.Organizations.FirstOrDefault(x => x.Id == tenantId);
+
+            //    if (venue != null)
+            //    {
+            //        var venueModel = new OrganizationDTO
+            //        {
+            //            Id = venue.Id,
+            //            Name = venue.Name,
+            //            Address = venue.Address,
+            //            DatabaseName = databaseName,
+            //            DatabaseServerName = databaseServerName
+            //        };
+            //        return venueModel;
+            //    }
+            //}
+            return null;
         }
     }
 }

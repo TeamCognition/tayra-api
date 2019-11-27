@@ -10,8 +10,8 @@ using Tayra.Models.Catalog;
 namespace Tayra.Models.Catalog.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20191125203649_MVP-2")]
-    partial class MVP2
+    [Migration("20191127184345_BETA")]
+    partial class BETA
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
