@@ -1,16 +1,20 @@
 ﻿using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Tayra.Models.Organizations
 {
     public class OrganizationDbContext : FirdawsDbContext, IAuditPersistenceStore
     {
+        private const string OrganizationIdFK = "OrganizationId";
         private readonly TenantDTO _tenant;
 
         #region Constructor
@@ -41,6 +45,7 @@ namespace Tayra.Models.Organizations
             : base(httpContext, CreateDDRConnection(tenantProvider.GetShardMap(), tenantProvider.GetTenant().ShardingKey, tenantProvider.GetTemplateConnectionString()))
         {
             _tenant = tenantProvider.GetTenant();
+            this.Database.Migrate();
         }
 
 
@@ -243,24 +248,49 @@ namespace Tayra.Models.Organizations
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
+            var orgEntity = modelBuilder.Model.FindEntityType(typeof(Organization));
+            var orgPKey = orgEntity.FindPrimaryKey();
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
             {
-                var ro = modelBuilder.Model.FindEntityType(typeof(Organization));
+                var id = entityType.GetProperties().FirstOrDefault(x => x.IsPrimaryKey() && x.Name == "Id");
+                if(id != null) id.ValueGenerated = ValueGenerated.OnAdd;
 
-                var o = relationship.GetOrAddProperty("OrganizationId", typeof(int));
+                var orgId = entityType.GetOrAddProperty(OrganizationIdFK, typeof(int));
+                entityType.GetOrAddForeignKey(orgId, orgPKey, orgEntity);
+                entityType.SetPrimaryKey(entityType.FindPrimaryKey().Properties.Append(orgId).ToList());
 
-                relationship.GetOrAddForeignKey(o, ro.FindPrimaryKey(), ro);
-                relationship.SetPrimaryKey(relationship.FindPrimaryKey().Properties.Append(o).ToList());
+                var clrType = entityType.ClrType;
+                var method = SetGlobalQueryMethod.MakeGenericMethod(clrType);
+                method.Invoke(this, new object[] { modelBuilder });
             }
-
 
             Seed(modelBuilder);
             
-
             base.OnModelCreating(modelBuilder);
         }
 
+        public override int SaveChanges()
+        {
+            foreach (var entry in ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Added
+            && !e.Entity.GetType().HasAttribute<TenantSharedEntityAttribute>()))
+            {
+                entry.Property(OrganizationIdFK).CurrentValue = OrganizationId;
+            }
+
+            return base.SaveChanges();
+        }
+
         #endregion
+
+        static readonly MethodInfo SetGlobalQueryMethod = typeof(OrganizationDbContext).GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                                                                                      .Single(t => t.IsGenericMethod && t.Name == "SetGlobalQuery");
+
+        public void SetGlobalQuery<T>(ModelBuilder builder) where T : class
+        {
+            Debug.WriteLine("Adding global query for: " + typeof(T));
+            builder.Entity<T>().HasQueryFilter(e => EF.Property<int>(e, OrganizationIdFK) == _tenant.ShardingKey);
+        }
 
         #region Seed
 
@@ -296,11 +326,11 @@ namespace Tayra.Models.Organizations
             // Ask shard map to broker a validated connection for the given key
             SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
 
-            // Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
-            SqlCommand cmd = sqlConn.CreateCommand();
-            cmd.CommandText = @"exec sp_set_session_context @key=N'OrganizationId', @value=@shardingKey";
-            cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
-            cmd.ExecuteNonQuery();
+            //// Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
+            //SqlCommand cmd = sqlConn.CreateCommand();
+            //cmd.CommandText = @"exec sp_set_session_context @key=N'OrganizationId', @value=@shardingKey";
+            //cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
+            //cmd.ExecuteNonQuery();
 
             var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
             var options = optionsBuilder.UseSqlServer(sqlConn).Options;
@@ -314,6 +344,6 @@ namespace Tayra.Models.Organizations
             var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
             return optionsBuilder.UseSqlServer(connectionString).Options;
         }
-        //TODO: convert these two to use OnConfiguring, what will happen to migrations?
+        //TODO: convert these two to use OnConfiguring, what will happen to migrations
     }
 }

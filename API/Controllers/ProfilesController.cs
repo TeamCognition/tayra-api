@@ -1,5 +1,6 @@
 ﻿using System;
 using Firdaws.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -38,7 +39,7 @@ namespace Tayra.API.Controllers
             return Ok(ProfilesService.GetProfileViewDTO(x => x.Nickname == nickname));
         }
 
-        [HttpPost("search")]
+        [AllowAnonymous, HttpPost("search")]
         public ActionResult<GridData<ProfileGridDTO>> Search([FromBody] ProfileGridParams gridParams)
         {
             if(string.IsNullOrEmpty(gridParams.Sidx))
@@ -47,7 +48,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "ASC";
             }
 
-            return ProfilesService.GetGridData(CurrentUser.Id, gridParams);
+            return ProfilesService.GetGridData(5, gridParams);
         }
 
         [HttpPost("searchWithSummary")]

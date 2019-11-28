@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
-    public partial class BETA : Migration
+    public partial class BETA1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -56,7 +56,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Integrations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ProjectId = table.Column<int>(nullable: false),
                     Type = table.Column<int>(nullable: false),
@@ -81,7 +82,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Items",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(maxLength: 100, nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -113,7 +115,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Logs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Data = table.Column<string>(nullable: true),
                     Event = table.Column<int>(nullable: false),
@@ -136,7 +139,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Profiles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
@@ -165,7 +169,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ProjectAreas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
@@ -189,7 +194,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Projects",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Key = table.Column<string>(maxLength: 50, nullable: false),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
@@ -219,7 +225,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Shops",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     ClosedAt = table.Column<DateTime>(nullable: true),
@@ -244,7 +251,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "StatTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     IntegrationType = table.Column<int>(nullable: false),
@@ -269,7 +277,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "TaskCategories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
@@ -293,7 +302,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Tokens",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Symbol = table.Column<string>(nullable: true),
@@ -320,7 +330,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "WebhookEventLogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Data = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
@@ -342,7 +353,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "IntegrationFields",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     IntegrationId = table.Column<int>(nullable: false),
                     Key = table.Column<string>(maxLength: 50, nullable: true),
@@ -374,7 +386,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ShopItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
                     Quantity = table.Column<int>(nullable: true),
@@ -412,7 +425,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ClaimBundles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),
                     Type = table.Column<int>(nullable: false),
@@ -442,7 +456,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Invitations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Code = table.Column<Guid>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),
@@ -475,7 +490,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ItemDisenchants",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),
@@ -510,7 +526,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ItemGifts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
                     SenderId = table.Column<int>(nullable: false),
@@ -553,7 +570,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ProfileInventoryItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
@@ -657,7 +675,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Challenges",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Status = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
@@ -735,7 +754,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ShopPurchases",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),
@@ -784,7 +804,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Teams",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Key = table.Column<string>(maxLength: 50, nullable: true),
                     Name = table.Column<string>(nullable: true),
@@ -1116,7 +1137,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Competitions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     IsIndividual = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(maxLength: 100, nullable: true),
@@ -1173,7 +1195,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "TokenTransactions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     Value = table.Column<double>(nullable: false),
                     FinalBalance = table.Column<double>(nullable: false),
@@ -1354,7 +1377,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "TaskLogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ExternalId = table.Column<string>(nullable: true),
                     IntegrationType = table.Column<int>(nullable: false),
@@ -1400,7 +1424,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Tasks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ExternalId = table.Column<string>(nullable: true),
                     IntegrationType = table.Column<int>(nullable: false),
@@ -1676,7 +1701,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "CompetitionRewards",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     TokenValue = table.Column<float>(nullable: false),
                     TokenId = table.Column<int>(nullable: false),
@@ -1721,7 +1747,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Competitors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     CompetitionId = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: true),
@@ -1799,7 +1826,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "CompetitorScores",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     CompetitorId = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),

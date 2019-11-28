@@ -10,10 +10,6 @@ namespace Tayra.Models.Organizations
         
         public string Name { get; set; }
         public string Address { get; set; }
-
-        //it creates unnecessary column 'organizationDetailId' in 'Profiles' table
-        //public virtual ICollection<Team> Teams { get; set; }
-        //public virtual ICollection<Profile> Profiles { get; set; }
         
         #region IAuditedEntity
 

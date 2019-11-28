@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tayra.Models.Catalog;
-using Tayra.Models.Organizations;
 using Tayra.Services;
 
 namespace Tayra.Auth
