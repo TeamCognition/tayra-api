@@ -51,12 +51,11 @@ namespace Tayra.Models.Catalog
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Identity>().HasIndex(x => x.Username).IsUnique();
-
             modelBuilder.Entity<IdentityEmail>(entity =>
             {
                 entity.HasKey(x => new { x.IdentityId, x.Email });
                 entity.HasIndex(x => x.Email).IsUnique();
+                entity.HasIndex(x => new { x.Email, x.IsPrimary }).IsUnique();
                 entity.HasIndex(x => new { x.IdentityId, x.IsPrimary }).IsUnique();
             });
 

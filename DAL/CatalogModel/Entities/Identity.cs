@@ -10,9 +10,6 @@ namespace Tayra.Models.Catalog
         [Key]
         public int Id { get; set; }
 
-        [Required, MaxLength(200)]
-        public string Username { get; set; }
-
         [Required]
         public byte[] Password { get; set; }
 

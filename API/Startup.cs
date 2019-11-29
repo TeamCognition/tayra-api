@@ -31,13 +31,6 @@ namespace Tayra.API
             ReadAppConfig();
         }
 
-        #region Private fields
-
-        private ICatalogRepository _catalogRepository;
-
-        #endregion
-
-
         public static DatabaseConfig DatabaseConfig { get; set; }
         public static CatalogConfig CatalogConfig { get; set; }
         public IConfiguration Configuration { get; }
@@ -45,10 +38,9 @@ namespace Tayra.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("core-dev")));
-
-            //services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-dev")));
-            //services.AddDbContext<OrganizationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("org-local")));
+            //register DBs
+            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString(CatalogConfig, DatabaseConfig)));
+            services.AddDbContext<OrganizationDbContext>(options => { });
 
             services.AddAuthentication("Bearer")
                .AddJwtBearer("Bearer", options =>
@@ -59,6 +51,7 @@ namespace Tayra.API
                    options.Audience = "tAPI";
                });
 
+            //Add Application services
             services.AddTransient<ILogsService, LogsService>();
             services.AddTransient<IShopsService, ShopsService>();
             services.AddTransient<ITasksService, TasksService>();
@@ -76,29 +69,18 @@ namespace Tayra.API
             services.AddTransient<ICompetitionsService, CompetitionsService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
 
+            services.AddScoped<ITenantProvider, ShardTenantProvider>();
             services.AddTransient<IOrganizationsService, Services.OrganizationsService>();
 
 
+            services.AddHttpContextAccessor();
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ILogger, DebugLogger>();
 
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
-            services.AddSession();
-
-            //register catalog DB
-            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString(CatalogConfig, DatabaseConfig)));
-            services.AddDbContext<OrganizationDbContext>(options => { });
-
-            //Add Application services
-            services.AddTransient<ICatalogRepository, CatalogRepository>();
-            services.AddScoped<ITenantProvider, ShardTenantProvider>();
-
-            //create instance of utilities class
-            var provider = services.BuildServiceProvider();
-            _catalogRepository = provider.GetService<ICatalogRepository>();
+            //services.AddSession();
 
             services.AddCors(c =>
             {
@@ -200,23 +182,6 @@ namespace Tayra.API
                 CatalogDatabase = Configuration["CatalogDatabase"],
                 CatalogServer = Configuration["CatalogServer"] + ".database.windows.net"
             };
-        }
-
-        /// <summary>
-        /// Gets the basic SQL connection string.
-        /// </summary>
-        /// <returns></returns>
-        private string GetBasicSqlConnectionString()
-        {
-            var connStrBldr = new SqlConnectionStringBuilder
-            {
-                UserID = DatabaseConfig.DatabaseUser,
-                Password = DatabaseConfig.DatabasePassword,
-                ApplicationName = "Tayra",
-                ConnectTimeout = DatabaseConfig.ConnectionTimeOut
-            };
-
-            return connStrBldr.ConnectionString;
         }
 
         private void ConfigureSwagger(IServiceCollection services)

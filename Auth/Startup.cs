@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Tayra.Models.Catalog;
+using Tayra.Models.Organizations;
 using Tayra.Services;
 
 namespace Tayra.Auth
@@ -22,9 +25,8 @@ namespace Tayra.Auth
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-
-            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("catalog")));
+            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString()));
+            services.AddDbContext<OrganizationDbContext>(options => { });
 
             var identityServer = services.AddIdentityServer()
                     .AddInMemoryPersistedGrants()
@@ -49,6 +51,8 @@ namespace Tayra.Auth
             services.AddTransient<ITokensService, TokensService>();
             services.AddTransient<ILogsService, LogsService>();
             services.AddTransient<IIdentitiesService, IdentitiesService>();
+
+            services.AddHttpContextAccessor();
 
             services.AddCors(c =>
             {
@@ -77,6 +81,20 @@ namespace Tayra.Auth
             app.UseCors(options => options.AllowAnyOrigin());
 
             app.UseIdentityServer();
+        }
+
+        /// <summary>
+        ///  Gets the catalog connection string using the app settings
+        /// </summary>
+        private string GetCatalogConnectionString()
+        {
+            var databasePassword = Configuration["DatabasePassword"];
+            var databaseUser = Configuration["DatabaseUser"];
+            var catalogDatabase = Configuration["CatalogDatabase"];
+            var catalogServer = Configuration["CatalogServer"] + ".database.windows.net";
+
+            return
+                $"Server=tcp:{catalogServer},1433;Database={catalogDatabase};User ID={databaseUser};Password={databasePassword};Trusted_Connection=False;Encrypt=True;";
         }
     }
 }

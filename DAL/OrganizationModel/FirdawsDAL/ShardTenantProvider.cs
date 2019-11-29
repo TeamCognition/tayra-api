@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Tayra.Models.Organizations
 {
@@ -11,13 +12,19 @@ namespace Tayra.Models.Organizations
     {
         private static ListShardMap<int> _shardMap { get; set; }
         private string _host;
-
         private IConfiguration _config;
 
+        [ActivatorUtilitiesConstructor]
         public ShardTenantProvider(IHttpContextAccessor accessor, IConfiguration config)
         {
             _config = config;
             _host = accessor.HttpContext.Request.Host.ToString();
+        }
+
+        public ShardTenantProvider(string host, IConfiguration config)
+        {
+            _config = config;
+            _host = host;
         }
 
         public ShardMap GetShardMap()

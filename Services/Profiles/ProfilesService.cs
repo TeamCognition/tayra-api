@@ -31,19 +31,10 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public Profile Get(int identityId)
+        public Profile GetByIdentityId(int identityId)
         {
             return DbContext.Profiles
                 .FirstOrDefault(x => x.IdentityId == identityId);
-        }
-
-        public Profile GetByUsername(string username) //by email
-        {
-            var identity = CatalogDb.Identities.FirstOrDefault(x => x.Username == username);
-
-            identity.EnsureNotNull(username);
-
-            return DbContext.Profiles.FirstOrDefault(x => x.IdentityId == identity.Id);
         }
 
         public Profile GetByNickname(string nickname)

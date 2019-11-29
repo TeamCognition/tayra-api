@@ -24,11 +24,12 @@ namespace Tayra.Services
 
         #region Public Methods 
 
+        //TODO: wrap with Transaction
         public void InternalCreateWithProfile(IdentityCreateDTO dto)
         {
-            var doesExist = CatalogDb.Identities.Any(x => x.Username == dto.Username);
+            var emailTaken = CatalogDb.IdentityEmails.Any(x => x.Email == dto.Email);
 
-            if (doesExist)
+            if (emailTaken)
             {
                 throw new ApplicationException("Identity with same username already exists");
             }
@@ -37,16 +38,25 @@ namespace Tayra.Services
 
             var identity = CatalogDb.Add(new Identity
             {
-                Username = dto.Username,
                 Salt = salt,
                 Password = PasswordHelper.Hash(dto.Password, salt),
             }).Entity;
 
+            CatalogDb.Add(new IdentityEmail
+            {
+                Email = dto.Email,
+                IsPrimary = true,
+                Identity = identity
+            });
+
+            CatalogDb.Add(new TenantIdentity
+            {
+                Identity = identity,
+                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(TenantUtilities.GenerateShardingKey(dto.TenantHost))
+            }) ;
+
             //get identity Id
             CatalogDb.SaveChanges();
-            var tenant = CatalogDb.Tenants.FirstOrDefault();
-
-            var shardingKey = TenantUtilities.GenerateShardingKey(tenant.Name);
 
             var profile = DbContext.Add(new Profile
             {
@@ -70,7 +80,7 @@ namespace Tayra.Services
             
         }
 
-        public Identity GetByEmail(string email)
+        public Identity GetByEmail(string email) //TODO: this should be used by Auth.ResourceOwnerValidator?
         {
             return CatalogDb.IdentityEmails
                 .Include(x => x.Identity)

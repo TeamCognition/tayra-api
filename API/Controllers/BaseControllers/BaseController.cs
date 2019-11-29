@@ -97,8 +97,8 @@ namespace Tayra.API.Controllers
         {
             if (User?.Identity is ClaimsIdentity identity)
             {
-                var username = identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                return ProfilesService.GetByUsername(username);
+                //var username = identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                return ProfilesService.GetByEmail(username);
             }
 
             return null;

@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
 using Firdaws.Core;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
-using Tayra.Models.Organizations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Tayra.Models.Catalog;
 using Tayra.Services;
 using Task = System.Threading.Tasks.Task;
 
@@ -11,11 +13,13 @@ namespace Tayra.Auth
 {
     public class ResourceOwnerValidator : IResourceOwnerPasswordValidator
     {
-        private readonly IIdentitiesService _identitiesService;
+        private readonly CatalogDbContext _catalogContext;
+        private readonly IHttpContextAccessor _httpAccessor;
 
-        public ResourceOwnerValidator(IIdentitiesService identitiesService)
+        public ResourceOwnerValidator(IHttpContextAccessor httpAccessor, CatalogDbContext catalogContext)
         {
-            _identitiesService = identitiesService;
+            _httpAccessor = httpAccessor;
+            _catalogContext = catalogContext;
         }
 
         /// <summary>
@@ -25,7 +29,7 @@ namespace Tayra.Auth
         /// <returns></returns>
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            var identity = _identitiesService.GetByEmail(context.UserName);
+            var identity = IdentityGetByEmail(context.UserName);
             if (identity == null)
             {
                 context.Result = new GrantValidationResult(
@@ -44,12 +48,20 @@ namespace Tayra.Auth
 
                 return Task.CompletedTask;
             }
-
+            
             context.Result = new GrantValidationResult(
-                subject: identity.Username,
+                subject: identity.Id.ToString(),
                 authenticationMethod: OidcConstants.AuthenticationMethods.Password);
 
             return Task.CompletedTask;
+        }
+
+        private Models.Catalog.Identity IdentityGetByEmail(string email)
+        {
+            return _catalogContext.IdentityEmails
+                .Include(x => x.Identity)
+                .FirstOrDefault(x => x.Email == email)
+                .Identity;
         }
     }
 }
