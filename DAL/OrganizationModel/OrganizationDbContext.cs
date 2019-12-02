@@ -288,7 +288,7 @@ namespace Tayra.Models.Organizations
 
         public void SetGlobalQuery<T>(ModelBuilder builder) where T : class
         {
-            Debug.WriteLine("Adding global query for: " + typeof(T));
+            //Debug.WriteLine("Adding global query for: " + typeof(T));
             builder.Entity<T>().HasQueryFilter(e => EF.Property<int>(e, OrganizationIdFK) == _tenant.ShardingKey);
         }
 

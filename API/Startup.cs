@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Linq;
+using Firdaws.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Tayra.API.Helpers;
+using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
 using Tayra.Helpers;
@@ -53,6 +55,7 @@ namespace Tayra.API
 
             //Add Application services
             services.AddTransient<ILogsService, LogsService>();
+            services.AddTransient<IBlobsService, BlobsService>();
             services.AddTransient<IShopsService, ShopsService>();
             services.AddTransient<ITasksService, TasksService>();
             services.AddTransient<ITeamsService, TeamsService>();
@@ -69,10 +72,11 @@ namespace Tayra.API
             services.AddTransient<ICompetitionsService, CompetitionsService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
 
-            services.AddScoped<ITenantProvider, ShardTenantProvider>();
             services.AddTransient<IOrganizationsService, Services.OrganizationsService>();
 
-
+            services.AddScoped<ITenantProvider, ShardTenantProvider>();
+            services.AddScoped<IClaimsPrincipalProvider<TayraPrincipal>, TayraPrincipalProvider>();
+            
             services.AddHttpContextAccessor();
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -16,6 +16,7 @@ namespace Tayra.API.Controllers
         #region Private Members
 
         private ILogsService _logsService;
+        private IBlobsService _blobsService;
         private IShopsService _shopsService;
         private ITasksService _tasksService;
         private ITeamsService _teamsService;
@@ -32,7 +33,7 @@ namespace Tayra.API.Controllers
         private ICompetitionsService _competitionsService;
         private IIntegrationsService _integrationsService;
 
-        private Profile _currentUser;
+        private TayraPrincipal _currentUser;
 
         #region OvoOno
 
@@ -46,7 +47,6 @@ namespace Tayra.API.Controllers
         public BaseController(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
-            _currentUser = LoadCurrentUser();
             Configuration = Resolve<IConfiguration>();
         }
 
@@ -56,6 +56,7 @@ namespace Tayra.API.Controllers
 
         protected IServiceProvider ServiceProvider { get; }
         protected ILogsService LogsService => _logsService ?? (_logsService = Resolve<ILogsService>());
+        protected IBlobsService BlobsService => _blobsService ?? (_blobsService = Resolve<IBlobsService>());
         protected IShopsService ShopsService => _shopsService ?? (_shopsService = Resolve<IShopsService>());
         protected ITasksService TasksService => _tasksService ?? (_tasksService = Resolve<ITasksService>());
         protected ITeamsService TeamsService => _teamsService ?? (_teamsService = Resolve<ITeamsService>());
@@ -79,10 +80,7 @@ namespace Tayra.API.Controllers
         /// <summary>
         /// Returns current TayraPrincipal.
         /// </summary>
-        //protected new FirdawsPrincipal User => new FirdawsPrincipal(HttpContext.User);
-
-
-        public Profile CurrentUser => _currentUser ?? (_currentUser = LoadCurrentUser());
+        public TayraPrincipal CurrentUser => _currentUser ?? (_currentUser = new TayraPrincipal(User));
 
         #endregion
 
@@ -91,17 +89,6 @@ namespace Tayra.API.Controllers
         protected T Resolve<T>()
         {
             return ServiceProvider.GetService<T>();
-        }
-
-        protected Profile LoadCurrentUser()
-        {
-            if (User?.Identity is ClaimsIdentity identity)
-            {
-                //var username = identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                return ProfilesService.GetByEmail(username);
-            }
-
-            return null;
         }
 
         #endregion

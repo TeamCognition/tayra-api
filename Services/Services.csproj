@@ -10,6 +10,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="morelinq" Version="3.2.0" />
     <PackageReference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="10.0.2" />
     <PackageReference Include="Firdaws.Core" Version="1.0.0-*" />
     <PackageReference Include="Firdaws.DAL" Version="1.0.0-*" />
   </ItemGroup>
@@ -39,6 +40,8 @@
     <Folder Include="Inventories\" />
     <Folder Include="Organizations\" />
     <Folder Include="Organizations\DTO\" />
+    <Folder Include="Blobs\" />
+    <Folder Include="Blobs\DTO\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
