@@ -64,7 +64,8 @@ namespace Tayra.Auth
                 }
 
                 claimList.Add(new Claim(FirdawsClaimTypes.ProfileId, profile.Id.ToString())); //For CreatedBy column
-                claimList.Add(new Claim(ClaimTypes.Role, profile.Role.ToString()));
+                claimList.Add(new Claim(FirdawsClaimTypes.IdentityId, profile.IdentityId.ToString()));
+                claimList.Add(new Claim(TayraClaimTypes.Role, profile.Role.ToString()));
 
                 context.IssuedClaims = claimList;
                 return Task.FromResult(0);

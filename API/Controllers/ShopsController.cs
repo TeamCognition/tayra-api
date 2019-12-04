@@ -37,7 +37,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "DESC";
             }
 
-            return ShopsService.GetShopPurchasesGridDTO(CurrentUser.Id, gridParams);
+            return ShopsService.GetShopPurchasesGridDTO(CurrentUser.ProfileId, gridParams);
         }
 
         [HttpPost("purchaseAdminSearch")]
@@ -49,7 +49,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "DESC";
             }
 
-            return ShopsService.GetShopPurchasesAdminGridDTO(CurrentUser.Id, gridParams);
+            return ShopsService.GetShopPurchasesAdminGridDTO(CurrentUser.ProfileId, gridParams);
         }
 
         [HttpPost("close")]
@@ -73,7 +73,7 @@ namespace Tayra.API.Controllers
         [HttpPut("purchaseStatus/{shopPurchaseId:int}")]
         public IActionResult UpdateShopItem([FromRoute] int shopPurchaseId, [FromBody] ShopPurchaseStatuses status)
         {
-            ShopsService.UpdateShopPurchaseStatus(CurrentUser.Id, shopPurchaseId, status);
+            ShopsService.UpdateShopPurchaseStatus(CurrentUser.ProfileId, shopPurchaseId, status);
             OrganizationContext.SaveChanges();
 
             return Ok();

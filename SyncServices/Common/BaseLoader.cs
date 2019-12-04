@@ -26,35 +26,34 @@ namespace Tayra.SyncServices.Common
 
         #region Abstract Methods
 
-        public void Execute(DateTime date, params TimeZoneDTO[] timeZoneDTO) => Execute(date, GetOrganizations(timeZoneDTO));
+        public void Execute(DateTime date, params TimeZoneDTO[] timeZoneDTO) => Execute(date, GetTenants(timeZoneDTO));
 
-        public void Execute(DateTime date, string organizationKey) => Execute(date, GetOrganization(organizationKey));
+        public void Execute(DateTime date, string tenantKey) => Execute(date, GetTenant(tenantKey));
 
-        public abstract void Execute(DateTime date, params Tenant[] organizations);
+        public abstract void Execute(DateTime date, params Tenant[] tenants);
 
         #endregion
 
         #region Protected Methods
 
-        protected Tenant[] GetOrganizations(params TimeZoneDTO[] timezoneInfo)
+        protected Tenant[] GetTenants(params TimeZoneDTO[] timezoneInfo)
         {
             var timezones = timezoneInfo.Select(t => t.Id).ToList();
 
-            var organizations = CatalogDbContext.Organizations
+            var tenants = CatalogDbContext.Tenants
                 .AsNoTracking();
 
             if (timezones.Count > 0)
             {
-                organizations = organizations.Where(x => timezones.Contains(x.Timezone));
+                tenants = tenants.Where(x => timezones.Contains(x.Timezone));
             }
 
-            var orgs = organizations.ToArray();
-            return orgs;
+            return tenants.ToArray();
         }
 
-        protected Tenant GetOrganization(string organizationKey)
+        protected Tenant GetTenant(string tenantKey)
         {
-            return CatalogDbContext.Organizations.AsNoTracking().FirstOrDefault(x => x.Key == organizationKey);
+            return CatalogDbContext.Tenants.AsNoTracking().FirstOrDefault(x => x.Name == tenantKey);
         }
 
         #endregion

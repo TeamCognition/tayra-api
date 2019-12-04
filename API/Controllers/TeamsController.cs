@@ -78,7 +78,7 @@ namespace Tayra.API.Controllers
         [HttpDelete("delete")]
         public IActionResult Delete([FromQuery]string teamKey)
         {
-            TeamsService.Archive(CurrentUser.Id, teamKey);
+            TeamsService.Archive(CurrentUser.ProfileId, teamKey);
             OrganizationContext.SaveChanges();
 
             return Ok();

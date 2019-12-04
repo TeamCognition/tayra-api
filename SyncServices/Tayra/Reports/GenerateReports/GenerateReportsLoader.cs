@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Firdaws.Core;
-using Microsoft.EntityFrameworkCore;
-using MoreLinq;
-using Tayra.Common;
+using Microsoft.Extensions.Configuration;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
@@ -13,36 +8,38 @@ namespace Tayra.SyncServices.Tayra
 {
     public class GenerateReportsLoader : BaseLoader
     {
+        private readonly IConfiguration _config;
+
         #region Constructor
 
-        public GenerateReportsLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public GenerateReportsLoader(IConfiguration config, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
-
+            _config = config;
         }
 
         #endregion
 
         #region Public Methods
 
-        public override void Execute(DateTime date, params Tenant[] organizations)
+        public override void Execute(DateTime date, params Tenant[] tenants)
         {
-            foreach (var org in organizations)
+            foreach (var tenant in tenants)
             {
-                LogService.SetOrganizationId(org.Id);
-                using (var organizationDb = new OrganizationDbContext(org.Database, false))
+                LogService.SetOrganizationId(tenant.Name);
+                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name, _config)))
                 {
-                    var profileDailyReports = GenerateProfileReportsDailyLoader.GenerateProfileReports(organizationDb, date, LogService);
-                    var profileWeeklyReports = GenerateProfileReportsWeeklyLoader.GenerateProfileReports(organizationDb, date, LogService);
-                    
-                    GenerateProjectReportsDailyLoader.GenerateProjectReports(organizationDb, date, LogService, profileDailyReports);
-                    GenerateProjectReportsWeeklyLoader.GenerateProjectReports(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
+                    var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService);
+                    var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService);
 
-                    GenerateTeamReportsDailyLoader.GenerateTeamReports(organizationDb, date, LogService, profileDailyReports);
-                    GenerateTeamReportsWeeklyLoader.GenerateTeamReports(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
+                    GenerateProjectReportsLoader.GenerateProjectReportsDaily(organizationDb, date, LogService, profileDailyReports);
+                    GenerateProjectReportsLoader.GenerateProjectReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
+
+                    GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports);
+                    GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
                 }
             }
         }
 
         #endregion
-        }
     }
+}

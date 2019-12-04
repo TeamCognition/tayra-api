@@ -42,7 +42,7 @@ namespace Tayra.API.Controllers
         [HttpPost("purchase")]
         public IActionResult PurchaseShopItem([FromBody] ShopItemPurchaseDTO dto)
         {
-            ShopItemsService.PurchaseShopItem(CurrentUser.Id, dto);
+            ShopItemsService.PurchaseShopItem(CurrentUser.ProfileId, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();

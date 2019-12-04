@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Linq;
 using Firdaws.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Tayra.API.Helpers;
@@ -163,7 +160,6 @@ namespace Tayra.API
         {
             return
                 $"Server=tcp:{catalogConfig.CatalogServer},1433;Database={catalogConfig.CatalogDatabase};User ID={databaseConfig.DatabaseUser};Password={databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;";
-                //$"Server=tcp:sqlserver-tayra.database.windows.net,1433;Database=sqldb-tayra-tenants_free-prod;User ID={databaseConfig.DatabaseUser};Password={databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;";
         }
 
         /// <summary>

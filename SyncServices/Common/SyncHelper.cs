@@ -66,19 +66,19 @@ namespace Tayra.SyncServices.Common
             switch (jobTypes)
             {
                 case JobTypes.GenerateReports:
-                    return new GenerateReportsLoader(logService, coreDatabase);
+                    return new GenerateReportsLoader(config, logService, coreDatabase);
 
                 case JobTypes.GenerateReportProfile:
-                    return new GenerateProfileReportsDailyLoader(logService, coreDatabase);
+                    return new GenerateProfileReportsLoader(config, logService, coreDatabase);
 
                 case JobTypes.GenerateReportProject:
-                    return new GenerateProjectReportsDailyLoader(logService, coreDatabase);
+                    return new GenerateProjectReportsLoader(config, logService, coreDatabase);
 
                 case JobTypes.GenerateReportTeam:
-                    return new GenerateTeamReportsDailyLoader(logService, coreDatabase);
+                    return new GenerateTeamReportsLoader(config, logService, coreDatabase);
 
                 case JobTypes.SyncCompetitions:
-                    return new SyncCompetitionsLoader(logService, coreDatabase);
+                    return new SyncCompetitionsLoader(config, logService, coreDatabase);
             }
 
             throw new NotSupportedException($"{jobTypes} integration are not supported");

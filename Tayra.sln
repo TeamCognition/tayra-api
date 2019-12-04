@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportsTester", "ReportsTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogModel", "DAL\CatalogModel\CatalogModel.csproj", "{03F4D000-D6A4-4FC9-99C1-EE4F3675FFBC}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "SyncServices", "SyncServices\SyncServices.csproj", "{9D8D7E29-BB2C-4B2E-B187-0D08464CBD58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncServices", "SyncServices\SyncServices.csproj", "{9D8D7E29-BB2C-4B2E-B187-0D08464CBD58}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imager", "Imager\Imager.csproj", "{B0682D4B-FA6B-4DF1-A360-8B298DB94536}"
 EndProject

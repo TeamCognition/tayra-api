@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+      <RootNamespace>Tayra.Imager</RootNamespace>
+      <AssemblyName>Tayra.Imager</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

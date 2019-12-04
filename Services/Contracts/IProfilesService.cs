@@ -18,7 +18,7 @@ namespace Tayra.Services
         GridData<ProfileCompletedChallengesGridDTO> GetCompletedChallengesGridDTO(ProfileCompletedChallengesGridParams gridParams);        
         ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId);
         ProfileViewDTO GetProfileViewDTO(Expression<Func<Profile, bool>> condition);
-        void ModifyTokens(Profile profile, ProfileModifyTokensDTO dto);
+        void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto);
     }
 
 }

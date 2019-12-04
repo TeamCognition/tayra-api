@@ -325,9 +325,9 @@ namespace Tayra.Services
             return profileDto;
         }
 
-        public void ModifyTokens(Profile profile, ProfileModifyTokensDTO dto)
+        public void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto)
         {
-            if (profile.Role == ProfileRoles.Member)
+            if (profileRole != ProfileRoles.Admin)
             {
                 throw new FirdawsSecurityException("You are not allowed to perform this action!");
             }

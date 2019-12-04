@@ -43,7 +43,7 @@ namespace Tayra.API.Controllers
         [HttpPost("activate")]
         public IActionResult ActivateInventoryItem([FromBody] InventoryItemActivateToggleDTO dto)
         {
-            InventoriesService.Activate(CurrentUser.Id, dto);
+            InventoriesService.Activate(CurrentUser.ProfileId, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -52,7 +52,7 @@ namespace Tayra.API.Controllers
         [HttpPost("deactivate")]
         public IActionResult DeactivateInventoryItem([FromBody] InventoryItemActivateToggleDTO dto)
         {
-            InventoriesService.Deactivate(CurrentUser.Id, dto);
+            InventoriesService.Deactivate(CurrentUser.ProfileId, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -61,7 +61,7 @@ namespace Tayra.API.Controllers
         [HttpPost("gift")]
         public IActionResult GiftInventoryItem([FromBody] InventoryItemGiftDTO dto)
         {
-            InventoriesService.Gift(CurrentUser.Id, dto);
+            InventoriesService.Gift(CurrentUser.ProfileId, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -70,7 +70,7 @@ namespace Tayra.API.Controllers
         [HttpPost("disenchant")]
         public IActionResult DisenchantInventoryItem([FromBody] InventoryItemDisenchantDTO dto)
         {
-            InventoriesService.Disenchant(CurrentUser.Id, dto);
+            InventoriesService.Disenchant(CurrentUser.ProfileId, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -79,7 +79,7 @@ namespace Tayra.API.Controllers
         [HttpPost("give")]
         public IActionResult GiveInventoryItem([FromBody] InventoryGiveDTO dto)
         {
-            InventoriesService.Give(CurrentUser.Id,dto);
+            InventoriesService.Give(CurrentUser.ProfileId,dto);
             OrganizationContext.SaveChanges();
 
             return Ok();

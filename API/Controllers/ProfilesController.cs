@@ -30,7 +30,7 @@ namespace Tayra.API.Controllers
         [HttpGet("me")]
         public ActionResult<ProfileViewDTO> GetCurrentUser()
         {
-            return Ok(ProfilesService.GetProfileViewDTO(x => x.Id == CurrentUser.Id));
+            return Ok(ProfilesService.GetProfileViewDTO(x => x.Id == CurrentUser.ProfileId));
         }
 
         [HttpGet("{nickname}")]
@@ -60,7 +60,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "ASC";
             }
 
-            return ProfilesService.GetGridDataWithSummary(CurrentUser.Id, gridParams);
+            return ProfilesService.GetGridDataWithSummary(CurrentUser.ProfileId, gridParams);
         }
 
 
@@ -74,7 +74,7 @@ namespace Tayra.API.Controllers
             }
 
             //gridParams.ProfileNicknameQuery ??= CurrentUser.Nickname
-            gridParams.ProfileId = gridParams.ProfileId ?? CurrentUser.Id;
+            gridParams.ProfileId = gridParams.ProfileId ?? CurrentUser.ProfileId;
             return ProfilesService.GetCompletedChallengesGridDTO(gridParams);
         }
 
@@ -92,7 +92,7 @@ namespace Tayra.API.Controllers
         [HttpPost("oneUp")]
         public ActionResult<IOneUpProfile> OneUpProfile([FromBody] ProfileOneUpDTO dto)
         {
-            int totalUps = ProfilesService.OneUpProfile(CurrentUser.Id, dto);
+            int totalUps = ProfilesService.OneUpProfile(CurrentUser.ProfileId, dto);
             DbContext.SaveChanges();
 
             return Ok(new { TotalUps = totalUps });
@@ -101,7 +101,7 @@ namespace Tayra.API.Controllers
         [HttpPost("modifyTokens")]
         public IActionResult ModifyTokens([FromBody] ProfileModifyTokensDTO dto)
         {
-            ProfilesService.ModifyTokens(CurrentUser, dto);
+            ProfilesService.ModifyTokens(CurrentUser.Role, dto);
             DbContext.SaveChanges();
 
             return Ok();

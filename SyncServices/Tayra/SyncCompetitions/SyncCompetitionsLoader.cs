@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Firdaws.Core;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -14,32 +14,32 @@ namespace Tayra.SyncServices.Tayra
     {
         #region Private Variables
 
+        private readonly IConfiguration _config;
+
         #endregion
 
         #region Constructor
 
-        public SyncCompetitionsLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public SyncCompetitionsLoader(IConfiguration config, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
-
+            _config = config;
         }
 
         #endregion
 
         #region Public Methods
 
-        public override void Execute(DateTime date, params Tenant[] organizations)
+        public override void Execute(DateTime date, params Tenant[] tenants)
         {
-            foreach (var org in organizations)
+            foreach (var tenant in tenants)
             {
-                LogService.SetOrganizationId(org.Id);
-                using (var organizationDb = new OrganizationDbContext(org.Database, false))
+                LogService.SetOrganizationId(tenant.Name);
+                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name, _config)))
                 {
                     FetchCompetitionsData(organizationDb, date, LogService);
                 }
             }
         }
-
-
 
         #endregion
 
@@ -70,8 +70,6 @@ namespace Tayra.SyncServices.Tayra
                 if (e == null)
                     throw new Exception();
             }
-
-
         }
 
         #endregion

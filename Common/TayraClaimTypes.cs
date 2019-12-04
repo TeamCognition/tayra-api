@@ -4,6 +4,7 @@
     {
         public const string CurrentOrganizationId = "http://Tayra/Claims/CurrentOrganizationId";
         public const string TeamKey = "http://Tayra/Claims/TeamKey";
+        public const string Role = "http://Tayra/Claims/Role";
         //public const string LocaleId = "http://Tayra/Claims/LocaleId";    
     }
 }

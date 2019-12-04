@@ -52,7 +52,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "DESC";
             }
 
-            return IdentitiesService.GetIdentityEmailsGridData(CurrentUser.Id, gridParams);
+            return IdentitiesService.GetIdentityEmailsGridData(CurrentUser.ProfileId, gridParams);
         }
 
         [HttpPost("addEmail")]

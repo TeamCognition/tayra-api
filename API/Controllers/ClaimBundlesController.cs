@@ -31,7 +31,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "DESC";
             }
 
-            return ClaimBundlesService.GetClaimBundlesGrid(CurrentUser.Id, gridParams);
+            return ClaimBundlesService.GetClaimBundlesGrid(CurrentUser.ProfileId, gridParams);
         }
 
         [HttpPost("claim")]
@@ -45,11 +45,11 @@ namespace Tayra.API.Controllers
             ClaimBundleClaimRewardsDTO claimedRewards;
             if (claimBundleId.HasValue)
             {
-                claimedRewards = ClaimBundlesService.ClaimReward(CurrentUser.Id, claimBundleId.Value);
+                claimedRewards = ClaimBundlesService.ClaimReward(CurrentUser.ProfileId, claimBundleId.Value);
             }
             else
             {
-                claimedRewards = ClaimBundlesService.ClaimRewards(CurrentUser.Id, claimBundleType.Value);
+                claimedRewards = ClaimBundlesService.ClaimRewards(CurrentUser.ProfileId, claimBundleType.Value);
             }
 
             OrganizationContext.SaveChanges();

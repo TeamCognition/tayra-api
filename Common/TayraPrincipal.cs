@@ -13,6 +13,8 @@ namespace Tayra.Common
         /// <summary>
         /// Organization ID in which user is currently logged in.
         /// </summary>
-        public int CurrentOrganizationId => Convert.ToInt32(this.FindFirstOrDefault(TayraClaimTypes.CurrentOrganizationId).DefaultIfEmpty("0"));
+        public int CurrentOrganizationId => int.Parse(this.FindFirstOrDefault(TayraClaimTypes.CurrentOrganizationId).DefaultIfEmpty("0"));
+
+        public ProfileRoles Role => Enum.Parse<ProfileRoles>(this.FindFirstOrDefault(TayraClaimTypes.Role).DefaultIfEmpty(ProfileRoles.Member.ToString()));
     }
 }

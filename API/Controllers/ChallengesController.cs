@@ -60,7 +60,7 @@ namespace Tayra.API.Controllers
         [HttpPost("end/{challengeId}")]
         public IActionResult EndChallenge([FromRoute]int challengeId)
         {
-            ChallengesService.EndChallenge(CurrentUser.Id, challengeId);
+            ChallengesService.EndChallenge(CurrentUser.ProfileId, challengeId);
             OrganizationContext.SaveChanges();
 
             return Ok();

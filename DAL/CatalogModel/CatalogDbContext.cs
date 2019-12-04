@@ -15,6 +15,10 @@ namespace Tayra.Models.Catalog
             ConnectionString = connectionString;
         }
 
+        public CatalogDbContext(string connectionString) : this(connectionString, new DbContextOptions<CatalogDbContext>())
+        {
+        }
+
         #endregion
 
         #region Properties
