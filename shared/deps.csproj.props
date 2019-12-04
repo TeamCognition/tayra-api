@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <SignalRVersion>1.0.0-alpha-*</SignalRVersion>
+  </PropertyGroup>
+</Project>
