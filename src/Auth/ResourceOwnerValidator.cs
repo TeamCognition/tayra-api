@@ -6,7 +6,6 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Models.Catalog;
-using Tayra.Services;
 using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.Auth
@@ -60,8 +59,9 @@ namespace Tayra.Auth
         {
             return _catalogContext.IdentityEmails
                 .Include(x => x.Identity)
-                .FirstOrDefault(x => x.Email == email)
-                .Identity;
+                .Where(x => x.Email == email)
+                .Select(x => x.Identity)
+                .FirstOrDefault();
         }
     }
 }

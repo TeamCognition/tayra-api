@@ -46,7 +46,7 @@ namespace ReportsTester
                 .Options;
 
             // Run the test against one instance of the context
-            using (var context = new OrganizationDbContext(null, null))
+            using (var context = new OrganizationDbContext(null, null, null))
             {
                 Seed(context);
                 context.SaveChanges();
@@ -69,7 +69,7 @@ namespace ReportsTester
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
-            using (var context = new OrganizationDbContext(null, null))
+            using (var context = new OrganizationDbContext(null, null, null))
             {
                 var a = context.ProfileReportsDaily.ToList();
 

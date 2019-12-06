@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Firdaws.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using MoreLinq;
 using Tayra.Common;
 using Tayra.Models.Catalog;
@@ -16,15 +15,15 @@ namespace Tayra.SyncServices.Tayra
     {
         #region Private Variables
 
-        private readonly IConfiguration _config;
+        private readonly IShardMapProvider _shardMapProvider;
 
         #endregion
 
         #region Constructor
 
-        public GenerateProfileReportsLoader(IConfiguration config, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public GenerateProfileReportsLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
-            _config = config;
+            _shardMapProvider = shardMapProvider;
         }
 
         #endregion
@@ -36,7 +35,7 @@ namespace Tayra.SyncServices.Tayra
             foreach (var tenant in tenants)
             {
                 LogService.SetOrganizationId(tenant.Name);
-                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name, _config)))
+                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name), _shardMapProvider))
                 {
                     GenerateProfileReportsDaily(organizationDb, date, LogService);
                 }

@@ -51,6 +51,7 @@ namespace Tayra.Auth
             services.AddTransient<ITokensService, TokensService>();
             services.AddTransient<ILogsService, LogsService>();
             services.AddTransient<IIdentitiesService, IdentitiesService>();
+            services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
 
             services.AddHttpContextAccessor();
 
@@ -91,7 +92,7 @@ namespace Tayra.Auth
             var databasePassword = Configuration["DatabasePassword"];
             var databaseUser = Configuration["DatabaseUser"];
             var catalogDatabase = Configuration["CatalogDatabase"];
-            var catalogServer = Configuration["CatalogServer"] + ".database.windows.net";
+            var catalogServer = Configuration["CatalogServer"];
 
             return
                 $"Server=tcp:{catalogServer},1433;Database={catalogDatabase};User ID={databaseUser};Password={databasePassword};Trusted_Connection=False;Encrypt=True;";

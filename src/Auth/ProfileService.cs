@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Firdaws.Core;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
-using Tayra.Services;
 using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.Auth
@@ -22,18 +19,20 @@ namespace Tayra.Auth
     {
         private readonly IHttpContextAccessor _httpAccessor;
         private readonly CatalogDbContext _catalogContext;
-        private readonly IConfiguration _config;
+        private readonly IShardMapProvider _shardMapProvider;
 
-        public ProfileService(IHttpContextAccessor httpAccessor, CatalogDbContext catalogContext, IConfiguration config)
+        public ProfileService(IHttpContextAccessor httpAccessor, CatalogDbContext catalogContext, IShardMapProvider shardMapProvider)
         {
             _httpAccessor = httpAccessor;
             _catalogContext = catalogContext;
-            _config = config;
+            _shardMapProvider = shardMapProvider;
         }
+
 
         /// <summary>
         /// This method is called whenever claims about the user are requested (e.g. during token creation or via the userinfo endpoint)
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Potential Code Quality Issues", "RECS0022:A catch clause that catches System.Exception and has an empty body", Justification = "<Pending>")]
         public virtual Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             var subject = context.Subject.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject).Value;
@@ -42,13 +41,24 @@ namespace Tayra.Auth
                                         .Where(x => x.IdentityId == int.Parse(subject))
                                         .Select(x => x.Tenant)
                                         .FirstOrDefault();
-            using (var orgContext = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name, _config)))
+            using (var orgContext = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name), _shardMapProvider)) //TODO: check if passing httpAccessor will change anything
             {
                 var profile = orgContext.Profiles
                     .FirstOrDefault(x => x.IdentityId == int.Parse(subject));
 
                 if (profile == null)
                 {
+                    try
+                    {
+                        orgContext.Add(new LoginLog
+                        {
+                            ProfileId = profile.Id,
+                            IdentityId = profile.IdentityId,
+                            FailReason = "In Auth.ProfileService, profile was null"
+                        });
+                        orgContext.SaveChanges();
+                    }
+                    catch (Exception) { }
                     return Task.FromResult(0);
                 }
 
@@ -66,8 +76,20 @@ namespace Tayra.Auth
                 claimList.Add(new Claim(FirdawsClaimTypes.ProfileId, profile.Id.ToString())); //For CreatedBy column
                 claimList.Add(new Claim(FirdawsClaimTypes.IdentityId, profile.IdentityId.ToString()));
                 claimList.Add(new Claim(TayraClaimTypes.Role, profile.Role.ToString()));
-
                 context.IssuedClaims = claimList;
+                
+                try
+                {
+                    orgContext.Add(new LoginLog
+                    {
+                        ProfileId = profile.Id,
+                        IdentityId = profile.IdentityId,
+                        ClaimsJson = JsonConvert.SerializeObject(claimList)
+                    });
+                    orgContext.SaveChanges();
+                }
+                catch (Exception) { }
+
                 return Task.FromResult(0);
             }        
         }

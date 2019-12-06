@@ -9,12 +9,26 @@ namespace Tayra.Services
     public class OrganizationsService : IOrganizationsService
     {
         protected readonly CatalogDbContext CatalogDb;
-        protected readonly ListShardMap<int> ShardMap;
+        protected readonly IShardMapProvider ShardMapProvider;
+        protected ListShardMap<int> ShardMap => ShardMapProvider.ShardMap;
 
-        public OrganizationsService(CatalogDbContext catalogDb, ITenantProvider tenantProvider)
+        public OrganizationsService(CatalogDbContext catalogDb, IShardMapProvider shardMapProvider)
         {
             CatalogDb = catalogDb;
-            ShardMap = tenantProvider.GetShardMap() as ListShardMap<int>;
+            ShardMapProvider = shardMapProvider;
+        }
+
+        public void EnsureOrganizationsAreCreatedAndMigrated()
+        {
+            foreach (var sl in ShardMap.GetShards())
+            {
+                var cs = new SqlConnectionStringBuilder(ShardMapProvider.TemplateConnectionString)
+                {
+                    DataSource = sl.Location.DataSource,
+                    InitialCatalog = sl.Location.Database
+                };
+                TenantUtilities.DatabaseEnsureCreatedAndMigrated(cs.ConnectionString);
+            }
         }
 
         // Enter a new shard - i.e. an empty database - to the shard map, allocate a first tenant to it 
@@ -23,9 +37,6 @@ namespace Tayra.Services
 
         public void Create(OrganizationCreateDTO dto)
         {
-            if (ShardMap == null)
-                throw new Exception("Shard map not initialized");
-
             ShardLocation shardLocation = new ShardLocation(dto.DatabaseServer, dto.DatabaseName, SqlProtocol.Tcp, 1433); //port number is necessary, otherwise shard can't be found
 
             if (!ShardMap.TryGetShard(shardLocation, out Shard shard))
@@ -74,37 +85,6 @@ namespace Tayra.Services
                 Address = "Burch",
                 Name = dto.Name
             });
-        }
-
-        public OrganizationDTO GetVenueDetails(int tenantId)
-        {
-            //get database name
-            //string databaseName, databaseServerName;
-            //PointMapping<int> mapping;
-
-            //if (ShardMap.TryGetMappingForKey(tenantId, out mapping))
-            //{
-            //    using (SqlConnection sqlConn = ShardMap.OpenConnectionForKey(tenantId, _connectionString))
-            //    {
-            //        databaseName = sqlConn.Database;
-            //        databaseServerName = sqlConn.DataSource.Split(':').Last().Split(',').First();
-            //    }
-            //    var venue = DbContext.Organizations.FirstOrDefault(x => x.Id == tenantId);
-
-            //    if (venue != null)
-            //    {
-            //        var venueModel = new OrganizationDTO
-            //        {
-            //            Id = venue.Id,
-            //            Name = venue.Name,
-            //            Address = venue.Address,
-            //            DatabaseName = databaseName,
-            //            DatabaseServerName = databaseServerName
-            //        };
-            //        return venueModel;
-            //    }
-            //}
-            return null;
         }
     }
 }

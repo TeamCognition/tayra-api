@@ -7,9 +7,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Tayra.Common;
 using Tayra.DAL;
 using Tayra.Models.Catalog;
+using Tayra.Models.Organizations;
 using Tayra.SyncServices.Tayra;
 
 namespace Tayra.SyncServices.Common
@@ -51,11 +51,9 @@ namespace Tayra.SyncServices.Common
 
         public static IConfigurationRoot LoadSettings(ExecutionContext context)
         {
-                
-
             return new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("../sharedSettings.json", optional: true)
+                .AddJsonFile("../../sharedSettings.json", optional: true)
                 .AddJsonFile("sharedSettings.json", optional: true) // When app is published
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()
@@ -66,25 +64,26 @@ namespace Tayra.SyncServices.Common
         {
             var config = LoadSettings(context);
             //var logger = CreateApplicationInsightsLogger($"{serviceType}Loader", config["ApplicationInsights:InstrumentationKey"]);
-            var coreDatabase = new CatalogDbContext(ConnectionStringUtilities.GetCatalogDbConnStr(config));
+            var shardMapProvider = new ShardMapProvider(config);
             var logService = new LogService(logger);
+            var coreDatabase = new CatalogDbContext(ConnectionStringUtilities.GetCatalogDbConnStr(config));
 
             switch (jobTypes)
             {
                 case JobTypes.GenerateReports:
-                    return new GenerateReportsLoader(config, logService, coreDatabase);
+                    return new GenerateReportsLoader(shardMapProvider, logService, coreDatabase);
 
                 case JobTypes.GenerateReportProfile:
-                    return new GenerateProfileReportsLoader(config, logService, coreDatabase);
+                    return new GenerateProfileReportsLoader(shardMapProvider, logService, coreDatabase);
 
                 case JobTypes.GenerateReportProject:
-                    return new GenerateProjectReportsLoader(config, logService, coreDatabase);
+                    return new GenerateProjectReportsLoader(shardMapProvider, logService, coreDatabase);
 
                 case JobTypes.GenerateReportTeam:
-                    return new GenerateTeamReportsLoader(config, logService, coreDatabase);
+                    return new GenerateTeamReportsLoader(shardMapProvider, logService, coreDatabase);
 
                 case JobTypes.SyncCompetitions:
-                    return new SyncCompetitionsLoader(config, logService, coreDatabase);
+                    return new SyncCompetitionsLoader(shardMapProvider, logService, coreDatabase);
             }
 
             throw new NotSupportedException($"{jobTypes} integration are not supported");

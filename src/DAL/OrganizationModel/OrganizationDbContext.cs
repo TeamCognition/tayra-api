@@ -1,5 +1,4 @@
 ﻿using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Firdaws.Core;
@@ -41,8 +40,8 @@ namespace Tayra.Models.Organizations
         /// Use this public c'tor with the shard map parameter in
         // the regular application calls with a tenant id.
         /// </summary>
-        public OrganizationDbContext(IHttpContextAccessor httpContext, ITenantProvider tenantProvider)
-            : base(httpContext, CreateDDRConnection(tenantProvider.GetShardMap(), tenantProvider.GetTenant().ShardingKey, tenantProvider.GetTemplateConnectionString()))
+        public OrganizationDbContext(IHttpContextAccessor httpContext, ITenantProvider tenantProvider, IShardMapProvider shardMapProvider)
+            : base(httpContext, CreateDDRConnection(shardMapProvider.ShardMap, tenantProvider.GetTenant().ShardingKey, shardMapProvider.TemplateConnectionString))
         {
             _tenant = tenantProvider.GetTenant();
             this.Database.Migrate();
@@ -88,6 +87,7 @@ namespace Tayra.Models.Organizations
         public DbSet<ItemDisenchant> ItemDisenchants { get; set; }
         public DbSet<ItemGift> ItemGifts { get; set; }
         public DbSet<Log> Logs { get; set; }
+        public DbSet<LoginLog> LoginLogs { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<ProfileInventoryItem> ProfileInventoryItems { get; set; }
@@ -318,14 +318,14 @@ namespace Tayra.Models.Organizations
         /// </summary>
         /// <param name="shardMap">The shard map.</param>
         /// <param name="shardingKey">The sharding key.</param>
-        /// <param name="connectionStr">The connection string.</param>
+        /// <param name="connectionStr">The Template connection string.</param>
         /// <returns></returns>
         // Only static methods are allowed in calls into base class c'tors
         private static DbContextOptions CreateDDRConnection(ShardMap shardMap, int shardingKey, string connectionStr)
         {
             // Ask shard map to broker a validated connection for the given key
             SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
-
+            
             //// Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
             //SqlCommand cmd = sqlConn.CreateCommand();
             //cmd.CommandText = @"exec sp_set_session_context @key=N'OrganizationId', @value=@shardingKey";

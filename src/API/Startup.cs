@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Firdaws.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +11,7 @@ using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
+using Tayra.DAL;
 using Tayra.Helpers;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -22,25 +21,20 @@ namespace Tayra.API
 {
     public class Startup
     {
-        public Startup(IConfiguration config, IHostingEnvironment env)
+        public Startup(IConfiguration config)
         {
             Configuration = config;
-
-            //read config settigs from appsettings.json
-            ReadAppConfig();
         }
 
-        public static DatabaseConfig DatabaseConfig { get; set; }
-        public static CatalogConfig CatalogConfig { get; set; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             //register DBs
-            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString(CatalogConfig, DatabaseConfig)));
+            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
             services.AddDbContext<OrganizationDbContext>(options => { });
-
+            
             services.AddAuthentication("Bearer")
                .AddJwtBearer("Bearer", options =>
                {
@@ -71,6 +65,7 @@ namespace Tayra.API
 
             services.AddTransient<IOrganizationsService, Services.OrganizationsService>();
 
+            services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
             services.AddScoped<ITenantProvider, ShardTenantProvider>();
             services.AddScoped<IClaimsPrincipalProvider<TayraPrincipal>, TayraPrincipalProvider>();
             
@@ -97,7 +92,7 @@ namespace Tayra.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOrganizationsService orgService)
         {
             if (env.IsDevelopment())
             {
@@ -146,43 +141,11 @@ namespace Tayra.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tayra API V1");
                 c.RoutePrefix = string.Empty;
             });
+
+            orgService.EnsureOrganizationsAreCreatedAndMigrated();
         }
 
         #region Private Methods
-
-        /// <summary>
-        ///  Gets the catalog connection string using the app settings
-        /// </summary>
-        /// <param name="catalogConfig">The catalog configuration.</param>
-        /// <param name="databaseConfig">The database configuration.</param>
-        /// <returns></returns>
-        private string GetCatalogConnectionString(CatalogConfig catalogConfig, DatabaseConfig databaseConfig)
-        {
-            return
-                $"Server=tcp:{catalogConfig.CatalogServer},1433;Database={catalogConfig.CatalogDatabase};User ID={databaseConfig.DatabaseUser};Password={databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;";
-        }
-
-        /// <summary>
-        /// Reads the application settings from appsettings.json
-        /// </summary>
-        private void ReadAppConfig()
-        {
-            DatabaseConfig = new DatabaseConfig
-            {
-                DatabasePassword = Configuration["DatabasePassword"],
-                DatabaseUser = Configuration["DatabaseUser"],
-                DatabaseServerPort = Convert.ToInt32(Configuration["DatabaseServerPort"]),
-                SqlProtocol = SqlProtocol.Tcp,
-                ConnectionTimeOut = Convert.ToInt32(Configuration["ConnectionTimeOut"]),
-            };
-
-            CatalogConfig = new CatalogConfig
-            {
-                ServicePlan = Configuration["ServicePlan"],
-                CatalogDatabase = Configuration["CatalogDatabase"],
-                CatalogServer = Configuration["CatalogServer"] + ".database.windows.net"
-            };
-        }
 
         private void ConfigureSwagger(IServiceCollection services)
         {

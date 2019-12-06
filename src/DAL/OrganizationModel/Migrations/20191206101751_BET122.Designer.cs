@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191206101751_BET122")]
+    partial class BET122
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -628,35 +630,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Logs");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.LoginLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<string>("ClaimsJson");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("FailReason");
-
-                    b.Property<int>("IdentityId");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int>("ProfileId");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasAlternateKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("LoginLogs");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Organization", b =>
@@ -2307,14 +2280,6 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Log", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.LoginLog", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Organization")
                         .WithMany()

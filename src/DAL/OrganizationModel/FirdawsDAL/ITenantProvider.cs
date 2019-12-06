@@ -5,9 +5,5 @@ namespace Tayra.Models.Organizations
     public interface ITenantProvider
     {
         TenantDTO GetTenant();
-
-        ShardMap GetShardMap();
-
-        string GetTemplateConnectionString();
     }
 }
