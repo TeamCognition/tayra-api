@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+          
+    <Target Name="CopySharedSettingsOnBuild" AfterTargets="Build" Condition="'$(AssemblyName)' != 'Tayra.Connectors.App'">
+    <ItemGroup>  
+        <SharedSettingsJson Include="$(ProjectDir)../../../shared/sharedSettings.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SharedSettingsJson)" DestinationFolder="$(OutDir)" />
+    </Target>
+    
+    <Target Name="CopySharedSettingsOnPublish" AfterTargets="Publish" Condition="'$(AssemblyName)' != 'Tayra.Connectors.App'">
+    <ItemGroup>  
+        <SharedSettingsJson Include="$(ProjectDir)../../../shared/sharedSettings.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SharedSettingsJson)" DestinationFolder="$(PublishDir)" />
+    </Target>
+    
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>Tayra.Models.Seeder</RootNamespace>
+    <AssemblyName>Tayra.Models.Seeder</AssemblyName>
+  </PropertyGroup>  
+        
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+<!--    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0" /> --> 
+  </ItemGroup>
+  
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrganizationModel\OrganizationModel.csproj" />
+    <ProjectReference Include="..\CatalogModel\CatalogModel.csproj" />
+  </ItemGroup>
+</Project>

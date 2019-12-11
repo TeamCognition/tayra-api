@@ -1,4 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    
+    <Import Project="..\..\shared\shared.csproj.props" />
+    
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>Tayra.SyncServices</RootNamespace>
@@ -41,6 +44,7 @@
     <Folder Include="Tayra\Reports\GenerateReportsProfile\" />
     <Folder Include="Tayra\Reports\GenerateReportsTeam\" />
     <Folder Include="Tayra\Reports\GenerateReports\" />
+    <Folder Include="Tayra\ActionPoints\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />

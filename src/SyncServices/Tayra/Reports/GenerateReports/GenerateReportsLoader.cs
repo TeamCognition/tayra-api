@@ -35,6 +35,8 @@ namespace Tayra.SyncServices.Tayra
 
                     GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports);
                     GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
+
+                    MakeActionPointsLoader.MakeActionPoints(organizationDb, date, LogService);
                 }
             }
         }

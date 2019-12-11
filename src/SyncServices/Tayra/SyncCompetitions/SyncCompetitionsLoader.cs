@@ -59,7 +59,7 @@ namespace Tayra.SyncServices.Tayra
                 foreach (var c in competitions)
                 {
                     competitionsService.EndCompetition(c.Id);
-                    logService.Log<SyncCompetitionsLoader>($"Competition {c.Id} has been ended.");
+                    logService.Log<SyncCompetitionsLoader> ($"Competition {c.Id} has been ended.");
                 }
 
                 organizationDb.SaveChanges();

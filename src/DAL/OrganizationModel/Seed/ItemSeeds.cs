@@ -3,16 +3,9 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ItemSeeder
+    public static class ItemSeeds
     {
-        protected OrganizationDbContext DbContext;
-        
-        public ItemSeeder(OrganizationDbContext dbContext)
-        {
-            DbContext = dbContext;
-        }
-
-        public void SeedTasks()
+        public static void AddShopItemSeeds(OrganizationDbContext dbContext)
         {
             var shopItemsSeed = new List<Item>
             {
@@ -724,8 +717,8 @@ namespace Tayra.Models.Organizations
                 }
             }
 
-            DbContext.AddRange(shopItemsSeed);
-            DbContext.SaveChanges();
+            dbContext.AddRange(shopItemsSeed);
+            dbContext.SaveChanges();
 
             var shopItems = new List<ShopItem>();
             foreach (var item in shopItemsSeed)
@@ -739,8 +732,8 @@ namespace Tayra.Models.Organizations
                 });
             }
 
-            DbContext.AddRange(shopItems);
-            DbContext.SaveChanges();
+            dbContext.AddRange(shopItems);
+            dbContext.SaveChanges();
         }
     }
 }

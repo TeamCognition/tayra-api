@@ -88,7 +88,10 @@ namespace Tayra.SyncServices.Tayra
                                  TacklesTotal = 0
                              }).ToList();
 
-            var companyTokenId = organizationDb.Tokens.FirstOrDefault(x => x.Type == TokenType.CompanyToken).Id;
+            var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
+            if (companyTokenId == 0)
+                throw new Exception("COMPANY TOKEN NOT FOUND");
+
             var tokens = (from tt in organizationDb.TokenTransactions
                           group tt by tt.ProfileId into total
                           let change = total.Where(x => x.Created.Date == fromDay.Date)

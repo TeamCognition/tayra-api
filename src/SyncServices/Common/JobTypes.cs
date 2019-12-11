@@ -6,6 +6,7 @@
         GenerateReportProfile = 2,
         GenerateReportProject = 3,
         GenerateReportTeam = 4,
-        SyncCompetitions = 5
+        SyncCompetitions = 5,
+        MakeActionPoints = 6
     }
 }

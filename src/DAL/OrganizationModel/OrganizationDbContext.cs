@@ -263,8 +263,6 @@ namespace Tayra.Models.Organizations
                 var method = SetGlobalQueryMethod.MakeGenericMethod(clrType);
                 method.Invoke(this, new object[] { modelBuilder });
             }
-
-            Seed(modelBuilder);
             
             base.OnModelCreating(modelBuilder);
         }
@@ -290,27 +288,6 @@ namespace Tayra.Models.Organizations
         {
             //Debug.WriteLine("Adding global query for: " + typeof(T));
             builder.Entity<T>().HasQueryFilter(e => EF.Property<int>(e, OrganizationIdFK) == _tenant.ShardingKey);
-        }
-
-        #region Seed
-
-        private void Seed(ModelBuilder modelBuilder)
-        {
-            //var cToken = new Token { Id = 1, Name = "Company Token", Symbol = "CT", Type = TokenType.CompanyToken };
-            //var expToken = new Token { Id = 2, Symbol = "EXP", Name = nameof(TokenType.Experience), Type = TokenType.Experience };
-            //var p1Token = new Token { Id = 3, Symbol = "1Up", Name = nameof(TokenType.OneUp), Type = TokenType.OneUp };
-
-            //modelBuilder.Entity<Token>().HasData(cToken);
-            //modelBuilder.Entity<Token>().HasData(expToken);
-            //modelBuilder.Entity<Token>().HasData(p1Token);
-
-            //var shop = new Shop { Id = 1, Name = "Employee Shop" };
-            //modelBuilder.Entity<Shop>().HasData(shop);
-
-            //var taskCategory = new TaskCategory { Id = 1, Name = "Undefined" };
-            //modelBuilder.Entity<TaskCategory>().HasData(taskCategory);
-
-            #endregion
         }
 
         /// <summary>
