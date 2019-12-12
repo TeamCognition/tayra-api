@@ -1,13 +1,15 @@
+using System;
 using System.Collections.Generic;
 using Tayra.Common;
+using Tayra.Models.Organizations;
 
-namespace Tayra.Models.Organizations
+namespace Tayra.Models.Seeder
 {
     public static class ItemSeeds
     {
         public static void AddShopItemSeeds(OrganizationDbContext dbContext)
         {
-            var shopItemsSeed = new List<Item>
+            var itemsSeed = new List<Item>
             {
                 new Item
                 {
@@ -695,7 +697,7 @@ namespace Tayra.Models.Organizations
                 },
             };
 
-            foreach (var item in shopItemsSeed)
+            foreach (var item in itemsSeed)
             {
                 switch (item.Rarity)
                 {
@@ -717,13 +719,13 @@ namespace Tayra.Models.Organizations
                 }
             }
 
-            dbContext.AddRange(shopItemsSeed);
-            dbContext.SaveChanges();
+            dbContext.AddRange(itemsSeed);
+            Console.WriteLine("Added " + nameof(itemsSeed));
 
-            var shopItems = new List<ShopItem>();
-            foreach (var item in shopItemsSeed)
+            var shopItemsSeed = new List<ShopItem>();
+            foreach (var item in itemsSeed)
             {
-                shopItems.Add(new ShopItem
+                shopItemsSeed.Add(new ShopItem
                 {
                     ItemId = item.Id,
                     IsGlobal = true,
@@ -732,8 +734,8 @@ namespace Tayra.Models.Organizations
                 });
             }
 
-            dbContext.AddRange(shopItems);
-            dbContext.SaveChanges();
+            dbContext.AddRange(shopItemsSeed);
+            Console.WriteLine("Added " + nameof(shopItemsSeed));
         }
     }
 }

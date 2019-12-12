@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191212132556_BETA16")]
+    partial class BETA16
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,150 +50,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("EntityChangeLogs");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPoint", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime?>("ConcludedOn");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Data");
-
-                    b.Property<int>("DateId");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int?>("Type");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("ActionPoints");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointProfile", b =>
-                {
-                    b.Property<int>("ActionPointId");
-
-                    b.Property<int>("ProfileId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime?>("ConcludedOn");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsMemberOnly");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("ActionPointId", "ProfileId", "OrganizationId");
-
-                    b.HasAlternateKey("ActionPointId", "ProfileId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProfileId");
-
-                    b.ToTable("ActionPointProfiles");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointProject", b =>
-                {
-                    b.Property<int>("ActionPointId");
-
-                    b.Property<int>("ProjectId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime?>("ConcludedOn");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("ActionPointId", "ProjectId", "OrganizationId");
-
-                    b.HasAlternateKey("ActionPointId", "ProjectId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ActionPointProjects");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointSetting", b =>
-                {
-                    b.Property<int>("Type");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<DateTime?>("MuteUntil");
-
-                    b.Property<bool>("NotifyByEmail");
-
-                    b.Property<bool>("NotifyByNotification");
-
-                    b.Property<bool>("NotifyByPush");
-
-                    b.Property<int>("ProjectId");
-
-                    b.HasKey("Type", "OrganizationId");
-
-                    b.HasAlternateKey("Type");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ActionPointSettings");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.Blob", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("CreatedBy");
-
-                    b.Property<string>("Extension");
-
-                    b.Property<string>("Filename");
-
-                    b.Property<long>("Filesize");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int?>("LastModifiedBy");
-
-                    b.Property<int>("Purpose");
-
-                    b.Property<int>("Type");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasAlternateKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("Blobs");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Challenge", b =>
@@ -2135,76 +1993,6 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             modelBuilder.Entity("Firdaws.DAL.EntityChangeLog", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPoint", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointProfile", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.ActionPoint", "ActionPoint")
-                        .WithMany("Profiles")
-                        .HasForeignKey("ActionPointId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
-                        .WithMany()
-                        .HasForeignKey("ProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointProject", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.ActionPoint", "ActionPoint")
-                        .WithMany("Projects")
-                        .HasForeignKey("ActionPointId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointSetting", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.Blob", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Organization")
                         .WithMany()

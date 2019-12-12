@@ -1,16 +1,21 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
+using Tayra.Models.Organizations;
 
-namespace Seeder
+namespace Tayra.Models.Seeder
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Seed started!");
 
             var config = LoadSettings();
-            Console.WriteLine(config["CatalogServer"]);
+            var shardMapProvider = new ShardMapProvider(config);
+
+            //Seeder.SeedAll(shardMapProvider, config);
+            //Seeder.Seed(shardMapProvider, "localhost:5001");
+            Console.WriteLine("Seed finished!");
         }
 
         public static IConfigurationRoot LoadSettings()

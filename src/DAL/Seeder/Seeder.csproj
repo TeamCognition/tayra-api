@@ -31,5 +31,9 @@
   <ItemGroup>
     <ProjectReference Include="..\OrganizationModel\OrganizationModel.csproj" />
     <ProjectReference Include="..\CatalogModel\CatalogModel.csproj" />
+    <ProjectReference Include="..\..\Common\Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Seed\" />
   </ItemGroup>
 </Project>

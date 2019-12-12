@@ -98,49 +98,60 @@ namespace Tayra.SyncServices.Tayra
             var profiles = organizationDb.Profiles.Select(x => new { x.Id , x.Created}).ToList();
             foreach(var p in profiles)
             {
-                if(p.Created >= DateHelper2.ParseDate(dateId1ago))
+                if (p.Created <= DateHelper2.ParseDate(dateId1ago))
                 {
                     MakeProfileAP(organizationDb,
-                        ActionPointTypes.ProfilesNoCompletedTasksIn14Days,
-                        profileId: taskStats.Any(x => x.ProfileId == p.Id && x.CompletedInLast2 == 0)
+                        ActionPointTypes.ProfilesNoCompletedTasksIn1Week,
+                        profileId: taskStats.Any(x => x.ProfileId == p.Id && x.CompletedInLast1 == 0 && x.CompletedInLast2 != 0)
                                    || !taskStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
                 }
-                if (p.Created >= DateHelper2.ParseDate(dateId2ago))
+
+                if (!CommonHelper.IsMonday(fromDay))
                 {
-                    MakeProfileAP(organizationDb,
-                        ActionPointTypes.ProfilesNoCompletedTasksIn7Days,
-                        profileId: taskStats.Any(x => x.CompletedInLast2 == 0)
-                                   || !taskStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                    if (p.Created <= DateHelper2.ParseDate(dateId2ago))
+                    {
+                        MakeProfileAP(organizationDb,
+                            ActionPointTypes.ProfilesNoCompletedTasksIn2Week,
+                            profileId: taskStats.Any(x => x.ProfileId == p.Id && x.CompletedInLast2 == 0)
+                                       || !taskStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
 
-                    MakeProfileAP(organizationDb,
-                        ActionPointTypes.ProfilesLowImpactFor2Weeks,
-                        profileId: reportsStats.Any(x => x.ProfileId == p.Id && x.ImpactFor1Weeks < 9 && x.ImpactFor2Weeks < 9)
-                                   || !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                        MakeProfileAP(organizationDb,
+                            ActionPointTypes.ProfilesLowImpactFor2Weeks,
+                            profileId: reportsStats.Any(x => x.ProfileId == p.Id && x.ImpactFor1Weeks < 9 && x.ImpactFor2Weeks < 9)
+                                       || !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
 
-                    MakeProfileAP(organizationDb,
-                        ActionPointTypes.ProfilesLowImpactFor2Weeks,
-                        profileId: reportsStats.Any(x => x.ProfileId == p.Id && x.SpeedFor1Weeks < 9 && x.SpeedFor2Weeks < 9)
-                                   || !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                        MakeProfileAP(organizationDb,
+                            ActionPointTypes.ProfilesLowImpactFor2Weeks,
+                            profileId: reportsStats.Any(x => x.ProfileId == p.Id && x.SpeedFor1Weeks < 9 && x.SpeedFor2Weeks < 9)
+                                       || !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
 
-                    MakeProfileAP(organizationDb,
-                        ActionPointTypes.ProfilesLowImpactFor2Weeks,
-                        profileId: reportsStats.Any(x => x.ProfileId == p.Id && x.HeatFor1Weeks < 9 && x.HeatFor2Weeks < 9)
-                                   || !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                        MakeProfileAP(organizationDb,
+                            ActionPointTypes.ProfilesLowImpactFor2Weeks,
+                            profileId: reportsStats.Any(x => x.ProfileId == p.Id && x.HeatFor1Weeks < 9 && x.HeatFor2Weeks < 9)
+                                       || !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                    }
                 }
             }
 
-            var projects = organizationDb.Projects.Select(x => new { x.Id, x.Created }).ToList();
-            if (projects.Count > 0 && projects.First().Created >= DateHelper2.ParseDate(dateId4ago))
+            if (!CommonHelper.IsMonday(fromDay))
             {
-                if (shopItemsAddedCount != 0)
+                var projects = organizationDb.Projects.Select(x => new { x.Id, x.Created }).ToList();
+                foreach (var proj in projects)
                 {
-                    MakeAP(organizationDb, ActionPointTypes.ShopNoItemsAddedIn4Weeks);
-                }
-                if (challengesCreatedCount != 0)
-                {
-                    MakeAP(organizationDb, ActionPointTypes.ChallengeNotCreatedIn4Weeks);
+                    if (proj.Created <= DateHelper2.ParseDate(dateId4ago))
+                    {
+                        if (shopItemsAddedCount == 0)
+                        {
+                            MakeProjectAP(organizationDb, ActionPointTypes.ShopNoItemsAddedIn4Weeks, proj.Id);
+                        }
+                        if (challengesCreatedCount == 0)
+                        {
+                            MakeProjectAP(organizationDb, ActionPointTypes.ChallengeNotCreatedIn4Weeks, proj.Id);
+                        }
+                    }
                 }
             }
+            
 
             //var existing = organizationDb.ActionPoints.Count(x => x.DateId == dateId);
             //if (existing > 0)
@@ -171,6 +182,26 @@ namespace Tayra.SyncServices.Tayra
                     new ActionPointProfile
                     { 
                         ProfileId = profileId
+                    }}
+            });
+        }
+
+        private static void MakeProjectAP(OrganizationDbContext dbContext, ActionPointTypes type, int projectId, int dateId = 0)
+        {
+            if (projectId <= 0)
+                return;
+
+            if (dateId == 0)
+                dateId = DateHelper2.ToDateId(DateTime.UtcNow);
+
+            dbContext.Add(new ActionPoint
+            {
+                Type = type,
+                DateId = dateId,
+                Projects = new List<ActionPointProject> {
+                    new ActionPointProject
+                    {
+                        ProjectId = projectId
                     }}
             });
         }

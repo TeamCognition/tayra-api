@@ -6,14 +6,12 @@ namespace Tayra.Models.Organizations
 {
     public class ActionPointSetting : ITimeStampedEntity
     {
-        //public int ProfileId { get; set; }
-        //public virtual Profile Profile { get; set; }
+        public ActionPointTypes? Type { get; set; }
 
         public int ProjectId { get; set; }
         public virtual Project Project { get; set; }
 
         //public ActionPointCategories? Category { get; set; }
-        public ActionPointTypes? Type { get; set; }
 
         public bool NotifyByEmail { get; set; }
         public bool NotifyByPush { get; set; }

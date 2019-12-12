@@ -2,8 +2,8 @@
 {
     public enum ActionPointTypes
     {
-        ProfilesNoCompletedTasksIn7Days = 101,
-        ProfilesNoCompletedTasksIn14Days = 102,
+        ProfilesNoCompletedTasksIn1Week = 101,
+        ProfilesNoCompletedTasksIn2Week = 102,
 
         ProfilesLowImpactFor2Weeks = 103,
         ProfilesHighImpactFor2Weeks = 104,

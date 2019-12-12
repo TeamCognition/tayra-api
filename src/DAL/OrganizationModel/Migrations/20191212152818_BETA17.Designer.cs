@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191212152818_BETA17")]
+    partial class BETA17
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,7 +91,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<DateTime>("Created");
 
-                    b.Property<bool>("IsMemberOnly");
+                    b.Property<bool>("IsProfileOnly");
 
                     b.Property<DateTime?>("LastModified");
 
@@ -102,31 +104,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("ProfileId");
 
                     b.ToTable("ActionPointProfiles");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointProject", b =>
-                {
-                    b.Property<int>("ActionPointId");
-
-                    b.Property<int>("ProjectId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime?>("ConcludedOn");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("ActionPointId", "ProjectId", "OrganizationId");
-
-                    b.HasAlternateKey("ActionPointId", "ProjectId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ActionPointProjects");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ActionPointSetting", b =>
@@ -2166,26 +2143,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointProject", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.ActionPoint", "ActionPoint")
-                        .WithMany("Projects")
-                        .HasForeignKey("ActionPointId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
                 });

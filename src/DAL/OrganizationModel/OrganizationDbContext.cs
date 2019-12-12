@@ -68,7 +68,11 @@ namespace Tayra.Models.Organizations
         #endregion
 
         #region Db Sets
-
+        public DbSet<ActionPoint> ActionPoints { get; set; }
+        public DbSet<ActionPointProfile> ActionPointProfiles { get; set; }
+        public DbSet<ActionPointProject> ActionPointProjects { get; set; }
+        public DbSet<ActionPointSetting> ActionPointSettings { get; set; }
+        public DbSet<Blob> Blobs { get; set; }
         public DbSet<Challenge> Challenges { get; set; }
         public DbSet<ChallengeCompletion> ChallengeCompletions { get; set; }
         public DbSet<ClaimBundle> ClaimBundles { get; set; }
@@ -135,7 +139,21 @@ namespace Tayra.Models.Organizations
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Profile>().HasIndex(x => x.Nickname).IsUnique();
+            modelBuilder.Entity<ActionPointProfile>(entity =>
+            {
+                entity.HasKey(x => new { x.ActionPointId, x.ProfileId });
+            });
+
+            modelBuilder.Entity<ActionPointProject>(entity =>
+            {
+                entity.HasKey(x => new { x.ActionPointId, x.ProjectId });
+            });
+
+            modelBuilder.Entity<ActionPointSetting>(entity =>
+            {
+                entity.HasKey(x => new { x.Type });
+            });
+
 
             modelBuilder.Entity<ChallengeCompletion>().HasKey(x => new { x.ChallengeId, x.ProfileId });
 
@@ -167,6 +185,8 @@ namespace Tayra.Models.Organizations
                 entity.HasKey(x => x.Id);
                 entity.Property(x => x.Id).ValueGeneratedNever();
             });
+
+            modelBuilder.Entity<Profile>().HasIndex(x => x.Nickname).IsUnique();
 
             modelBuilder.Entity<ProfileInventoryItem>(entity =>
             {

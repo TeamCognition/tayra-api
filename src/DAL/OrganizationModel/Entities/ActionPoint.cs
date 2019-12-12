@@ -7,6 +7,8 @@ namespace Tayra.Models.Organizations
 {
     public class ActionPoint : ITimeStampedEntity
     {
+        public int Id { get; set; }
+
         public ActionPointTypes? Type { get; set; }
         public string Data { get; set; }
         public int DateId { get; set; }
@@ -14,6 +16,8 @@ namespace Tayra.Models.Organizations
         public DateTime? ConcludedOn { get; set; }
         
         public virtual ICollection<ActionPointProfile> Profiles { get; set; }
+        public virtual ICollection<ActionPointProject> Projects { get; set; }
+
 
         #region ITimeStampedEntity
 

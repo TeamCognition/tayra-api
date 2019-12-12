@@ -3,16 +3,14 @@ using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class ActionPointProfile : ITimeStampedEntity
+    public class ActionPointProject : ITimeStampedEntity
     {
         //Composite Key
         public int ActionPointId { get; set; }
         public virtual ActionPoint ActionPoint { get; set; }
 
-        public int ProfileId { get; set; }
-        public virtual Profile Profile { get; set; }
-
-        public bool IsMemberOnly { get; set; }
+        public int ProjectId { get; set; }
+        public virtual Project Project { get; set; }
 
         public DateTime? ConcludedOn { get; set; }
 
