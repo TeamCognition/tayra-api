@@ -27,7 +27,7 @@ namespace Tayra.Services
             _imageContainer = _storageClient.GetContainerReference("imgs");
         }
 
-        public Blob UploadToAzureAndSave(BlobUploadDTO dto)
+        public Blob UploadToAzure(BlobUploadDTO dto)
         {
             var blob = new Blob
             {

@@ -2,6 +2,7 @@
 using System.Linq;
 using Firdaws.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -13,8 +14,9 @@ namespace Tayra.API.Controllers
 
         #region Constructor
 
-        public BlobsController(OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
+        public BlobsController(IConfiguration config, OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
         {
+            _config = config;
             DbContext = dbContext;
         }
 
@@ -23,6 +25,7 @@ namespace Tayra.API.Controllers
         #region Properties
 
         private readonly OrganizationDbContext DbContext;
+        private readonly IConfiguration _config;
 
         #endregion
 
@@ -38,10 +41,10 @@ namespace Tayra.API.Controllers
                 return BadRequest("file has to be an image");
             }
 
-            var blob = BlobsService.UploadToAzureAndSave(dto);
+            var blob = BlobsService.UploadToAzure(dto);
             DbContext.SaveChanges();
 
-            return Ok(new { Id = $"{blob.Id}.{blob.Extension}" });
+            return Ok(new { Id = $"{_config["BlobPath"]}{_config["BlobContainerImages"]}/{blob.Id}.{blob.Extension}" });
         }
 
         #endregion

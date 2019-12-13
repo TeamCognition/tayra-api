@@ -35,7 +35,7 @@ namespace Imager
                 .Configure<AzureBlobStorageImageProviderOptions>(options =>
                 {
                     options.ConnectionString = AppConfiguration["BlobStorageConnectionStr"];
-                    options.ContainerName = AppConfiguration["BlobContainerName"];
+                    options.ContainerName = AppConfiguration["BlobContainerImages"];
                 })
                 .AddProvider<AzureBlobStorageImageProvider>()
                 .AddProcessor<ResizeWebProcessor>();

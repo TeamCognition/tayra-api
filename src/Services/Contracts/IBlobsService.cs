@@ -5,6 +5,6 @@ namespace Tayra.Services
 {
     public interface IBlobsService
     {
-        Blob UploadToAzureAndSave(BlobUploadDTO dto);
+        Blob UploadToAzure(BlobUploadDTO dto);
     }
 }
