@@ -290,8 +290,8 @@ namespace Tayra.Models.Organizations
         public override int SaveChanges()
         {
             foreach (var entry in ChangeTracker.Entries()
-            .Where(e => e.State == EntityState.Added
-            && !e.Entity.GetType().HasAttribute<TenantSharedEntityAttribute>()))
+                .Where(e => e.State == EntityState.Added
+                && !e.Entity.GetType().HasAttribute<TenantSharedEntityAttribute>()))
             {
                 entry.Property(OrganizationIdFK).CurrentValue = OrganizationId;
             }

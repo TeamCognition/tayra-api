@@ -61,16 +61,14 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost, Route("contactUs")]
-        public async Task<IActionResult> ContactUs([FromBody] ContactFormDTO dto)
+        public IActionResult ContactUs([FromBody] ContactFormDTO dto)
         {
             try
             {
-                var mailer = new MailerService();
-                await mailer.Send("haris.botic96@gmail.com",
+                MailerService.SendEmail("haris.botic96@gmail.com",
                             "haris@tayra.io",
                             "New Contact (Landing Page Contact Form)",
                             JsonConvert.SerializeObject(dto));
-
 
                 _catalogContext.LandingPageContacts.Add(new LandingPageContact
                 {
@@ -81,8 +79,6 @@ namespace Tayra.API.Controllers
                 });
 
                 _catalogContext.SaveChanges();
-                
-
             }
             catch (Exception)
             {

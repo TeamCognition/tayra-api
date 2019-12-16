@@ -3,6 +3,8 @@ using System.Linq;
 using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
+using Tayra.Common;
+using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
@@ -38,6 +40,8 @@ namespace Tayra.Services
 
             var identity = CatalogDb.Add(new Identity
             {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
                 Salt = salt,
                 Password = PasswordHelper.Hash(dto.Password, salt),
             }).Entity;
@@ -60,8 +64,8 @@ namespace Tayra.Services
 
             var profile = DbContext.Add(new Profile
             {
-                FirstName = dto.Profile.FirstName,
-                LastName = dto.Profile.LastName,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
                 Nickname = dto.Profile.Nickname,
                 Role = dto.Profile.Role,
                 Avatar = dto.Profile.Avatar,
@@ -86,6 +90,42 @@ namespace Tayra.Services
                 .Include(x => x.Identity)
                 .FirstOrDefault(x => x.Email == email)
                 .Identity;
+        }
+
+        public void Invite(int profileId, string host, IdentityInviteDTO dto)
+        {
+            var invitation = new Invitation
+            {
+                Code = Guid.NewGuid(),
+                EmailAddress = dto.EmailAddress,
+                Role = dto.Role,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Status = InvitationStatus.Sent
+            };
+
+            var resp = MailerService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            if(resp.StatusCode != System.Net.HttpStatusCode.Accepted)
+            {
+                throw new ApplicationException(dto.EmailAddress + " email not sent");
+            }
+
+            DbContext.Add(invitation);
+        }
+
+        public IdentityInvitationViewDTO GetInvitation(string InvitationCode)
+        {
+            var dto = DbContext.Invitations.Where(x => x.Code == Guid.Parse(InvitationCode) && x.IsActive)
+                        .Select(x => new IdentityInvitationViewDTO
+                        {
+                            EmailAddress = x.EmailAddress,
+                            FirstName = x.FirstName,
+                            LastName = x.LastName
+                        }).FirstOrDefault();
+
+            dto.EnsureNotNull(InvitationCode);
+
+            return dto;
         }
 
         public GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams)
@@ -154,6 +194,7 @@ namespace Tayra.Services
 
         public bool RemoveEmail(int identityId, string email)
         {
+            //TODO: you can't remove primary email, also not if its the last one
             var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt != null);
             var emailEntry = scope.Where(x => x.IdentityId == identityId && x.Email == email).FirstOrDefault();
 

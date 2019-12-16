@@ -14,15 +14,14 @@ namespace Tayra.Models.Organizations
         [Required]
         public Guid Code { get; set; }
 
-        [Required, ForeignKey(nameof(Profile))]
-        public int ProfileId { get; set; }
-
         public InvitationStatus Status { get; set; } = InvitationStatus.Created;
+        public ProfileRoles Role { get; set; }
 
-        [MaxLength(1000)]
-        public string EmailId { get; set; }
+        [Required, MaxLength(1000)]
+        public string EmailAddress { get; set; }
 
-        public virtual Profile Profile { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         [NotMapped]
         public bool IsActive

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore;
@@ -45,15 +46,27 @@ namespace Tayra.Auth
         {
             var env = hostingContext.HostingEnvironment;
 
-            // find the shared folder in the parent folder
-            var sharedFolder = Path.Combine(env.ContentRootPath, "../..", "shared");
+            var dict = new Dictionary<string, string>
+            {
+                {"DatabaseUser", "tyradmin"},
+                {"DatabasePassword", "Kr7N9#p!2AbR"},
+                {"DatabaseServerPort", "1433"},
+                {"ConnectionTimeOut", "100"},
 
-            //load the SharedSettings first, so that appsettings.json overrwrites it
+                {"CatalogServer", "sqlserver-tayra.database.windows.net"},
+                {"CatalogDatabase", "sqldb-tayra-catalog-prod"},
+
+
+                {"BlobPath", "https://tayra.blob.core.windows.net/"},
+                {"BlobStorageConnectionStr", "DefaultEndpointsProtocol=https;AccountName=tayra;AccountKey=98ZragdvKWY2WgKDOsKTZfhXze0nAe8/wkZKzOanlcF7W9qrjqwX/HMg6upmZ9c3Sgu9FvvGyfh1N+zb1gtPVA==;EndpointSuffix=core.windows.net"},
+                {"BlobContainerImages", "imgs"}
+            };
+
+            config.AddInMemoryCollection(dict);
+
             config
-                .AddJsonFile(Path.Combine(sharedFolder, "sharedSettings.json"), optional: true)
-                            .AddJsonFile("sharedSettings.json", optional: true) // When app is published
-                            .AddJsonFile("appsettings.json", optional: true)
-                            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
             config.AddEnvironmentVariables();
         }

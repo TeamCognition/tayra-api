@@ -9,6 +9,8 @@ namespace Tayra.Services
 
         Identity GetByEmail(string email);
 
+        void Invite(int profileId, string host, IdentityInviteDTO dto);
+        IdentityInvitationViewDTO GetInvitation(string InvitationCode);
         GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams);
         void AddEmail(int identityId, string email);
         void SetPrimaryEmail(int identityId, string email);

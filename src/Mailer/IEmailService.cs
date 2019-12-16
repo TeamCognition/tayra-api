@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
+using SendGrid;
 
 namespace Tayra.Mailer
 {
     public interface IEmailService
     {
-        Task Send(string sender, string recipient, string subject, string body);
+        Response SendEmail(string sender, string recipient, string subject, string body);
     }
 }

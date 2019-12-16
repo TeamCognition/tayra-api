@@ -10,7 +10,9 @@ namespace Tayra.Models.Organizations
     {
         public int Id { get; set; }
 
+        [MaxLength(50)]
         public string FirstName { get; set; }
+        [MaxLength(50)]
         public string LastName { get; set; }
         public string Nickname { get; set; }
 
@@ -19,12 +21,14 @@ namespace Tayra.Models.Organizations
 
         public ProfileRoles Role { get; set; }
 
+        [MaxLength(100)]
+        public string JobPosition { get; set; }
+
         public int IdentityId { get; set; }
 
         public virtual ICollection<ProfileInventoryItem> InventoryItems { get; set; }
         public virtual ICollection<ProjectMember> Projects { get; set; }
         public virtual ICollection<TeamMember> Teams { get; set; }
-        public virtual ICollection<Invitation> Invitations { get; set; }
         public virtual ICollection<TokenTransaction> Tokens { get; set; }
         public virtual ICollection<ProfileReportDaily> StatsDaily { get; set; }
         public virtual ICollection<ProfileReportWeekly> StatsWeekly { get; set; }

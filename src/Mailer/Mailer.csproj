@@ -12,6 +12,10 @@
   <ItemGroup>
     <PackageReference Include="Sendgrid" Version="9.12.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DTO\" />
+    <Folder Include="DTO\Interfaces\" />
+  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

@@ -32,7 +32,6 @@ namespace Tayra.Models.Catalog
         public DbSet<Identity> Identities { get; set; }
         public DbSet<IdentityEmail> IdentityEmails { get; set; }
         public DbSet<IdentityExternalId> IdentityExternalIds { get; set; }
-
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<TenantIdentity> TenantIdentities { get; set; }
 

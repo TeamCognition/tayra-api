@@ -11,6 +11,8 @@ namespace Tayra.Models.Organizations
         public ShardTenantProvider(IHttpContextAccessor accessor)
         {
             _host = accessor.HttpContext.Request.Host.ToString();
+            _host = _host.Replace("localhost:5000", "localhost:5001");
+            _host = _host.Replace("localhost:3000", "localhost:5001");
         }
 
         public ShardTenantProvider(string host)
