@@ -120,7 +120,9 @@ namespace Tayra.API.Controllers
                 return Ok();
             }
 
-            if (fields.Timespent == null || fields.Timespent == 0)
+            int? autoTimeSpent = null;
+            fields.Timespent = fields.Timespent > 0 ? fields.Timespent : null; //redundant, check above
+            if (fields.Timespent == null)
             {
                 var statuses = jiraConnector.GetProjectStatuses(rewardStatusField.IntegrationId, jiraProjectId, fields.IssueType.Id);
                 var todoStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
@@ -170,10 +172,11 @@ namespace Tayra.API.Controllers
                 var days = (enteredRewardStatus.Value - enteredInProgress.Value).Days;
                 var hours = (enteredRewardStatus.Value - enteredInProgress.Value).TotalHours;
 
-                fields.Timespent = (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes;
+                autoTimeSpent = (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes;
             }
 
-            var effortScore = TayraEffortCalculator.CalcEffortScore(fields.Timespent ?? 0, TayraPersonalPerformance.MapSPToComplexity(fields.StoryPointsCF ?? 0));
+            var timeSpentToUse = fields.Timespent ?? autoTimeSpent;
+            var effortScore = TayraEffortCalculator.CalcEffortScore(timeSpentToUse ?? 0, TayraPersonalPerformance.MapSPToComplexity(fields.StoryPointsCF ?? 0));
 
             TokensService.CreateTransaction(TokenType.CompanyToken, assigneProfile.Id, effortScore, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
             TokensService.CreateTransaction(TokenType.Experience, assigneProfile.Id, effortScore, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
@@ -184,6 +187,7 @@ namespace Tayra.API.Controllers
                 IntegrationType = IntegrationType.ATJ,
                 Summary = fields.Summary,
                 JiraStatusCategory = fields.Status.Category.Id,
+                AutoTimeSpentInMinutes = autoTimeSpent,
                 TimeSpentInMinutes = fields.Timespent,
                 TimeOriginalEstimatInMinutes = fields.TimeOriginalEstimate,
                 StoryPoints = fields.StoryPointsCF,
@@ -210,7 +214,7 @@ namespace Tayra.API.Controllers
                     { "effortScore", Math.Round(effortScore, 2).ToString() },
                     { "profileNickname", assigneProfile.Nickname },
                     { "competitorName", activeCompetitions.FirstOrDefault()?.CompetitorName},
-                    { "timespent", fields.Timespent.ToString()}
+                    { "timespent", timeSpentToUse.ToString()}
                 },
                 ProfileId = assigneProfile.Id,
                 CompetitionIds = activeCompetitions.Select(x => x.Id).Distinct()

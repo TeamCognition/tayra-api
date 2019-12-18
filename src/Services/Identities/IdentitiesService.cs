@@ -92,7 +92,77 @@ namespace Tayra.Services
                 .Identity;
         }
 
-        public void Invite(int profileId, string host, IdentityInviteDTO dto)
+        public void InvitationJoinWithSaveChanges(IdentityJoinDTO dto)
+        {
+            var invitation = DbContext.Invitations.FirstOrDefault(x => x.Code == Guid.Parse(dto.InvitationCode) && x.IsActive);
+
+            invitation.EnsureNotNull(dto.InvitationCode);
+
+            ValidateInvitationWithSaveChanges(invitation);
+
+            if(!ProfilesService.IsUsernameUnique(DbContext, dto.Username))
+            {
+                throw new ApplicationException($"Username already exists");
+            }
+
+            if (!IdentityRules.IsPasswordValid(dto.Password))
+            {
+                throw new ApplicationException($"Invalid password");
+            }
+
+            var salt = PasswordHelper.GenerateSalt();
+
+            var identity = CatalogDb.Add(new Identity
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Salt = salt,
+                Password = PasswordHelper.Hash(dto.Password, salt),
+            }).Entity;
+
+            CatalogDb.Add(new IdentityEmail
+            {
+                Email = invitation.EmailAddress,
+                IsPrimary = true,
+                Identity = identity
+            });
+
+            //get identity Id
+            CatalogDb.SaveChanges();
+
+            var profile = DbContext.Add(new Profile
+            {
+                Avatar = dto.Avatar,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Nickname = dto.Username,
+                JobPosition = dto.JobPosition,
+                Role = invitation.Role,
+                IdentityId = identity.Id
+            }).Entity;
+
+            if (invitation.ProjectId.HasValue)
+            {
+                DbContext.Add(new ProjectMember
+                {
+                    Profile = profile,
+                    ProjectId = invitation.ProjectId.Value,
+                });
+            }
+
+            if (invitation.TeamId.HasValue)
+            {
+                DbContext.Add(new TeamMember
+                {
+                    Profile = profile,
+                    TeamId = invitation.TeamId.Value,
+                });
+            }
+
+            DbContext.SaveChanges();
+        }
+
+        public void CreateInvitation(int profileId, string host, IdentityInviteDTO dto)
         {
             var invitation = new Invitation
             {
@@ -101,8 +171,25 @@ namespace Tayra.Services
                 Role = dto.Role,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
+                ProjectId = dto.ProjectId,
+                TeamId = dto.TeamId,
                 Status = InvitationStatus.Sent
             };
+
+            if(!IsEmailAddressUnique(dto.EmailAddress))
+            {
+                throw new ApplicationException("Email address already used");
+            }
+
+            if (dto.ProjectId.HasValue && !DbContext.Projects.Any(x => x.Id == dto.ProjectId && x.ArchivedAt == null))
+            {
+                throw new EntityNotFoundException<Project>(dto.ProjectId);
+            }
+
+            if (dto.TeamId.HasValue && !DbContext.Teams.Any(x => x.Id == dto.TeamId && x.ArchivedAt == null))
+            {
+                throw new EntityNotFoundException<Team>(dto.TeamId);
+            }
 
             var resp = MailerService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
             if(resp.StatusCode != System.Net.HttpStatusCode.Accepted)
@@ -115,17 +202,40 @@ namespace Tayra.Services
 
         public IdentityInvitationViewDTO GetInvitation(string InvitationCode)
         {
-            var dto = DbContext.Invitations.Where(x => x.Code == Guid.Parse(InvitationCode) && x.IsActive)
+            var invitation = DbContext.Invitations.Where(x => x.Code == Guid.Parse(InvitationCode) && x.IsActive)
                         .Select(x => new IdentityInvitationViewDTO
                         {
                             EmailAddress = x.EmailAddress,
                             FirstName = x.FirstName,
-                            LastName = x.LastName
+                            LastName = x.LastName,
+                            Status = x.Status
                         }).FirstOrDefault();
 
-            dto.EnsureNotNull(InvitationCode);
+            invitation.EnsureNotNull(InvitationCode);
 
-            return dto;
+            if(invitation.Status == InvitationStatus.Sent)
+            {
+                invitation.Status = InvitationStatus.Viewed;
+            }
+
+            DbContext.SaveChanges();
+
+            return invitation;
+        }
+
+        public GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams)
+        {
+            IQueryable<IdentityInvitationGridDTO> query = from i in DbContext.Invitations
+                                                      select new IdentityInvitationGridDTO
+                                                      {
+                                                          EmailAddress =  i.EmailAddress,
+                                                          Status = i.Status,
+                                                          FirstName = i.FirstName,
+                                                          LastName = i.LastName
+                                                      };
+
+            GridData<IdentityInvitationGridDTO> gridData = query.GetGridData(gridParams);
+            return gridData;
         }
 
         public GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams)
@@ -148,6 +258,11 @@ namespace Tayra.Services
 
             GridData<IdentityEmailsGridDTO> gridData = query.GetGridData(gridParams);
             return gridData;
+        }
+
+        public bool IsEmailAddressUnique(string email)
+        {
+            return !CatalogDb.IdentityEmails.Any(x => x.Email == email && x.DeletedAt == null);
         }
 
         public void AddEmail(int identityId, string email)
@@ -194,13 +309,41 @@ namespace Tayra.Services
 
         public bool RemoveEmail(int identityId, string email)
         {
-            //TODO: you can't remove primary email, also not if its the last one
-            var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt != null);
-            var emailEntry = scope.Where(x => x.IdentityId == identityId && x.Email == email).FirstOrDefault();
+            var scope = CatalogDb.IdentityEmails.Where(x => x.IdentityId == identityId && x.DeletedAt != null);
+            var identityEmail = scope.Where(x => x.Email == email).FirstOrDefault();
 
-            CatalogDb.IdentityEmails.Remove(emailEntry);
+            if(identityEmail.IsPrimary)
+            {
+                throw new ApplicationException("You can't remove primary email address");
+            }
+
+            if (scope.Count() <= 1)
+            {
+                throw new ApplicationException("You must have at least one email address");
+            }
+
+            identityEmail.DeletedAt = DateTime.UtcNow;
             var affectedRecords = CatalogDb.SaveChanges();
             return affectedRecords > 0;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private bool ValidateInvitationWithSaveChanges(Invitation invitation)
+        {
+            if (!invitation.IsActive)
+                return false;
+
+            if(!IsEmailAddressUnique(invitation.EmailAddress))
+            {
+                invitation.Status = InvitationStatus.Expired;
+                DbContext.SaveChanges();
+                return false;
+            }
+
+            return true;
         }
 
         #endregion

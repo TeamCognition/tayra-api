@@ -9,5 +9,8 @@ namespace Tayra.Services
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public int? ProjectId { get; set; }
+        public int? TeamId { get; set; }
     }
 }

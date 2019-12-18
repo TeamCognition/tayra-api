@@ -4,7 +4,6 @@ using System.Net;
 using System.Security;
 using System.Threading.Tasks;
 using Firdaws.Core;
-using Firdaws.DAL;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 

@@ -84,6 +84,12 @@ namespace Tayra.API.Controllers
            return Ok(ProfilesService.GetProfileRadarChartDTO(profileId));
         }
 
+        [HttpGet("isUsernameUnique")]
+        public ActionResult<bool> IsUsernameUnique([FromQuery] string username)
+        {
+            return ProfilesService.IsUsernameUnique(username);
+        }
+
         public interface IOneUpProfile //for swagger
         {
             int TotalUps { get; set; }

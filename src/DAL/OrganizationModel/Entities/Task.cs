@@ -17,6 +17,7 @@ namespace Tayra.Models.Organizations
         public TaskStatuses Status { get; set; }
         public TaskTypes Type { get; set; }
 
+        public int? AutoTimeSpentInMinutes { get; set; }
         public int? TimeSpentInMinutes { get; set; }
         public int? TimeOriginalEstimatInMinutes { get; set; }
 

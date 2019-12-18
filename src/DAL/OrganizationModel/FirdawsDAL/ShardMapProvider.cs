@@ -47,7 +47,7 @@ namespace Tayra.Models.Organizations
             }
             catch (Exception exception)
             {
-                Trace.TraceError(exception.Message, "Error in sharding initialisation.");
+                Trace.TraceError(exception.Message, $"{shardMapName} : shardMapName \n {connectionString} : connectionString \n Error in sharding initialisation.");
                 throw new ApplicationException("Error in sharding initialisation.");
             }
         }

@@ -36,6 +36,7 @@ namespace Tayra.Services
             task.LastModifiedDateId = DateHelper2.ToDateId(DateTime.UtcNow);
             task.Status = TayraPersonalPerformance.MapJiraIssueCategoryToTaskStatus(dto.JiraStatusCategory);
             task.Type = dto.Type;
+            task.AutoTimeSpentInMinutes = dto.AutoTimeSpentInMinutes;
             task.TimeSpentInMinutes = dto.TimeSpentInMinutes;
             task.TimeOriginalEstimatInMinutes = dto.TimeOriginalEstimatInMinutes;
             task.StoryPoints = dto.StoryPoints;

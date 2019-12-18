@@ -35,7 +35,8 @@ namespace Tayra.API
 
                 {"BlobPath", "https://tayra.blob.core.windows.net/"},
                 {"BlobStorageConnectionStr", "DefaultEndpointsProtocol=https;AccountName=tayra;AccountKey=98ZragdvKWY2WgKDOsKTZfhXze0nAe8/wkZKzOanlcF7W9qrjqwX/HMg6upmZ9c3Sgu9FvvGyfh1N+zb1gtPVA==;EndpointSuffix=core.windows.net"},
-                {"BlobContainerImages", "imgs"}
+                {"BlobContainerImages", "imgs"},
+                {"ASPNETCORE_DETAILEDERRORS", "true" }
             };
 
             config.AddInMemoryCollection(dict);

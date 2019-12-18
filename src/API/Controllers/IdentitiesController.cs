@@ -2,7 +2,6 @@
 using Firdaws.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -12,8 +11,9 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public IdentitiesController(OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
+        public IdentitiesController(ITenantProvider tenantProvider, OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
         {
+            TenantProvider = tenantProvider;
             DbContext = dbContext;
         }
 
@@ -21,6 +21,7 @@ namespace Tayra.API.Controllers
 
         #region Properties
 
+        public readonly ITenantProvider TenantProvider;
         public readonly OrganizationDbContext DbContext;
 
         #endregion
@@ -30,16 +31,16 @@ namespace Tayra.API.Controllers
         [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {
-            var o = Resolve<IOrganizationsService>();
-            o.Create(new OrganizationCreateDTO
-            {
-                Key = "localhost:3000",
-                Name = "Localhost 3000",
-                Timezone = "Europe Central",
-                DatabaseServer = "sqlserver-tayra.database.windows.net",
-                DatabaseName = "sqldb-tayra-tenants_free-prod",
-                TemplateConnectionString = "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
-            });
+            //var o = Resolve<IOrganizationsService>();
+            //o.Create(new OrganizationCreateDTO
+            //{
+            //    Key = "localhost:3000",
+            //    Name = "Localhost 3000",
+            //    Timezone = "Europe Central",
+            //    DatabaseServer = "sqlserver-tayra.database.windows.net",
+            //    DatabaseName = "sqldb-tayra-tenants_free-prod",
+            //    TemplateConnectionString = "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
+            //});
 
             //IdentitiesService.InternalCreateWithProfile(dto);
             //DbContext.SaveChanges();
@@ -47,17 +48,31 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
+        [HttpPost("join")]
+        public IActionResult Sendinvitation([FromBody] IdentityJoinDTO dto)
+        {
+            IdentitiesService.InvitationJoinWithSaveChanges(dto);
+
+            return Ok();
+        }
+
         [HttpPost("invitation")]
         public IActionResult Sendinvitation([FromBody] IdentityInviteDTO dto)
         {
-            IdentitiesService.Invite(CurrentUser.ProfileId, Request.Host.ToString(), dto);
+            IdentitiesService.CreateInvitation(CurrentUser.ProfileId, TenantProvider.GetTenant().Host, dto);
 
             DbContext.SaveChanges();
             return Ok();
         }
 
+        [HttpPost("searchInvitations")]
+        public ActionResult<GridData<IdentityInvitationGridDTO>> SearchInvitation([FromBody] IdentityInvitationGridParams gridParams)
+        {
+            return IdentitiesService.GetInvitationsGridData(gridParams);
+        }
+
         [AllowAnonymous, HttpGet("invitation")]
-        public IActionResult Getinvitation([FromQuery] string InvitationCode)
+        public ActionResult<IdentityInvitationViewDTO> Getinvitation([FromQuery] string InvitationCode)
         {
             return Ok(IdentitiesService.GetInvitation(InvitationCode));
         }
@@ -72,6 +87,12 @@ namespace Tayra.API.Controllers
             }
 
             return IdentitiesService.GetIdentityEmailsGridData(CurrentUser.ProfileId, gridParams);
+        }
+
+        [HttpGet("isEmailUnique")]
+        public ActionResult<bool> IsEmailUnique([FromQuery] string email)
+        {
+            return IdentitiesService.IsEmailAddressUnique(email);
         }
 
         [HttpPost("addEmail")]

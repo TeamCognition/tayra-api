@@ -14,6 +14,7 @@ namespace Tayra.Services
         public IssueStatusCategories JiraStatusCategory { get; set; }
         public TaskTypes Type { get; set; }
 
+        public int? AutoTimeSpentInMinutes { get; set; }
         public int? TimeSpentInMinutes { get; set; }
         public int? TimeOriginalEstimatInMinutes { get; set; }
 

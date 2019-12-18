@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using Firdaws.Core;
 using Firdaws.DAL;
-using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -61,6 +60,16 @@ namespace Tayra.Services
             return DbContext.Profiles.FirstOrDefault(x => x.IdentityId == ie.IdentityId);
         }
 
+        public bool IsUsernameUnique(string username)
+        {
+            return IsUsernameUnique(DbContext, username);
+        }
+
+        public static bool IsUsernameUnique(OrganizationDbContext dbContext, string username)
+        {
+            return !dbContext.Profiles.Any(x => x.Nickname == username);
+        }
+
         public int OneUpProfile(int profileId, ProfileOneUpDTO dto)
         {
             int? lastUppedAt = (from u in DbContext.ProfileOneUps
@@ -71,10 +80,10 @@ namespace Tayra.Services
                                 ).FirstOrDefault();
                               
 
-            if(!ProfileRules.CanUpProfile(profileId, dto.ProfileId, lastUppedAt))
-            {
-                throw new ApplicationException("Profile already upped by same user today");
-            }
+            //if(!ProfileRules.CanUpProfile(profileId, dto.ProfileId, lastUppedAt))
+            //{
+            //    throw new ApplicationException("Profile already upped by same user today");
+            //}
 
             DbContext.Add(new ProfileOneUp
             {

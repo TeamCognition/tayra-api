@@ -2,7 +2,7 @@
 
 namespace Tayra.Services
 {
-    public class IdentityInvitationViewDTO
+    public class IdentityInvitationGridDTO
     {
         public string EmailAddress { get; set; }
         public string FirstName { get; set; }
