@@ -1,4 +1,5 @@
-﻿using Tayra.Common;
+﻿using System;
+using Tayra.Common;
 
 namespace Tayra.Services
 {
@@ -8,5 +9,6 @@ namespace Tayra.Services
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public InvitationStatus Status { get; set; }
+        public DateTime Created { get; set; }
     }
 }

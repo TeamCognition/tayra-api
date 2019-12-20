@@ -44,7 +44,7 @@ namespace Tayra.API.Controllers
             var blob = BlobsService.UploadToAzure(dto);
             DbContext.SaveChanges();
 
-            return Ok(new { Id = $"{_config["BlobPath"]}{_config["BlobContainerImages"]}/{blob.Id}.{blob.Extension}" });
+            return Ok(new { Id = $"{_config["ImagerServer"]}{_config["BlobContainerImages"]}/{blob.Id}.{blob.Extension}" });
         }
 
         #endregion

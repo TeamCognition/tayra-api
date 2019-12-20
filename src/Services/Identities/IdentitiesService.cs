@@ -8,7 +8,6 @@ using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
-
 namespace Tayra.Services
 {
     public class IdentitiesService : BaseService<OrganizationDbContext>, IIdentitiesService
@@ -127,6 +126,7 @@ namespace Tayra.Services
                 Identity = identity
             });
 
+            invitation.Status = InvitationStatus.Accepted;
             //get identity Id
             CatalogDb.SaveChanges();
 
@@ -226,13 +226,15 @@ namespace Tayra.Services
         public GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams)
         {
             IQueryable<IdentityInvitationGridDTO> query = from i in DbContext.Invitations
-                                                      select new IdentityInvitationGridDTO
-                                                      {
-                                                          EmailAddress =  i.EmailAddress,
-                                                          Status = i.Status,
-                                                          FirstName = i.FirstName,
-                                                          LastName = i.LastName
-                                                      };
+                                                          where i.IsActive == !gridParams.ActiveStatusesOnly
+                                                          select new IdentityInvitationGridDTO
+                                                          {
+                                                              EmailAddress =  i.EmailAddress,
+                                                              Status = i.Status,
+                                                              FirstName = i.FirstName,
+                                                              LastName = i.LastName,
+                                                              Created = i.Created
+                                                          };
 
             GridData<IdentityInvitationGridDTO> gridData = query.GetGridData(gridParams);
             return gridData;
