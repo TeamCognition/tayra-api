@@ -65,13 +65,36 @@ namespace Tayra.Connectors.Common
 
         protected Integration CreateProjectIntegration(int projectId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
-            return CreateProfileIntegration(null, projectId, fields);
+            return CreateProfileIntegration(null, projectId, fields, oldIntegration);
         }
 
         protected Integration CreateProfileIntegration(int? profileId, int projectId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
-            oldIntegration.Fields.ToList().ForEach(x => OrganizationContext.Remove(x));
-            OrganizationContext.Remove(oldIntegration);
+            if (oldIntegration != null)
+            {
+                oldIntegration.Fields.ToList().ForEach(x => OrganizationContext.Remove(x));
+                OrganizationContext.Remove(oldIntegration);
+            }
+
+            if(profileId != null)
+            {
+                var externalId = fields.GetValueOrDefault(Constants.USER_ACCOUNT_ID);
+                if (!string.IsNullOrEmpty(externalId))
+                {
+                    var eId = OrganizationContext.ProfileExternalIds.FirstOrDefault(x => x.ProfileId == profileId && x.ProjectId == projectId && x.IntegrationType == Type);
+                    if (eId != null)
+                        OrganizationContext.Remove(eId);
+
+                    OrganizationContext.Add(new ProfileExternalId
+                    {
+                        ProfileId = profileId.Value,
+                        ProjectId = projectId,
+                        IntegrationType = Type,
+                        ExternalId = externalId
+                    });
+                }
+            }
+
             return OrganizationContext.Integrations.Add(new Integration
             {
                 ProfileId = profileId,

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Firdaws.Core;
 using Firdaws.DAL;
+using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -53,11 +54,11 @@ namespace Tayra.Services
 
         public Profile GetByExternalId(string externalId, IntegrationType integrationType)
         {
-            var ie = CatalogDb.IdentityExternalIds.FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType);
+            var pe = DbContext.ProfileExternalIds.Include(x => x.Profile).FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType);
 
-            ie.EnsureNotNull(externalId, integrationType);
+            pe.EnsureNotNull(externalId, integrationType);
 
-            return DbContext.Profiles.FirstOrDefault(x => x.IdentityId == ie.IdentityId);
+            return pe.Profile;
         }
 
         public bool IsUsernameUnique(string username)

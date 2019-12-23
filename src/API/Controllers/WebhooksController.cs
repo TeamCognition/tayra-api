@@ -26,7 +26,7 @@ namespace Tayra.API.Controllers
         }
 
         #endregion
-
+        
         #region Properties
 
         private OrganizationDbContext DbContext { get; }

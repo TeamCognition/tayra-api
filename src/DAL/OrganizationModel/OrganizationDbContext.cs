@@ -94,6 +94,7 @@ namespace Tayra.Models.Organizations
         public DbSet<LoginLog> LoginLogs { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Profile> Profiles { get; set; }
+        public DbSet<ProfileExternalId> ProfileExternalIds { get; set; }
         public DbSet<ProfileInventoryItem> ProfileInventoryItems { get; set; }
         public DbSet<ProfileLog> ProfileLogs { get; set; }
         public DbSet<ProfileOneUp> ProfileOneUps { get; set; }
@@ -180,6 +181,12 @@ namespace Tayra.Models.Organizations
                 entity.HasIndex(x => new { x.CompetitorId, x.TeamId });
             });
 
+            modelBuilder.Entity<Integration>(entity =>
+            {
+                entity.HasIndex(x => new { x.ProfileId, x.ProjectId });
+            });
+
+
             modelBuilder.Entity<Organization>(entity =>
             {
                 entity.HasKey(x => x.Id);
@@ -188,10 +195,11 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<Profile>().HasIndex(x => x.Nickname).IsUnique();
 
-            modelBuilder.Entity<Integration>(entity =>
+            modelBuilder.Entity<ProfileExternalId>(entity =>
             {
-                entity.HasIndex(x => new { x.ProfileId, x.ProjectId });
+                entity.HasKey(x => new { x.ProfileId, x.ProjectId, x.IntegrationType });
             });
+
             modelBuilder.Entity<ProfileInventoryItem>(entity =>
             {
                 entity.HasIndex(x => new { x.ItemId, x.ProfileId, x.IsActive }); //?

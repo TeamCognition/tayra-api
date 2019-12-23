@@ -2,14 +2,18 @@
 using System.ComponentModel.DataAnnotations;
 using Firdaws.DAL;
 using Tayra.Common;
+using Tayra.Models.Organizations;
 
-namespace Tayra.Models.Catalog
+namespace Tayra.Models.Organizations
 {
-    public class IdentityExternalId : ITimeStampedEntity
+    public class ProfileExternalId : ITimeStampedEntity
     {
         //Composite Key
-        public int IdentityId { get; set; }
-        public virtual Identity Identity { get; set; }
+        public int ProfileId { get; set; }
+        public virtual Profile Profile { get; set; }
+
+        public int ProjectId { get; set; }
+        public virtual Project Project  { get; set; }
 
         public IntegrationType IntegrationType { get; set; }
 

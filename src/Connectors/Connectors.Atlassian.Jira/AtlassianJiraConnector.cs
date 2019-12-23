@@ -49,7 +49,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                 var accResData = AtlassianJiraService.GetAccessibleResources(tokenData.TokenType, tokenData.AccessToken)?.Data?.FirstOrDefault();
                 var loggedInUser = AtlassianJiraService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
 
-                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == null && x.ProjectId == projectId && x.Type == Type);
+                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == profileId && x.ProjectId == projectId && x.Type == Type);
                 var projectIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == null && x.ProjectId == projectId && x.Type == Type);
                 if (projectIntegration == null && ProfileRoles.Member == profileRole)
                 {
@@ -79,9 +79,9 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [ATConstants.AT_SITE_NAME] = accResData.Name
                     };
 
-                    var newProjectIntegration = CreateProjectIntegration(projectId, projectFields, projectIntegration);
+                    projectIntegration = CreateProjectIntegration(projectId, projectFields, projectIntegration);
                     OrganizationContext.SaveChanges();
-                    return newProjectIntegration;
+                    return projectIntegration;
                 }
             }
             return null;

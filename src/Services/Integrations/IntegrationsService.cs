@@ -26,33 +26,19 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        //we don't need this?
-        public void SetProfileIntegration(int profileId, IntegrationProfileConfigDTO dto)
+        /// <summary>
+        /// USE ONLY IF YOU NEED. VERY SLOW. USE ProfilesService.GetByExternalId instead
+        /// </summary>
+        /// <param name="externalId"></param>
+        /// <returns></returns>
+        public int GetProfileIdByExternalId(string externalId)
         {
-            var integration = ProfileIntegrationsScope(profileId, dto.ProjectId)
-                                .Include(x => x.Fields)
-                                .LastOrDefault(x => x.Type == dto.Type);
-
-            if (integration == null)
-            {
-                integration = new Integration
-                {
-                    ProfileId = profileId,
-                    ProjectId = dto.ProjectId,
-                    Type = dto.Type,
-                    Fields = new List<IntegrationField>()
-                };
-                DbContext.Add(integration);
-            }
-
-            integration.Fields.ToList().ForEach(x => DbContext.Remove(x));
-
-            integration.Fields.Add(new IntegrationField { Key = IntegrationConstants.ProfileExternalId, Value = dto.ExternalId });
+            return DbContext.IntegrationFields.Where(x => x.Value == externalId).Select(x => x.Integration.ProjectId).FirstOrDefault();
         }
 
         public void DeleteProfileIntegration(int profileId, int projectId, IntegrationType integrationType)
         {
-            var integration = ProfileIntegrationsScope(profileId, profileId)
+            var integration = ProfileIntegrationsScope(profileId, projectId)
                                 .Include(x => x.Fields)
                                 .LastOrDefault(x => x.ProfileId == profileId && x.ProjectId == projectId && x.Type == integrationType);
 

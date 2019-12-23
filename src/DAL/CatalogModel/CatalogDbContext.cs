@@ -31,7 +31,6 @@ namespace Tayra.Models.Catalog
 
         public DbSet<Identity> Identities { get; set; }
         public DbSet<IdentityEmail> IdentityEmails { get; set; }
-        public DbSet<IdentityExternalId> IdentityExternalIds { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<TenantIdentity> TenantIdentities { get; set; }
 
@@ -60,12 +59,6 @@ namespace Tayra.Models.Catalog
                 entity.HasIndex(x => new { x.Email, x.DeletedAt }).IsUnique();
                 entity.HasIndex(x => new { x.Email, x.IsPrimary }).IsUnique();
                 entity.HasIndex(x => new { x.IdentityId, x.IsPrimary }).IsUnique();
-            });
-
-            modelBuilder.Entity<IdentityExternalId>(entity =>
-            {
-                entity.HasKey(x => new { x.IdentityId, x.IntegrationType });
-                entity.HasIndex(x => x.ExternalId).IsUnique();
             });
 
             modelBuilder.Entity<Tenant>(entity =>
