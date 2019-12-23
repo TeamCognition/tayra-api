@@ -1,4 +1,5 @@
-﻿using Tayra.Models.Organizations;
+﻿using Tayra.Common;
+using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.Common
 {
@@ -8,7 +9,7 @@ namespace Tayra.Connectors.Common
 
         string GetAuthDoneUrl(bool isSuccessful);
 
-        Integration Authenticate(int projectId, string userState);
+        Integration Authenticate(int profileId, ProfileRoles profileRole, int projectId, string userState);
 
         Integration RefreshToken(int projectId);
     }

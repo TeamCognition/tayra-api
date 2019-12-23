@@ -25,7 +25,7 @@ namespace Tayra.API.Controllers
         #region Public Methods
 
         [HttpGet, Route("")]
-        public ActionResult<List<IntegrationViewDTO>> Get()
+        public ActionResult<List<IntegrationProjectViewDTO>> Get()
         {
             return IntegrationsService.GetProjectIntegrations(CurrentProject.Id);
         }
@@ -34,7 +34,7 @@ namespace Tayra.API.Controllers
         public IActionResult Connect(IntegrationType type)
         {
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-            return Redirect(connector.GetAuthUrl($"174{CurrentProject.Id}"));
+            return Redirect(connector.GetAuthUrl(Cipher.Encrypt($"{CurrentUser.ProfileId}|{CurrentUser.Role}|{CurrentProject.Id}")));
         }
 
         [HttpGet, Route("settings/atj")]

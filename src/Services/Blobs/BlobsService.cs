@@ -39,7 +39,7 @@ namespace Tayra.Services
                 Purpose = dto.BlobPurpose
             };
 
-            CloudBlockBlob blockBlob = _imageContainer.GetBlockBlobReference(blob.Id.ToString());
+            CloudBlockBlob blockBlob = _imageContainer.GetBlockBlobReference($"{blob.Id.ToString()}.{blob.Extension}");
             blockBlob.Properties.ContentType = dto.File.ContentType;
             blockBlob.Properties.ContentDisposition = $"attachment;filename=\"{dto.BlobPurpose}-{blob.Id}\"";
 

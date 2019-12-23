@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Tayra.Common;
@@ -20,13 +21,67 @@ namespace Tayra.Services
 
         #endregion
 
+        IQueryable<Integration> ProfileIntegrationsScope (int profileId, int projectId) => DbContext.Integrations.Where(x => x.ProfileId == profileId && x.ProjectId == projectId);
+        IQueryable<Integration> ProjectIntegrationsScope (int projectId) => DbContext.Integrations.Where(x => x.ProfileId == null && x.ProjectId == projectId);
+
         #region Public Methods
 
-        public List<IntegrationViewDTO> GetProjectIntegrations(int projectId)
+        //we don't need this?
+        public void SetProfileIntegration(int profileId, IntegrationProfileConfigDTO dto)
         {
+            var integration = ProfileIntegrationsScope(profileId, dto.ProjectId)
+                                .Include(x => x.Fields)
+                                .LastOrDefault(x => x.Type == dto.Type);
+
+            if (integration == null)
+            {
+                integration = new Integration
+                {
+                    ProfileId = profileId,
+                    ProjectId = dto.ProjectId,
+                    Type = dto.Type,
+                    Fields = new List<IntegrationField>()
+                };
+                DbContext.Add(integration);
+            }
+
+            integration.Fields.ToList().ForEach(x => DbContext.Remove(x));
+
+            integration.Fields.Add(new IntegrationField { Key = IntegrationConstants.ProfileExternalId, Value = dto.ExternalId });
+        }
+
+        public void DeleteProfileIntegration(int profileId, int projectId, IntegrationType integrationType)
+        {
+            var integration = ProfileIntegrationsScope(profileId, profileId)
+                                .Include(x => x.Fields)
+                                .LastOrDefault(x => x.ProfileId == profileId && x.ProjectId == projectId && x.Type == integrationType);
+
+            integration.EnsureNotNull(projectId, integrationType);
+
+            integration.Fields.ToList().ForEach(x => DbContext.Remove(x));
+            DbContext.Remove(integration);
+        }
+
+        public List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(int profileId)
+        {
+            //could this be taken out of access token?
+            var profileProjectIds = DbContext.ProjectMembers.Where(x => x.ProfileId == profileId).Select(x => x.ProjectId).ToList();
+
             return DbContext.Integrations
-                .Where(x => x.ProjectId == projectId)
-                .Select(x => new IntegrationViewDTO
+                .Where(x => (x.ProfileId == profileId || x.ProfileId == null) && profileProjectIds.Contains(x.ProjectId))
+                .Select(x => new IntegrationProfileConfigDTO
+                {
+                    ProjectId = x.ProjectId,
+                    Type = x.Type,
+                    ExternalId = x.Fields.Where(e => e.Key == IntegrationConstants.ProfileExternalId).Select(e => e.Value).FirstOrDefault()
+                })
+                .ToList();
+        }
+
+        public List<IntegrationProjectViewDTO> GetProjectIntegrations(int projectId)
+        {
+            return ProjectIntegrationsScope(projectId)
+                .Select(x => new IntegrationProjectViewDTO
                 {
                     Type = x.Type,
                     Created = x.Created,
@@ -40,10 +95,9 @@ namespace Tayra.Services
 
         public JiraSettingsViewDTO GetJiraSettingsViewDTO(int projectId)
         {
-            var integration = DbContext
-                                .Integrations
+            var integration = ProjectIntegrationsScope(projectId)
                                 .Include(x => x.Fields)
-                                .LastOrDefault(x => x.ProjectId == projectId && x.Type == IntegrationType.ATJ);
+                                .LastOrDefault(x => x.Type == IntegrationType.ATJ);
 
             if (integration == null)
             {
@@ -76,10 +130,9 @@ namespace Tayra.Services
 
         public void UpdateJiraSettings(int projectId, JiraSettingsUpdateDTO dto)
         {
-            var integration = DbContext
-                                .Integrations
+            var integration = ProjectIntegrationsScope(projectId)
                                 .Include(x => x.Fields)
-                                .LastOrDefault(x => x.ProjectId == projectId && x.Type == IntegrationType.ATJ);
+                                .LastOrDefault(x => x.Type == IntegrationType.ATJ);
 
             if (integration == null)
             {

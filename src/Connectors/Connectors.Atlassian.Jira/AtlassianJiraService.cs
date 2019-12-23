@@ -27,6 +27,7 @@ namespace Tayra.Connectors.Atlassian.Jira
         private const string GET_ISSUE_CHANGELOGS = API + "issue/{0}/changelog";
         private const string GET_ISSUE_TYPES = API + "issuetype";
         private const string GET_USERS = API + "users/search";
+        private const string GET_LOGGEDIN_USER = API + "myself";
 
         #endregion
 
@@ -148,6 +149,17 @@ namespace Tayra.Connectors.Atlassian.Jira
                 .UseSerializer(() => new JsonNetSerializer());
 
             return GetPaginatedResponse<JiraIssueChangelog>(client, request);
+        }
+
+        public static IRestResponse<JiraUser> GetLoggedInUser(string cloudId, string tokenType, string accessToken)
+        {
+            var request = new RestRequest(GET_LOGGEDIN_USER, Method.GET);
+            request.AddHeader("Authorization", $"{tokenType} {accessToken}");
+
+            var client = new RestClient(string.Format(BASE_URL, cloudId))
+                .UseSerializer(() => new JsonNetSerializer());
+
+            return client.Execute<JiraUser>(request);
         }
 
         public static IRestResponse<List<JiraUser>> GetUsers(string cloudId, string tokenType, string accessToken)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Firdaws.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,11 +17,11 @@ namespace Tayra.Connectors.Atlassian.Jira
         private const string AUDIENCE = "api.atlassian.com";
         private const string SCOPE = "read%3Ajira-user%20read%3Ajira-work%20offline_access";
 
-        public AtlassianJiraConnector(ILogger logger, OrganizationDbContext dataContext) : base(logger, null, dataContext)
+        public AtlassianJiraConnector(ILogger logger, OrganizationDbContext dataContext) : base(logger, null, null, dataContext)
         {
         }
 
-        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext) : base(logger, httpContext, dataContext)
+        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext) : base(logger, httpContext, tenantProvider, dataContext)
         {
         }
 
@@ -33,7 +34,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return $"{AUTH_URL}?audience={AUDIENCE}&client_id={AtlassianJiraService.APP_ID}&state={userState}&scope={SCOPE}&redirect_uri={GetCallbackUrl(userState)}&response_type=code&prompt=consent";
         }
 
-        public override Integration Authenticate(int projectId, string userState)
+        public override Integration Authenticate(int profileId, ProfileRoles profileRole, int projectId, string userState)
         {
             if (HttpContext?.Request != null)
             {
@@ -46,9 +47,28 @@ namespace Tayra.Connectors.Atlassian.Jira
 
                 var tokenData = AtlassianJiraService.GetAccessToken(authorizationCode, GetCallbackUrl(userState))?.Data;
                 var accResData = AtlassianJiraService.GetAccessibleResources(tokenData.TokenType, tokenData.AccessToken)?.Data?.FirstOrDefault();
-                if (tokenData != null && accResData != null)
+                var loggedInUser = AtlassianJiraService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
+
+                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == null && x.ProjectId == projectId && x.Type == Type);
+                var projectIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == null && x.ProjectId == projectId && x.Type == Type);
+                if (projectIntegration == null && ProfileRoles.Member == profileRole)
                 {
-                    var fields = new Dictionary<string, string>
+                    throw new FirdawsSecurityException($"profileId: {profileId} tried to integrate {Type} before segment integration");
+                }
+
+                if (loggedInUser != null)
+                {
+                    var profileFields = new Dictionary<string, string>
+                    {
+                        [Constants.USER_ACCOUNT_ID] = loggedInUser.AccountId
+                    };
+
+                    CreateProfileIntegration(profileId, projectId, profileFields, profileIntegration);
+                }
+
+                if (profileRole != ProfileRoles.Member && tokenData != null && accResData != null)
+                {
+                    var projectFields = new Dictionary<string, string>
                     {
                         [Constants.ACCESS_TOKEN] = tokenData.AccessToken,
                         [Constants.ACCESS_TOKEN_TYPE] = tokenData.TokenType,
@@ -59,10 +79,11 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [ATConstants.AT_SITE_NAME] = accResData.Name
                     };
 
-                    return CreateIntegration(projectId, fields);
+                    var newProjectIntegration = CreateProjectIntegration(projectId, projectFields, projectIntegration);
+                    OrganizationContext.SaveChanges();
+                    return newProjectIntegration;
                 }
             }
-
             return null;
         }
 
@@ -249,8 +270,6 @@ namespace Tayra.Connectors.Atlassian.Jira
         {
             return ReadField(integrationId, ATConstants.AT_CLOUD_ID, "Unknown cloud id for integration " + integrationId);
         }
-
-
 
         #endregion
 

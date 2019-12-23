@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Firdaws.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Tayra.Models.Organizations;

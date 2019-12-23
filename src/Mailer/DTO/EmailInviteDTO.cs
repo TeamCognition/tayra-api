@@ -7,9 +7,10 @@
 
         public EmailInviteDTO(string host, string inviteCode)
         {
+            var protocol = host.StartsWith("localhost:", System.StringComparison.Ordinal) ? "http" : "https";
             TemplateData = new
             {
-                InviteLink = $"https://{host}/join?invitationCode={inviteCode}"
+                InviteLink = $"{protocol}://{host}/join?invitationCode={inviteCode}"
             };
         }
     }

@@ -48,7 +48,7 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPost("join")]
+        [AllowAnonymous, HttpPost("join")]
         public IActionResult Sendinvitation([FromBody] IdentityJoinDTO dto)
         {
             IdentitiesService.InvitationJoinWithSaveChanges(dto);

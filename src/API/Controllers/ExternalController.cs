@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Tayra.API.Helpers;
 using Tayra.Common;
@@ -41,8 +39,12 @@ namespace Tayra.API.Controllers
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try
             {
-                var projectId = Convert.ToInt32(state.Substring(3));
-                connector.Authenticate(projectId, state); //state needs to be more safe, safe in db
+                var stateData = Cipher.Decrypt(state).Split('|');
+
+                var profileId = int.Parse(stateData[0]);
+                var profileRole = Enum.Parse<ProfileRoles>(stateData[1]);
+                var projectId = int.Parse(stateData[2]);
+                connector.Authenticate(profileId, profileRole, projectId, state);
             }
             catch
             {

@@ -126,6 +126,12 @@ namespace Tayra.Services
                 Identity = identity
             });
 
+            CatalogDb.Add(new TenantIdentity
+            {
+                Identity = identity,
+                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(DbContext.OrganizationId)
+            });
+
             invitation.Status = InvitationStatus.Accepted;
             //get identity Id
             CatalogDb.SaveChanges();

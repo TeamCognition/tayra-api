@@ -81,11 +81,11 @@ namespace Tayra.Models.Organizations
         public DbSet<Competition> Competitions { get; set; }
         public DbSet<CompetitionLog> CompetitionLogs { get; set; }
         //public DbSet<Date> Dates { get; set; }
+        public DbSet<Integration> Integrations { get; set; }
+        public DbSet<IntegrationField> IntegrationFields { get; set; }
         public DbSet<CompetitionReward> CompetitionRewards { get; set; }
         public DbSet<Competitor> Competitors { get; set; }
         public DbSet<CompetitorScore> CompetitorScores { get; set; }
-        public DbSet<Integration> Integrations { get; set; }
-        public DbSet<IntegrationField> IntegrationFields { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemDisenchant> ItemDisenchants { get; set; }
@@ -188,6 +188,10 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<Profile>().HasIndex(x => x.Nickname).IsUnique();
 
+            modelBuilder.Entity<Integration>(entity =>
+            {
+                entity.HasIndex(x => new { x.ProfileId, x.ProjectId });
+            });
             modelBuilder.Entity<ProfileInventoryItem>(entity =>
             {
                 entity.HasIndex(x => new { x.ItemId, x.ProfileId, x.IsActive }); //?
@@ -273,7 +277,7 @@ namespace Tayra.Models.Organizations
             foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
             {
                 var id = entityType.GetProperties().FirstOrDefault(x => x.IsPrimaryKey() && x.Name == "Id");
-                if(id != null) id.ValueGenerated = ValueGenerated.OnAdd;
+                if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;
 
                 var orgId = entityType.GetOrAddProperty(OrganizationIdFK, typeof(int));
                 entityType.GetOrAddForeignKey(orgId, orgPKey, orgEntity);
@@ -283,7 +287,7 @@ namespace Tayra.Models.Organizations
                 var method = SetGlobalQueryMethod.MakeGenericMethod(clrType);
                 method.Invoke(this, new object[] { modelBuilder });
             }
-            
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -322,7 +326,7 @@ namespace Tayra.Models.Organizations
         {
             // Ask shard map to broker a validated connection for the given key
             SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
-            
+
             //// Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
             //SqlCommand cmd = sqlConn.CreateCommand();
             //cmd.CommandText = @"exec sp_set_session_context @key=N'OrganizationId', @value=@shardingKey";

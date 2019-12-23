@@ -40,9 +40,12 @@ namespace Tayra.Connectors.App.Controllers
             try
             {
                 var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-                var account = connector.Authenticate(1, "test");
+                var account = connector.Authenticate(1, ProfileRoles.Admin, 1, "test");
 
-                TempData["Account"] = JsonConvert.SerializeObject(account);
+                TempData["Account"] = JsonConvert.SerializeObject(account, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
                 return RedirectToAction(type.ToString(), "Results");
             }
             catch (ApplicationException e)

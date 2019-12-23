@@ -13,10 +13,11 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext)
+        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext)
         {
             Logger = logger;
             HttpContext = httpContext?.HttpContext;
+            Tenant = tenantProvider.GetTenant();
             OrganizationContext = dataContext;
         }
 
@@ -29,7 +30,7 @@ namespace Tayra.Connectors.Common
         protected ILogger Logger { get; }
 
         protected HttpContext HttpContext { get; }
-
+        protected TenantDTO Tenant { get; }
         protected OrganizationDbContext OrganizationContext { get; }
 
         #endregion
@@ -62,17 +63,22 @@ namespace Tayra.Connectors.Common
             //}
         }
 
-        protected Integration CreateIntegration(int projectId, Dictionary<string, string> fields)
+        protected Integration CreateProjectIntegration(int projectId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
-            var account = new Integration
+            return CreateProfileIntegration(null, projectId, fields);
+        }
+
+        protected Integration CreateProfileIntegration(int? profileId, int projectId, Dictionary<string, string> fields, Integration oldIntegration = null)
+        {
+            oldIntegration.Fields.ToList().ForEach(x => OrganizationContext.Remove(x));
+            OrganizationContext.Remove(oldIntegration);
+            return OrganizationContext.Integrations.Add(new Integration
             {
+                ProfileId = profileId,
                 ProjectId = projectId,
                 Type = Type,
                 Fields = fields.Select(x => new IntegrationField { Key = x.Key, Value = x.Value }).ToList()
-            };
-            OrganizationContext.Integrations.Add(account);
-            OrganizationContext.SaveChanges();
-            return account;
+            }).Entity;
         }
 
         protected string ReadField(int integrationId, string key, string errorMessage = null)

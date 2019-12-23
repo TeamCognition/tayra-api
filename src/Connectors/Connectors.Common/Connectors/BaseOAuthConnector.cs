@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.Common
@@ -9,7 +10,7 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseOAuthConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext) : base(logger, httpContext, dataContext)
+        protected BaseOAuthConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext) : base(logger, httpContext, tenantProvider, dataContext)
         {
         }
 
@@ -18,24 +19,25 @@ namespace Tayra.Connectors.Common
         #region Public Methods
 
         public abstract string GetAuthUrl(string userState);
-        
-        public abstract Integration Authenticate(int projectId, string userState);
 
-        public virtual Integration RefreshToken(int integrationId)
+        public abstract Integration Authenticate(int profileId, ProfileRoles profileRole, int projectId, string userState);
+
+        public virtual  Integration RefreshToken(int integrationId)
         {
             throw new NotImplementedException("Not supported by this network");
         }
 
         public virtual string GetAuthDoneUrl(bool isSuccessful)
         {
-            return $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/integrations/{Type.ToString().ToLower()}/done?successful={isSuccessful}";
+            string protocol = Tenant.Host.StartsWith("localhost:", StringComparison.InvariantCulture) ? "http" : "https"; 
+            return $"{protocol}://{Tenant.Host}/integrations/{Type.ToString().ToLower()}/done?successful={isSuccessful}";
         }
 
         #endregion
 
         #region Protected Methods
 
-        protected virtual string GetCallbackUrl(string userState)
+        protected virtual string GetCallbackUrl(string userState)//userState is not used, but everything works
         {
             return $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/external/callback/{Type.ToString().ToLower()}";
         }

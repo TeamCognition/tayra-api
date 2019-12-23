@@ -36,6 +36,8 @@ namespace Tayra.Connectors.App
 
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
+            services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
+            services.AddScoped<ITenantProvider, ShardTenantProvider>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

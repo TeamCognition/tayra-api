@@ -9,6 +9,7 @@ namespace Tayra.Models.Organizations
         [Key]
         public int Id { get; set; }
 
+        public Integration Integration { get; set; }
         public int IntegrationId { get; set; }
 
         [MaxLength(50)]
