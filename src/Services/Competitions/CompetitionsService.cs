@@ -39,7 +39,7 @@ namespace Tayra.Services
                             EndedAt = c.EndedAt,
                             Winner = new CompetitionViewGridDTO.CompetitionWinner
                             {
-                                Nickname = winner.DisplayName ?? winner.Profile.Nickname ?? winner.Team.Name,
+                                Username = winner.DisplayName ?? winner.Profile.Username ?? winner.Team.Name,
                                 Avatar = winner.Profile.Avatar ?? winner.Team.Avatar,
                                 Score = winner.ScoreValue
                             }
@@ -64,7 +64,7 @@ namespace Tayra.Services
                         Name = c.Competition.Name,
                         Status = c.Competition.Status,
                         TeamName = c.Team.Name,
-                        CompetitorName = c.Competition.Name ?? c.Profile.Nickname ?? c.Team.Name
+                        CompetitorName = c.Competition.Name ?? c.Profile.Username ?? c.Team.Name
                     }).ToList();
         }
 
@@ -83,7 +83,7 @@ namespace Tayra.Services
                         select new CompetitionGridDTO
                         {
                             Avatar = c.Profile.Avatar,
-                            Name = c.DisplayName ?? c.Profile.Nickname,
+                            Name = c.DisplayName ?? c.Profile.Username,
                             Subtitle = tag.Item.Name,
                             Points = Math.Round(c.ScoreValue, 2)
                         };

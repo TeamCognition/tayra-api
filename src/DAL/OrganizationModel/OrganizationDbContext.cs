@@ -193,7 +193,7 @@ namespace Tayra.Models.Organizations
                 entity.Property(x => x.Id).ValueGeneratedNever();
             });
 
-            modelBuilder.Entity<Profile>().HasIndex(x => x.Nickname).IsUnique();
+            modelBuilder.Entity<Profile>().HasIndex(x => x.Username).IsUnique();
 
             modelBuilder.Entity<ProfileExternalId>(entity =>
             {

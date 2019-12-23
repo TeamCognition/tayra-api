@@ -33,10 +33,10 @@ namespace Tayra.API.Controllers
             return Ok(ProfilesService.GetProfileViewDTO(x => x.Id == CurrentUser.ProfileId));
         }
 
-        [HttpGet("{nickname}")]
-        public ActionResult<ProfileViewDTO> GetCurrentUser([FromRoute] string nickname)
+        [HttpGet("{username}")]
+        public ActionResult<ProfileViewDTO> GetCurrentUser([FromRoute] string username)
         {
-            return Ok(ProfilesService.GetProfileViewDTO(x => x.Nickname == nickname));
+            return Ok(ProfilesService.GetProfileViewDTO(x => x.Username == username));
         }
 
         [AllowAnonymous, HttpPost("search")]
@@ -73,7 +73,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "DESC";
             }
 
-            //gridParams.ProfileNicknameQuery ??= CurrentUser.Nickname
+            //gridParams.ProfileUsernameQuery ??= CurrentUser.Username
             gridParams.ProfileId = gridParams.ProfileId ?? CurrentUser.ProfileId;
             return ProfilesService.GetCompletedChallengesGridDTO(gridParams);
         }
@@ -84,7 +84,7 @@ namespace Tayra.API.Controllers
            return Ok(ProfilesService.GetProfileRadarChartDTO(profileId));
         }
 
-        [HttpGet("isUsernameUnique")]
+        [AllowAnonymous, HttpGet("isUsernameUnique")]
         public ActionResult<bool> IsUsernameUnique([FromQuery] string username)
         {
             return ProfilesService.IsUsernameUnique(username);

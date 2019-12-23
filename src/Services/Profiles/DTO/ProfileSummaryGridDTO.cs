@@ -4,7 +4,7 @@
     {
         public int ProfileId { get; set; }
         public string Name { get; set; }
-        public string Nickname { get; set; }
+        public string Username { get; set; }
         public string Avatar { get; set; }
         public string Title { get; set; }
         public Team[] Teams { get; set; }

@@ -28,7 +28,7 @@ namespace Tayra.Services
         public class Completion
         {
             public int ProfileId { get; set; }
-            public string ProfileNickname { get; set; }
+            public string ProfileUsername { get; set; }
             public string ProfileAvatar { get; set; }
             public DateTime CompletedAt { get; set; }
         }

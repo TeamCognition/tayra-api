@@ -15,7 +15,7 @@ namespace Tayra.Services
 
         public class CompetitionWinner
         {
-            public string Nickname { get; set; }
+            public string Username { get; set; }
             public string Avatar { get; set; }
             public double? Score { get; set; }
         }

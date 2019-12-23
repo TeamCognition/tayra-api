@@ -4,7 +4,7 @@ namespace Tayra.Services
 {
     public class ProfileCreateDTO
     {
-        public string Nickname { get; set; }
+        public string Username { get; set; }
 
         public string Avatar { get; set; }
 

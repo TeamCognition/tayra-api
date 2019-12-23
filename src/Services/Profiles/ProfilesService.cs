@@ -37,10 +37,10 @@ namespace Tayra.Services
                 .FirstOrDefault(x => x.IdentityId == identityId);
         }
 
-        public Profile GetByNickname(string nickname)
+        public Profile GetByUsername(string username)
         {
             return DbContext.Profiles
-                .FirstOrDefault(x => x.Nickname.ToLower() == nickname.ToLower());
+                .FirstOrDefault(x => x.Username.ToLower() == username.ToLower());
         }
 
         public Profile GetByEmail(string email)
@@ -68,18 +68,18 @@ namespace Tayra.Services
 
         public static bool IsUsernameUnique(OrganizationDbContext dbContext, string username)
         {
-            return !dbContext.Profiles.Any(x => x.Nickname == username);
+            return !dbContext.Profiles.Any(x => x.Username == username);
         }
 
         public int OneUpProfile(int profileId, ProfileOneUpDTO dto)
         {
             int? lastUppedAt = (from u in DbContext.ProfileOneUps
                                 where u.CreatedBy == profileId
-                                where u.UppedProfileId == dto.ProfileId                                
+                                where u.UppedProfileId == dto.ProfileId
                                 orderby u.DateId descending
                                 select u.DateId
                                 ).FirstOrDefault();
-                              
+
 
             //if(!ProfileRules.CanUpProfile(profileId, dto.ProfileId, lastUppedAt))
             //{
@@ -92,16 +92,16 @@ namespace Tayra.Services
                 DateId = DateHelper2.ToDateId(DateTime.UtcNow)
             });
 
-            var oneUpGiverNickname = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Nickname;
-            var oneUpReceiverNickname = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId).Nickname;
+            var oneUpGiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
+            var oneUpReceiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId).Username;
             LogsService.LogEvent(new LogCreateDTO
             {
                 Event = LogEvents.ProfileOneUpGave,
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", DateTime.UtcNow.ToString() },
-                    { "profileNickname", oneUpGiverNickname },
-                    { "receiverNickname", oneUpReceiverNickname }
+                    { "profileUsername", oneUpGiverUsername },
+                    { "receiverUsername", oneUpReceiverUsername }
                 },
                 ProfileId = profileId,
             });
@@ -112,8 +112,8 @@ namespace Tayra.Services
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", DateTime.UtcNow.ToString() },
-                    { "profileNickname", oneUpReceiverNickname },
-                    { "giverNickname", oneUpGiverNickname }
+                    { "profileUsername", oneUpReceiverUsername },
+                    { "giverUsername", oneUpGiverUsername }
                 },
                 ProfileId = dto.ProfileId,
             });
@@ -125,25 +125,25 @@ namespace Tayra.Services
         public GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams)
         {
             IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Role == ProfileRoles.Member && x.Id != profileId);
-            Expression<Func<Profile, bool>> byNickname = x => x.Nickname.Contains(gridParams.NicknameQuery.RemoveAllWhitespaces());
+            Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
-            
-            if(!string.IsNullOrEmpty(gridParams.ProjectKeyQuery))
+
+            if (!string.IsNullOrEmpty(gridParams.ProjectKeyQuery))
             {
                 var project = DbContext.Projects.FirstOrDefault(x => x.Key == gridParams.ProjectKeyQuery);
                 var profileIds = DbContext.ProjectMembers.Where(x => x.ProjectId == project.Id).Select(x => x.ProfileId).ToList();
                 scope = scope.Where(x => profileIds.Contains(x.Id));
             }
 
-            if (!string.IsNullOrEmpty(gridParams.NicknameQuery) && !string.IsNullOrEmpty(gridParams.NameQuery))
-                scope = scope.Chain(ChainType.OR, byNickname, byName);
+            if (!string.IsNullOrEmpty(gridParams.UsernameQuery) && !string.IsNullOrEmpty(gridParams.NameQuery))
+                scope = scope.Chain(ChainType.OR, byUsername, byName);
             else
             {
-                if(!string.IsNullOrEmpty(gridParams.NicknameQuery))
-                    scope = scope.Where(byNickname);
+                if (!string.IsNullOrEmpty(gridParams.UsernameQuery))
+                    scope = scope.Where(byUsername);
 
                 if (!string.IsNullOrEmpty(gridParams.NameQuery))
-                    scope = scope.Where(byName);   
+                    scope = scope.Where(byName);
             }
 
             var query = from p in scope
@@ -153,7 +153,7 @@ namespace Tayra.Services
                         {
                             ProfileId = p.Id,
                             Name = p.FirstName + " " + p.LastName,
-                            Nickname = p.Nickname,
+                            Username = p.Username,
                             TokensTotal = (float)Math.Round(pdr.CompanyTokensTotal, 2),
                             Created = p.Created.ToShortDateString()
                         };
@@ -166,25 +166,25 @@ namespace Tayra.Services
         public GridData<ProfileSummaryGridDTO> GetGridDataWithSummary(int profileId, ProfileSummaryGridParams gridParams)
         {
             IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Role == ProfileRoles.Member && x.Id != profileId);
-            Expression<Func<Profile, bool>> byNickname = x => x.Nickname.Contains(gridParams.NicknameQuery.RemoveAllWhitespaces());
+            Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
-            
-            if(!string.IsNullOrEmpty(gridParams.ProjectKeyQuery))
+
+            if (!string.IsNullOrEmpty(gridParams.ProjectKeyQuery))
             {
                 var project = DbContext.Projects.FirstOrDefault(x => x.Key == gridParams.ProjectKeyQuery);
                 var profileIds = DbContext.ProjectMembers.Where(x => x.ProjectId == project.Id).Select(x => x.ProfileId).ToList();
                 scope = scope.Where(x => profileIds.Contains(x.Id));
             }
 
-            if (!string.IsNullOrEmpty(gridParams.NicknameQuery) && !string.IsNullOrEmpty(gridParams.NameQuery))
-                scope = scope.Chain(ChainType.OR, byNickname, byName);
+            if (!string.IsNullOrEmpty(gridParams.UsernameQuery) && !string.IsNullOrEmpty(gridParams.NameQuery))
+                scope = scope.Chain(ChainType.OR, byUsername, byName);
             else
             {
-                if(!string.IsNullOrEmpty(gridParams.NicknameQuery))
-                    scope = scope.Where(byNickname);
+                if (!string.IsNullOrEmpty(gridParams.UsernameQuery))
+                    scope = scope.Where(byUsername);
 
                 if (!string.IsNullOrEmpty(gridParams.NameQuery))
-                    scope = scope.Where(byName);   
+                    scope = scope.Where(byName);
             }
 
             var expTokenId = DbContext.Tokens.Where(x => x.Type == TokenType.Experience).Select(x => x.Id).First();
@@ -198,7 +198,7 @@ namespace Tayra.Services
                         {
                             ProfileId = p.Id,
                             Name = p.FirstName + " " + p.LastName,
-                            Nickname = p.Nickname,
+                            Username = p.Username,
                             Avatar = p.Avatar,
                             Title = title.Item.Name,
                             Teams = p.Teams.Select(x => new ProfileSummaryGridDTO.Team { Name = x.Team.Name, Key = x.Team.Key }).ToArray(),
@@ -249,19 +249,19 @@ namespace Tayra.Services
             var tm = DbContext.TeamMembers.FirstOrDefault(x => x.ProfileId == profileId);
 
             var trw = new List<TeamReportWeekly>();
-            if(tm != null)
+            if (tm != null)
             {
                 trw = DbContext.TeamReportsWeekly
                             .OrderByDescending(x => x.DateId)
                             .Where(x => x.DateId <= profileWeeklyDateId && x.TeamId == tm.TeamId)
                             .Take(4).ToList();
 
-            }               
+            }
 
-            if(!prw.Any()) //Average throws exception if count is 0
+            if (!prw.Any()) //Average throws exception if count is 0
                 prw = null;
 
-            if(!trw.Any()) //Average throws exception if count is 0
+            if (!trw.Any()) //Average throws exception if count is 0
                 trw = null;
 
             return new ProfileRadarChartDTO
@@ -271,7 +271,7 @@ namespace Tayra.Services
 
                 TasksCompletedAverage = Math.Round(prw?.Average(x => x.TasksCompletedChange) ?? 0, 2),
                 TasksCompletedTotal = prd?.TasksCompletedTotal,
-                
+
                 ComplexityAverage = Math.Round(prw?.Average(x => x.ComplexityChange) ?? 0, 2),
                 ComplexityTotal = prd?.ComplexityTotal,
 
@@ -294,7 +294,7 @@ namespace Tayra.Services
                                   ProfileId = p.Id,
                                   FirstName = p.FirstName,
                                   LastName = p.LastName,
-                                  Nickname = p.Nickname,
+                                  Username = p.Username,
                                   Role = p.Role,
                                   Avatar = p.Avatar,
                                   CompanyTokens = Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),

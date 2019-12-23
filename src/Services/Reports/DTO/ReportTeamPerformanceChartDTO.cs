@@ -11,7 +11,7 @@ namespace Tayra.Services
         {
             public int ProfileId { get; set; }
             public string FullName { get; set; }
-            public string Nickname { get; set; }
+            public string Username { get; set; }
             public string Avatar { get; set; }
             public double[] AverageScores { get; set; }
         }

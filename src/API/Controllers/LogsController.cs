@@ -31,9 +31,9 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "DESC";
             }
 
-            if(!gridParams.ProfileId.HasValue && !string.IsNullOrEmpty(gridParams.ProfileNickname))
+            if(!gridParams.ProfileId.HasValue && !string.IsNullOrEmpty(gridParams.ProfileUsername))
             {
-                var x = ProfilesService.GetByNickname(gridParams.ProfileNickname);
+                var x = ProfilesService.GetByUsername(gridParams.ProfileUsername);
                 gridParams.ProfileId = x.Id;
             }
 

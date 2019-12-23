@@ -113,7 +113,7 @@ namespace Tayra.Services
                 ProjectId = 1
             });
 
-            if(purchaseStatus == ShopPurchaseStatuses.Fulfilled)
+            if (purchaseStatus == ShopPurchaseStatuses.Fulfilled)
             {
                 DbContext.Add(new ProfileInventoryItem
                 {
@@ -125,14 +125,14 @@ namespace Tayra.Services
                 });
             }
 
-            var buyerNickname = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Nickname;
+            var buyerUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
             LogsService.LogEvent(new LogCreateDTO
             {
                 Event = LogEvents.ShopItemPurchased,
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", DateTime.UtcNow.ToString() },
-                    { "profileNickname", buyerNickname },
+                    { "profileUsername", buyerUsername },
                     { "itemPrice", shopItem.DiscountPrice?.ToString() ?? shopItem.Price.ToString() },
                     { "itemId", shopItem.ItemId.ToString() },
                     { "purchaseStatus", purchaseStatus.ToString() },

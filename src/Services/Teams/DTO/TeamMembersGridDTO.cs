@@ -5,7 +5,7 @@
         private double _heat;
         
         public string Name { get; set; }
-        public string Nickname { get; set; }
+        public string Username { get; set; }
         public double Speed { get; set; }
         public double Heat
         {

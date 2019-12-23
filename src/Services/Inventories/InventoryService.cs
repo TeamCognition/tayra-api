@@ -54,7 +54,7 @@ namespace Tayra.Services
 
         public GridData<InventoryItemGridDTO> GetInventoryItemViewGridDTO(InventoryItemGridParams gridParams)
         {
-            var profile = DbContext.Profiles.FirstOrDefault(x => x.Nickname == gridParams.ProfileNickname);
+            var profile = DbContext.Profiles.FirstOrDefault(x => x.Username == gridParams.ProfileUsername);
 
             var query = from i in DbContext.ProfileInventoryItems
                         where i.ProfileId == profile.Id
@@ -92,20 +92,20 @@ namespace Tayra.Services
                 throw new ApplicationException("We are unable to perform this action :)");
             }
 
-            if(itemToActivate.Item.Type == ItemTypes.TayraTitle)
+            if (itemToActivate.Item.Type == ItemTypes.TayraTitle)
             {
                 var currentActive = DbContext.ProfileInventoryItems.FirstOrDefault(x => x.ItemType == itemToActivate.Item.Type && x.ProfileId == profileId && x.IsActive);
-                if(currentActive != null)
+                if (currentActive != null)
                 {
                     currentActive.IsActive = false;
                 }
 
                 itemToActivate.IsActive = true;
             }
-            else if(itemToActivate.Item.Type == ItemTypes.TayraBadge)
+            else if (itemToActivate.Item.Type == ItemTypes.TayraBadge)
             {
                 var currentActiveCount = DbContext.ProfileInventoryItems.Where(x => x.ItemType == itemToActivate.Item.Type && x.ProfileId == profileId && x.IsActive).Count();
-                if(currentActiveCount >= 3)
+                if (currentActiveCount >= 3)
                 {
                     throw new ApplicationException("You already have 3 active badges");
                 }
@@ -129,7 +129,7 @@ namespace Tayra.Services
 
             invItem.EnsureNotNull(dto.InventoryItemId);
 
-            if(!InventoryRules.CanGiftInventoryItem(profileId, dto.ReceiverId, invItem.ProfileId, invItem.Item.IsGiftable))
+            if (!InventoryRules.CanGiftInventoryItem(profileId, dto.ReceiverId, invItem.ProfileId, invItem.Item.IsGiftable))
             {
                 throw new ApplicationException("We are unable to perform this action :)");
             }
@@ -142,16 +142,16 @@ namespace Tayra.Services
                 AcquireMethod = InventoryAcquireMethods.MemberGift
             });
 
-            var gifterNickname = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Nickname;
-            var receiverNickname = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId).Nickname;
+            var gifterUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
+            var receiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId).Username;
             LogsService.LogEvent(new LogCreateDTO
             {
                 Event = LogEvents.InventoryItemGifted,
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", DateTime.UtcNow.ToString() },
-                    { "profileNickname", gifterNickname },
-                    { "receiverNickname", receiverNickname },
+                    { "profileUsername", gifterUsername },
+                    { "receiverUsername", receiverUsername },
                     { "itemName", invItem.Item.Name }
                 },
                 ProfileId = profileId,
@@ -163,8 +163,8 @@ namespace Tayra.Services
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", DateTime.UtcNow.ToString() },
-                    { "profileNickname", receiverNickname },
-                    { "gifterNickname", gifterNickname },
+                    { "profileUsername", receiverUsername },
+                    { "gifterUsername", gifterUsername },
                     { "itemName", invItem.Item.Name }
                 },
                 ProfileId = dto.ReceiverId,
@@ -199,7 +199,7 @@ namespace Tayra.Services
             });
 
             DbContext.Remove(invItem);
-            
+
             TokensService.CreateTransaction(TokenType.CompanyToken, profileId, invItem.Item.WorthValue, TransactionReason.ItemDisenchant, null);
         }
 

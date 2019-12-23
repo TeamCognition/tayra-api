@@ -26,7 +26,7 @@ namespace Tayra.API.Controllers
         }
 
         #endregion
-        
+
         #region Properties
 
         private OrganizationDbContext DbContext { get; }
@@ -37,7 +37,7 @@ namespace Tayra.API.Controllers
 
         private void SaveWebhookEventLog(JObject jObject)
         {
-            DbContext.WebhookEventLogs.Add(new WebhookEventLog { Data = jObject.ToString(Formatting.None)});
+            DbContext.WebhookEventLogs.Add(new WebhookEventLog { Data = jObject.ToString(Formatting.None) });
             DbContext.SaveChanges();
         }
 
@@ -97,7 +97,7 @@ namespace Tayra.API.Controllers
                     TeamId = teamMember?.TeamId,
                     ProjectId = currentProject?.ProjectId
                 });
-                    
+
                 LogsService.LogEvent(new LogCreateDTO
                 {
                     Event = LogEvents.IssueStatusChange,
@@ -108,8 +108,8 @@ namespace Tayra.API.Controllers
                         { "issueKey", we.JiraIssue.Key },
                         { "issueSummary", fields.Summary },
                         { "issueStatus", fields.Status.Name },
-                        { "profileNickname", assigneProfile.Nickname },
-                        { "competitorName", assigneProfile.Nickname }, //prev: activeCompetitions.FirstOrDefault()?.CompetitorName
+                        { "profileUsername", assigneProfile.Username },
+                        { "competitorName", assigneProfile.Username }, //prev: activeCompetitions.FirstOrDefault()?.CompetitorName
                         { "timespent", fields.Timespent.ToString()}
                     },
                     ProfileId = assigneProfile.Id,
@@ -162,7 +162,7 @@ namespace Tayra.API.Controllers
 
                 if (!enteredInProgress.HasValue)
                 {
-                    if(!enteredRewardStatus.HasValue)
+                    if (!enteredRewardStatus.HasValue)
                     {
                         throw new ApplicationException("timespent fallback calculations crashed");
                     }
@@ -212,7 +212,7 @@ namespace Tayra.API.Controllers
                     { "issueSummary", fields.Summary },
                     { "issueStatus", fields.Status.Name },
                     { "effortScore", Math.Round(effortScore, 2).ToString() },
-                    { "profileNickname", assigneProfile.Nickname },
+                    { "profileUsername", assigneProfile.Username },
                     { "competitorName", activeCompetitions.FirstOrDefault()?.CompetitorName},
                     { "timespent", timeSpentToUse.ToString()}
                 },
@@ -231,7 +231,7 @@ namespace Tayra.API.Controllers
             return Fecha.AddMilliseconds(milliseconds);
         }
 
-        
+
         private TaskPriorities GetTaskPriority(string jiraIssuePriorityId)
         {
             switch (jiraIssuePriorityId)

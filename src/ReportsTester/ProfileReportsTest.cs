@@ -37,7 +37,7 @@ namespace ReportsTester
             startDate.AddDays(2).AddWeeks(5),
             startDate.AddDays(3).AddWeeks(5),
         };
-        
+
         [Fact]
         public void Test1()
         {
@@ -93,9 +93,9 @@ namespace ReportsTester
         private void Seed(OrganizationDbContext dbContext)
         {
             SeedTokens(dbContext);
-            
+
             var profiles = SeedProfiles(dbContext);
-            
+
             SeedTasks(dbContext, profiles);
             SeedOneUps(dbContext, profiles);
 
@@ -123,7 +123,7 @@ namespace ReportsTester
         }
 
         private List<Profile> SeedProfiles(OrganizationDbContext dbContext)
-        {            
+        {
             var profiles = new List<Profile>
             {
                 new Profile
@@ -131,14 +131,14 @@ namespace ReportsTester
                     Id = 1,
                     FirstName = "Haris",
                     LastName = "Botic",
-                    Nickname = "bota"
+                    Username = "bota"
                 },
                 new Profile
                 {
                     Id = 2,
                     FirstName = "Ejub",
                     LastName = "Hadzic",
-                    Nickname = "eji"
+                    Username = "eji"
                 }
             };
 
@@ -156,7 +156,7 @@ namespace ReportsTester
             {
                 var dateId = DateHelper2.ToDateId(date);
                 var c = 2;
-                if(dateId >= 20191125)
+                if (dateId >= 20191125)
                     c = 1;
                 tasks.AddRange(new List<Task>
                 {
@@ -168,7 +168,7 @@ namespace ReportsTester
                         Complexity = c,
                         IsProductionBugFixing = false,
                         IsProductionBugCausing = false,
-                        BugSeverity = 2, 
+                        BugSeverity = 2,
                         BugPopulationAffect = 1,
                         Status = TaskStatuses.Done
                     },
@@ -180,7 +180,7 @@ namespace ReportsTester
                         Complexity = c,
                         IsProductionBugFixing = false,
                         IsProductionBugCausing = false,
-                        BugSeverity = 2, 
+                        BugSeverity = 2,
                         BugPopulationAffect = 1,
                         Status = TaskStatuses.Done
                     },
@@ -192,7 +192,7 @@ namespace ReportsTester
                         Complexity = c,
                         IsProductionBugFixing = false,
                         IsProductionBugCausing = false,
-                        BugSeverity = 2, 
+                        BugSeverity = 2,
                         BugPopulationAffect = 1,
                         Status = TaskStatuses.Done
                     },
@@ -245,7 +245,7 @@ namespace ReportsTester
             var teamMembers = new List<TeamMember>();
             foreach (var p in profiles)
             {
-                teamMembers.Add(new TeamMember{TeamId = 1, ProfileId = p.Id});
+                teamMembers.Add(new TeamMember { TeamId = 1, ProfileId = p.Id });
             }
 
             dbContext.AddRange(teams);
@@ -267,13 +267,13 @@ namespace ReportsTester
             var projectMembers = new List<ProjectMember>();
             foreach (var p in profiles)
             {
-                projectMembers.Add(new ProjectMember{ProjectId = 1, ProfileId = p.Id});
+                projectMembers.Add(new ProjectMember { ProjectId = 1, ProfileId = p.Id });
             }
 
             var projectTeams = new List<ProjectTeam>();
             foreach (var t in teams)
             {
-                projectTeams.Add(new ProjectTeam{ProjectId = 1, TeamId = t.Id});
+                projectTeams.Add(new ProjectTeam { ProjectId = 1, TeamId = t.Id });
             }
 
             dbContext.AddRange(projects);

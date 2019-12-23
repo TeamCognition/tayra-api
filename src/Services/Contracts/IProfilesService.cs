@@ -9,7 +9,7 @@ namespace Tayra.Services
     public interface IProfilesService
     {
         Profile GetByIdentityId(int identityId);
-        Profile GetByNickname(string nickname);
+        Profile GetByUsername(string username);
         Profile GetByEmail(string email);
         Profile GetByExternalId(string externalId, IntegrationType integrationType);
         bool IsUsernameUnique(string username);

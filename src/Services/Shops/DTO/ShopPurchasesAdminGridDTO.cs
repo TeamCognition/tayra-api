@@ -6,7 +6,7 @@ namespace Tayra.Services
     public class ShopPurchasesAdminGridDTO
     {
         public int ShopPurchaseId { get; set; }
-        public string BuyerNickname { get; set; }
+        public string BuyerUsername { get; set; }
         public float Price { get; set; }
         public ShopPurchaseStatuses Status { get; set; }
         public DateTime Created { get; set; }

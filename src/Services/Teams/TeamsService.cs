@@ -45,15 +45,15 @@ namespace Tayra.Services
 
 
             IQueryable<TeamViewGridDTO> query = from t in scope
-                                            select new TeamViewGridDTO
-                                            {
-                                                TeamId = t.Id,//TODO: delete, maybe?
-                                                TeamKey = t.Key,
-                                                Name = t.Name,
-                                                Created = t.Created.ToShortDateString(),
-                                                Avatar = t.Avatar,
-                                                Subtitle = t.Members.Count() + " Members",
-                                            };
+                                                select new TeamViewGridDTO
+                                                {
+                                                    TeamId = t.Id,//TODO: delete, maybe?
+                                                    TeamKey = t.Key,
+                                                    Name = t.Name,
+                                                    Created = t.Created.ToShortDateString(),
+                                                    Avatar = t.Avatar,
+                                                    Subtitle = t.Members.Count() + " Members",
+                                                };
 
             GridData<TeamViewGridDTO> gridData = query.GetGridData(gridParams);
 
@@ -70,17 +70,17 @@ namespace Tayra.Services
                 .Where(x => x.TeamId == team.Id);
 
             IQueryable<TeamMembersGridDTO> query = from t in scope
-                                            from pdr in DbContext.ProfileReportsWeekly.Where(x => t.ProfileId == x.ProfileId)
-                                            .OrderByDescending(x => x.DateId).Take(1).DefaultIfEmpty()
-                                            select new TeamMembersGridDTO
-                                            {
-                                                Name = t.Profile.FirstName + " " + t.Profile.LastName,
-                                                Nickname = t.Profile.Nickname,
-                                                Speed = Math.Round(t.Profile.StatsWeekly.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
-                                                Heat = Math.Round(t.Profile.StatsWeekly.Select(x => x.Heat).FirstOrDefault(), 2),
-                                                Impact = Math.Round(t.Profile.StatsWeekly.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
-                                                MemberFrom = t.Created.ToShortDateString()
-                                            };
+                                                   from pdr in DbContext.ProfileReportsWeekly.Where(x => t.ProfileId == x.ProfileId)
+                                                   .OrderByDescending(x => x.DateId).Take(1).DefaultIfEmpty()
+                                                   select new TeamMembersGridDTO
+                                                   {
+                                                       Name = t.Profile.FirstName + " " + t.Profile.LastName,
+                                                       Username = t.Profile.Username,
+                                                       Speed = Math.Round(t.Profile.StatsWeekly.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
+                                                       Heat = Math.Round(t.Profile.StatsWeekly.Select(x => x.Heat).FirstOrDefault(), 2),
+                                                       Impact = Math.Round(t.Profile.StatsWeekly.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
+                                                       MemberFrom = t.Created.ToShortDateString()
+                                                   };
 
             GridData<TeamMembersGridDTO> gridData = query.GetGridData(gridParams);
 
@@ -117,7 +117,7 @@ namespace Tayra.Services
         public void AddMembers(string teamKey, IList<TeamAddMemberDTO> dto)
         {
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
-            
+
             team.EnsureNotNull(teamKey);
 
             foreach (var m in dto)

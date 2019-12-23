@@ -43,7 +43,7 @@ namespace Tayra.Services
         }
 
         public GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(int profileId, ShopPurchasesGridParams gridParams)
-        { 
+        {
             var query = from sp in DbContext.ShopPurchases
                         where sp.ProfileId == profileId
                         select new ShopPurchasesGridDTO
@@ -86,7 +86,7 @@ namespace Tayra.Services
                         select new ShopPurchasesAdminGridDTO
                         {
                             ShopPurchaseId = sp.Id,
-                            BuyerNickname = sp.Profile.Nickname,
+                            BuyerUsername = sp.Profile.Username,
                             Price = sp.Price,
                             Status = sp.Status,
                             Created = sp.Created,
@@ -119,7 +119,7 @@ namespace Tayra.Services
 
             shopPurchase.Status = newStatus;
 
-            if(newStatus == ShopPurchaseStatuses.Fulfilled)
+            if (newStatus == ShopPurchaseStatuses.Fulfilled)
             {
                 DbContext.Add(new ProfileInventoryItem
                 {
@@ -130,7 +130,7 @@ namespace Tayra.Services
                     ItemType = shopPurchase.Item.Type
                 });
             }
-            else if(newStatus == ShopPurchaseStatuses.Refunded)
+            else if (newStatus == ShopPurchaseStatuses.Refunded)
             {
                 TokensService.CreateTransaction(TokenType.CompanyToken, shopPurchase.ProfileId, shopPurchase.Price, TransactionReason.ShopItemRefund, null);
             }

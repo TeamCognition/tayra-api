@@ -28,7 +28,7 @@ namespace Tayra.Services
         public GridData<ChallengeViewGridDTO> GetProjectChallengesGrid(int projectId, ChallengeViewGridParams gridParams)
         {
             IQueryable<Challenge> scope = DbContext.Challenges.Where(x => x.ProjectId == projectId);
-            if(gridParams.Statuses != null)
+            if (gridParams.Statuses != null)
             {
                 scope = scope.Where(x => gridParams.Statuses.Contains(x.Status));
             }
@@ -52,7 +52,7 @@ namespace Tayra.Services
                             Completions = cc.Select(x => new ChallengeViewGridDTO.Completion
                             {
                                 ProfileId = x.ProfileId,
-                                ProfileNickname = x.Profile.Nickname,
+                                ProfileUsername = x.Profile.Username,
                                 ProfileAvatar = x.Profile.Avatar,
                                 CompletedAt = x.Created
                             }).ToList()
@@ -106,7 +106,7 @@ namespace Tayra.Services
             challenge.CompletionsRemaining = dto.CompletionsRemaining;
             challenge.IsEasterEgg = dto.IsEasterEgg;
             challenge.ActiveUntil = dto.ActiveUntil;
-            challenge.ProjectId = projectId; 
+            challenge.ProjectId = projectId;
         }
 
         public void CompleteChallenge(ChallengeCompleteDTO dto)
@@ -135,7 +135,7 @@ namespace Tayra.Services
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", DateTime.UtcNow.ToString() },
-                    { "profileNickname", profile.Nickname },
+                    { "profileUsername", profile.Username },
                     { "challengeName", challenge.Name },
                     { "challengeTokenReward", challenge.TokenRewardValue.ToString() },
                     { "challengeCustomReward", challenge.CustomReward }
