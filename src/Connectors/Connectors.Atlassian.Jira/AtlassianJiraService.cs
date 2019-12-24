@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using RestSharp;
 using Tayra.Connectors.Common;
 
@@ -28,6 +29,7 @@ namespace Tayra.Connectors.Atlassian.Jira
         private const string GET_ISSUE_TYPES = API + "issuetype";
         private const string GET_USERS = API + "users/search";
         private const string GET_LOGGEDIN_USER = API + "myself";
+        private const string CREATE_WEBHOOK = API + "webhook";
 
         #endregion
 
@@ -184,6 +186,29 @@ namespace Tayra.Connectors.Atlassian.Jira
                 .UseSerializer(() => new JsonNetSerializer());
 
             var response = client.Execute<List<JiraIssueType>>(request);
+
+            return response;
+        }
+
+        public static IRestResponse CreateIssueUpdateWebhook(string cloudId, string tokenType, string accessToken)
+        {
+            var request = new RestRequest(string.Format(CREATE_WEBHOOK), Method.POST);
+            request.AddHeader("Authorization", $"{tokenType} {accessToken}");
+            request.AddParameter("application/json", JsonConvert.SerializeObject(new
+            {
+                url = "https://tayra-dev.azurewebsites.net/webhooks/atjissueupdate",
+                webhooks = new []
+                {
+                    new { events = new string[] { "jira:issue_updated" } }
+                }
+
+            }), ParameterType.RequestBody);
+
+
+            var client = new RestClient(string.Format(BASE_URL, cloudId))
+                .UseSerializer(() => new JsonNetSerializer());
+
+            var response = client.Execute(request);
 
             return response;
         }

@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using Firdaws.DAL;
 using Tayra.Common;
-using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations
 {
