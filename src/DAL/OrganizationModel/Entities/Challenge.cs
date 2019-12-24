@@ -26,8 +26,8 @@ namespace Tayra.Models.Organizations
         public DateTime? ActiveUntil { get; set; }
         public DateTime? EndedAt { get; set; }
 
-        public int ProjectId { get; set; }
-        public virtual Project Project { get; set; }
+        public int SegmentId { get; set; }
+        public virtual Segment Segment { get; set; }
 
         #region IAuditedEntity
 

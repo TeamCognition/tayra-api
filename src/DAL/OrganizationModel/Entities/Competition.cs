@@ -34,8 +34,8 @@ namespace Tayra.Models.Organizations
         public int TokenId { get; set; }
         public virtual Token Token { get; set; }
 
-        public int ProjectId { get; set; }
-        public virtual Project Project { get; set; }
+        public int SegmentId { get; set; }
+        public virtual Segment Segment { get; set; }
 
         public int? WinnerId { get; set; }
 

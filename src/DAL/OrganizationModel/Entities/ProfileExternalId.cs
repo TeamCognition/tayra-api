@@ -11,8 +11,8 @@ namespace Tayra.Models.Organizations
         public int ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
-        public int ProjectId { get; set; }
-        public virtual Project Project  { get; set; }
+        public int SegmentId { get; set; }
+        public virtual Segment Segment  { get; set; }
 
         public IntegrationType IntegrationType { get; set; }
 

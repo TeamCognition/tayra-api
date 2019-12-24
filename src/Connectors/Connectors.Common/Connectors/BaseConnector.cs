@@ -63,12 +63,12 @@ namespace Tayra.Connectors.Common
             //}
         }
 
-        protected Integration CreateProjectIntegration(int projectId, Dictionary<string, string> fields, Integration oldIntegration = null)
+        protected Integration CreateSegmentIntegration(int segmentId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
-            return CreateProfileIntegration(null, projectId, fields, oldIntegration);
+            return CreateProfileIntegration(null, segmentId, fields, oldIntegration);
         }
 
-        protected Integration CreateProfileIntegration(int? profileId, int projectId, Dictionary<string, string> fields, Integration oldIntegration = null)
+        protected Integration CreateProfileIntegration(int? profileId, int segmentId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
             if (oldIntegration != null)
             {
@@ -81,14 +81,14 @@ namespace Tayra.Connectors.Common
                 var externalId = fields.GetValueOrDefault(Constants.USER_ACCOUNT_ID);
                 if (!string.IsNullOrEmpty(externalId))
                 {
-                    var eId = OrganizationContext.ProfileExternalIds.FirstOrDefault(x => x.ProfileId == profileId && x.ProjectId == projectId && x.IntegrationType == Type);
+                    var eId = OrganizationContext.ProfileExternalIds.FirstOrDefault(x => x.ProfileId == profileId && x.SegmentId == segmentId && x.IntegrationType == Type);
                     if (eId != null)
                         OrganizationContext.Remove(eId);
 
                     OrganizationContext.Add(new ProfileExternalId
                     {
                         ProfileId = profileId.Value,
-                        ProjectId = projectId,
+                        SegmentId = segmentId,
                         IntegrationType = Type,
                         ExternalId = externalId
                     });
@@ -98,7 +98,7 @@ namespace Tayra.Connectors.Common
             return OrganizationContext.Integrations.Add(new Integration
             {
                 ProfileId = profileId,
-                ProjectId = projectId,
+                SegmentId = segmentId,
                 Type = Type,
                 Fields = fields.Select(x => new IntegrationField { Key = x.Key, Value = x.Value }).ToList()
             }).Entity;

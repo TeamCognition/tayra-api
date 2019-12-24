@@ -3,7 +3,7 @@ using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProjectArea : IAuditedEntity
+    public class SegmentArea : IAuditedEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

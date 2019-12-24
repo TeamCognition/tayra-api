@@ -25,9 +25,9 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public GridData<ChallengeViewGridDTO> GetProjectChallengesGrid(int projectId, ChallengeViewGridParams gridParams)
+        public GridData<ChallengeViewGridDTO> GetSegmentChallengesGrid(int segmentId, ChallengeViewGridParams gridParams)
         {
-            IQueryable<Challenge> scope = DbContext.Challenges.Where(x => x.ProjectId == projectId);
+            IQueryable<Challenge> scope = DbContext.Challenges.Where(x => x.SegmentId == segmentId);
             if (gridParams.Statuses != null)
             {
                 scope = scope.Where(x => gridParams.Statuses.Contains(x.Status));
@@ -63,7 +63,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void Create(int projectId, ChallengeCreateDTO dto)
+        public void Create(int segmentId, ChallengeCreateDTO dto)
         {
             if (!ChallengeRules.IsActiveUntilValid(dto.ActiveUntil))
             {
@@ -82,11 +82,11 @@ namespace Tayra.Services
                 CompletionsRemaining = dto.CompletionsLimit,
                 IsEasterEgg = dto.IsEasterEgg,
                 ActiveUntil = dto.ActiveUntil,
-                ProjectId = projectId
+                SegmentId = segmentId
             });
         }
 
-        public void Update(int projectId, ChallengeUpdateDTO dto)
+        public void Update(int segmentId, ChallengeUpdateDTO dto)
         {
             var challenge = DbContext.Challenges.FirstOrDefault(x => x.Id == dto.ChallengeId);
 
@@ -106,7 +106,7 @@ namespace Tayra.Services
             challenge.CompletionsRemaining = dto.CompletionsRemaining;
             challenge.IsEasterEgg = dto.IsEasterEgg;
             challenge.ActiveUntil = dto.ActiveUntil;
-            challenge.ProjectId = projectId;
+            challenge.SegmentId = segmentId;
         }
 
         public void CompleteChallenge(ChallengeCompleteDTO dto)

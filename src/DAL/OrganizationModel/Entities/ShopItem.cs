@@ -25,7 +25,7 @@ namespace Tayra.Models.Organizations
         public DateTime? ArchivedAt { get; set; }
 
         public bool IsGlobal { get; set; }
-        public virtual ICollection<ShopItemProject> Projects { get; set; }
+        public virtual ICollection<ShopItemSegment> Segments { get; set; }
 
         #region IAuditedEntity
 

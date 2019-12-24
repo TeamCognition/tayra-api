@@ -110,7 +110,7 @@ namespace Tayra.Services
                 Price = shopItem.Price,
                 PriceDiscountedFor = shopItem.Price - shopItem.DiscountPrice,
                 GiftFor = null,
-                ProjectId = 1
+                SegmentId = 1
             });
 
             if (purchaseStatus == ShopPurchaseStatuses.Fulfilled)
@@ -136,7 +136,7 @@ namespace Tayra.Services
                     { "itemPrice", shopItem.DiscountPrice?.ToString() ?? shopItem.Price.ToString() },
                     { "itemId", shopItem.ItemId.ToString() },
                     { "purchaseStatus", purchaseStatus.ToString() },
-                    { "projectId", "1" },
+                    { "segmentId", "1" },
                     { "itemName", shopItem.Item.Name }
                 },
                 ProfileId = profileId,
@@ -222,7 +222,7 @@ namespace Tayra.Services
     }
 }
 
-//private static Expression<Func<Profile, NotificationRecipientDTO>> _projection = x => new NotificationRecipientDTO
+//private static Expression<Func<Profile, NotificationRecipientDTO>> _segmention = x => new NotificationRecipientDTO
 //{
 //    FirstName = x.FirstName,
 //    LastName = x.LastName,

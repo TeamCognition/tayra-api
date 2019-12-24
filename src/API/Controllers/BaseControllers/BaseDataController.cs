@@ -5,7 +5,7 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.API.Controllers
 {
-    [Route("{project}/[controller]"), TypeFilter(typeof(ProjectAuthorizationFilter))]
+    [Route("{segment}/[controller]"), TypeFilter(typeof(SegmentAuthorizationFilter))]
     public class BaseDataController : BaseController
     {
         private OrganizationDbContext _organizationContext;
@@ -15,9 +15,9 @@ namespace Tayra.API.Controllers
             _organizationContext = context;
         }
 
-        public Project CurrentProject { get; set; }
+        public Segment CurrentSegment { get; set; }
 
-        //public OrganizationDbContext OrganizationContext => _organizationContext ?? (_organizationContext = new OrganizationDbContext(CurrentProject.DataWarehouse));
+        //public OrganizationDbContext OrganizationContext => _organizationContext ?? (_organizationContext = new OrganizationDbContext(CurrentSegment.DataWarehouse));
         public OrganizationDbContext OrganizationContext => _organizationContext;
     }
 }

@@ -3,13 +3,13 @@ using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProjectReportWeekly : ITimeStampedEntity
+    public class SegmentReportWeekly : ITimeStampedEntity
     {
         public int DateId { get; set; }
         public int IterationCount { get; set; }
 
-        public int ProjectId { get; set; }
-        public virtual Project Project { get; set; }
+        public int SegmentId { get; set; }
+        public virtual Segment Segment { get; set; }
 
         public int TaskCategoryId { get; set; }
         public virtual TaskCategory TaskCategory { get; set; }
@@ -71,7 +71,7 @@ namespace Tayra.Models.Organizations
 
         #endregion
 
-        #region Project Stats
+        #region Segment Stats
 
         public int MembersCountTotal { get; set; }
 

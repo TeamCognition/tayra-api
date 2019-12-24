@@ -283,7 +283,7 @@ namespace Tayra.SyncServices.Tayra
                                        r.ProfileId,
                                        r.Heat
                                    })
-                                    .DistinctBy(x => x.ProfileId).ToList(); //ProjectArea is ignored cuz we are only taking 'Totals'
+                                    .DistinctBy(x => x.ProfileId).ToList(); //SegmentArea is ignored cuz we are only taking 'Totals'
 
 
             foreach (var r in reportsToInsert)

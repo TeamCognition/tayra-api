@@ -23,8 +23,8 @@ namespace Tayra.Models.Organizations
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public int? ProjectId { get; set; }
-        public Project Project { get; set; }
+        public int? SegmentId { get; set; }
+        public Segment Segment { get; set; }
 
         public int? TeamId { get; set; }
         public Team Team { get; set; }

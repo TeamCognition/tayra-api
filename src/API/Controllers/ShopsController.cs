@@ -29,7 +29,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost("purchaseSearch")]
-        public ActionResult<GridData<ShopPurchasesGridDTO>> GetProjectCompetitions([FromBody] ShopPurchasesGridParams gridParams)
+        public ActionResult<GridData<ShopPurchasesGridDTO>> GetSegmentCompetitions([FromBody] ShopPurchasesGridParams gridParams)
         {
             if (string.IsNullOrEmpty(gridParams.Sidx))
             {
@@ -41,7 +41,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost("purchaseAdminSearch")]
-        public ActionResult<GridData<ShopPurchasesAdminGridDTO>> GetProjectCompetitions([FromBody] ShopPurchasesAdminGridParams gridParams)
+        public ActionResult<GridData<ShopPurchasesAdminGridDTO>> GetSegmentCompetitions([FromBody] ShopPurchasesAdminGridParams gridParams)
         {
             if (string.IsNullOrEmpty(gridParams.Sidx))
             {

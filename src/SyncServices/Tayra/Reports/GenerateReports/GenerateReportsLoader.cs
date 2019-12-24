@@ -30,8 +30,8 @@ namespace Tayra.SyncServices.Tayra
                     var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService);
                     var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService);
 
-                    GenerateProjectReportsLoader.GenerateProjectReportsDaily(organizationDb, date, LogService, profileDailyReports);
-                    GenerateProjectReportsLoader.GenerateProjectReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
+                    GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, date, LogService, profileDailyReports);
+                    GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
 
                     GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports);
                     GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);

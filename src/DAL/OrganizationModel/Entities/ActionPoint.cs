@@ -16,7 +16,7 @@ namespace Tayra.Models.Organizations
         public DateTime? ConcludedOn { get; set; }
         
         public virtual ICollection<ActionPointProfile> Profiles { get; set; }
-        public virtual ICollection<ActionPointProject> Projects { get; set; }
+        public virtual ICollection<ActionPointSegment> Segments { get; set; }
 
 
         #region ITimeStampedEntity

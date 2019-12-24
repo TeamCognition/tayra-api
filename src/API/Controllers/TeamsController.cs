@@ -34,7 +34,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "ASC";
             }
             
-            return TeamsService.GetViewGridData(CurrentProject.Id, gridParams);
+            return TeamsService.GetViewGridData(CurrentSegment.Id, gridParams);
         }
 
         [HttpPost("members")] //TODO: searchMembers
@@ -51,7 +51,7 @@ namespace Tayra.API.Controllers
         [HttpPost("create")]
         public IActionResult CreateTeam([FromBody]TeamCreateDTO dto)
         {
-            TeamsService.Create(CurrentProject.Id, dto);
+            TeamsService.Create(CurrentSegment.Id, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -60,7 +60,7 @@ namespace Tayra.API.Controllers
         [HttpPut("update")]
         public IActionResult UpdateTeam([FromBody] TeamUpdateDTO dto)
         {
-            TeamsService.Update(CurrentProject.Id, dto);
+            TeamsService.Update(CurrentSegment.Id, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();

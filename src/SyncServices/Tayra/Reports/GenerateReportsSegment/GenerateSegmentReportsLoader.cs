@@ -9,13 +9,13 @@ using Tayra.SyncServices.Common;
 
 namespace Tayra.SyncServices.Tayra
 {
-    public class GenerateProjectReportsLoader : BaseLoader
+    public class GenerateSegmentReportsLoader : BaseLoader
     {
         private readonly IShardMapProvider _shardMapProvider;
 
         #region Constructor
 
-        public GenerateProjectReportsLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public GenerateSegmentReportsLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
             _shardMapProvider = shardMapProvider;
         }
@@ -31,12 +31,12 @@ namespace Tayra.SyncServices.Tayra
                 LogService.SetOrganizationId(tenant.Name);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name), _shardMapProvider))
                 {
-                    GenerateProjectReportsDaily(organizationDb, date, LogService);
+                    GenerateSegmentReportsDaily(organizationDb, date, LogService);
                 }
             }
         }
 
-        public static void GenerateProjectReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null)
+        public static void GenerateSegmentReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null)
         {
             var dateId = DateHelper2.ToDateId(fromDay);
 
@@ -46,9 +46,9 @@ namespace Tayra.SyncServices.Tayra
             }
 
 
-            var reportsToInsert = new List<ProjectReportDaily>();
+            var reportsToInsert = new List<SegmentReportDaily>();
 
-            var projects = (from t in organizationDb.Projects
+            var segments = (from t in organizationDb.Segments
                             where t.ArchivedAt == null
                             select new
                             {
@@ -56,13 +56,13 @@ namespace Tayra.SyncServices.Tayra
                                 MemberIds = t.Members.Select(x => x.ProfileId).ToList()
                             }).ToList();
 
-            foreach (var t in projects)
+            foreach (var t in segments)
             {
                 var mr = profileReportsDaily.Where(x => t.MemberIds.Contains(x.ProfileId)).ToList();
 
-                reportsToInsert.Add(new ProjectReportDaily
+                reportsToInsert.Add(new SegmentReportDaily
                 {
-                    ProjectId = t.TeamId,
+                    SegmentId = t.TeamId,
                     DateId = dateId,
                     IterationCount = 1,
                     TaskCategoryId = 1,
@@ -107,21 +107,21 @@ namespace Tayra.SyncServices.Tayra
             }
 
 
-            var existing = organizationDb.ProjectReportsDaily.Count(x => x.DateId == dateId);
+            var existing = organizationDb.SegmentReportsDaily.Count(x => x.DateId == dateId);
             if (existing > 0)
             {
-                logService.Log<ProjectReportDaily>($"deleting {existing} records from database");
-                organizationDb.Database.ExecuteSqlCommand($"delete from ProjectReportsDaily where {nameof(ProjectReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                logService.Log<SegmentReportDaily>($"deleting {existing} records from database");
+                organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsDaily where {nameof(SegmentReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
                 organizationDb.SaveChanges();
             }
 
-            organizationDb.ProjectReportsDaily.AddRange(reportsToInsert);
+            organizationDb.SegmentReportsDaily.AddRange(reportsToInsert);
             organizationDb.SaveChanges();
 
-            logService.Log<GenerateProjectReportsLoader>($"{reportsToInsert.Count} new reports saved to database.");
+            logService.Log<GenerateSegmentReportsLoader>($"{reportsToInsert.Count} new reports saved to database.");
         }
 
-        public static void GenerateProjectReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, List<ProfileReportWeekly> profileReportsWeekly = null)
+        public static void GenerateSegmentReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, List<ProfileReportWeekly> profileReportsWeekly = null)
         {
             if (!CommonHelper.IsMonday(fromDay) || profileReportsWeekly == null)
                 return;
@@ -139,9 +139,9 @@ namespace Tayra.SyncServices.Tayra
             }
 
 
-            var reportsToInsert = new List<ProjectReportWeekly>();
+            var reportsToInsert = new List<SegmentReportWeekly>();
 
-            var projects = (from t in organizationDb.Projects
+            var segments = (from t in organizationDb.Segments
                             where t.ArchivedAt == null
                             select new
                             {
@@ -149,7 +149,7 @@ namespace Tayra.SyncServices.Tayra
                                 MemberIds = t.Members.Select(x => x.ProfileId).ToList()
                             }).ToList();
 
-            foreach (var t in projects)
+            foreach (var t in segments)
             {
                 var drs = profileReportsDaily.Where(x => t.MemberIds.Contains(x.ProfileId)).ToList();
                 var drsCount = drs.Count();
@@ -160,9 +160,9 @@ namespace Tayra.SyncServices.Tayra
                 if (drsCount == 0)
                     continue;
 
-                reportsToInsert.Add(new ProjectReportWeekly
+                reportsToInsert.Add(new SegmentReportWeekly
                 {
-                    ProjectId = t.TeamId,
+                    SegmentId = t.TeamId,
                     DateId = dateId,
                     IterationCount = 1,
                     TaskCategoryId = 1,
@@ -221,18 +221,18 @@ namespace Tayra.SyncServices.Tayra
             }
 
 
-            var existing = organizationDb.ProjectReportsWeekly.Count(x => x.DateId == dateId);
+            var existing = organizationDb.SegmentReportsWeekly.Count(x => x.DateId == dateId);
             if (existing > 0)
             {
-                logService.Log<ProjectReportWeekly>($"deleting {existing} records from database");
-                organizationDb.Database.ExecuteSqlCommand($"delete from ProjectReportsWeekly where {nameof(ProjectReportWeekly.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                logService.Log<SegmentReportWeekly>($"deleting {existing} records from database");
+                organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsWeekly where {nameof(SegmentReportWeekly.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
                 organizationDb.SaveChanges();
             }
 
-            organizationDb.ProjectReportsWeekly.AddRange(reportsToInsert);
+            organizationDb.SegmentReportsWeekly.AddRange(reportsToInsert);
             organizationDb.SaveChanges();
 
-            logService.Log<GenerateProjectReportsLoader>($"{reportsToInsert.Count} new reports saved to database.");
+            logService.Log<GenerateSegmentReportsLoader>($"{reportsToInsert.Count} new reports saved to database.");
         }
 
         #endregion

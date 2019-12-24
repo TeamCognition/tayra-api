@@ -48,7 +48,7 @@ namespace Tayra.Services
             task.Labels = string.Join(',', dto.Labels);
             task.AssigneeProfileId = dto.AssigneeProfileId;
             task.TeamId = dto.TeamId;
-            task.ProjectId = dto.ProjectId;
+            task.SegmentId = dto.SegmentId;
         }
 
         #endregion

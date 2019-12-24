@@ -1,6 +1,6 @@
 ﻿namespace Tayra.Services
 {
-    public class ReportProjectPerformanceChartDTO
+    public class ReportSegmentPerformanceChartDTO
     {
         public int MembersTotal { get; set; }
         public double ScoreAverage { get; set; }

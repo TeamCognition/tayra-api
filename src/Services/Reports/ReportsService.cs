@@ -18,12 +18,12 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public ReportProjectPerformanceChartDTO GetReportProjectPerformanceChartDTO(int projectId)
+        public ReportSegmentPerformanceChartDTO GetReportSegmentPerformanceChartDTO(int segmentId)
         {
-            return DbContext.ProjectReportsWeekly
+            return DbContext.SegmentReportsWeekly
                 .OrderByDescending(x => x.DateId)
-                .Where(x => x.ProjectId == projectId)
-                .Select(x => new ReportProjectPerformanceChartDTO
+                .Where(x => x.SegmentId == segmentId)
+                .Select(x => new ReportSegmentPerformanceChartDTO
                 {
                     //MembersTotal = x.MembersTotal,
                     //ScoreAverage = Math.Round(x.ScoreAverage, 0),
@@ -60,13 +60,13 @@ namespace Tayra.Services
             };
         }
 
-        public ReportTeamsPerformanceChartDTO GetReportTeamsPerformanceChartDTO(int projectId, int periodInDays)
+        public ReportTeamsPerformanceChartDTO GetReportTeamsPerformanceChartDTO(int segmentId, int periodInDays)
         {
-            var projectTeams = DbContext.ProjectTeams.Where(x => x.ProjectId == projectId).Select(x => x.TeamId).ToList();
+            var segmentTeams = DbContext.ProjectTeams.Where(x => x.SegmentId == segmentId).Select(x => x.TeamId).ToList();
             var lastReportCreatedAt = DbContext.TeamReportsWeekly.OrderByDescending(x => x.DateId).Select(x => x.DateId).FirstOrDefault();
 
             var dataset = (from tr in DbContext.TeamReportsWeekly
-                           where projectTeams.Contains(tr.TeamId)
+                           where segmentTeams.Contains(tr.TeamId)
                            where tr.DateId > DateHelper2.AddDays(lastReportCreatedAt, -periodInDays)
                            orderby tr.DateId
                            group tr by tr.TeamId into t
@@ -87,13 +87,13 @@ namespace Tayra.Services
             };
         }
 
-        public IList<ReportTeamsCompletedTasksChartDTO> GetReportTeamsCompletedTasksChartDTO(int projectId)
+        public IList<ReportTeamsCompletedTasksChartDTO> GetReportTeamsCompletedTasksChartDTO(int segmentId)
         {
-            var projectTeams = DbContext.ProjectTeams.Where(x => x.ProjectId == projectId).Select(x => x.TeamId).ToList();
+            var segmentTeams = DbContext.ProjectTeams.Where(x => x.SegmentId == segmentId).Select(x => x.TeamId).ToList();
             var lastReportCreatedAt = DbContext.TeamReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.DateId).FirstOrDefault();
 
             return (from tr in DbContext.TeamReportsDaily
-                    where projectTeams.Contains(tr.TeamId)
+                    where segmentTeams.Contains(tr.TeamId)
                     where tr.DateId == lastReportCreatedAt
                     select new ReportTeamsCompletedTasksChartDTO
                     {

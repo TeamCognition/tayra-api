@@ -7,20 +7,20 @@ using Tayra.Services;
 
 namespace Tayra.API.Filters
 {
-    public class ProjectAuthorizationFilter : IActionFilter
+    public class SegmentAuthorizationFilter : IActionFilter
     {
         #region Constructor
 
-        public ProjectAuthorizationFilter(IProjectsService projectsService)
+        public SegmentAuthorizationFilter(ISegmentsService segmentsService)
         {
-            ProjectsService = projectsService;
+            SegmentsService = segmentsService;
         }
 
         #endregion
 
         #region Properties
 
-        public IProjectsService ProjectsService { get; set; }
+        public ISegmentsService SegmentsService { get; set; }
 
         #endregion
 
@@ -31,16 +31,16 @@ namespace Tayra.API.Filters
             var controller = (BaseDataController)context.Controller;
             if (controller != null)
             {
-                var projectKey = Convert.ToString(controller.RouteData.Values["project"]);
+                var segmentKey = Convert.ToString(controller.RouteData.Values["segment"]);
 
                 var isAdmin = true;//controller.CurrentUser.Role == Roles.Admin; bug calls LoadUser when there is no user
-                var hasProjectAccess = true;//controller.CurrentUser.Any(b => b.Project.Key == projectKey);
-                if (isAdmin || hasProjectAccess)
+                var hasSegmentAccess = true;//controller.CurrentUser.Any(b => b.Segment.Key == segmentKey);
+                if (isAdmin || hasSegmentAccess)
                 {
-                    controller.CurrentProject = ProjectsService.Get(projectKey);
-                    if (controller.CurrentProject == null)
+                    controller.CurrentSegment = SegmentsService.Get(segmentKey);
+                    if (controller.CurrentSegment == null)
                     {
-                        throw new ApplicationException("Unable to get project with key " + projectKey);
+                        throw new ApplicationException("Unable to get segment with key " + segmentKey);
                     }
                     return;
                 }

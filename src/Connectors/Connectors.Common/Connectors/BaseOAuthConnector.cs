@@ -20,7 +20,7 @@ namespace Tayra.Connectors.Common
 
         public abstract string GetAuthUrl(string userState);
 
-        public abstract Integration Authenticate(int profileId, ProfileRoles profileRole, int projectId, string userState);
+        public abstract Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState);
 
         public virtual  Integration RefreshToken(int integrationId)
         {

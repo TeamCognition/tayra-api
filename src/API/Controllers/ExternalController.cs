@@ -43,8 +43,8 @@ namespace Tayra.API.Controllers
 
                 var profileId = int.Parse(stateData[0]);
                 var profileRole = Enum.Parse<ProfileRoles>(stateData[1]);
-                var projectId = int.Parse(stateData[2]);
-                connector.Authenticate(profileId, profileRole, projectId, state);
+                var segmentId = int.Parse(stateData[2]);
+                connector.Authenticate(profileId, profileRole, segmentId, state);
             }
             catch
             {

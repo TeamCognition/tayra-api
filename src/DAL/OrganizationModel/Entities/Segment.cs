@@ -6,7 +6,7 @@ using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class Project : IAuditedEntity
+    public class Segment : IAuditedEntity
     {
         [Key]
         public int Id { get; set; }
@@ -37,9 +37,9 @@ namespace Tayra.Models.Organizations
         public virtual Organization Organization { get; set; }
 
         public virtual ICollection<Challenge> Challenges { get; set; }
-        public virtual ICollection<ProjectMember> Members { get; set; }
-        public virtual ICollection<ProjectReportDaily> ReportsDaily { get; set; }
-        public virtual ICollection<ProjectReportWeekly> ReportsWeekly { get; set; }
+        public virtual ICollection<SegmentMember> Members { get; set; }
+        public virtual ICollection<SegmentReportDaily> ReportsDaily { get; set; }
+        public virtual ICollection<SegmentReportWeekly> ReportsWeekly { get; set; }
 
         #region IAuditedEntity
 

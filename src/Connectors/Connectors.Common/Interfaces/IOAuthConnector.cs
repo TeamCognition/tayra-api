@@ -9,8 +9,8 @@ namespace Tayra.Connectors.Common
 
         string GetAuthDoneUrl(bool isSuccessful);
 
-        Integration Authenticate(int profileId, ProfileRoles profileRole, int projectId, string userState);
+        Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState);
 
-        Integration RefreshToken(int projectId);
+        Integration RefreshToken(int segmentId);
     }
 }

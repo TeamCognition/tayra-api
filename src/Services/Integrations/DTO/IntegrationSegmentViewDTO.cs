@@ -3,7 +3,7 @@ using Tayra.Common;
 
 namespace Tayra.Services
 {
-    public class IntegrationProjectViewDTO
+    public class IntegrationSegmentViewDTO
     {
         public IntegrationType Type { get; set; }
         public int CreatedBy { get; set; }

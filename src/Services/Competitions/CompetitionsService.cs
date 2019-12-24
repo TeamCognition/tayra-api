@@ -22,10 +22,10 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public GridData<CompetitionViewGridDTO> GetProjectCompetitionsGrid(int projectId, CompetitionViewGridParams gridParams)
+        public GridData<CompetitionViewGridDTO> GetSegmentCompetitionsGrid(int segmentId, CompetitionViewGridParams gridParams)
         {
             var query = from c in DbContext.Competitions
-                        where c.ProjectId == projectId
+                        where c.SegmentId == segmentId
                         where c.Status == gridParams.Status
                         join twinner in DbContext.Competitors on c.WinnerId equals twinner.Id into g
                         from winner in g.DefaultIfEmpty()
@@ -106,7 +106,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void Create(int projectId, CompetitionCreateDTO dto)
+        public void Create(int segmentId, CompetitionCreateDTO dto)
         {
             var token = DbContext.Tokens.FirstOrDefault(x => x.Type == (dto.Token ?? TokenType.CompanyToken));
             var competition = new Competition
@@ -117,7 +117,7 @@ namespace Tayra.Services
                 Type = dto.Type ?? CompetitionType.Leaderboard,
                 Theme = dto.Theme ?? CompetitionTheme.LeaderboardClouds,
                 TokenId = token.Id,
-                ProjectId = projectId
+                SegmentId = segmentId
             };
 
             if (!CompetitionRules.IsScheduledEndAtValid(competition.StartedAt, competition.ScheduledEndAt))
@@ -220,7 +220,7 @@ namespace Tayra.Services
                     TokenRewardValue = competition.TokenRewardValue,
                     Name = competition.Name,
                     IsIndividual = competition.IsIndividual,
-                    ProjectId = competition.ProjectId,
+                    SegmentId = competition.SegmentId,
                     TokenId = competition.TokenId,
                     Type = competition.Type,
                     Theme = competition.Theme,

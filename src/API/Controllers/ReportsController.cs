@@ -18,10 +18,10 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpGet("projectPerformance")]
-        public ActionResult<ReportProjectPerformanceChartDTO> GetProjectPerformanceReport()
+        [HttpGet("segmentPerformance")]
+        public ActionResult<ReportSegmentPerformanceChartDTO> GetSegmentPerformanceReport()
         {
-            var report = ReportsService.GetReportProjectPerformanceChartDTO(CurrentProject.Id);
+            var report = ReportsService.GetReportSegmentPerformanceChartDTO(CurrentSegment.Id);
             return Ok(report);
         }
 
@@ -35,14 +35,14 @@ namespace Tayra.API.Controllers
         [HttpGet("teamsPerformance")]
         public ActionResult<ReportTeamsPerformanceChartDTO> GetTeamsPerformanceReport()
         {
-            var report = ReportsService.GetReportTeamsPerformanceChartDTO(CurrentProject.Id, 7);
+            var report = ReportsService.GetReportTeamsPerformanceChartDTO(CurrentSegment.Id, 7);
             return Ok(report);
         }
 
         [HttpGet("teamsCompletedTasks")]
         public ActionResult<IList<ReportTeamsPerformanceChartDTO>> GetTeamsCompletedTasksReport()
         {
-            var report = ReportsService.GetReportTeamsCompletedTasksChartDTO(CurrentProject.Id);
+            var report = ReportsService.GetReportTeamsCompletedTasksChartDTO(CurrentSegment.Id);
             return Ok(report);
         }
 

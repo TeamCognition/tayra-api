@@ -23,7 +23,7 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpPost("search")]
-        public ActionResult<GridData<ClaimBundleViewGridDTO>> GetProjectChallenges([FromBody] ClaimBundleViewGridParams gridParams)
+        public ActionResult<GridData<ClaimBundleViewGridDTO>> GetSegmentChallenges([FromBody] ClaimBundleViewGridParams gridParams)
         {
             if (string.IsNullOrEmpty(gridParams.Sidx))
             {

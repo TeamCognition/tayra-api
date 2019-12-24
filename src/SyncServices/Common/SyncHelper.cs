@@ -75,8 +75,8 @@ namespace Tayra.SyncServices.Common
                 case JobTypes.GenerateReportProfile:
                     return new GenerateProfileReportsLoader(shardMapProvider, logService, coreDatabase);
 
-                case JobTypes.GenerateReportProject:
-                    return new GenerateProjectReportsLoader(shardMapProvider, logService, coreDatabase);
+                case JobTypes.GenerateReportSegment:
+                    return new GenerateSegmentReportsLoader(shardMapProvider, logService, coreDatabase);
 
                 case JobTypes.GenerateReportTeam:
                     return new GenerateTeamReportsLoader(shardMapProvider, logService, coreDatabase);

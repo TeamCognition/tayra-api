@@ -6,7 +6,7 @@ namespace Tayra.SyncServices.Common
     public class LogService
     {
         protected string _tenantKey;
-        protected int _projectId;
+        protected int _segmentId;
         protected int _teamId;
         protected DateTime _timestamp;
 
@@ -23,9 +23,9 @@ namespace Tayra.SyncServices.Common
             _timestamp = timestamp ?? _timestamp;
         }
 
-        public void SetProjectId(int projectId, DateTime? timestamp = null)
+        public void SetSegmentId(int segmentId, DateTime? timestamp = null)
         {
-            _projectId = projectId;
+            _segmentId = segmentId;
             _timestamp = timestamp ?? _timestamp;
         }
 
@@ -35,10 +35,10 @@ namespace Tayra.SyncServices.Common
              _timestamp = timestamp ?? _timestamp;
         }
 
-        public void SetIds(string tenantKey, int projectId, int teamId, DateTime? timestamp = null)
+        public void SetIds(string tenantKey, int segmentId, int teamId, DateTime? timestamp = null)
         {
             _tenantKey = tenantKey;
-            _projectId = projectId;
+            _segmentId = segmentId;
             _teamId = teamId;
             _timestamp = timestamp ?? DateTime.UtcNow;
         }
@@ -46,7 +46,7 @@ namespace Tayra.SyncServices.Common
         public void Log<T>(string logText, bool isError = false)
         {
             var duration = (DateTime.UtcNow - _timestamp).TotalSeconds;
-            var msg = $"{DateTime.UtcNow:O}\t${_tenantKey}.{_projectId}.{_teamId}\t{typeof(T).Name}:\t{logText} ({duration} seconds)";
+            var msg = $"{DateTime.UtcNow:O}\t${_tenantKey}.{_segmentId}.{_teamId}\t{typeof(T).Name}:\t{logText} ({duration} seconds)";
             _timestamp = DateTime.UtcNow;
 
             if (isError)

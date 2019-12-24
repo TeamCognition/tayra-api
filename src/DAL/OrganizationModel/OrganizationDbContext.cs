@@ -70,7 +70,7 @@ namespace Tayra.Models.Organizations
         #region Db Sets
         public DbSet<ActionPoint> ActionPoints { get; set; }
         public DbSet<ActionPointProfile> ActionPointProfiles { get; set; }
-        public DbSet<ActionPointProject> ActionPointProjects { get; set; }
+        public DbSet<ActionPointSegment> ActionPointSegments { get; set; }
         public DbSet<ActionPointSetting> ActionPointSettings { get; set; }
         public DbSet<Blob> Blobs { get; set; }
         public DbSet<Challenge> Challenges { get; set; }
@@ -100,15 +100,15 @@ namespace Tayra.Models.Organizations
         public DbSet<ProfileOneUp> ProfileOneUps { get; set; }
         public DbSet<ProfileReportDaily> ProfileReportsDaily { get; set; }
         public DbSet<ProfileReportWeekly> ProfileReportsWeekly { get; set; }
-        public DbSet<Project> Projects { get; set; }
-        public DbSet<ProjectArea> ProjectAreas { get; set; }
-        public DbSet<ProjectMember> ProjectMembers { get; set; }
-        public DbSet<ProjectReportDaily> ProjectReportsDaily { get; set; }
-        public DbSet<ProjectReportWeekly> ProjectReportsWeekly { get; set; }
-        public DbSet<ProjectTeam> ProjectTeams { get; set; }
+        public DbSet<Segment> Segments { get; set; }
+        public DbSet<SegmentArea> SegmentAreas { get; set; }
+        public DbSet<SegmentMember> SegmentMembers { get; set; }
+        public DbSet<SegmentReportDaily> SegmentReportsDaily { get; set; }
+        public DbSet<SegmentReportWeekly> SegmentReportsWeekly { get; set; }
+        public DbSet<SegmentTeam> ProjectTeams { get; set; }
         public DbSet<Shop> Shops { get; set; }
         public DbSet<ShopItem> ShopItems { get; set; }
-        public DbSet<ShopItemProject> ShopItemProjects { get; set; }
+        public DbSet<ShopItemSegment> ShopItemSegments { get; set; }
         public DbSet<ShopLog> ShopLogs { get; set; }
         public DbSet<ShopPurchase> ShopPurchases { get; set; }
         public DbSet<Task> Tasks { get; set; }
@@ -145,9 +145,9 @@ namespace Tayra.Models.Organizations
                 entity.HasKey(x => new { x.ActionPointId, x.ProfileId });
             });
 
-            modelBuilder.Entity<ActionPointProject>(entity =>
+            modelBuilder.Entity<ActionPointSegment>(entity =>
             {
-                entity.HasKey(x => new { x.ActionPointId, x.ProjectId });
+                entity.HasKey(x => new { x.ActionPointId, x.SegmentId });
             });
 
             modelBuilder.Entity<ActionPointSetting>(entity =>
@@ -183,7 +183,7 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<Integration>(entity =>
             {
-                entity.HasIndex(x => new { x.ProfileId, x.ProjectId });
+                entity.HasIndex(x => new { x.ProfileId, x.SegmentId });
             });
 
 
@@ -197,7 +197,7 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileExternalId>(entity =>
             {
-                entity.HasKey(x => new { x.ProfileId, x.ProjectId, x.IntegrationType });
+                entity.HasKey(x => new { x.ProfileId, x.SegmentId, x.IntegrationType });
             });
 
             modelBuilder.Entity<ProfileInventoryItem>(entity =>
@@ -224,21 +224,21 @@ namespace Tayra.Models.Organizations
                 entity.HasKey(x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
             });
 
-            modelBuilder.Entity<Project>().HasIndex(x => x.Key).IsUnique();
-            modelBuilder.Entity<ProjectArea>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<ProjectMember>().HasKey(x => new { x.ProjectId, x.ProfileId });
-            modelBuilder.Entity<ProjectReportDaily>().HasKey(x => new { x.DateId, x.ProjectId, x.TaskCategoryId });
-            modelBuilder.Entity<ProjectReportWeekly>().HasKey(x => new { x.DateId, x.ProjectId, x.TaskCategoryId });
-            modelBuilder.Entity<ProjectTeam>().HasKey(x => new { x.ProjectId, x.TeamId });
+            modelBuilder.Entity<Segment>().HasIndex(x => x.Key).IsUnique();
+            modelBuilder.Entity<SegmentArea>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<SegmentMember>().HasKey(x => new { x.SegmentId, x.ProfileId });
+            modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
+            modelBuilder.Entity<SegmentReportWeekly>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
+            modelBuilder.Entity<SegmentTeam>().HasKey(x => new { x.SegmentId, x.TeamId });
 
             modelBuilder.Entity<ShopItem>(entity =>
             {
                 entity.HasIndex(x => x.ItemId).IsUnique();
             });
 
-            modelBuilder.Entity<ShopItemProject>(entity =>
+            modelBuilder.Entity<ShopItemSegment>(entity =>
             {
-                entity.HasKey(x => new { x.ShopItemId, x.ProjectId });
+                entity.HasKey(x => new { x.ShopItemId, x.SegmentId });
             });
 
             modelBuilder.Entity<ShopLog>().HasKey(x => new { x.ShopId, x.LogId });

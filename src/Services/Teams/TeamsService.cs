@@ -37,10 +37,10 @@ namespace Tayra.Services
             return teamDto;
         }
 
-        public GridData<TeamViewGridDTO> GetViewGridData(int projectId, TeamViewGridParams gridParams)
+        public GridData<TeamViewGridDTO> GetViewGridData(int segmentId, TeamViewGridParams gridParams)
         {
             var scope = DbContext.Teams
-                .Where(x => x.ProjectId == projectId)
+                .Where(x => x.SegmentId == segmentId)
                 .Where(x => x.ArchivedAt == null);
 
 
@@ -87,14 +87,14 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void Create(int projectId, TeamCreateDTO dto)
+        public void Create(int segmentId, TeamCreateDTO dto)
         {
-            DbContext.Add(new ProjectTeam
+            DbContext.Add(new SegmentTeam
             {
-                ProjectId = projectId,
+                SegmentId = segmentId,
                 Team = new Team
                 {
-                    ProjectId = projectId,
+                    SegmentId = segmentId,
                     Key = dto.Key.Trim(),
                     Name = dto.Name.Trim(),
                     Avatar = dto.Avatar
@@ -102,13 +102,13 @@ namespace Tayra.Services
             });
         }
 
-        public void Update(int projectId, TeamUpdateDTO dto)
+        public void Update(int segmentId, TeamUpdateDTO dto)
         {
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == dto.TeamKey);
 
             team.EnsureNotNull(dto.TeamKey);
 
-            team.ProjectId = dto.NewProjectId ?? projectId;
+            team.SegmentId = dto.NewSegmentId ?? segmentId;
             team.Key = dto.Key.Trim();
             team.Name = dto.Name.Trim();
             team.Avatar = dto.Avatar;

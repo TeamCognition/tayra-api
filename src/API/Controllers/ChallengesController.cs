@@ -19,7 +19,7 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpPost("search")]
-        public ActionResult<GridData<ChallengeViewGridDTO>> GetProjectChallenges([FromBody] ChallengeViewGridParams gridParams)
+        public ActionResult<GridData<ChallengeViewGridDTO>> GetSegmentChallenges([FromBody] ChallengeViewGridParams gridParams)
         {
             if (string.IsNullOrEmpty(gridParams.Sidx))
             {
@@ -27,13 +27,13 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "ASC";
             }
 
-            return ChallengesService.GetProjectChallengesGrid(CurrentProject.Id, gridParams);
+            return ChallengesService.GetSegmentChallengesGrid(CurrentSegment.Id, gridParams);
         }
 
         [HttpPost("create")]
         public IActionResult CreateChallenge([FromBody] ChallengeCreateDTO dto)
         {
-            ChallengesService.Create(CurrentProject.Id, dto);
+            ChallengesService.Create(CurrentSegment.Id, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -42,7 +42,7 @@ namespace Tayra.API.Controllers
         [HttpPut("update")]
         public IActionResult UpdateChallenge([FromBody] ChallengeUpdateDTO dto)
         {
-            ChallengesService.Update(CurrentProject.Id, dto);
+            ChallengesService.Update(CurrentSegment.Id, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();

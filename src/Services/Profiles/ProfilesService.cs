@@ -128,10 +128,10 @@ namespace Tayra.Services
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
 
-            if (!string.IsNullOrEmpty(gridParams.ProjectKeyQuery))
+            if (!string.IsNullOrEmpty(gridParams.SegmentKeyQuery))
             {
-                var project = DbContext.Projects.FirstOrDefault(x => x.Key == gridParams.ProjectKeyQuery);
-                var profileIds = DbContext.ProjectMembers.Where(x => x.ProjectId == project.Id).Select(x => x.ProfileId).ToList();
+                var segment = DbContext.Segments.FirstOrDefault(x => x.Key == gridParams.SegmentKeyQuery);
+                var profileIds = DbContext.SegmentMembers.Where(x => x.SegmentId == segment.Id).Select(x => x.ProfileId).ToList();
                 scope = scope.Where(x => profileIds.Contains(x.Id));
             }
 
@@ -169,10 +169,10 @@ namespace Tayra.Services
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
 
-            if (!string.IsNullOrEmpty(gridParams.ProjectKeyQuery))
+            if (!string.IsNullOrEmpty(gridParams.SegmentKeyQuery))
             {
-                var project = DbContext.Projects.FirstOrDefault(x => x.Key == gridParams.ProjectKeyQuery);
-                var profileIds = DbContext.ProjectMembers.Where(x => x.ProjectId == project.Id).Select(x => x.ProfileId).ToList();
+                var segment = DbContext.Segments.FirstOrDefault(x => x.Key == gridParams.SegmentKeyQuery);
+                var profileIds = DbContext.SegmentMembers.Where(x => x.SegmentId == segment.Id).Select(x => x.ProfileId).ToList();
                 scope = scope.Where(x => profileIds.Contains(x.Id));
             }
 
@@ -301,10 +301,10 @@ namespace Tayra.Services
                                   Experience = Convert.ToInt32(tt.Where(x => x.Type == TokenType.Experience).Select(x => x.Value).FirstOrDefault()),
                                   OneUps = Convert.ToInt32(tt.Where(x => x.Type == TokenType.OneUp).Select(x => x.Value).FirstOrDefault()),
                                   CustomTokens = tt.Where(x => x.Type == TokenType.Custom).ToList(),
-                                  Projects = p.Projects.Select(x => new ProfileViewDTO.Project
+                                  Segments = p.Segments.Select(x => new ProfileViewDTO.Segment
                                   {
-                                      Name = x.Project.Name,
-                                      Key = x.Project.Key
+                                      Name = x.Segment.Name,
+                                      Key = x.Segment.Key
                                   }),
                                   Teams = p.Teams.Select(x => new ProfileViewDTO.Team
                                   {

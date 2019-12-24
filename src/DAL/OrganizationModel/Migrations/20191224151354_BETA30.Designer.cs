@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191224151354_BETA30")]
+    partial class BETA30
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1226,7 +1228,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Segments");
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentArea", b =>
@@ -1255,7 +1257,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("SegmentAreas");
+                    b.ToTable("ProjectAreas");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentMember", b =>
@@ -1282,7 +1284,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("ProfileId");
 
-                    b.ToTable("SegmentMembers");
+                    b.ToTable("ProjectMembers");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportDaily", b =>
@@ -1361,7 +1363,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("TaskCategoryId");
 
-                    b.ToTable("SegmentReportsDaily");
+                    b.ToTable("ProjectReportsDaily");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportWeekly", b =>
@@ -1462,7 +1464,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("TaskCategoryId");
 
-                    b.ToTable("SegmentReportsWeekly");
+                    b.ToTable("ProjectReportsWeekly");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentTeam", b =>

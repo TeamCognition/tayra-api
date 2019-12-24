@@ -21,8 +21,8 @@ namespace Tayra.Services
 
         #endregion
 
-        IQueryable<Integration> ProfileIntegrationsScope (int profileId, int projectId) => DbContext.Integrations.Where(x => x.ProfileId == profileId && x.ProjectId == projectId);
-        IQueryable<Integration> ProjectIntegrationsScope (int projectId) => DbContext.Integrations.Where(x => x.ProfileId == null && x.ProjectId == projectId);
+        IQueryable<Integration> ProfileIntegrationsScope(int profileId, int segmentId) => DbContext.Integrations.Where(x => x.ProfileId == profileId && x.SegmentId == segmentId);
+        IQueryable<Integration> SegmentIntegrationsScope(int segmentId) => DbContext.Integrations.Where(x => x.ProfileId == null && x.SegmentId == segmentId);
 
         #region Public Methods
 
@@ -33,16 +33,16 @@ namespace Tayra.Services
         /// <returns></returns>
         public int GetProfileIdByExternalId(string externalId)
         {
-            return DbContext.IntegrationFields.Where(x => x.Value == externalId).Select(x => x.Integration.ProjectId).FirstOrDefault();
+            return DbContext.IntegrationFields.Where(x => x.Value == externalId).Select(x => x.Integration.SegmentId).FirstOrDefault();
         }
 
-        public void DeleteProfileIntegration(int profileId, int projectId, IntegrationType integrationType)
+        public void DeleteSegmentIntegration(int profileId, int segmentId, IntegrationType integrationType)
         {
-            var integration = ProfileIntegrationsScope(profileId, projectId)
+            var integration = ProfileIntegrationsScope(profileId, segmentId)
                                 .Include(x => x.Fields)
-                                .LastOrDefault(x => x.ProfileId == profileId && x.ProjectId == projectId && x.Type == integrationType);
+                                .LastOrDefault(x => x.ProfileId == profileId && x.SegmentId == segmentId && x.Type == integrationType);
 
-            integration.EnsureNotNull(projectId, integrationType);
+            integration.EnsureNotNull(segmentId, integrationType);
 
             integration.Fields.ToList().ForEach(x => DbContext.Remove(x));
             DbContext.Remove(integration);
@@ -51,23 +51,23 @@ namespace Tayra.Services
         public List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(int profileId)
         {
             //could this be taken out of access token?
-            var profileProjectIds = DbContext.ProjectMembers.Where(x => x.ProfileId == profileId).Select(x => x.ProjectId).ToList();
+            var profileProjectIds = DbContext.SegmentMembers.Where(x => x.ProfileId == profileId).Select(x => x.SegmentId).ToList();
 
             return DbContext.Integrations
-                .Where(x => (x.ProfileId == profileId || x.ProfileId == null) && profileProjectIds.Contains(x.ProjectId))
+                .Where(x => (x.ProfileId == profileId || x.ProfileId == null) && profileProjectIds.Contains(x.SegmentId))
                 .Select(x => new IntegrationProfileConfigDTO
                 {
-                    ProjectId = x.ProjectId,
+                    ProjectId = x.SegmentId,
                     Type = x.Type,
                     ExternalId = x.Fields.Where(e => e.Key == IntegrationConstants.ProfileExternalId).Select(e => e.Value).FirstOrDefault()
                 })
                 .ToList();
         }
 
-        public List<IntegrationProjectViewDTO> GetProjectIntegrations(int projectId)
+        public List<IntegrationSegmentViewDTO> GetSegmentIntegrations(int segmentId)
         {
-            return ProjectIntegrationsScope(projectId)
-                .Select(x => new IntegrationProjectViewDTO
+            return SegmentIntegrationsScope(segmentId)
+                .Select(x => new IntegrationSegmentViewDTO
                 {
                     Type = x.Type,
                     Created = x.Created,
@@ -79,15 +79,15 @@ namespace Tayra.Services
                 .ToList();
         }
 
-        public JiraSettingsViewDTO GetJiraSettingsViewDTO(int projectId)
+        public JiraSettingsViewDTO GetJiraSettingsViewDTO(int segmentId)
         {
-            var integration = ProjectIntegrationsScope(projectId)
+            var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
                                 .LastOrDefault(x => x.Type == IntegrationType.ATJ);
 
             if (integration == null)
             {
-                throw new ApplicationException("No Jira integration associated with project " + projectId);
+                throw new ApplicationException("No Jira integration associated with segment " + segmentId);
             }
 
             var jiraConnector = new AtlassianJiraConnector(null, DbContext);
@@ -98,10 +98,10 @@ namespace Tayra.Services
                 x.Statuses = jiraConnector.GetProjectStatuses(integration.Id, x.Id);
             }
 
-            var projects = integration.Fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID);
+            var jiraProjects = integration.Fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID);
             var rewardStatus = integration.Fields.Where(x => x.Key.StartsWith(ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_, StringComparison.InvariantCulture));
 
-            var activeProjects = projects
+            var activeProjects = jiraProjects
                 .Select(p => new ActiveProject(p.Value, rewardStatus.FirstOrDefault(x => x.Key.Contains(p.Value)).Value));
 
 
@@ -114,15 +114,15 @@ namespace Tayra.Services
             };
         }
 
-        public void UpdateJiraSettings(int projectId, JiraSettingsUpdateDTO dto)
+        public void UpdateJiraSettings(int segmentId, JiraSettingsUpdateDTO dto)
         {
-            var integration = ProjectIntegrationsScope(projectId)
+            var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
                                 .LastOrDefault(x => x.Type == IntegrationType.ATJ);
 
             if (integration == null)
             {
-                throw new ApplicationException("No Jira integration associated with project " + projectId);
+                throw new ApplicationException("No Jira integration associated with segment " + segmentId);
             }
 
             var fields = integration.Fields

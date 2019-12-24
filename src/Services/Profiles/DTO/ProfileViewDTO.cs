@@ -26,11 +26,11 @@ namespace Tayra.Services
         public IList<ActiveItem> Badges { get; set; }
         public ActiveItem Title { get; set; }
 
-        public virtual IEnumerable<Project> Projects { get; set; }
+        public virtual IEnumerable<Segment> Segments { get; set; }
         public virtual IEnumerable<Team> Teams { get; set; }
         public virtual IList<Token> CustomTokens { get; set; } //Ienumerable when fixed profileViewGET
 
-        public class Project
+        public class Segment
         {
             public string Key { get; set; }
             public string Name { get; set; }

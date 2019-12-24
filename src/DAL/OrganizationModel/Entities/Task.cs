@@ -45,11 +45,11 @@ namespace Tayra.Models.Organizations
         public int? TeamId { get; set; }
         public virtual Team Team { get; set; }
 
-        public int? ProjectId { get; set; }
-        public virtual Project Project { get; set; }
+        public int? SegmentId { get; set; }
+        public virtual Segment Segment { get; set; }
 
-        public int? ProjectAreaId { get; set; }
-        public virtual ProjectArea ProjectArea { get; set; }
+        public int? SegmentAreaId { get; set; }
+        public virtual SegmentArea SegmentArea { get; set; }
 
         public int? TaskCategoryId { get; set; }
         public virtual TaskCategory TaskCategory { get; set; }

@@ -84,9 +84,9 @@ namespace Tayra.SyncServices.Tayra
 
 
             var shopItemsAddedCount = (from si in organizationDb.ShopItems
-                                      where si.CreatedBy > 0
-                                      where si.Created > DateHelper2.ParseDate(dateId4ago)
-                                      select si).Count();
+                                       where si.CreatedBy > 0
+                                       where si.Created > DateHelper2.ParseDate(dateId4ago)
+                                       select si).Count();
 
 
             var challengesCreatedCount = (from c in organizationDb.Challenges
@@ -95,8 +95,8 @@ namespace Tayra.SyncServices.Tayra
                                           select c).Count();
 
 
-            var profiles = organizationDb.Profiles.Select(x => new { x.Id , x.Created}).ToList();
-            foreach(var p in profiles)
+            var profiles = organizationDb.Profiles.Select(x => new { x.Id, x.Created }).ToList();
+            foreach (var p in profiles)
             {
                 if (p.Created <= DateHelper2.ParseDate(dateId1ago))
                 {
@@ -135,23 +135,23 @@ namespace Tayra.SyncServices.Tayra
 
             if (!CommonHelper.IsMonday(fromDay))
             {
-                var projects = organizationDb.Projects.Select(x => new { x.Id, x.Created }).ToList();
-                foreach (var proj in projects)
+                var segments = organizationDb.Segments.Select(x => new { x.Id, x.Created }).ToList();
+                foreach (var proj in segments)
                 {
                     if (proj.Created <= DateHelper2.ParseDate(dateId4ago))
                     {
                         if (shopItemsAddedCount == 0)
                         {
-                            MakeProjectAP(organizationDb, ActionPointTypes.ShopNoItemsAddedIn4Weeks, proj.Id);
+                            MakeSegmentAP(organizationDb, ActionPointTypes.ShopNoItemsAddedIn4Weeks, proj.Id);
                         }
                         if (challengesCreatedCount == 0)
                         {
-                            MakeProjectAP(organizationDb, ActionPointTypes.ChallengeNotCreatedIn4Weeks, proj.Id);
+                            MakeSegmentAP(organizationDb, ActionPointTypes.ChallengeNotCreatedIn4Weeks, proj.Id);
                         }
                     }
                 }
             }
-            
+
 
             //var existing = organizationDb.ActionPoints.Count(x => x.DateId == dateId);
             //if (existing > 0)
@@ -180,15 +180,15 @@ namespace Tayra.SyncServices.Tayra
                 DateId = dateId,
                 Profiles = new List<ActionPointProfile> {
                     new ActionPointProfile
-                    { 
+                    {
                         ProfileId = profileId
                     }}
             });
         }
 
-        private static void MakeProjectAP(OrganizationDbContext dbContext, ActionPointTypes type, int projectId, int dateId = 0)
+        private static void MakeSegmentAP(OrganizationDbContext dbContext, ActionPointTypes type, int segmentId, int dateId = 0)
         {
-            if (projectId <= 0)
+            if (segmentId <= 0)
                 return;
 
             if (dateId == 0)
@@ -198,10 +198,10 @@ namespace Tayra.SyncServices.Tayra
             {
                 Type = type,
                 DateId = dateId,
-                Projects = new List<ActionPointProject> {
-                    new ActionPointProject
+                Segments = new List<ActionPointSegment> {
+                    new ActionPointSegment
                     {
-                        ProjectId = projectId
+                        SegmentId = segmentId
                     }}
             });
         }
@@ -212,10 +212,10 @@ namespace Tayra.SyncServices.Tayra
                 dateId = DateHelper2.ToDateId(DateTime.UtcNow);
 
             dbContext.Add(new ActionPoint
-           {
+            {
                 Type = type,
                 DateId = dateId
-           });
+            });
         }
 
         #endregion

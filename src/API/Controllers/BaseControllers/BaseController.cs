@@ -24,7 +24,7 @@ namespace Tayra.API.Controllers
         private ILookupsService _lookupsService;
         private IReportsService _reportsService;
         private IProfilesService _profilesService;
-        private IProjectsService _projectsService;
+        private ISegmentsService _segmentsService;
         private IShopItemsService _shopItemsService;
         private IChallengesService _challengesService;
         private IIdentitiesService _identitiesService;
@@ -64,7 +64,7 @@ namespace Tayra.API.Controllers
         protected ILookupsService LookupsService => _lookupsService ?? (_lookupsService = Resolve<ILookupsService>());
         protected IReportsService ReportsService => _reportsService ?? (_reportsService = Resolve<IReportsService>());
         protected IProfilesService ProfilesService => _profilesService ?? (_profilesService = Resolve<IProfilesService>());
-        protected IProjectsService ProjectsService => _projectsService ?? (_projectsService = Resolve<IProjectsService>());
+        protected ISegmentsService SegmentsService => _segmentsService ?? (_segmentsService = Resolve<ISegmentsService>());
         protected IShopItemsService ShopItemsService => _shopItemsService ?? (_shopItemsService = Resolve<IShopItemsService>());
         protected IChallengesService ChallengesService => _challengesService ?? (_challengesService = Resolve<IChallengesService>());
         protected IIdentitiesService IdentitiesService => _identitiesService ?? (_identitiesService = Resolve<IIdentitiesService>());

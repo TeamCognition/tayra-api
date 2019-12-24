@@ -2,7 +2,7 @@
 
 namespace Tayra.Services
 {
-    public class ProjectCreateDTO
+    public class SegmentCreateDTO
     {
         [Required, MaxLength(50)]
         public string Key { get; set; }

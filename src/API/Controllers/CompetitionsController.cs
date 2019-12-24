@@ -20,7 +20,7 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpPost("search")]
-        public ActionResult<GridData<CompetitionViewGridDTO>> GetProjectCompetitions([FromBody] CompetitionViewGridParams gridParams)
+        public ActionResult<GridData<CompetitionViewGridDTO>> GetSegmentCompetitions([FromBody] CompetitionViewGridParams gridParams)
         {
             if (string.IsNullOrEmpty(gridParams.Sidx))
             {
@@ -28,7 +28,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "DESC";
             }
 
-            return CompetitionsService.GetProjectCompetitionsGrid(CurrentProject.Id, gridParams);
+            return CompetitionsService.GetSegmentCompetitionsGrid(CurrentSegment.Id, gridParams);
         }
 
         [HttpPost("competitors")] //TODO: competitorsSearch / searchCompetitors
@@ -45,7 +45,7 @@ namespace Tayra.API.Controllers
         [HttpPost("create")]
         public IActionResult Create([FromBody]CompetitionCreateDTO dto)
         {
-            CompetitionsService.Create(CurrentProject.Id, dto);
+            CompetitionsService.Create(CurrentSegment.Id, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();

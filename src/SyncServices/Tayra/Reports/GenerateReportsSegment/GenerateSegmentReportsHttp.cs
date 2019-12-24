@@ -7,14 +7,14 @@ using Tayra.SyncServices.Common;
 
 namespace Tayra.SyncServices
 {
-    public static class GenerateProjectReportsHttp
+    public static class GenerateSegmentReportsHttp
     {
-        [FunctionName(nameof(GenerateProjectReportsHttp))]
+        [FunctionName(nameof(GenerateSegmentReportsHttp))]
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest request,
             ExecutionContext context, ILogger logger)
         {
-            SyncHelper.RunFromHttp(JobTypes.GenerateReportProject, request, context, logger);
+            SyncHelper.RunFromHttp(JobTypes.GenerateReportSegment, request, context, logger);
             return new OkResult();
         }
     }

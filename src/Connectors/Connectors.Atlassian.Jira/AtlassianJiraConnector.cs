@@ -34,7 +34,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return $"{AUTH_URL}?audience={AUDIENCE}&client_id={AtlassianJiraService.APP_ID}&state={userState}&scope={SCOPE}&redirect_uri={GetCallbackUrl(userState)}&response_type=code&prompt=consent";
         }
 
-        public override Integration Authenticate(int profileId, ProfileRoles profileRole, int projectId, string userState)
+        public override Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState)
         {
             if (HttpContext?.Request != null)
             {
@@ -49,9 +49,9 @@ namespace Tayra.Connectors.Atlassian.Jira
                 var accResData = AtlassianJiraService.GetAccessibleResources(tokenData.TokenType, tokenData.AccessToken)?.Data?.FirstOrDefault();
                 var loggedInUser = AtlassianJiraService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
 
-                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == profileId && x.ProjectId == projectId && x.Type == Type);
-                var projectIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == null && x.ProjectId == projectId && x.Type == Type);
-                if (projectIntegration == null && ProfileRoles.Member == profileRole)
+                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == profileId && x.SegmentId == segmentId && x.Type == Type);
+                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == null && x.SegmentId == segmentId && x.Type == Type);
+                if (segmentIntegration == null && ProfileRoles.Member == profileRole)
                 {
                     throw new FirdawsSecurityException($"profileId: {profileId} tried to integrate {Type} before segment integration");
                 }
@@ -63,12 +63,12 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [Constants.USER_ACCOUNT_ID] = loggedInUser.AccountId
                     };
 
-                    CreateProfileIntegration(profileId, projectId, profileFields, profileIntegration);
+                    CreateProfileIntegration(profileId, segmentId, profileFields, profileIntegration);
                 }
 
                 if (profileRole != ProfileRoles.Member && tokenData != null && accResData != null)
                 {
-                    var projectFields = new Dictionary<string, string>
+                    var segmentFields = new Dictionary<string, string>
                     {
                         [Constants.ACCESS_TOKEN] = tokenData.AccessToken,
                         [Constants.ACCESS_TOKEN_TYPE] = tokenData.TokenType,
@@ -79,9 +79,9 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [ATConstants.AT_SITE_NAME] = accResData.Name
                     };
 
-                    projectIntegration = CreateProjectIntegration(projectId, projectFields, projectIntegration);
+                    segmentIntegration = CreateSegmentIntegration(segmentId, segmentFields, segmentIntegration);
                     OrganizationContext.SaveChanges();
-                    return projectIntegration;
+                    return segmentIntegration;
                 }
             }
             return null;

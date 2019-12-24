@@ -16,7 +16,7 @@ namespace Tayra.Services
 
         #region Constructor
 
-        public IdentitiesService(CatalogDbContext catalogDb, OrganizationDbContext dbContext): base(dbContext)
+        public IdentitiesService(CatalogDbContext catalogDb, OrganizationDbContext dbContext) : base(dbContext)
         {
             CatalogDb = catalogDb;
         }
@@ -56,7 +56,7 @@ namespace Tayra.Services
             {
                 Identity = identity,
                 TenantId = TenantUtilities.ConvertShardingKeyToTenantId(TenantUtilities.GenerateShardingKey(dto.TenantHost))
-            }) ;
+            });
 
             //get identity Id
             CatalogDb.SaveChanges();
@@ -71,16 +71,16 @@ namespace Tayra.Services
                 IdentityId = identity.Id
             }).Entity;
 
-            //var project = DbContext.Projects.FirstOrDefault();
-            //DbContext.Add(new ProjectMember
+            //var segment = DbContext.Segments.FirstOrDefault();
+            //DbContext.Add(new SegmentMember
             //{
             //    Profile = profile,
-            //    ProjectId = project.Id,
+            //    SegmentId = segment.Id,
 
             //});
 
             DbContext.SaveChanges();
-            
+
         }
 
         public Identity GetByEmail(string email) //TODO: this should be used by Auth.ResourceOwnerValidator?
@@ -99,7 +99,7 @@ namespace Tayra.Services
 
             ValidateInvitationWithSaveChanges(invitation);
 
-            if(!ProfilesService.IsUsernameUnique(DbContext, dto.Username))
+            if (!ProfilesService.IsUsernameUnique(DbContext, dto.Username))
             {
                 throw new ApplicationException($"Username already exists");
             }
@@ -147,12 +147,12 @@ namespace Tayra.Services
                 IdentityId = identity.Id
             }).Entity;
 
-            if (invitation.ProjectId.HasValue)
+            if (invitation.SegmentId.HasValue)
             {
-                DbContext.Add(new ProjectMember
+                DbContext.Add(new SegmentMember
                 {
                     Profile = profile,
-                    ProjectId = invitation.ProjectId.Value,
+                    SegmentId = invitation.SegmentId.Value,
                 });
             }
 
@@ -177,19 +177,19 @@ namespace Tayra.Services
                 Role = dto.Role,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
-                ProjectId = dto.ProjectId,
+                SegmentId = dto.SegmentId,
                 TeamId = dto.TeamId,
                 Status = InvitationStatus.Sent
             };
 
-            if(!IsEmailAddressUnique(dto.EmailAddress))
+            if (!IsEmailAddressUnique(dto.EmailAddress))
             {
                 throw new ApplicationException("Email address already used");
             }
 
-            if (dto.ProjectId.HasValue && !DbContext.Projects.Any(x => x.Id == dto.ProjectId && x.ArchivedAt == null))
+            if (dto.SegmentId.HasValue && !DbContext.Segments.Any(x => x.Id == dto.SegmentId && x.ArchivedAt == null))
             {
-                throw new EntityNotFoundException<Project>(dto.ProjectId);
+                throw new EntityNotFoundException<Segment>(dto.SegmentId);
             }
 
             if (dto.TeamId.HasValue && !DbContext.Teams.Any(x => x.Id == dto.TeamId && x.ArchivedAt == null))
@@ -198,7 +198,7 @@ namespace Tayra.Services
             }
 
             var resp = MailerService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
-            if(resp.StatusCode != System.Net.HttpStatusCode.Accepted)
+            if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 throw new ApplicationException(dto.EmailAddress + " email not sent");
             }
@@ -219,7 +219,7 @@ namespace Tayra.Services
 
             invitation.EnsureNotNull(InvitationCode);
 
-            if(invitation.Status == InvitationStatus.Sent)
+            if (invitation.Status == InvitationStatus.Sent)
             {
                 invitation.Status = InvitationStatus.Viewed;
             }
@@ -235,7 +235,7 @@ namespace Tayra.Services
                                                           where i.IsActive == !gridParams.ActiveStatusesOnly
                                                           select new IdentityInvitationGridDTO
                                                           {
-                                                              EmailAddress =  i.EmailAddress,
+                                                              EmailAddress = i.EmailAddress,
                                                               Status = i.Status,
                                                               FirstName = i.FirstName,
                                                               LastName = i.LastName,
@@ -320,7 +320,7 @@ namespace Tayra.Services
             var scope = CatalogDb.IdentityEmails.Where(x => x.IdentityId == identityId && x.DeletedAt != null);
             var identityEmail = scope.Where(x => x.Email == email).FirstOrDefault();
 
-            if(identityEmail.IsPrimary)
+            if (identityEmail.IsPrimary)
             {
                 throw new ApplicationException("You can't remove primary email address");
             }
@@ -344,7 +344,7 @@ namespace Tayra.Services
             if (!invitation.IsActive)
                 return false;
 
-            if(!IsEmailAddressUnique(invitation.EmailAddress))
+            if (!IsEmailAddressUnique(invitation.EmailAddress))
             {
                 invitation.Status = InvitationStatus.Expired;
                 DbContext.SaveChanges();

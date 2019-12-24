@@ -60,7 +60,7 @@ namespace Tayra.API.Controllers
 
             if (rewardStatusField == null)
             {
-                throw new ApplicationException($"issue is located in {jiraProjectId} jira project which is not connected to any tayra projects");
+                throw new ApplicationException($"issue is located in {jiraProjectId} jira segment which is not connected to any tayra segments");
             }
 
             var jiraConnector = new AtlassianJiraConnector(null, DbContext);
@@ -73,7 +73,7 @@ namespace Tayra.API.Controllers
 
             var assigneProfile = ProfilesService.GetByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
             var teamMember = DbContext.TeamMembers.FirstOrDefault(x => x.ProfileId == assigneProfile.Id);
-            var currentProject = DbContext.ProjectMembers.FirstOrDefault(x => x.ProfileId == assigneProfile.Id);
+            var currentSegment = DbContext.SegmentMembers.FirstOrDefault(x => x.ProfileId == assigneProfile.Id);
 
             var activeCompetitions = CompetitionsService.GetActiveCompetitions(assigneProfile.Id);
             var jiraBaseUrl = we.JiraIssue.Self.Substring(0, we.JiraIssue.Self.IndexOf('/', 10));
@@ -95,7 +95,7 @@ namespace Tayra.API.Controllers
                     AssigneeProfileId = assigneProfile.Id,
                     ReporterProfileId = 0,
                     TeamId = teamMember?.TeamId,
-                    ProjectId = currentProject?.ProjectId
+                    SegmentId = currentSegment?.SegmentId
                 });
 
                 LogsService.LogEvent(new LogCreateDTO
@@ -198,7 +198,7 @@ namespace Tayra.API.Controllers
                 AssigneeProfileId = assigneProfile.Id,
                 ReporterProfileId = 0,
                 TeamId = teamMember?.TeamId,
-                ProjectId = currentProject?.ProjectId
+                SegmentId = currentSegment?.SegmentId
             });
 
             LogsService.LogEvent(new LogCreateDTO

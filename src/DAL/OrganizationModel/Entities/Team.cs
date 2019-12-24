@@ -17,8 +17,8 @@ namespace Tayra.Models.Organizations
         [MaxLength(2000)]
         public string Avatar { get; set; }
 
-        public int ProjectId { get; set; }
-        public virtual Project Project { get; set; }
+        public int SegmentId { get; set; }
+        public virtual Segment Segment { get; set; }
 
         public DateTime? ArchivedAt { get; set; }
 

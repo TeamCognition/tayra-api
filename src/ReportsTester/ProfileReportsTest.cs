@@ -58,8 +58,8 @@ namespace ReportsTester
                     GenerateProfileReportsLoader.GenerateProfileReportsDaily(context, date, logService);
                     GenerateProfileReportsLoader.GenerateProfileReportsWeekly(context, date, logService);
 
-                    GenerateProjectReportsLoader.GenerateProjectReportsDaily(context, date, logService);
-                    GenerateProjectReportsLoader.GenerateProjectReportsWeekly(context, date, logService);
+                    GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(context, date, logService);
+                    GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(context, date, logService);
 
                     GenerateTeamReportsLoader.GenerateTeamReportsDaily(context, date, logService);
                     GenerateTeamReportsLoader.GenerateTeamReportsWeekly(context, date, logService);
@@ -100,7 +100,7 @@ namespace ReportsTester
             SeedOneUps(dbContext, profiles);
 
             var teams = SeedTeams(dbContext, profiles);
-            SeedProjects(dbContext, profiles, teams);
+            SeedSegments(dbContext, profiles, teams);
         }
 
         private void SeedTokens(OrganizationDbContext dbContext)
@@ -254,31 +254,31 @@ namespace ReportsTester
             return teams;
         }
 
-        private void SeedProjects(OrganizationDbContext dbContext, List<Profile> profiles, List<Team> teams)
+        private void SeedSegments(OrganizationDbContext dbContext, List<Profile> profiles, List<Team> teams)
         {
-            var projects = new List<Project>
+            var segments = new List<Segment>
             {
-                new Project
+                new Segment
                 {
                     Id = 1
                 }
             };
 
-            var projectMembers = new List<ProjectMember>();
+            var segmentMembers = new List<SegmentMember>();
             foreach (var p in profiles)
             {
-                projectMembers.Add(new ProjectMember { ProjectId = 1, ProfileId = p.Id });
+                segmentMembers.Add(new SegmentMember { SegmentId = 1, ProfileId = p.Id });
             }
 
-            var projectTeams = new List<ProjectTeam>();
+            var segmentTeams = new List<SegmentTeam>();
             foreach (var t in teams)
             {
-                projectTeams.Add(new ProjectTeam { ProjectId = 1, TeamId = t.Id });
+                segmentTeams.Add(new SegmentTeam { SegmentId = 1, TeamId = t.Id });
             }
 
-            dbContext.AddRange(projects);
-            dbContext.AddRange(projectMembers);
-            dbContext.AddRange(projectTeams);
+            dbContext.AddRange(segments);
+            dbContext.AddRange(segmentMembers);
+            dbContext.AddRange(segmentTeams);
         }
     }
 }

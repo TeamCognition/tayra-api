@@ -5,11 +5,11 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.Services
 {
-    public class ProjectsService : BaseService<OrganizationDbContext>, IProjectsService
+    public class SegmentsService : BaseService<OrganizationDbContext>, ISegmentsService
     {
         #region Constructor
 
-        public ProjectsService(OrganizationDbContext dbContext) : base(dbContext)
+        public SegmentsService(OrganizationDbContext dbContext) : base(dbContext)
         {
         }
 
@@ -17,27 +17,27 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public IQueryable<Project> Get()
+        public IQueryable<Segment> Get()
         {
-            return DbContext.Projects
+            return DbContext.Segments
                 .AsNoTracking();
         }
 
-        public Project Get(int id)
+        public Segment Get(int id)
         {
             return Get()
                 .FirstOrDefault(i => i.Id == id);
         }
 
-        public Project Get(string projectKey)
+        public Segment Get(string segmentKey)
         {
             return Get()
-                .FirstOrDefault(i => i.Key == projectKey);
+                .FirstOrDefault(i => i.Key == segmentKey);
         }
 
-        public Project Create(ProjectCreateDTO dto)
+        public Segment Create(SegmentCreateDTO dto)
         {
-            var project = new Project
+            var segment = new Segment
             {
                 Key = dto.Key,
                 Name = dto.Name,
@@ -45,27 +45,27 @@ namespace Tayra.Services
                 OrganizationId = 1
             };
 
-            DbContext.Projects.Add(project);
+            DbContext.Segments.Add(segment);
             DbContext.SaveChanges();
-            return project;
+            return segment;
         }
 
         public bool Delete(int id)
         {
-            var projectToDelete = GetOrFail(id);
-            DbContext.Projects.Remove(projectToDelete);
+            var segmentToDelete = GetOrFail(id);
+            DbContext.Segments.Remove(segmentToDelete);
             var affectedRecords = DbContext.SaveChanges();
             return affectedRecords > 0;
         }
 
         #endregion
 
-        private Project GetOrFail(int id)
+        private Segment GetOrFail(int id)
         {
             var item = Get(id);
             if (item == null)
             {
-                throw new ApplicationException($"{typeof(Project)} does not exist.");
+                throw new ApplicationException($"{typeof(Segment)} does not exist.");
             }
 
             return item;
