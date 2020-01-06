@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Firdaws.DAL;
 using Tayra.Common;
 
@@ -13,9 +14,6 @@ namespace Tayra.Models.Organizations
         public string Name { get; set; }
         public string Description { get; set; }
         public string Image { get; set; }
-
-        public double TokenRewardValue { get; set; }
-        public string CustomReward { get; set; }
         
         public int? CompletionsLimit { get; set; }
         public int? CompletionsRemaining { get; set; }
@@ -26,8 +24,13 @@ namespace Tayra.Models.Organizations
         public DateTime? ActiveUntil { get; set; }
         public DateTime? EndedAt { get; set; }
 
+        public float RewardValue { get; set; }
+
         public int SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
+
+        public virtual ICollection<ChallengeGoal> Goals { get; set; }
+        public virtual ICollection<ChallengeReward> Rewards { get; set; }
 
         #region IAuditedEntity
 

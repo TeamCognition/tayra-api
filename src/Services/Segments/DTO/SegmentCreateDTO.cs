@@ -7,12 +7,9 @@ namespace Tayra.Services
         [Required, MaxLength(50)]
         public string Key { get; set; }
 
-        public int OrganizationId { get; set; }
+        public string Avatar { get; set; }
 
         [Required, MaxLength(100)]
         public string Name { get; set; }
-
-        [MaxLength(50)]
-        public string Timezone { get; set; }
     }
 }

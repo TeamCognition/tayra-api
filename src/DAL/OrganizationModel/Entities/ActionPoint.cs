@@ -18,7 +18,6 @@ namespace Tayra.Models.Organizations
         public virtual ICollection<ActionPointProfile> Profiles { get; set; }
         public virtual ICollection<ActionPointSegment> Segments { get; set; }
 
-
         #region ITimeStampedEntity
 
         public DateTime Created { get; set; }

@@ -62,11 +62,11 @@ namespace Tayra.Services
 
         public ReportTeamsPerformanceChartDTO GetReportTeamsPerformanceChartDTO(int segmentId, int periodInDays)
         {
-            var segmentTeams = DbContext.ProjectTeams.Where(x => x.SegmentId == segmentId).Select(x => x.TeamId).ToList();
+            var segmentTeamsIds = DbContext.TeamsScopeOfSegment(segmentId).Select(x => x.Id).ToList();
             var lastReportCreatedAt = DbContext.TeamReportsWeekly.OrderByDescending(x => x.DateId).Select(x => x.DateId).FirstOrDefault();
 
             var dataset = (from tr in DbContext.TeamReportsWeekly
-                           where segmentTeams.Contains(tr.TeamId)
+                           where segmentTeamsIds.Contains(tr.TeamId)
                            where tr.DateId > DateHelper2.AddDays(lastReportCreatedAt, -periodInDays)
                            orderby tr.DateId
                            group tr by tr.TeamId into t
@@ -89,17 +89,17 @@ namespace Tayra.Services
 
         public IList<ReportTeamsCompletedTasksChartDTO> GetReportTeamsCompletedTasksChartDTO(int segmentId)
         {
-            var segmentTeams = DbContext.ProjectTeams.Where(x => x.SegmentId == segmentId).Select(x => x.TeamId).ToList();
+            var segmentTeamsIds = DbContext.TeamsScopeOfSegment(segmentId).Select(x => x.Id).ToList();
             var lastReportCreatedAt = DbContext.TeamReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.DateId).FirstOrDefault();
 
             return (from tr in DbContext.TeamReportsDaily
-                    where segmentTeams.Contains(tr.TeamId)
+                    where segmentTeamsIds.Contains(tr.TeamId)
                     where tr.DateId == lastReportCreatedAt
                     select new ReportTeamsCompletedTasksChartDTO
                     {
                         TeamId = tr.TeamId,
                         TeamName = tr.Team.Name,
-                        TeamAvatar = tr.Team.Avatar,
+                        TeamAvatar = tr.Team.AvatarColor,
                         TasksCompletedTotal = tr.TasksCompletedTotal,
                     }).ToList();
         }

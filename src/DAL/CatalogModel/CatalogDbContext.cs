@@ -56,9 +56,7 @@ namespace Tayra.Models.Catalog
             modelBuilder.Entity<IdentityEmail>(entity =>
             {
                 entity.HasKey(x => new { x.IdentityId, x.Email });
-                entity.HasIndex(x => new { x.Email, x.DeletedAt }).IsUnique();
                 entity.HasIndex(x => new { x.Email, x.IsPrimary }).IsUnique();
-                entity.HasIndex(x => new { x.IdentityId, x.IsPrimary }).IsUnique();
             });
 
             modelBuilder.Entity<Tenant>(entity =>

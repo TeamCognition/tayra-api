@@ -2,7 +2,7 @@
 {
     public enum LookupTypes
     {
-        Integrations = 1,
+        FREE = 1,
         Tokens = 2,
         TokenTypes = 3,
         ExperienceRanks = 4,

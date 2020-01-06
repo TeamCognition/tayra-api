@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Firdaws.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,12 @@ namespace Tayra.API.Controllers
         #endregion
 
         #region Action Methods
+
+        [HttpGet("sessionCache")]
+        public ActionResult<ProfileSessionCacheDTO> GetSessionCache()
+        {
+            return Ok(ProfilesService.GetSessionCache(CurrentUser.ProfileId));
+        }
 
         [HttpGet("me")]
         public ActionResult<ProfileViewDTO> GetCurrentUser()
@@ -63,7 +70,6 @@ namespace Tayra.API.Controllers
             return ProfilesService.GetGridDataWithSummary(CurrentUser.ProfileId, gridParams);
         }
 
-
         [HttpPost("completedChallengesSearch")]
         public ActionResult<GridData<ProfileCompletedChallengesGridDTO>> GetCompletedChallengesGrid([FromBody] ProfileCompletedChallengesGridParams gridParams)
         {
@@ -76,6 +82,20 @@ namespace Tayra.API.Controllers
             //gridParams.ProfileUsernameQuery ??= CurrentUser.Username
             gridParams.ProfileId = gridParams.ProfileId ?? CurrentUser.ProfileId;
             return ProfilesService.GetCompletedChallengesGridDTO(gridParams);
+        }
+
+        [HttpGet, Route("integrations")]
+        public ActionResult<List<IntegrationProfileConfigDTO>> GetProfileIntegrations()
+        {
+            return IntegrationsService.GetProfileIntegrationsWithPending(CurrentUser.ProfileId);
+        }
+
+        [HttpPut]
+        public IActionResult UpdateProfile([FromBody] ProfileUpdateDTO dto)
+        {
+            ProfilesService.UpdateProfile(CurrentUser.ProfileId, dto);
+            DbContext.SaveChanges();
+            return Ok();
         }
 
         [HttpGet("radarChart/{profileId}")]

@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
+﻿using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
 {

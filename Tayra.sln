@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{A039
 		shared\sharedSettings.json = shared\sharedSettings.json
 		shared\shared.csproj.props = shared\shared.csproj.props
 		shared\deps.csproj.props = shared\deps.csproj.props
+		firdawsCore.props = shared\firdawsCore.props
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth", "src\Auth\Auth.csproj", "{7A1AF552-13FE-43F0-91C2-CE18F17E33F6}"

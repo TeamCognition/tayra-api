@@ -8,6 +8,7 @@ namespace Tayra.Services
 {
     public interface IProfilesService
     {
+        ProfileSessionCacheDTO GetSessionCache(int profileId);
         Profile GetByIdentityId(int identityId);
         Profile GetByUsername(string username);
         Profile GetByEmail(string email);
@@ -17,6 +18,7 @@ namespace Tayra.Services
         GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams);
         GridData<ProfileSummaryGridDTO> GetGridDataWithSummary(int profileId, ProfileSummaryGridParams gridParams);
         GridData<ProfileCompletedChallengesGridDTO> GetCompletedChallengesGridDTO(ProfileCompletedChallengesGridParams gridParams);        
+        void UpdateProfile(int profileId, ProfileUpdateDTO dto);
         ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId);
         ProfileViewDTO GetProfileViewDTO(Expression<Func<Profile, bool>> condition);
         void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto);

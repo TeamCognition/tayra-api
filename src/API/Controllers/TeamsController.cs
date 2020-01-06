@@ -37,7 +37,7 @@ namespace Tayra.API.Controllers
             return TeamsService.GetViewGridData(CurrentSegment.Id, gridParams);
         }
 
-        [HttpPost("members")] //TODO: searchMembers
+        [HttpPost("searchMembers")]
         public ActionResult<GridData<TeamMembersGridDTO>> GetTeamMembers([FromBody] TeamMembersGridParams gridParams)
         {
             if (string.IsNullOrEmpty(gridParams.Sidx))

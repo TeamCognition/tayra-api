@@ -6,8 +6,7 @@ namespace Tayra.Services
     public interface IShopsService
     {
         ShopViewDTO GetShopViewDTO(int shopId);
-        GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(int profileId, ShopPurchasesGridParams gridParams);
-        GridData<ShopPurchasesAdminGridDTO> GetShopPurchasesAdminGridDTO(int profileId, ShopPurchasesAdminGridParams gridParams);
+        GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(int profileId, ProfileRoles role, ShopPurchasesGridParams gridParams);
         void UpdateShopPurchaseStatus(int profileId, int shopPurchaseId, ShopPurchaseStatuses newStatus);
         void OpenShop(int shopId);
         void CloseShop(int shopId);

@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="..\..\..\shared\firdawsCore.props" />
+  <Import Project="..\..\..\shared\firdawsDAL.props" />
+  
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>Tayra.Models.Organizations</RootNamespace>
@@ -13,8 +15,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.3" />
     <PackageReference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client" Version="2.3.0" />
-    <PackageReference Include="Firdaws.Core" Version="1.0.0-*" />
-    <PackageReference Include="Firdaws.DAL" Version="1.0.0-*" />
   </ItemGroup>
 
   <ItemGroup>

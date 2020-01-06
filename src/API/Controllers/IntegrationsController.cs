@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.API.Helpers;
 using Tayra.Common;
@@ -23,12 +22,6 @@ namespace Tayra.API.Controllers
         public IConnectorResolver ConnectorResolver { get; }
 
         #region Public Methods
-
-        [HttpGet, Route("")]
-        public ActionResult<List<IntegrationSegmentViewDTO>> Get()
-        {
-            return IntegrationsService.GetSegmentIntegrations(CurrentSegment.Id);
-        }
 
         [HttpGet, Route("connect/{type?}")]
         public IActionResult Connect(IntegrationType type)

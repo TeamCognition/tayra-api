@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Firdaws.DAL;
 using Tayra.Common;
@@ -19,8 +20,12 @@ namespace Tayra.Models.Organizations
         public bool IsDisenchantable { get; set; }
         public bool IsGiftable { get; set; }
 
+        public bool IsQuantityLimited { get; set; }
+
         public ItemRarities Rarity { get; set; }
         public ItemTypes Type { get; set; }
+
+        public virtual ICollection<ItemReservation> Reservations { get; set; }
 
         #region IAuditedEntity
 

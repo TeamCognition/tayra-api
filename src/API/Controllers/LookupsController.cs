@@ -7,27 +7,21 @@ using Tayra.Services;
 
 namespace Tayra.API.Controllers
 {
-    public class LookupsController : BaseDataController
+    public class LookupsController : BaseController
     {
         #region Constructor
 
-        public LookupsController(IServiceProvider serviceProvider, OrganizationDbContext context) : base(serviceProvider, context)
+        public LookupsController(IServiceProvider serviceProvider, OrganizationDbContext context) : base(serviceProvider)
         {
+            OrganizationContext = context;
         }
 
         #endregion
 
-        #region From Database
-
-        #endregion
+        public OrganizationDbContext OrganizationContext { get; set; }
 
         #region From Enum
 
-        [HttpGet, Route(nameof(LookupTypes.Integrations))]
-        public IEnumerable<LookupDTO> GetIntegrations()
-        {
-            return LookupsService.GetFromEnum<IntegrationType>();
-        }
 
         [HttpGet, Route(nameof(LookupTypes.TokenTypes))]
         public IEnumerable<LookupDTO> GetTokenTypes()
@@ -73,7 +67,7 @@ namespace Tayra.API.Controllers
 
         #endregion
 
-        #region From Db
+        #region From Database
 
         [HttpGet, Route(nameof(LookupTypes.Tokens))]
         public IEnumerable<LookupDTO> GetTokens()
@@ -93,8 +87,7 @@ namespace Tayra.API.Controllers
             foreach (var type in types)
             {
                 result[type] =
-                    (type == LookupTypes.Integrations) ? GetIntegrations()
-                    : (type == LookupTypes.Tokens) ? GetTokens()
+                    (type == LookupTypes.Tokens) ? GetTokens()
                     : (type == LookupTypes.TokenTypes) ? GetTokenTypes()
                     : (type == LookupTypes.ExperienceRanks) ? GetExperienceRanks()
                     : (type == LookupTypes.CompetitionStatuses) ? GetCompetitionStatuses()

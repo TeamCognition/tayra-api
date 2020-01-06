@@ -1,4 +1,6 @@
-﻿namespace Tayra.Services
+﻿using System;
+
+namespace Tayra.Services
 {
     public class TeamMembersGridDTO
     {
@@ -13,6 +15,6 @@
             set { _heat = value; }
         }
         public double Impact { get; set; }
-        public string MemberFrom { get; set; }
+        public DateTime MemberFrom { get; set; }
     }
 }

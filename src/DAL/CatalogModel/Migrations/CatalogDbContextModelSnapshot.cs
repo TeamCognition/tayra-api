@@ -67,14 +67,7 @@ namespace Tayra.Models.Catalog.Migrations
 
                     b.HasKey("IdentityId", "Email");
 
-                    b.HasIndex("Email", "DeletedAt")
-                        .IsUnique()
-                        .HasFilter("[DeletedAt] IS NOT NULL");
-
                     b.HasIndex("Email", "IsPrimary")
-                        .IsUnique();
-
-                    b.HasIndex("IdentityId", "IsPrimary")
                         .IsUnique();
 
                     b.ToTable("IdentityEmails");

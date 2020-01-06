@@ -37,19 +37,7 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "DESC";
             }
 
-            return ShopsService.GetShopPurchasesGridDTO(CurrentUser.ProfileId, gridParams);
-        }
-
-        [HttpPost("purchaseAdminSearch")]
-        public ActionResult<GridData<ShopPurchasesAdminGridDTO>> GetSegmentCompetitions([FromBody] ShopPurchasesAdminGridParams gridParams)
-        {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(ShopPurchasesAdminGridDTO.Created);
-                gridParams.Sord = "DESC";
-            }
-
-            return ShopsService.GetShopPurchasesAdminGridDTO(CurrentUser.ProfileId, gridParams);
+            return ShopsService.GetShopPurchasesGridDTO(CurrentUser.ProfileId, CurrentUser.Role, gridParams);
         }
 
         [HttpPost("close")]

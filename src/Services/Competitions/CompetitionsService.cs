@@ -40,7 +40,7 @@ namespace Tayra.Services
                             Winner = new CompetitionViewGridDTO.CompetitionWinner
                             {
                                 Username = winner.DisplayName ?? winner.Profile.Username ?? winner.Team.Name,
-                                Avatar = winner.Profile.Avatar ?? winner.Team.Avatar,
+                                Avatar = winner.Profile.Avatar ?? winner.Team.AvatarColor,
                                 Score = winner.ScoreValue
                             }
                         };
@@ -94,7 +94,7 @@ namespace Tayra.Services
                     .Select(x => new CompetitionGridDTO
                     {
                         TeamKey = x.Team.Key,
-                        Avatar = x.Team.Avatar,
+                        Avatar = x.Team.AvatarColor,
                         Name = x.DisplayName ?? x.Team.Name,
                         Subtitle = x.Team.Members.Count() + " Members",
                         Points = Math.Round(x.ScoreValue, 2),

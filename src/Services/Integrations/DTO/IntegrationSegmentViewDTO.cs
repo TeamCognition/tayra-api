@@ -6,7 +6,6 @@ namespace Tayra.Services
     public class IntegrationSegmentViewDTO
     {
         public IntegrationType Type { get; set; }
-        public int CreatedBy { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastModified { get; set; }
     }

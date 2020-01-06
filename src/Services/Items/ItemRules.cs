@@ -8,5 +8,10 @@ namespace Tayra.Services
         {
             return (int)itemType >= 100 && (int)itemType < 200;
         }
+
+        public static bool CanReserveQuantity(int? available, int toReserve)
+        {
+            return !available.HasValue || available.Value >= toReserve;
+        }
     }
 }

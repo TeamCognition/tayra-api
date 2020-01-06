@@ -7,7 +7,7 @@ namespace Tayra.Services
         public int TeamId { get; set; }
         public string TeamKey { get; set; }
         public string Name { get; set; }
-        public string Avatar { get; set; }
+        public string AvatarColor { get; set; }
         public DateTime Created { get; set; }
     }
 }

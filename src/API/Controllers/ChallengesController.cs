@@ -30,6 +30,13 @@ namespace Tayra.API.Controllers
             return ChallengesService.GetSegmentChallengesGrid(CurrentSegment.Id, gridParams);
         }
 
+        [HttpGet("{challengeId:int}")]
+        public ActionResult<ChallengeViewDTO> GetSegmentChallenges([FromRoute] int challengeId)
+        {
+
+            return ChallengesService.GetChallengeViewDTO(CurrentUser.ProfileId, challengeId);
+        }
+
         [HttpPost("create")]
         public IActionResult CreateChallenge([FromBody] ChallengeCreateDTO dto)
         {

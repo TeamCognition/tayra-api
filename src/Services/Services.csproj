@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="..\..\shared\firdawsCore.props" />
+  <Import Project="..\..\shared\firdawsDAL.props" />
+  
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>Tayra.Services</RootNamespace>
@@ -11,8 +13,6 @@
     <PackageReference Include="morelinq" Version="3.2.0" />
     <PackageReference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client" Version="2.3.0" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="10.0.2" />
-    <PackageReference Include="Firdaws.Core" Version="1.0.0-*" />
-    <PackageReference Include="Firdaws.DAL" Version="1.0.0-*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +42,7 @@
     <Folder Include="Organizations\DTO\" />
     <Folder Include="Blobs\" />
     <Folder Include="Blobs\DTO\" />
+    <Folder Include="Items\DTO\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

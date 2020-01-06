@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Firdaws.Core;
 using Firdaws.DAL;
@@ -42,13 +41,29 @@ namespace Tayra.Services
             return shopDto;
         }
 
-        public GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(int profileId, ShopPurchasesGridParams gridParams)
+        public GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(int profileId, ProfileRoles role, ShopPurchasesGridParams gridParams)
         {
-            var query = from sp in DbContext.ShopPurchases
-                        where sp.ProfileId == profileId
+            if (gridParams.PurchaseStatusesQuery == null || gridParams.PurchaseStatusesQuery.Count == 0)
+            {
+                throw new ApplicationException("PurchaseStatusesQuery is empty");
+            }
+
+            if (gridParams.ItemTypesQuery == null || gridParams.PurchaseStatusesQuery.Count == 0)
+            {
+                throw new ApplicationException("ItemTypesQuery is empty");
+            }
+
+            var scope = role == ProfileRoles.Member
+                ? DbContext.ShopPurchases.Where(x => x.ProfileId == profileId)
+                : DbContext.ShopPurchases;
+
+            var query = from sp in scope
+                        where gridParams.PurchaseStatusesQuery.Contains(sp.Status)
+                        where gridParams.ItemTypesQuery.Contains(sp.ItemType)
                         select new ShopPurchasesGridDTO
                         {
                             ShopPurchaseId = sp.Id,
+                            BuyerUsername = sp.Profile.Username,
                             Price = sp.Price,
                             Status = sp.Status,
                             Created = sp.Created,
@@ -64,44 +79,6 @@ namespace Tayra.Services
                         };
 
             GridData<ShopPurchasesGridDTO> gridData = query.GetGridData(gridParams);
-
-            return gridData;
-        }
-
-        public GridData<ShopPurchasesAdminGridDTO> GetShopPurchasesAdminGridDTO(int profileId, ShopPurchasesAdminGridParams gridParams)
-        {
-            if (gridParams.PurchaseStatusesQuery == null || gridParams.PurchaseStatusesQuery.Count == 0)
-            {
-                throw new ApplicationException("PurchaseStatusesQuery is empty");
-            }
-
-            if (gridParams.ItemTypesQuery == null || gridParams.PurchaseStatusesQuery.Count == 0)
-            {
-                throw new ApplicationException("ItemTypesQuery is empty");
-            }
-
-            var query = from sp in DbContext.ShopPurchases
-                        where gridParams.PurchaseStatusesQuery.Contains(sp.Status)
-                        where gridParams.ItemTypesQuery.Contains(sp.ItemType)
-                        select new ShopPurchasesAdminGridDTO
-                        {
-                            ShopPurchaseId = sp.Id,
-                            BuyerUsername = sp.Profile.Username,
-                            Price = sp.Price,
-                            Status = sp.Status,
-                            Created = sp.Created,
-                            LastModified = sp.LastModified ?? sp.Created,
-                            Item = new ShopPurchasesAdminGridDTO.ItemDTO
-                            {
-                                Id = sp.ItemId,
-                                Name = sp.Item.Name,
-                                Image = sp.Item.Image,
-                                Rarity = sp.Item.Rarity,
-                                Type = sp.Item.Type
-                            }
-                        };
-
-            GridData<ShopPurchasesAdminGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
         }

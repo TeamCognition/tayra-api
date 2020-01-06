@@ -31,6 +31,43 @@ namespace Tayra.Services
 
         #region Public Methods
 
+        public ProfileSessionCacheDTO GetSessionCache(int profileId)
+        {
+            var teams = DbContext.TeamMembers.Where(x => x.ProfileId == profileId)
+                .Select( x=> new ProfileSessionCacheDTO.TeamDTO
+                {
+                    Id = x.TeamId,
+                    Key = x.Team.Key,
+                    Name = x.Team.Name,
+                    AvatarColor = x.Team.AvatarColor,
+                    Segment = new ProfileSessionCacheDTO.SegmentDTO
+                    {
+                        Id = x.Team.Segment.Id,
+                        Key = x.Team.Segment.Key,
+                        Name = x.Team.Segment.Name,
+                        Avatar = x.Team.Segment.Avatar,
+                    }
+                }).ToList();
+
+            var activeItems = GetProfileActiveItems(profileId);
+
+            return (from p in DbContext.Profiles.Where(x => x.Id == profileId)
+                    select new ProfileSessionCacheDTO
+                    {
+                        ProfileId = p.Id,
+                        FirstName = p.FirstName,
+                        LastName = p.LastName,
+                        Username = p.Username,
+                        Role = p.Role,
+                        Avatar = p.Avatar,
+                        Teams = teams,
+                        Title = activeItems.Title,
+                        Badges = activeItems.Badges,
+                        Border = activeItems.Border
+                    }).FirstOrDefault();
+        }
+
+
         public Profile GetByIdentityId(int identityId)
         {
             return DbContext.Profiles
@@ -128,12 +165,12 @@ namespace Tayra.Services
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
 
-            if (!string.IsNullOrEmpty(gridParams.SegmentKeyQuery))
-            {
-                var segment = DbContext.Segments.FirstOrDefault(x => x.Key == gridParams.SegmentKeyQuery);
-                var profileIds = DbContext.SegmentMembers.Where(x => x.SegmentId == segment.Id).Select(x => x.ProfileId).ToList();
-                scope = scope.Where(x => profileIds.Contains(x.Id));
-            }
+            //if (!string.IsNullOrEmpty(gridParams.SegmentKeyQuery))
+            //{
+            //    var segment = DbContext.Segments.FirstOrDefault(x => x.Key == gridParams.SegmentKeyQuery);
+            //    var profileIds = DbContext.SegmentMembers.Where(x => x.SegmentId == segment.Id).Select(x => x.ProfileId).ToList();
+            //    scope = scope.Where(x => profileIds.Contains(x.Id));
+            //}
 
             if (!string.IsNullOrEmpty(gridParams.UsernameQuery) && !string.IsNullOrEmpty(gridParams.NameQuery))
                 scope = scope.Chain(ChainType.OR, byUsername, byName);
@@ -155,7 +192,7 @@ namespace Tayra.Services
                             Name = p.FirstName + " " + p.LastName,
                             Username = p.Username,
                             TokensTotal = (float)Math.Round(pdr.CompanyTokensTotal, 2),
-                            Created = p.Created.ToShortDateString()
+                            Created = p.Created
                         };
 
             GridData<ProfileGridDTO> gridData = query.GetGridData(gridParams);
@@ -169,12 +206,12 @@ namespace Tayra.Services
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
 
-            if (!string.IsNullOrEmpty(gridParams.SegmentKeyQuery))
-            {
-                var segment = DbContext.Segments.FirstOrDefault(x => x.Key == gridParams.SegmentKeyQuery);
-                var profileIds = DbContext.SegmentMembers.Where(x => x.SegmentId == segment.Id).Select(x => x.ProfileId).ToList();
-                scope = scope.Where(x => profileIds.Contains(x.Id));
-            }
+            //if (!string.IsNullOrEmpty(gridParams.SegmentKeyQuery))
+            //{
+            //    var segment = DbContext.Segments.FirstOrDefault(x => x.Key == gridParams.SegmentKeyQuery);
+            //    var profileIds = DbContext.SegmentMembers.Where(x => x.SegmentId == segment.Id).Select(x => x.ProfileId).ToList();
+            //    scope = scope.Where(x => profileIds.Contains(x.Id));
+            //}
 
             if (!string.IsNullOrEmpty(gridParams.UsernameQuery) && !string.IsNullOrEmpty(gridParams.NameQuery))
                 scope = scope.Chain(ChainType.OR, byUsername, byName);
@@ -231,6 +268,21 @@ namespace Tayra.Services
 
             return gridData;
 
+        }
+
+        public void UpdateProfile(int profileId, ProfileUpdateDTO dto)
+        {
+            var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);
+
+            profile.EnsureNotNull(profileId);
+
+            profile.Avatar = dto.Avatar;
+            profile.FirstName = dto.FirstName;
+            profile.LastName = dto.LastName;
+            profile.JobPosition = dto.JobPosition;
+            profile.BornOn = dto.BornOn;
+            profile.EmployedOn = dto.EmployedOn;
+            profile.Username = dto.Username;
         }
 
         public ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId)
@@ -301,31 +353,12 @@ namespace Tayra.Services
                                   Experience = Convert.ToInt32(tt.Where(x => x.Type == TokenType.Experience).Select(x => x.Value).FirstOrDefault()),
                                   OneUps = Convert.ToInt32(tt.Where(x => x.Type == TokenType.OneUp).Select(x => x.Value).FirstOrDefault()),
                                   CustomTokens = tt.Where(x => x.Type == TokenType.Custom).ToList(),
-                                  Segments = p.Segments.Select(x => new ProfileViewDTO.Segment
-                                  {
-                                      Name = x.Segment.Name,
-                                      Key = x.Segment.Key
-                                  }),
-                                  Teams = p.Teams.Select(x => new ProfileViewDTO.Team
-                                  {
-                                      Name = x.Team.Name,
-                                      Key = x.Team.Key
-                                  })
                               }).FirstOrDefault();
 
-            var activeItems = (from ii in DbContext.ProfileInventoryItems
-                               where ii.ProfileId == profileDto.ProfileId
-                               where !ii.ClaimRequired || ii.ClaimedAt.HasValue
-                               where ii.IsActive
-                               select new ProfileViewDTO.ActiveItem
-                               {
-                                   InventoryItemId = ii.Id,
-                                   Name = ii.Item.Name,
-                                   Image = ii.Item.Image,
-                                   Type = ii.Item.Type
-                               }).ToList();
-            profileDto.Badges = activeItems.Where(x => x.Type == ItemTypes.TayraBadge).ToList();
-            profileDto.Title = activeItems.FirstOrDefault(x => x.Type == ItemTypes.TayraTitle);
+            var activeItems = GetProfileActiveItems(profileDto.ProfileId);
+            profileDto.Badges = activeItems.Badges;
+            profileDto.Title = activeItems.Title;
+            profileDto.Border = activeItems.Border;
 
             var weeklyStats = DbContext.ProfileReportsWeekly.LastOrDefault(x => x.ProfileId == profileDto.ProfileId);
             profileDto.Heat = weeklyStats?.Heat;
@@ -343,6 +376,39 @@ namespace Tayra.Services
             }
             TokensService.CreateTransaction(TokenType.CompanyToken, dto.ProfileId, dto.TokenValue, TransactionReason.Manual, null);
         }
+
+        #endregion
+
+        #region Private methods
+
+        private class ProfileActiveItemsDTO
+        {
+            public IList<ItemActiveDTO> Badges { get; set; }
+            public ItemActiveDTO Title { get; set; }
+            public ItemActiveDTO Border { get; set; }
+        }
+
+        private ProfileActiveItemsDTO GetProfileActiveItems(int profileId)
+        {
+            var activeItems = (from ii in DbContext.ProfileInventoryItems
+                               where ii.ProfileId == profileId
+                               //where !ii.ClaimRequired || ii.ClaimedAt.HasValue
+                               where ii.IsActive
+                               select new ItemActiveDTO
+                               {
+                                   InventoryItemId = ii.Id,
+                                   Name = ii.Item.Name,
+                                   Image = ii.Item.Image,
+                                   Type = ii.Item.Type
+                               }).ToList();
+
+            return new ProfileActiveItemsDTO
+            {
+                Badges = activeItems.Where(x => x.Type == ItemTypes.TayraBadge).ToList(),
+                Title = activeItems.FirstOrDefault(x => x.Type == ItemTypes.TayraTitle),
+                Border = activeItems.FirstOrDefault(x => x.Type == ItemTypes.TayraBorder)
+            };
+    }
 
         #endregion
     }

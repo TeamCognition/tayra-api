@@ -29,11 +29,11 @@ namespace Tayra.Services
         public ShopItemViewDTO GetShopItemViewDTO(int itemId)
         {
             var shopItemDto = (from si in DbContext.ShopItems
-                               where si.ItemId == itemId && si.ArchivedAt == null
+                               where si.ItemId == itemId
                                select new ShopItemViewDTO
                                {
                                    ItemId = si.ItemId,
-                                   Quantity = si.Quantity,
+                                   Quantity = si.QuantityReserved,
                                    Price = si.Price,
                                    Created = si.Created,
                                    IsDisabled = si.DisabledAt.HasValue,
@@ -55,12 +55,12 @@ namespace Tayra.Services
         public GridData<ShopItemViewGridDTO> GetShopItemViewGridDTO(ProfileRoles profileRole, ShopItemViewGridParams gridParams)
         {
             var query = from si in DbContext.ShopItems
-                        where si.Item.Name.Contains(gridParams.NameQuery) && si.ArchivedAt == null
+                        where si.Item.Name.Contains(gridParams.NameQuery)
                         where profileRole != ProfileRoles.Member || si.DisabledAt == null
                         select new ShopItemViewGridDTO
                         {
                             ItemId = si.ItemId,
-                            Quantity = si.Quantity,
+                            Quantity = si.QuantityReserved,
                             Price = si.Price,
                             Created = si.Created,
                             IsDisabled = si.DisabledAt.HasValue,
@@ -83,18 +83,18 @@ namespace Tayra.Services
         {
             var shop = DbContext.Shops.FirstOrDefault();
             var token = DbContext.Tokens.FirstOrDefault(x => x.Type == TokenType.CompanyToken);
-            var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs*/).FirstOrDefault(x => x.ItemId == dto.ItemId && x.ArchivedAt == null);
+            var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
             var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == token.Id).Sum(x => x.Value);
 
             shop.EnsureNotNull(shop.Id);
             shopItem.EnsureNotNull(shop.Id, dto.ItemId);
 
-            if (!ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Price, shopItem.Quantity))
+            if (!ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Price, shopItem.QuantityReserved))
             {
                 throw new ApplicationException("We are unable to perform the action :)");
             }
 
-            shopItem.Quantity--;
+            shopItem.QuantityReserved--;
 
             TokensService.CreateTransaction(token.Id, profileId, shopItem.Price * -1, TransactionReason.ShopItemPurchase, null);
 
@@ -150,7 +150,7 @@ namespace Tayra.Services
                 DbContext.Add(new ShopItem
                 {
                     Price = dto.Price,
-                    Quantity = dto.Quantity,
+                    QuantityReserved = dto.Quantity,
                     Item = new Item
                     {
                         Name = dto.Name,
@@ -173,7 +173,7 @@ namespace Tayra.Services
             shopItem.EnsureNotNull(dto.ItemId);
 
             shopItem.Price = dto.Price;
-            shopItem.Quantity = dto.Quantity;
+            shopItem.QuantityReserved = dto.Quantity;
 
             var item = dto.AffectOwnedItems ? shopItem.Item : new Item();
             shopItem.Item = item;
@@ -215,7 +215,7 @@ namespace Tayra.Services
 
             shopItem.EnsureNotNull(itemId);
 
-            shopItem.ArchivedAt = DateTime.UtcNow;
+            DbContext.Remove(shopItem);
         }
 
         #endregion

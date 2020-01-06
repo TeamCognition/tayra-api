@@ -1,6 +1,6 @@
 ﻿<Project>
-  <Import Project="deps.csproj.props" />
 
+  <Import Project="deps.csproj.props" />
 
     <Target Name="CopySharedSettingsOnBuild" AfterTargets="Build" Condition="'$(AssemblyName)' != 'Tayra.Connectors.App'">
     <ItemGroup>  

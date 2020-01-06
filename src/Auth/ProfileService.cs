@@ -68,7 +68,7 @@ namespace Tayra.Auth
 
                 var claimList = new List<Claim>();
 
-                if (team != null)
+                if (team != null && team.Key != null)
                 {
                     claimList.Add(new Claim(TayraClaimTypes.TeamKey, team.Key));
                 }

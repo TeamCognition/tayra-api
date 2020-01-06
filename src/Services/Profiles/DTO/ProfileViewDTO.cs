@@ -23,39 +23,17 @@ namespace Tayra.Services
         public double AverageScore { get; set; }
         public int OneUps { get; set; }
 
-        public IList<ActiveItem> Badges { get; set; }
-        public ActiveItem Title { get; set; }
+        public IList<ItemActiveDTO> Badges { get; set; }
+        public ItemActiveDTO Title { get; set; }
+        public ItemActiveDTO Border { get; set; }
 
-        public virtual IEnumerable<Segment> Segments { get; set; }
-        public virtual IEnumerable<Team> Teams { get; set; }
         public virtual IList<Token> CustomTokens { get; set; } //Ienumerable when fixed profileViewGET
-
-        public class Segment
-        {
-            public string Key { get; set; }
-            public string Name { get; set; }
-        }
-
-        public class Team
-        {
-            public string Key { get; set; }
-            public string Name { get; set; }
-            public string Avatar { get; set; }
-        }
 
         public class Token
         {
             public string Name { get; set; }
             public TokenType Type { get; set; }
             public double Value { get; set; }
-        }
-
-        public class ActiveItem
-        {
-            public int InventoryItemId { get; set; }
-            public string Name { get; set; }
-            public string Image { get; set; }
-            public ItemTypes Type { get; set; }
         }
     }
 }

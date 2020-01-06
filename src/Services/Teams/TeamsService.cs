@@ -28,7 +28,7 @@ namespace Tayra.Services
                                TeamId = t.Id,
                                TeamKey = t.Key,
                                Name = t.Name,
-                               Avatar = t.Avatar,
+                               AvatarColor = t.AvatarColor,
                                Created = t.Created
                            }).FirstOrDefault();
 
@@ -39,19 +39,13 @@ namespace Tayra.Services
 
         public GridData<TeamViewGridDTO> GetViewGridData(int segmentId, TeamViewGridParams gridParams)
         {
-            var scope = DbContext.Teams
-                .Where(x => x.SegmentId == segmentId)
-                .Where(x => x.ArchivedAt == null);
-
-
-            IQueryable<TeamViewGridDTO> query = from t in scope
+            IQueryable<TeamViewGridDTO> query = from t in DbContext.TeamsScopeOfSegment(segmentId)
                                                 select new TeamViewGridDTO
                                                 {
-                                                    TeamId = t.Id,//TODO: delete, maybe?
                                                     TeamKey = t.Key,
                                                     Name = t.Name,
-                                                    Created = t.Created.ToShortDateString(),
-                                                    Avatar = t.Avatar,
+                                                    Created = t.Created,
+                                                    AvatarColor = t.AvatarColor,
                                                     Subtitle = t.Members.Count() + " Members",
                                                 };
 
@@ -62,9 +56,9 @@ namespace Tayra.Services
 
         public GridData<TeamMembersGridDTO> GetTeamMembersGridData(TeamMembersGridParams gridParams)
         {
-            var team = DbContext.Teams.FirstOrDefault(x => x.Key == gridParams.TeamKey && x.ArchivedAt == null);
+            var team = DbContext.Teams.FirstOrDefault(x => x.Key == gridParams.TeamKey);
 
-            team.EnsureNotNull(team.Id);
+            team.EnsureNotNull(gridParams.TeamKey);
 
             var scope = DbContext.TeamMembers
                 .Where(x => x.TeamId == team.Id);
@@ -79,7 +73,7 @@ namespace Tayra.Services
                                                        Speed = Math.Round(t.Profile.StatsWeekly.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
                                                        Heat = Math.Round(t.Profile.StatsWeekly.Select(x => x.Heat).FirstOrDefault(), 2),
                                                        Impact = Math.Round(t.Profile.StatsWeekly.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
-                                                       MemberFrom = t.Created.ToShortDateString()
+                                                       MemberFrom = t.Created
                                                    };
 
             GridData<TeamMembersGridDTO> gridData = query.GetGridData(gridParams);
@@ -89,16 +83,12 @@ namespace Tayra.Services
 
         public void Create(int segmentId, TeamCreateDTO dto)
         {
-            DbContext.Add(new SegmentTeam
+            DbContext.Add(new Team
             {
                 SegmentId = segmentId,
-                Team = new Team
-                {
-                    SegmentId = segmentId,
-                    Key = dto.Key.Trim(),
-                    Name = dto.Name.Trim(),
-                    Avatar = dto.Avatar
-                }
+                Key = dto.Key.Trim(),
+                Name = dto.Name.Trim(),
+                AvatarColor = dto.AvatarColor
             });
         }
 
@@ -111,7 +101,7 @@ namespace Tayra.Services
             team.SegmentId = dto.NewSegmentId ?? segmentId;
             team.Key = dto.Key.Trim();
             team.Name = dto.Name.Trim();
-            team.Avatar = dto.Avatar;
+            team.AvatarColor = dto.AvatarColor;
         }
 
         public void AddMembers(string teamKey, IList<TeamAddMemberDTO> dto)
@@ -132,11 +122,11 @@ namespace Tayra.Services
 
         public void Archive(int profileId, string teamKey)
         {
-            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey && x.ArchivedAt == null);
+            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
 
             team.EnsureNotNull(team.Key);
 
-            team.ArchivedAt = DateTime.UtcNow;
+            DbContext.Remove(team);
         }
 
 

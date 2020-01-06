@@ -53,7 +53,6 @@ namespace Tayra.SyncServices.Tayra
             var reportsToInsert = new List<TeamReportDaily>();
 
             var teams = (from t in organizationDb.Teams
-                         where t.ArchivedAt == null
                          select new
                          {
                              TeamId = t.Id,
@@ -146,7 +145,6 @@ namespace Tayra.SyncServices.Tayra
             var reportsToInsert = new List<TeamReportWeekly>();
 
             var teams = (from t in organizationDb.Teams
-                         where t.ArchivedAt == null
                          select new
                          {
                              TeamId = t.Id,

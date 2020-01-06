@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Firdaws.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using RestSharp;
@@ -21,6 +22,12 @@ namespace Tayra.Connectors.Common
             OrganizationContext = dataContext;
         }
 
+        protected BaseConnector(ILogger logger, OrganizationDbContext dataContext)
+        {
+            Logger = logger;
+            OrganizationContext = dataContext;
+        }
+        
         #endregion
 
         #region Properties

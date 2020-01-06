@@ -7,14 +7,14 @@ namespace Tayra.Models.Organizations
     /// <summary>
     /// Shop Inventory Items
     /// </summary>
-    public class ShopItem : IAuditedEntity
+    public class ShopItem : IAuditedEntity, IArchivableEntity
     {
         public int Id { get; set; }
 
         public int ItemId { get; set; }
         public virtual Item Item { get; set; }
 
-        public int? Quantity { get; set; }
+        public int? QuantityReserved { get; set; }
         
         public float Price { get; set; }
         public float? DiscountPrice { get; set; }
@@ -22,7 +22,6 @@ namespace Tayra.Models.Organizations
         public DateTime? FeaturedUntil { get; set; }
 
         public DateTime? DisabledAt { get; set; }
-        public DateTime? ArchivedAt { get; set; }
 
         public bool IsGlobal { get; set; }
         public virtual ICollection<ShopItemSegment> Segments { get; set; }

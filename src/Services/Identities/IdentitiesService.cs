@@ -129,7 +129,7 @@ namespace Tayra.Services
             CatalogDb.Add(new TenantIdentity
             {
                 Identity = identity,
-                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(DbContext.OrganizationId)
+                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(DbContext.CurrentTenantId)
             });
 
             invitation.Status = InvitationStatus.Accepted;
@@ -149,21 +149,16 @@ namespace Tayra.Services
 
             if (invitation.SegmentId.HasValue)
             {
-                DbContext.Add(new SegmentMember
-                {
-                    Profile = profile,
-                    SegmentId = invitation.SegmentId.Value,
-                });
-            }
-
-            if (invitation.TeamId.HasValue)
-            {
+                
+                
                 DbContext.Add(new TeamMember
                 {
                     Profile = profile,
                     TeamId = invitation.TeamId.Value,
                 });
             }
+
+            
 
             DbContext.SaveChanges();
         }
@@ -187,15 +182,18 @@ namespace Tayra.Services
                 throw new ApplicationException("Email address already used");
             }
 
-            if (dto.SegmentId.HasValue && !DbContext.Segments.Any(x => x.Id == dto.SegmentId && x.ArchivedAt == null))
+            if (dto.SegmentId.HasValue && !DbContext.Segments.Any(x => x.Id == dto.SegmentId))
             {
                 throw new EntityNotFoundException<Segment>(dto.SegmentId);
             }
 
-            if (dto.TeamId.HasValue && !DbContext.Teams.Any(x => x.Id == dto.TeamId && x.ArchivedAt == null))
+            if (dto.TeamId.HasValue && !DbContext.Teams.Any(x => x.Id == dto.TeamId))
             {
                 throw new EntityNotFoundException<Team>(dto.TeamId);
             }
+
+            invitation.TeamId = invitation.TeamId ?? DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
+            //invitation.TeamId ??= DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
 
             var resp = MailerService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
             if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
@@ -254,7 +252,7 @@ namespace Tayra.Services
                 .FirstOrDefault();
 
             var scope = CatalogDb.IdentityEmails
-                .Where(x => x.IdentityId == identityId);
+                .Where(x => x.IdentityId == identityId && x.DeletedAt == null);
 
             IQueryable<IdentityEmailsGridDTO> query = from e in scope
                                                       select new IdentityEmailsGridDTO
@@ -268,6 +266,25 @@ namespace Tayra.Services
             return gridData;
         }
 
+        public void ChangePasswordWithSaveChange(int identityId, IdentityChangePasswordDTO dto)
+        {
+            var identity = CatalogDb.Identities.FirstOrDefault(x => x.Id == identityId);
+            
+            identity.EnsureNotNull(identityId);
+
+            if(!PasswordHelper.Verify(identity.Password, identity.Salt, dto.OldPassword))
+            {
+                throw new ApplicationException("Old password is incorrect");
+            }
+
+            identity.Salt = PasswordHelper.GenerateSalt();
+            identity.Password = PasswordHelper.Hash(dto.NewPassword, identity.Salt);
+            
+            CatalogDb.SaveChanges();
+        }
+
+        #region Email Methods 
+
         public bool IsEmailAddressUnique(string email)
         {
             return !CatalogDb.IdentityEmails.Any(x => x.Email == email && x.DeletedAt == null);
@@ -275,7 +292,7 @@ namespace Tayra.Services
 
         public void AddEmail(int identityId, string email)
         {
-            var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt != null);
+            var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt == null);
 
             if (scope.Where(x => x.Email == email).Any())
             {
@@ -293,11 +310,9 @@ namespace Tayra.Services
             CatalogDb.SaveChanges();
         }
 
-        #region Email Methods 
-
         public void SetPrimaryEmail(int identityId, string email)
         {
-            var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt != null);
+            var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt == null);
 
             var emails = scope
                 .Where(x => x.IdentityId == identityId)
@@ -317,7 +332,7 @@ namespace Tayra.Services
 
         public bool RemoveEmail(int identityId, string email)
         {
-            var scope = CatalogDb.IdentityEmails.Where(x => x.IdentityId == identityId && x.DeletedAt != null);
+            var scope = CatalogDb.IdentityEmails.Where(x => x.IdentityId == identityId && x.DeletedAt == null);
             var identityEmail = scope.Where(x => x.Email == email).FirstOrDefault();
 
             if (identityEmail.IsPrimary)

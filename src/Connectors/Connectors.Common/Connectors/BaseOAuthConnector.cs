@@ -14,6 +14,10 @@ namespace Tayra.Connectors.Common
         {
         }
 
+        protected BaseOAuthConnector(ILogger logger, OrganizationDbContext dataContext) : base(logger, dataContext)
+        {
+        }
+
         #endregion
 
         #region Public Methods

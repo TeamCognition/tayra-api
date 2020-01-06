@@ -13,9 +13,6 @@ namespace Tayra.Models.Organizations
 {
     public class OrganizationDbContext : FirdawsDbContext, IAuditPersistenceStore
     {
-        private const string OrganizationIdFK = "OrganizationId";
-        private readonly TenantDTO _tenant;
-
         #region Constructor
 
         // C'tor to deploy schema and migrations to a new shard
@@ -41,29 +38,11 @@ namespace Tayra.Models.Organizations
         // the regular application calls with a tenant id.
         /// </summary>
         public OrganizationDbContext(IHttpContextAccessor httpContext, ITenantProvider tenantProvider, IShardMapProvider shardMapProvider)
-            : base(httpContext, CreateDDRConnection(shardMapProvider.ShardMap, tenantProvider.GetTenant().ShardingKey, shardMapProvider.TemplateConnectionString))
+            : base(tenantProvider.GetTenant(), httpContext, CreateDDRConnection(shardMapProvider.ShardMap, tenantProvider.GetTenant().ShardingKey, shardMapProvider.TemplateConnectionString))
         {
-            _tenant = tenantProvider.GetTenant();
             this.Database.Migrate();
         }
 
-
-        #endregion
-
-        #region Properties
-
-        public int OrganizationId
-        {
-            get
-            {
-                if (_tenant == null)
-                {
-                    return -1;
-                }
-
-                return _tenant.ShardingKey;
-            }
-        }
 
         #endregion
 
@@ -74,7 +53,11 @@ namespace Tayra.Models.Organizations
         public DbSet<ActionPointSetting> ActionPointSettings { get; set; }
         public DbSet<Blob> Blobs { get; set; }
         public DbSet<Challenge> Challenges { get; set; }
+        public DbSet<ChallengeCommit> ChallengeCommits { get; set; }
         public DbSet<ChallengeCompletion> ChallengeCompletions { get; set; }
+        public DbSet<ChallengeGoal> ChallengeGoals { get; set; }
+        public DbSet<ChallengeGoalCompletion> ChallengeGoalCompletions { get; set; }
+        public DbSet<ChallengeReward> ChallengeRewards { get; set; }
         public DbSet<ClaimBundle> ClaimBundles { get; set; }
         public DbSet<ClaimBundleItem> ClaimBundleItems { get; set; }
         public DbSet<ClaimBundleTokenTxn> ClaimBundleTokenTxns { get; set; }
@@ -90,6 +73,7 @@ namespace Tayra.Models.Organizations
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemDisenchant> ItemDisenchants { get; set; }
         public DbSet<ItemGift> ItemGifts { get; set; }
+        public DbSet<ItemReservation> ItemReservations { get; set; }
         public DbSet<Log> Logs { get; set; }
         public DbSet<LoginLog> LoginLogs { get; set; }
         public DbSet<Organization> Organizations { get; set; }
@@ -102,10 +86,8 @@ namespace Tayra.Models.Organizations
         public DbSet<ProfileReportWeekly> ProfileReportsWeekly { get; set; }
         public DbSet<Segment> Segments { get; set; }
         public DbSet<SegmentArea> SegmentAreas { get; set; }
-        public DbSet<SegmentMember> SegmentMembers { get; set; }
         public DbSet<SegmentReportDaily> SegmentReportsDaily { get; set; }
         public DbSet<SegmentReportWeekly> SegmentReportsWeekly { get; set; }
-        public DbSet<SegmentTeam> ProjectTeams { get; set; }
         public DbSet<Shop> Shops { get; set; }
         public DbSet<ShopItem> ShopItems { get; set; }
         public DbSet<ShopItemSegment> ShopItemSegments { get; set; }
@@ -140,6 +122,13 @@ namespace Tayra.Models.Organizations
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {   //IArchivableEntity
+                if (typeof(IArchivableEntity).IsAssignableFrom(entityType.ClrType))
+                {
+                    entityType.GetOrAddProperty(ArchivedAtProp, typeof(long?));
+                }
+            }
             modelBuilder.Entity<ActionPointProfile>(entity =>
             {
                 entity.HasKey(x => new { x.ActionPointId, x.ProfileId });
@@ -156,11 +145,22 @@ namespace Tayra.Models.Organizations
             });
 
 
+            modelBuilder.Entity<ChallengeCommit>().HasKey(x => new { x.ChallengeId, x.ProfileId });
             modelBuilder.Entity<ChallengeCompletion>().HasKey(x => new { x.ChallengeId, x.ProfileId });
+
+            modelBuilder.Entity<ChallengeGoalCompletion>(entity =>
+            {
+                entity.HasKey(x => new { x.GoalId, x.ProfileId });
+            });
+
+            modelBuilder.Entity<ChallengeReward>(entity =>
+            {
+                entity.HasKey(x => new { x.ChallengeId, x.ItemId });
+            });
 
             modelBuilder.Entity<ClaimBundleItem>().HasKey(x => new { x.ClaimBundleId, x.ProfileInventoryItemId });
             modelBuilder.Entity<ClaimBundleTokenTxn>().HasKey(x => new { x.ClaimBundleId, x.TokenTransactionId });
-
+            
             modelBuilder.Entity<CompetitionLog>(entity =>
             {
                 entity.HasKey(x => new { x.CompetitionId, x.LogId });
@@ -224,12 +224,10 @@ namespace Tayra.Models.Organizations
                 entity.HasKey(x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
             });
 
-            modelBuilder.Entity<Segment>().HasIndex(x => x.Key).IsUnique();
+            modelBuilder.Entity<Segment>().HasIndex(nameof(Segment.Key), ArchivedAtProp).IsUnique();
             modelBuilder.Entity<SegmentArea>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<SegmentMember>().HasKey(x => new { x.SegmentId, x.ProfileId });
             modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
             modelBuilder.Entity<SegmentReportWeekly>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
-            modelBuilder.Entity<SegmentTeam>().HasKey(x => new { x.SegmentId, x.TeamId });
 
             modelBuilder.Entity<ShopItem>(entity =>
             {
@@ -258,10 +256,13 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<Team>(entity =>
             {
-                entity.HasIndex(x => new { x.Key, x.ArchivedAt }).IsUnique();
+                entity.HasIndex(nameof(Team.SegmentId), nameof(Team.Key), ArchivedAtProp).IsUnique();
             });
 
-            modelBuilder.Entity<TeamMember>().HasKey(x => new { x.TeamId, x.ProfileId });
+            modelBuilder.Entity<TeamMember>(entity =>
+            {
+                entity.HasKey(x => new { x.TeamId, x.ProfileId });
+            });
 
             modelBuilder.Entity<TeamReportDaily>(entity =>
             {
@@ -284,13 +285,15 @@ namespace Tayra.Models.Organizations
             var orgPKey = orgEntity.FindPrimaryKey();
             foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
             {
+                //OrganizationId
                 var id = entityType.GetProperties().FirstOrDefault(x => x.IsPrimaryKey() && x.Name == "Id");
                 if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;
 
-                var orgId = entityType.GetOrAddProperty(OrganizationIdFK, typeof(int));
+                var orgId = entityType.GetOrAddProperty(TenantIdFK, typeof(int));
                 entityType.GetOrAddForeignKey(orgId, orgPKey, orgEntity);
                 entityType.SetPrimaryKey(entityType.FindPrimaryKey().Properties.Append(orgId).ToList());
 
+                //Set Global Query
                 var clrType = entityType.ClrType;
                 var method = SetGlobalQueryMethod.MakeGenericMethod(clrType);
                 method.Invoke(this, new object[] { modelBuilder });
@@ -301,13 +304,6 @@ namespace Tayra.Models.Organizations
 
         public override int SaveChanges()
         {
-            foreach (var entry in ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added
-                && !e.Entity.GetType().HasAttribute<TenantSharedEntityAttribute>()))
-            {
-                entry.Property(OrganizationIdFK).CurrentValue = OrganizationId;
-            }
-
             return base.SaveChanges();
         }
 
@@ -318,8 +314,16 @@ namespace Tayra.Models.Organizations
 
         public void SetGlobalQuery<T>(ModelBuilder builder) where T : class
         {
-            //Debug.WriteLine("Adding global query for: " + typeof(T));
-            builder.Entity<T>().HasQueryFilter(e => EF.Property<int>(e, OrganizationIdFK) == _tenant.ShardingKey);
+            if (typeof(IArchivableEntity).IsAssignableFrom(typeof(T)))
+            {
+                builder.Entity<T>().HasQueryFilter(e =>
+                    EF.Property<long?>(e, ArchivedAtProp) == null &&
+                    EF.Property<int>(e, TenantIdFK) == CurrentTenant.ShardingKey);
+            }
+            else
+            {
+                builder.Entity<T>().HasQueryFilter(e => EF.Property<int>(e, TenantIdFK) == CurrentTenant.ShardingKey);
+            }
         }
 
         /// <summary>
@@ -343,7 +347,7 @@ namespace Tayra.Models.Organizations
 
             var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
             var options = optionsBuilder.UseSqlServer(sqlConn).Options;
-            optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>();
+            optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>(); //TODO: this goes to FirdawsDB as well?
 
             return options;
         }

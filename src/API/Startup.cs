@@ -61,7 +61,7 @@ namespace Tayra.API
             services.AddTransient<IInventoriesService, InventoryService>();
             services.AddTransient<IClaimBundlesService, ClaimBundlesService>();
             services.AddTransient<ICompetitionsService, CompetitionsService>();
-            services.AddTransient<IntegrationsService, IntegrationsService>();
+            services.AddTransient<IIntegrationsService, IntegrationsService>();
 
             services.AddTransient<IOrganizationsService, Services.OrganizationsService>();
 

@@ -1,8 +1,6 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Tayra.API.Controllers;
-using Tayra.Common;
 using Tayra.Services;
 
 namespace Tayra.API.Filters

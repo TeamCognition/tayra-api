@@ -90,6 +90,46 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
+        public class CompanySignupDTO
+        {
+            public string Name { get; set; }
+            public string Location { get; set; }
+            public string ContactPerson { get; set; }
+            public string PhoneNumber { get; set; }
+            public string EmailAddress { get; set; }
+            public string Industry { get; set; }
+            public int EmployeesCount { get; set; }
+            public string Website { get; set; }
+        }
+
+        [HttpPost, Route("companySignup")]
+        public IActionResult CompanySignup([FromBody] CompanySignupDTO dto)
+        {
+            try
+            {
+                MailerService.SendEmail("haris.botic96@gmail.com",
+                            "haris@tayra.io",
+                            "New Company Signup",
+                            JsonConvert.SerializeObject(dto));
+
+                _catalogContext.LandingPageContacts.Add(new LandingPageContact
+                {
+                    Name = dto.Name,
+                    EmailAddresss = dto.EmailAddress,
+                    PhoneNumber = dto.PhoneNumber,
+                    Message = JsonConvert.SerializeObject(dto)
+                });
+
+                _catalogContext.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
         #endregion
     }
 }

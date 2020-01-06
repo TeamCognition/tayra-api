@@ -116,6 +116,13 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
+        [HttpPost("changePassword")]
+        public ActionResult ChangePassword([FromBody] IdentityChangePasswordDTO dto)
+        {
+            IdentitiesService.ChangePasswordWithSaveChange(CurrentUser.IdentityId, dto);
+            return Ok();
+        }
+
         #endregion
     }
 }

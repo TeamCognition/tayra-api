@@ -48,21 +48,21 @@ namespace Tayra.SyncServices.Tayra
 
             var reportsToInsert = new List<SegmentReportDaily>();
 
-            var segments = (from t in organizationDb.Segments
-                            where t.ArchivedAt == null
+            var segments = (from s in organizationDb.Segments
+                            let teamIds = s.Teams.Select(x => x.Id).ToList()
                             select new
                             {
-                                TeamId = t.Id,
-                                MemberIds = t.Members.Select(x => x.ProfileId).ToList()
+                                SegmentId = s.Id,
+                                MemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId)).Select(x => x.ProfileId).ToList()
                             }).ToList();
 
-            foreach (var t in segments)
+            foreach (var s in segments)
             {
-                var mr = profileReportsDaily.Where(x => t.MemberIds.Contains(x.ProfileId)).ToList();
+                var mr = profileReportsDaily.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
 
                 reportsToInsert.Add(new SegmentReportDaily
                 {
-                    SegmentId = t.TeamId,
+                    SegmentId = s.SegmentId,
                     DateId = dateId,
                     IterationCount = 1,
                     TaskCategoryId = 1,
@@ -141,20 +141,20 @@ namespace Tayra.SyncServices.Tayra
 
             var reportsToInsert = new List<SegmentReportWeekly>();
 
-            var segments = (from t in organizationDb.Segments
-                            where t.ArchivedAt == null
+            var segments = (from s in organizationDb.Segments
+                            let teamIds = s.Teams.Select(x => x.Id).ToList()
                             select new
                             {
-                                TeamId = t.Id,
-                                MemberIds = t.Members.Select(x => x.ProfileId).ToList()
+                                SegmentId = s.Id,
+                                MemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId)).Select(x => x.ProfileId).ToList()
                             }).ToList();
 
-            foreach (var t in segments)
+            foreach (var s in segments)
             {
-                var drs = profileReportsDaily.Where(x => t.MemberIds.Contains(x.ProfileId)).ToList();
+                var drs = profileReportsDaily.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
                 var drsCount = drs.Count();
 
-                var wrs = profileReportsWeekly.Where(x => t.MemberIds.Contains(x.ProfileId)).ToList();
+                var wrs = profileReportsWeekly.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
                 var wrsCount = wrs.Count();
 
                 if (drsCount == 0)
@@ -162,7 +162,7 @@ namespace Tayra.SyncServices.Tayra
 
                 reportsToInsert.Add(new SegmentReportWeekly
                 {
-                    SegmentId = t.TeamId,
+                    SegmentId = s.SegmentId,
                     DateId = dateId,
                     IterationCount = 1,
                     TaskCategoryId = 1,

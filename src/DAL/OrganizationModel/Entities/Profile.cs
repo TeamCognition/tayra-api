@@ -24,10 +24,12 @@ namespace Tayra.Models.Organizations
         [MaxLength(100)]
         public string JobPosition { get; set; }
 
+        public DateTime? BornOn { get; set; }
+        public DateTime? EmployedOn { get; set; }
+
         public int IdentityId { get; set; }
 
         public virtual ICollection<ProfileInventoryItem> InventoryItems { get; set; }
-        public virtual ICollection<SegmentMember> Segments { get; set; }
         public virtual ICollection<TeamMember> Teams { get; set; }
         public virtual ICollection<TokenTransaction> Tokens { get; set; }
         public virtual ICollection<ProfileReportDaily> StatsDaily { get; set; }

@@ -5,22 +5,25 @@ using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class Team : IAuditedEntity
+    public class Team : IAuditedEntity, IArchivableEntity
     {
         public int Id { get; set; }
-
-        [MaxLength(50)] //TODO:required
-        public string Key { get; set; }
-        public string Name { get; set; }
-        //public bool IsCompetitorOnly { get; set; }
-
-        [MaxLength(2000)]
-        public string Avatar { get; set; }
 
         public int SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
-        public DateTime? ArchivedAt { get; set; }
+        /// <summary>
+        /// null key means it's a team for unassigned memebers of a segment
+        /// </summary>
+        [MaxLength(50)]
+        public string Key { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+        //public bool IsCompetitorOnly { get; set; }
+
+        [MaxLength(50)]
+        public string AvatarColor { get; set; }
 
         public virtual ICollection<TeamMember> Members { get; set; }
         public virtual ICollection<TeamReportDaily> ReportsDaily { get; set; }

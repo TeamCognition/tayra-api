@@ -702,20 +702,20 @@ namespace Tayra.Models.Seeder
                 switch (item.Rarity)
                 {
                     case ItemRarities.Common:
-                    item.WorthValue = 100 * 0.8f;
-                    break;
+                        item.WorthValue = 100 * 0.8f;
+                        break;
 
                     case ItemRarities.Rare:
-                    item.WorthValue = 220 * 0.8f;
-                    break;
+                        item.WorthValue = 220 * 0.8f;
+                        break;
 
                     case ItemRarities.Epic:
-                    item.WorthValue = 550 * 0.8f;
-                    break;
+                        item.WorthValue = 550 * 0.8f;
+                        break;
 
                     case ItemRarities.Legendary:
-                    item.WorthValue = 1800 * 0.8f;
-                    break;
+                        item.WorthValue = 1800 * 0.8f;
+                        break;
                 }
             }
 
@@ -730,7 +730,7 @@ namespace Tayra.Models.Seeder
                     ItemId = item.Id,
                     IsGlobal = true,
                     Price = item.WorthValue / 0.8f,
-                    Quantity = null
+                    QuantityReserved = null
                 });
             }
 

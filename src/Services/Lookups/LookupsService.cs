@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Firdaws.Core;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services

@@ -51,28 +51,39 @@ namespace Tayra.Services
         public List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(int profileId)
         {
             //could this be taken out of access token?
-            var profileProjectIds = DbContext.SegmentMembers.Where(x => x.ProfileId == profileId).Select(x => x.SegmentId).ToList();
+            var profileSegmentIds = DbContext.TeamMembers.Where(x => x.ProfileId == profileId).Select(x => x.Team.SegmentId).Distinct().ToArray();
 
-            return DbContext.Integrations
-                .Where(x => (x.ProfileId == profileId || x.ProfileId == null) && profileProjectIds.Contains(x.SegmentId))
+            var integrations = DbContext.Integrations
+                .Where(x => (x.ProfileId == profileId || x.ProfileId == null) && profileSegmentIds.Contains(x.SegmentId))
                 .Select(x => new IntegrationProfileConfigDTO
                 {
-                    ProjectId = x.SegmentId,
+                    Id = x.Id,
+                    SegmentId = x.SegmentId,
                     Type = x.Type,
-                    ExternalId = x.Fields.Where(e => e.Key == IntegrationConstants.ProfileExternalId).Select(e => e.Value).FirstOrDefault()
+                    ExternalId = x.ProfileId != null ? x.Fields.Where(e => e.Key == IntegrationConstants.ProfileExternalId).Select(e => e.Value).FirstOrDefault() : null
                 })
                 .ToList();
+
+            foreach(var i in integrations.Where(x => x.ExternalId == null).ToArray())
+            {
+                if (integrations.Any(x => x.SegmentId == i.SegmentId && x.ExternalId != null))
+                    integrations.Remove(i);
+            }
+            return integrations;
         }
 
-        public List<IntegrationSegmentViewDTO> GetSegmentIntegrations(int segmentId)
+        public List<IntegrationSegmentViewDTO> GetSegmentIntegrations(string segmentKey)
         {
-            return SegmentIntegrationsScope(segmentId)
+            var segment = DbContext.Segments.Where(x => x.Key == segmentKey).FirstOrDefault();
+
+            segment.EnsureNotNull(segmentKey);
+
+            return SegmentIntegrationsScope(segment.Id)
                 .Select(x => new IntegrationSegmentViewDTO
                 {
                     Type = x.Type,
                     Created = x.Created,
-                    LastModified = x.LastModified ?? x.Created,
-                    CreatedBy = x.CreatedBy
+                    LastModified = x.LastModified ?? x.Created
                 })
                 .DistinctBy(x => x.Type)
                 .OrderByDescending(x => x.Created)
@@ -142,7 +153,6 @@ namespace Tayra.Services
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + projId, Value = rewardStatus });
             }
 
-            DbContext.Update(integration);
             DbContext.SaveChanges();
         }
 

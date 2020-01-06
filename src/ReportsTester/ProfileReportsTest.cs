@@ -232,6 +232,7 @@ namespace ReportsTester
             dbContext.AddRange(oneUps);
         }
 
+        //TODO: this is broken
         private List<Team> SeedTeams(OrganizationDbContext dbContext, List<Profile> profiles)
         {
             var teams = new List<Team>
@@ -264,21 +265,14 @@ namespace ReportsTester
                 }
             };
 
-            var segmentMembers = new List<SegmentMember>();
-            foreach (var p in profiles)
-            {
-                segmentMembers.Add(new SegmentMember { SegmentId = 1, ProfileId = p.Id });
-            }
-
-            var segmentTeams = new List<SegmentTeam>();
-            foreach (var t in teams)
-            {
-                segmentTeams.Add(new SegmentTeam { SegmentId = 1, TeamId = t.Id });
-            }
+            // var segmentMembers = new List<SegmentMember>();
+            // foreach (var p in profiles)
+            // {
+            //     segmentMembers.Add(new SegmentMember { SegmentId = 1, ProfileId = p.Id });
+            // }
 
             dbContext.AddRange(segments);
-            dbContext.AddRange(segmentMembers);
-            dbContext.AddRange(segmentTeams);
+            //dbContext.AddRange(segmentMembers);
         }
     }
 }

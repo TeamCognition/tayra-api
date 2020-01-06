@@ -7,13 +7,12 @@ namespace Tayra.Services
     {
         void InternalCreateWithProfile(IdentityCreateDTO dto);
         Identity GetByEmail(string email);
-
         void InvitationJoinWithSaveChanges(IdentityJoinDTO dto);
         void CreateInvitation(int profileId, string host, IdentityInviteDTO dto);
         IdentityInvitationViewDTO GetInvitation(string InvitationCode);
         GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams);
-
         GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams);
+        void ChangePasswordWithSaveChange(int identityId, IdentityChangePasswordDTO dto);
         bool IsEmailAddressUnique(string email);
         void AddEmail(int identityId, string email);
         void SetPrimaryEmail(int identityId, string email);

@@ -23,6 +23,7 @@
         InventoryItemReceived = 6003,
 
         Challenge = 7000,
-        ChallengeCompleted = 7001
+        ChallengeCompleted = 7001,
+        ChallengeGoalCompleted = 7002
     }
 }

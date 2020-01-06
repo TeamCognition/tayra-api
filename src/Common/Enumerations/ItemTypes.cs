@@ -12,6 +12,9 @@ namespace Tayra.Common
         [Description("Badge")]
         TayraBadge = 102,
 
+        [Description("Border")]
+        TayraBorder = 103,
+
         #endregion
 
         #region Digital Items

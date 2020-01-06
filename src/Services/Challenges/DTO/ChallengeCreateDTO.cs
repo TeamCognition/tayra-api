@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Firdaws.Core;
 
 namespace Tayra.Services
@@ -9,13 +10,25 @@ namespace Tayra.Services
         public string Description { get; set; }
         public string Image { get; set; }
 
-        public double TokenRewardValue { get; set; }
-        public string CustomReward { get; set; }
-
         public int? CompletionsLimit { get; set; }
 
         public bool IsEasterEgg { get; set; }
 
         public DateTime? ActiveUntil { get; set; }
+
+        public List<GoalDTO> Goals { get; set; }
+        public List<RewardDTO> Rewards { get; set; }
+
+        public class RewardDTO
+        {
+            public int ItemId { get; set; }
+            public int Quantity { get; set; }
+        }
+
+        public class GoalDTO
+        {
+            public string Title { get; set; }
+            public bool IsCommentRequired { get; set; }
+        }
     }
 }
