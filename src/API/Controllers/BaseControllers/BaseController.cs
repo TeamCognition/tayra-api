@@ -17,6 +17,7 @@ namespace Tayra.API.Controllers
 
         private ILogsService _logsService;
         private IBlobsService _blobsService;
+        private IItemsService _itemsService;
         private IShopsService _shopsService;
         private ITasksService _tasksService;
         private ITeamsService _teamsService;
@@ -57,6 +58,7 @@ namespace Tayra.API.Controllers
         protected IServiceProvider ServiceProvider { get; }
         protected ILogsService LogsService => _logsService ?? (_logsService = Resolve<ILogsService>());
         protected IBlobsService BlobsService => _blobsService ?? (_blobsService = Resolve<IBlobsService>());
+        protected IItemsService ItemsService => _itemsService ?? (_itemsService = Resolve<IItemsService>());
         protected IShopsService ShopsService => _shopsService ?? (_shopsService = Resolve<IShopsService>());
         protected ITasksService TasksService => _tasksService ?? (_tasksService = Resolve<ITasksService>());
         protected ITeamsService TeamsService => _teamsService ?? (_teamsService = Resolve<ITeamsService>());

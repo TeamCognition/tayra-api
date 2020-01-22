@@ -47,6 +47,7 @@ namespace Tayra.API
             //Add Application services
             services.AddTransient<ILogsService, LogsService>();
             services.AddTransient<IBlobsService, BlobsService>();
+            services.AddTransient<IItemsService, ItemsService>();
             services.AddTransient<IShopsService, ShopsService>();
             services.AddTransient<ITasksService, TasksService>();
             services.AddTransient<ITeamsService, TeamsService>();
@@ -80,7 +81,8 @@ namespace Tayra.API
 
             services.AddCors(c =>
             {
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+                c.AddPolicy("AllowAllOrigins", options => options.AllowAnyOrigin()
+                                                                 .AllowAnyHeader());
             });
 
             services.AddMvcCore()
@@ -108,7 +110,7 @@ namespace Tayra.API
 
             app.UseSwagger();
 
-            app.UseCors(options => options.AllowAnyOrigin());
+            app.UseCors("AllowAllOrigins");
 
             app.UseHttpsRedirection();
 
