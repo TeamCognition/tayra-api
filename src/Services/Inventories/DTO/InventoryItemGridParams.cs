@@ -1,4 +1,6 @@
-﻿using Firdaws.Core;
+﻿using System.Collections.Generic;
+using Firdaws.Core;
+using Tayra.Common;
 
 namespace Tayra.Services
 {
@@ -6,5 +8,7 @@ namespace Tayra.Services
     {
         public string ProfileUsername { get; set; }
         public string ItemNameQuery { get; set; }
+
+        public List<ItemTypes> ItemTypesQuery { get; set; }
     }
 }

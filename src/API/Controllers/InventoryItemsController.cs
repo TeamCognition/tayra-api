@@ -36,7 +36,6 @@ namespace Tayra.API.Controllers
                 gridParams.Sord = "DESC";
             }
 
-
             return InventoriesService.GetInventoryItemViewGridDTO(gridParams);
         }
 

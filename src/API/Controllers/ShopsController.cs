@@ -29,7 +29,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost("purchaseSearch")]
-        public ActionResult<GridData<ShopPurchasesGridDTO>> GetSegmentCompetitions([FromBody] ShopPurchasesGridParams gridParams)
+        public ActionResult<GridData<ShopPurchasesGridDTO>> GetShopPurchasesSearch([FromBody] ShopPurchasesGridParams gridParams)
         {
             if (string.IsNullOrEmpty(gridParams.Sidx))
             {

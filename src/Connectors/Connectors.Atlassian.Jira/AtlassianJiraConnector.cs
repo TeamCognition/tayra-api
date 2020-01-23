@@ -51,7 +51,7 @@ namespace Tayra.Connectors.Atlassian.Jira
 
                 var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == profileId && x.SegmentId == segmentId && x.Type == Type);
                 var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == null && x.SegmentId == segmentId && x.Type == Type);
-                if (segmentIntegration == null && ProfileRoles.Member == profileRole)
+                if (segmentIntegration == null && profileRole == ProfileRoles.Member)
                 {
                     throw new FirdawsSecurityException($"profileId: {profileId} tried to integrate {Type} before segment integration");
                 }
@@ -60,7 +60,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                 {
                     var profileFields = new Dictionary<string, string>
                     {
-                        [Constants.USER_ACCOUNT_ID] = loggedInUser.AccountId
+                        [Constants.PROFILE_EXTERNAL_ID] = loggedInUser.AccountId
                     };
 
                     CreateProfileIntegration(profileId, segmentId, profileFields, profileIntegration);
@@ -80,9 +80,10 @@ namespace Tayra.Connectors.Atlassian.Jira
                     };
 
                     segmentIntegration = CreateSegmentIntegration(segmentId, segmentFields, segmentIntegration);
-                    OrganizationContext.SaveChanges();
-                    return segmentIntegration;
                 }
+
+                OrganizationContext.SaveChanges();
+                return segmentIntegration;
             }
             return null;
         }

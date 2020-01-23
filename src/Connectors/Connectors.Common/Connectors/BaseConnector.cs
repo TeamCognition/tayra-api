@@ -85,7 +85,7 @@ namespace Tayra.Connectors.Common
 
             if(profileId != null)
             {
-                var externalId = fields.GetValueOrDefault(Constants.USER_ACCOUNT_ID);
+                var externalId = fields.GetValueOrDefault(Constants.PROFILE_EXTERNAL_ID);
                 if (!string.IsNullOrEmpty(externalId))
                 {
                     var eId = OrganizationContext.ProfileExternalIds.FirstOrDefault(x => x.ProfileId == profileId && x.SegmentId == segmentId && x.IntegrationType == Type);

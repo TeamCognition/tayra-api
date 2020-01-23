@@ -54,9 +54,23 @@ namespace Tayra.Services
 
         public GridData<InventoryItemGridDTO> GetInventoryItemViewGridDTO(InventoryItemGridParams gridParams)
         {
+            if(string.IsNullOrEmpty(gridParams.ProfileUsername))
+            {
+                throw new ApplicationException(nameof(gridParams.ProfileUsername) + "must be provided");
+            }
+
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Username == gridParams.ProfileUsername);
 
-            var query = from i in DbContext.ProfileInventoryItems
+            profile.EnsureNotNull(gridParams.ProfileUsername);
+
+            IQueryable<ProfileInventoryItem> scope = DbContext.ProfileInventoryItems;
+
+            if (gridParams.ItemTypesQuery != null && gridParams.ItemTypesQuery.Count > 0)
+            {
+                scope = scope.Where(x => gridParams.ItemTypesQuery.Contains(x.Item.Type));
+            }
+
+            var query = from i in scope
                         where i.ProfileId == profile.Id
                         where i.Item.Name.Contains(gridParams.ItemNameQuery)
                         select new InventoryItemGridDTO

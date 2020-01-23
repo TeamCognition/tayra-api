@@ -8,5 +8,6 @@ namespace Tayra.Services
         public string Name { get; set; }
         public string Image { get; set; }
         public ItemTypes Type { get; set; }
+        public ItemRarities Rarity { get; set; }
     }
 }

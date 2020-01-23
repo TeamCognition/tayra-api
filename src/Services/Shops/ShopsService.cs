@@ -48,7 +48,7 @@ namespace Tayra.Services
                 throw new ApplicationException("PurchaseStatusesQuery is empty");
             }
 
-            if (gridParams.ItemTypesQuery == null || gridParams.PurchaseStatusesQuery.Count == 0)
+            if (gridParams.ItemTypesQuery == null || gridParams.ItemTypesQuery.Count == 0)
             {
                 throw new ApplicationException("ItemTypesQuery is empty");
             }
@@ -56,6 +56,18 @@ namespace Tayra.Services
             var scope = role == ProfileRoles.Member
                 ? DbContext.ShopPurchases.Where(x => x.ProfileId == profileId)
                 : DbContext.ShopPurchases;
+
+            {
+                if (gridParams.CreatedFrom != null)
+                {
+                    scope = scope.Where(x => x.Created.Date >= gridParams.CreatedFrom.Value.Date);
+                }
+
+                if (gridParams.CreatedTo != null)
+                {
+                    scope = scope.Where(x => x.Created.Date <= gridParams.CreatedTo.Value.Date);
+                }
+            }
 
             var query = from sp in scope
                         where gridParams.PurchaseStatusesQuery.Contains(sp.Status)

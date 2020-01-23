@@ -399,7 +399,8 @@ namespace Tayra.Services
                                    InventoryItemId = ii.Id,
                                    Name = ii.Item.Name,
                                    Image = ii.Item.Image,
-                                   Type = ii.Item.Type
+                                   Type = ii.Item.Type,
+                                   Rarity = ii.Item.Rarity
                                }).ToList();
 
             return new ProfileActiveItemsDTO

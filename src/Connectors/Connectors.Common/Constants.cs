@@ -12,6 +12,6 @@
         public const string IDENTITY_URL = "IdentityUrl";
         public const string ID_TOKEN = "IdToken";
         public const string SCOPE = "Scope";
-        public const string USER_ACCOUNT_ID = "UserAccountId";
+        public const string PROFILE_EXTERNAL_ID = "ProfileExternalId";
     }
 }

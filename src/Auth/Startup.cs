@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -57,7 +55,8 @@ namespace Tayra.Auth
 
             services.AddCors(c =>
             {
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+                c.AddPolicy("AllowAllOrigins", options => options.AllowAnyOrigin()
+                                                                 .AllowAnyHeader());
             });
 
             if (Environment.IsDevelopment())
@@ -79,7 +78,7 @@ namespace Tayra.Auth
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(options => options.AllowAnyOrigin());
+            app.UseCors("AllowAllOrigins");
 
             app.UseIdentityServer();
         }

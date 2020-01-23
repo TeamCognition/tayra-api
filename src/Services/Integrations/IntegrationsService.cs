@@ -7,6 +7,7 @@ using MoreLinq;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
+using Tayra.Connectors.Common;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -60,7 +61,7 @@ namespace Tayra.Services
                     Id = x.Id,
                     SegmentId = x.SegmentId,
                     Type = x.Type,
-                    ExternalId = x.ProfileId != null ? x.Fields.Where(e => e.Key == IntegrationConstants.ProfileExternalId).Select(e => e.Value).FirstOrDefault() : null
+                    ExternalId = x.ProfileId != null ? x.Fields.Where(e => e.Key == Constants.PROFILE_EXTERNAL_ID).Select(e => e.Value).FirstOrDefault() : null
                 })
                 .ToList();
 

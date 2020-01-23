@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using IdentityServer4;
 using IdentityServer4.Models;
 
@@ -38,6 +39,9 @@ namespace Tayra.Auth
 
                     UpdateAccessTokenClaimsOnRefresh = true,
                     AllowOfflineAccess = true,
+
+                    //AccessTokenLifetime = (int) new TimeSpan(0,0,30).TotalSeconds,
+                    //IdentityTokenLifetime = (int) new TimeSpan(0,0,30).TotalSeconds,
 
                     AllowedScopes = new List<string>
                     { 

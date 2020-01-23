@@ -54,8 +54,40 @@ namespace Tayra.Services
 
         public GridData<ShopItemViewGridDTO> GetShopItemViewGridDTO(ProfileRoles profileRole, ShopItemViewGridParams gridParams)
         {
-            var query = from si in DbContext.ShopItems
-                        where si.Item.Name.Contains(gridParams.NameQuery)
+            IQueryable<ShopItem> scope = DbContext.ShopItems;
+
+            if (gridParams.ItemTypesQuery != null && gridParams.ItemTypesQuery.Count > 0)
+            {
+                scope = scope.Where(x => gridParams.ItemTypesQuery.Contains(x.Item.Type));
+            }
+
+            //TODO: discount is not considered in filters
+            {
+                if (gridParams.ItemPriceFrom != null)
+                {
+                    scope = scope.Where(x => x.Price >= gridParams.ItemPriceFrom);
+                }
+
+                if (gridParams.ItemPriceTo != null)
+                {
+                    scope = scope.Where(x => x.Price <= gridParams.ItemPriceTo);
+                }
+            }
+
+            {
+                if (gridParams.ItemAddedFrom != null)
+                {
+                    scope = scope.Where(x => x.Created.Date >= gridParams.ItemAddedFrom.Value.Date);
+                }
+
+                if (gridParams.ItemAddedTo != null)
+                {
+                    scope = scope.Where(x => x.Created.Date <= gridParams.ItemAddedTo.Value.Date);
+                }
+            }
+
+            var query = from si in scope
+                        where si.Item.Name.Contains(gridParams.ItemNameQuery)
                         where profileRole != ProfileRoles.Member || si.DisabledAt == null
                         select new ShopItemViewGridDTO
                         {
