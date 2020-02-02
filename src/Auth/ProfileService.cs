@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
+using Tayra.Services;
 using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.Auth
@@ -41,6 +42,7 @@ namespace Tayra.Auth
                                         .Where(x => x.IdentityId == int.Parse(subject))
                                         .Select(x => x.Tenant)
                                         .FirstOrDefault();
+
             using (var orgContext = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name), _shardMapProvider)) //TODO: check if passing httpAccessor will change anything
             {
                 var profile = orgContext.Profiles
@@ -62,20 +64,25 @@ namespace Tayra.Auth
                     return Task.FromResult(0);
                 }
 
-                var team = orgContext.TeamMembers.Where(x => x.ProfileId == profile.Id)
-                                                .Select(x => x.Team)
-                                                .FirstOrDefault();
+                var sAndtIds = orgContext.TeamMembers
+                    .Where(x => x.ProfileId == profile.Id)
+                    .Select(x => new
+                    {
+                        TeamId = x.Team.Id,
+                        SegmentId = x.Team.Segment.Id,
+                        TeamKey = x.Team.Key
+                    }).ToList();
 
-                var claimList = new List<Claim>();
-
-                if (team != null && team.Key != null)
+                var claimList = new List<Claim>
                 {
-                    claimList.Add(new Claim(TayraClaimTypes.TeamKey, team.Key));
-                }
+                    new Claim(FirdawsClaimTypes.ProfileId, profile.Id.ToString()), //For CreatedBy column
+                    new Claim(FirdawsClaimTypes.IdentityId, profile.IdentityId.ToString()),
+                    new Claim(TayraClaimTypes.Role, profile.Role.ToString()),
+                };
 
-                claimList.Add(new Claim(FirdawsClaimTypes.ProfileId, profile.Id.ToString())); //For CreatedBy column
-                claimList.Add(new Claim(FirdawsClaimTypes.IdentityId, profile.IdentityId.ToString()));
-                claimList.Add(new Claim(TayraClaimTypes.Role, profile.Role.ToString()));
+                claimList.AddRange(sAndtIds.Select(x => x.SegmentId).Distinct().Select(sId => new Claim(TayraClaimTypes.Segment, sId.ToString())));
+                claimList.AddRange(sAndtIds.Where(x => x.TeamKey != null).Select(x => x.TeamId).Distinct().Select(tId => new Claim(TayraClaimTypes.Team, tId.ToString())));
+
                 context.IssuedClaims = claimList;
                 
                 try

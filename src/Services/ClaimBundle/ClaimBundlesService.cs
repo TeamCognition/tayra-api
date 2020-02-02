@@ -60,38 +60,31 @@ namespace Tayra.Services
             return claimBundle;
         }
 
-        public ClaimBundleClaimRewardsDTO ClaimReward(int profileId, int claimBundleId)
+        public ClaimBundleClaimRewardsDTO ShowAndClaimRewards(int profileId, int claimBundleId, bool claimRewards)
         {
             var claimBundle = ClaimBundleCommonScope()
                 .FirstOrDefault(x => x.Id == claimBundleId);
 
             claimBundle.EnsureNotNull(claimBundleId);
 
-            if (!ClaimBundleRules.CanClaimReward(claimBundle, profileId))
+            if (claimRewards)
             {
-                throw new ApplicationException($"User cant claim this reward");
+                Claim(profileId, DateTime.UtcNow, claimBundle);
             }
-
-            Claim(claimBundle, DateTime.UtcNow);
 
             return MapClaimRewardsDTO(claimBundle);
         }
 
-        public ClaimBundleClaimRewardsDTO ClaimRewards(int profileId, ClaimBundleTypes type)
+        public ClaimBundleClaimRewardsDTO ShowAndClaimRewards(int profileId, ClaimBundleTypes type, bool claimRewards)
         { //TODO: merge claimRewards and this method
             var claimBundles = ClaimBundleCommonScope()
                 .Where(x => x.ProfileId == profileId)
                 .Where(x => x.Type == type)
                 .ToArray();
 
-            foreach (var cb in claimBundles)
+            if (claimRewards)
             {
-                if (!ClaimBundleRules.CanClaimReward(cb, profileId))
-                {
-                    throw new ApplicationException($"User cant claim this reward");
-                }
-
-                Claim(cb, DateTime.UtcNow);
+                Claim(profileId, DateTime.UtcNow, claimBundles);
             }
 
             return MapClaimRewardsDTO(claimBundles);
@@ -101,17 +94,25 @@ namespace Tayra.Services
 
         #region Private Methods
 
-        private static void Claim(ClaimBundle claimBundle, DateTime claimedAt)
+        private static void Claim(int profileId, DateTime claimedAt, params ClaimBundle[] claimBundles)
         {
-            claimBundle.RewardClaimedAt = claimedAt;
-            foreach (var cbItem in claimBundle.Items)
+            foreach (var cBundle in claimBundles)
             {
-                cbItem.ProfileInventoryItem.ClaimedAt = claimedAt;
-            }
+                if (!ClaimBundleRules.CanClaimReward(cBundle, profileId))
+                {
+                    throw new FirdawsSecurityException($"ProfileId {profileId} can't claim bundle with id: {cBundle.Id}");
+                }
 
-            foreach (var cbTTxn in claimBundle.TokenTxns)
-            {
-                cbTTxn.TokenTransaction.ClaimedAt = claimedAt;
+                cBundle.RewardClaimedAt = claimedAt;
+                foreach (var cbItem in cBundle.Items)
+                {
+                    cbItem.ProfileInventoryItem.ClaimedAt = claimedAt;
+                }
+
+                foreach (var cbTTxn in cBundle.TokenTxns)
+                {
+                    cbTTxn.TokenTransaction.ClaimedAt = claimedAt;
+                }
             }
         }
 

@@ -25,13 +25,28 @@ namespace Tayra.API.Controllers
         [HttpPost("search")]
         public ActionResult<GridData<ClaimBundleViewGridDTO>> GetSegmentChallenges([FromBody] ClaimBundleViewGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
+            return ClaimBundlesService.GetClaimBundlesGrid(CurrentUser.ProfileId, gridParams);
+        }
+
+        [HttpGet]
+        public ActionResult<ClaimBundleClaimRewardsDTO> ShowClaimBundle([FromQuery] int? claimBundleId, [FromQuery] ClaimBundleTypes? claimBundleType)
+        {
+            if (!claimBundleId.HasValue && !claimBundleType.HasValue)
             {
-                gridParams.Sidx = nameof(ClaimBundleViewGridDTO.Created);
-                gridParams.Sord = "DESC";
+                throw new ApplicationException("provide claimBundleId or claimBundleType");
             }
 
-            return ClaimBundlesService.GetClaimBundlesGrid(CurrentUser.ProfileId, gridParams);
+            ClaimBundleClaimRewardsDTO claimedRewards;
+            if (claimBundleId.HasValue)
+            {
+                claimedRewards = ClaimBundlesService.ShowAndClaimRewards(CurrentUser.ProfileId, claimBundleId.Value, false);
+            }
+            else
+            {
+                claimedRewards = ClaimBundlesService.ShowAndClaimRewards(CurrentUser.ProfileId, claimBundleType.Value, false);
+            }
+
+            return Ok(claimedRewards);
         }
 
         [HttpPost("claim")]
@@ -39,17 +54,17 @@ namespace Tayra.API.Controllers
         {
             if(!claimBundleId.HasValue && !claimBundleType.HasValue)
             {
-                throw new ApplicationException("provide claimBundleId or type");
+                throw new ApplicationException("provide claimBundleId or claimBundleType");
             }
 
             ClaimBundleClaimRewardsDTO claimedRewards;
             if (claimBundleId.HasValue)
             {
-                claimedRewards = ClaimBundlesService.ClaimReward(CurrentUser.ProfileId, claimBundleId.Value);
+                claimedRewards = ClaimBundlesService.ShowAndClaimRewards(CurrentUser.ProfileId, claimBundleId.Value, true);
             }
             else
             {
-                claimedRewards = ClaimBundlesService.ClaimRewards(CurrentUser.ProfileId, claimBundleType.Value);
+                claimedRewards = ClaimBundlesService.ShowAndClaimRewards(CurrentUser.ProfileId, claimBundleType.Value, true);
             }
 
             OrganizationContext.SaveChanges();

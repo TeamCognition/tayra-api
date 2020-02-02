@@ -730,7 +730,7 @@ namespace Tayra.Models.Seeder
                     ItemId = item.Id,
                     IsGlobal = true,
                     Price = item.WorthValue / 0.8f,
-                    QuantityReserved = null
+                    QuantityReservedRemaining = null
                 });
             }
 

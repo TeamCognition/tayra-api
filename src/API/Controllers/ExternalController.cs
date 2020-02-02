@@ -36,22 +36,22 @@ namespace Tayra.API.Controllers
         [HttpGet, Route("callback/{type?}")]
         public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
         {
+            var stateData = Cipher.Decrypt(state).Split('|');
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try
             {
-                var stateData = Cipher.Decrypt(state).Split('|');
-
-                var profileId = int.Parse(stateData[0]);
-                var profileRole = Enum.Parse<ProfileRoles>(stateData[1]);
-                var segmentId = int.Parse(stateData[2]);
-                connector.Authenticate(profileId, profileRole, segmentId, state);
+                connector.Authenticate(
+                    profileId: int.Parse(stateData[0]),
+                    profileRole: Enum.Parse<ProfileRoles>(stateData[1]),
+                    segmentId: int.Parse(stateData[2]),
+                    userState: state);
             }
             catch
             {
-                return Redirect(connector.GetAuthDoneUrl(false));
+                return Redirect(connector.GetAuthDoneUrl(stateData[3], false));
             }
 
-            return Redirect(connector.GetAuthDoneUrl(true));
+            return Redirect(connector.GetAuthDoneUrl(stateData[3], true));
         }
 
         public class ContactFormDTO

@@ -24,10 +24,15 @@ namespace Tayra.API.Controllers
         #region Public Methods
 
         [HttpGet, Route("connect/{type?}")]
-        public IActionResult Connect(IntegrationType type)
+        public IActionResult Connect([FromRoute] IntegrationType type, [FromQuery] string returnPath)
         {
+            if(string.IsNullOrEmpty(returnPath))
+            {
+                throw new ApplicationException("You have to provide returnPath");
+            }
+
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-            return Redirect(connector.GetAuthUrl(Cipher.Encrypt($"{CurrentUser.ProfileId}|{CurrentUser.Role}|{CurrentSegment.Id}")));
+            return Redirect(connector.GetAuthUrl(Cipher.Encrypt($"{CurrentUser.ProfileId}|{CurrentUser.Role}|{CurrentSegment.Id}|{returnPath}")));
         }
 
         [HttpGet, Route("settings/atj")]

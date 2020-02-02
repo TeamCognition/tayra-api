@@ -4,6 +4,7 @@ using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -34,13 +35,19 @@ namespace Tayra.Services
         {
             var query = (from tm in DbContext.TeamMembers
                          where tm.ProfileId == profileId
+                         let s = tm.Team.Segment
                          select new SegmentGridDTO
                          {
-                            SegmentId = tm.Team.Segment.Id,
-                            Name = tm.Team.Segment.Name,
-                            Key = tm.Team.Segment.Key,
-                            Avatar = tm.Team.Segment.Avatar,
-                            Created = tm.Team.Segment.Created
+                             SegmentId = s.Id,
+                             Name = s.Name,
+                             Key = s.Key,
+                             Avatar = s.Avatar,
+                             Created = s.Created,
+                             ChallengesActive = s.Challenges.Count(x => x.Status == ChallengeStatuses.Active),
+                             ChallengesCompleted = s.Challenges.Count(x => x.Status == ChallengeStatuses.Ended),
+                             ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
+                             Integrations = s.Integrations.Where(x => x.ProfileId == null).Select(x => x.Type).ToArray(),
+                             ActionPointsCount = s.ActionPoints.Count(x => x.ConcludedOn == null)
                          }).DistinctBy(x => x.Key);
 
             GridData<SegmentGridDTO> gridData = query.GetGridData(gridParams);
@@ -84,8 +91,9 @@ namespace Tayra.Services
                                                     {
                                                         Name = t.Name,
                                                         Key = t.Key,
-                                                        Avatar = t.AvatarColor,
-                                                        MemberFrom = t.Created
+                                                        AvatarColor = t.AvatarColor,
+                                                        MembersCount = t.Members.Count(),
+                                                        Created = t.Created
                                                     };
 
             GridData<SegmentTeamGridDTO> gridData = query.GetGridData(gridParams);
@@ -95,14 +103,19 @@ namespace Tayra.Services
 
         public SegmentViewDTO GetSegmnetViewDTO(string segmentKey)
         {
-            var segmentDTO =  (from segment in DbContext.Segments
-                                where segment.Key == segmentKey
+            var segmentDTO =  (from s in DbContext.Segments
+                                where s.Key == segmentKey
                                 select new SegmentViewDTO
                                 {
-                                    SegmentId = segment.Id,
-                                    Name = segment.Name,
-                                    Key = segment.Key,
-                                    Avatar = segment.Avatar
+                                    SegmentId = s.Id,
+                                    Name = s.Name,
+                                    Key = s.Key,
+                                    Avatar = s.Avatar,
+                                    TokensEarned = s.ReportsDaily.Select(x => x.CompanyTokensTotal).LastOrDefault(),
+                                    TokensSpent = s.ShopPurchases.Where(x => x.Status == ShopPurchaseStatuses.Fulfilled).Sum(x => x.Price),
+                                    ChallengesActive = s.Challenges.Count(x => x.Status == ChallengeStatuses.Active),
+                                    ChallengesCompleted = s.Challenges.Count(x => x.Status == ChallengeStatuses.Ended),
+                                    ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
                                 }).FirstOrDefault();
 
             segmentDTO.EnsureNotNull(segmentKey);

@@ -7,7 +7,7 @@ namespace Tayra.Connectors.Common
     {
         string GetAuthUrl(string userState);
 
-        string GetAuthDoneUrl(bool isSuccessful);
+        string GetAuthDoneUrl(string returnPath, bool isSuccessful);
 
         Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState);
 

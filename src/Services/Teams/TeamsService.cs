@@ -37,16 +37,24 @@ namespace Tayra.Services
             return teamDto;
         }
 
-        public GridData<TeamViewGridDTO> GetViewGridData(int segmentId, TeamViewGridParams gridParams)
+        public GridData<TeamViewGridDTO> GetViewGridData(int[] teamIds, TeamViewGridParams gridParams)
         {
-            IQueryable<TeamViewGridDTO> query = from t in DbContext.TeamsScopeOfSegment(segmentId)
+            IQueryable<TeamViewGridDTO> query = from t in DbContext.Teams
+                                                where teamIds.Contains(t.Id)
                                                 select new TeamViewGridDTO
                                                 {
-                                                    TeamKey = t.Key,
+                                                    TeamId = t.Id,
+                                                    Key = t.Key,
                                                     Name = t.Name,
-                                                    Created = t.Created,
                                                     AvatarColor = t.AvatarColor,
-                                                    Subtitle = t.Members.Count() + " Members",
+                                                    MembersCount = t.Members.Count(),
+                                                    Segment = new SegmentDTO
+                                                    {
+                                                        SegmentId = t.SegmentId,
+                                                        Name = t.Segment.Name,
+                                                        Key = t.Segment.Key,
+                                                        Avatar = t.Key,
+                                                    }
                                                 };
 
             GridData<TeamViewGridDTO> gridData = query.GetGridData(gridParams);

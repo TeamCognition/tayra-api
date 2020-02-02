@@ -31,10 +31,10 @@ namespace Tayra.Connectors.Common
             throw new NotImplementedException("Not supported by this network");
         }
 
-        public virtual string GetAuthDoneUrl(bool isSuccessful)
+        public virtual string GetAuthDoneUrl(string returnPath, bool isSuccessful)
         {
             string protocol = Tenant.Host.StartsWith("localhost:", StringComparison.InvariantCulture) ? "http" : "https"; 
-            return $"{protocol}://{Tenant.Host}/integrations/{Type.ToString().ToLower()}/done?successful={isSuccessful}";
+            return $"{protocol}://{Tenant.Host}/{returnPath}/?i={Type.ToString().ToLower()}&success={isSuccessful}";
         }
 
         #endregion

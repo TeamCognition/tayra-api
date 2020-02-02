@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200128121018_BETA41")]
+    partial class BETA41
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -230,7 +232,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<float>("RewardValue");
 
-                    b.Property<int?>("SegmentId");
+                    b.Property<int>("SegmentId");
 
                     b.Property<int>("Status");
 
@@ -353,7 +355,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<DateTime?>("LastModified");
 
-                    b.Property<int>("Quantity");
+                    b.Property<int>("QuantityReserved");
 
                     b.HasKey("ChallengeId", "ItemId", "OrganizationId");
 
@@ -364,29 +366,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("ChallengeRewards");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeSegment", b =>
-                {
-                    b.Property<int>("ChallengeId");
-
-                    b.Property<int>("SegmentId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("ChallengeId", "SegmentId", "OrganizationId");
-
-                    b.HasAlternateKey("ChallengeId", "SegmentId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("SegmentId");
-
-                    b.ToTable("ChallengeSegments");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundle", b =>
@@ -1652,7 +1631,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<float>("Price");
 
-                    b.Property<int?>("QuantityReservedRemaining");
+                    b.Property<int?>("QuantityReserved");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2371,7 +2350,7 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Tayra.Models.Organizations.Segment")
+                    b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("Challenges")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
@@ -2381,7 +2360,7 @@ namespace Tayra.Models.Organizations.Migrations
             modelBuilder.Entity("Tayra.Models.Organizations.ChallengeCommit", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Challenge", "Challenge")
-                        .WithMany("Commits")
+                        .WithMany()
                         .HasForeignKey("ChallengeId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2470,26 +2449,6 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeSegment", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Challenge", "Challenge")
-                        .WithMany("Segments")
-                        .HasForeignKey("ChallengeId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
-                        .WithMany()
-                        .HasForeignKey("SegmentId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundle", b =>

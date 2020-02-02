@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using Firdaws.Core;
-using Tayra.Common;
 
 namespace Tayra.Services
 {
     public class ChallengeViewGridParams : GridParams
     {
-        public IList<ChallengeStatuses> Statuses { get; set; }
+        public ICollection<int> Segments { get; set; }
     }
 }

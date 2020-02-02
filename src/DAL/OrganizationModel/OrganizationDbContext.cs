@@ -58,6 +58,7 @@ namespace Tayra.Models.Organizations
         public DbSet<ChallengeGoal> ChallengeGoals { get; set; }
         public DbSet<ChallengeGoalCompletion> ChallengeGoalCompletions { get; set; }
         public DbSet<ChallengeReward> ChallengeRewards { get; set; }
+        public DbSet<ChallengeSegment> ChallengeSegments { get; set; }
         public DbSet<ClaimBundle> ClaimBundles { get; set; }
         public DbSet<ClaimBundleItem> ClaimBundleItems { get; set; }
         public DbSet<ClaimBundleTokenTxn> ClaimBundleTokenTxns { get; set; }
@@ -156,6 +157,11 @@ namespace Tayra.Models.Organizations
             modelBuilder.Entity<ChallengeReward>(entity =>
             {
                 entity.HasKey(x => new { x.ChallengeId, x.ItemId });
+            });
+
+            modelBuilder.Entity<ChallengeSegment>(entity =>
+            {
+                entity.HasKey(x => new { x.ChallengeId, x.SegmentId });
             });
 
             modelBuilder.Entity<ClaimBundleItem>().HasKey(x => new { x.ClaimBundleId, x.ProfileInventoryItemId });

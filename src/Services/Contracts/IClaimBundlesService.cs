@@ -9,7 +9,7 @@ namespace Tayra.Services
         GridData<ClaimBundleViewGridDTO> GetClaimBundlesGrid(int profileId, ClaimBundleViewGridParams gridParams);
         ClaimBundle CreateClaimBundle(int profileId, ClaimBundleTypes type);
 
-        ClaimBundleClaimRewardsDTO ClaimReward(int profileId, int claimBundleId);
-        ClaimBundleClaimRewardsDTO ClaimRewards(int profileId, ClaimBundleTypes type);
+        ClaimBundleClaimRewardsDTO ShowAndClaimRewards(int profileId, int claimBundleId, bool claimRewards);
+        ClaimBundleClaimRewardsDTO ShowAndClaimRewards(int profileId, ClaimBundleTypes type, bool claimRewards);
     }
 }

@@ -26,12 +26,11 @@ namespace Tayra.Models.Organizations
 
         public float RewardValue { get; set; }
 
-        public int SegmentId { get; set; }
-        public virtual Segment Segment { get; set; }
-
         public virtual ICollection<ChallengeGoal> Goals { get; set; }
+        public virtual ICollection<ChallengeCommit> Commits { get; set; }
         public virtual ICollection<ChallengeReward> Rewards { get; set; }
-
+        public virtual ICollection<ChallengeSegment> Segments { get; set; }
+        
         #region IAuditedEntity
 
         public DateTime Created { get; set; }

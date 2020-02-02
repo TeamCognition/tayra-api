@@ -33,7 +33,7 @@ namespace Tayra.Services
                                select new ShopItemViewDTO
                                {
                                    ItemId = si.ItemId,
-                                   Quantity = si.QuantityReserved,
+                                   Quantity = si.QuantityReservedRemaining,
                                    Price = si.Price,
                                    Created = si.Created,
                                    IsDisabled = si.DisabledAt.HasValue,
@@ -56,43 +56,17 @@ namespace Tayra.Services
         {
             IQueryable<ShopItem> scope = DbContext.ShopItems;
 
-            if (gridParams.ItemTypesQuery != null && gridParams.ItemTypesQuery.Count > 0)
+            if (!string.IsNullOrEmpty(gridParams.ItemNameQuery))
             {
-                scope = scope.Where(x => gridParams.ItemTypesQuery.Contains(x.Item.Type));
-            }
-
-            //TODO: discount is not considered in filters
-            {
-                if (gridParams.ItemPriceFrom != null)
-                {
-                    scope = scope.Where(x => x.Price >= gridParams.ItemPriceFrom);
-                }
-
-                if (gridParams.ItemPriceTo != null)
-                {
-                    scope = scope.Where(x => x.Price <= gridParams.ItemPriceTo);
-                }
-            }
-
-            {
-                if (gridParams.ItemAddedFrom != null)
-                {
-                    scope = scope.Where(x => x.Created.Date >= gridParams.ItemAddedFrom.Value.Date);
-                }
-
-                if (gridParams.ItemAddedTo != null)
-                {
-                    scope = scope.Where(x => x.Created.Date <= gridParams.ItemAddedTo.Value.Date);
-                }
+                scope = scope.Where(x => x.Item.Name.Contains(gridParams.ItemNameQuery));
             }
 
             var query = from si in scope
-                        where si.Item.Name.Contains(gridParams.ItemNameQuery)
                         where profileRole != ProfileRoles.Member || si.DisabledAt == null
                         select new ShopItemViewGridDTO
                         {
                             ItemId = si.ItemId,
-                            Quantity = si.QuantityReserved,
+                            Quantity = si.QuantityReservedRemaining,
                             Price = si.Price,
                             Created = si.Created,
                             IsDisabled = si.DisabledAt.HasValue,
@@ -117,16 +91,17 @@ namespace Tayra.Services
             var token = DbContext.Tokens.FirstOrDefault(x => x.Type == TokenType.CompanyToken);
             var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
             var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == token.Id).Sum(x => x.Value);
+            var sugmentId = DbContext.TeamMembers.Where(x => x.ProfileId == profileId).Select(x => x.Team.SegmentId).FirstOrDefault();
 
             shop.EnsureNotNull(shop.Id);
             shopItem.EnsureNotNull(shop.Id, dto.ItemId);
 
-            if (!ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Price, shopItem.QuantityReserved))
+            if (!ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Price, shopItem.QuantityReservedRemaining))
             {
                 throw new ApplicationException("We are unable to perform the action :)");
             }
 
-            shopItem.QuantityReserved--;
+            shopItem.QuantityReservedRemaining--;
 
             TokensService.CreateTransaction(token.Id, profileId, shopItem.Price * -1, TransactionReason.ShopItemPurchase, null);
 
@@ -142,7 +117,7 @@ namespace Tayra.Services
                 Price = shopItem.Price,
                 PriceDiscountedFor = shopItem.Price - shopItem.DiscountPrice,
                 GiftFor = null,
-                SegmentId = 1
+                SegmentId = sugmentId
             });
 
             if (purchaseStatus == ShopPurchaseStatuses.Fulfilled)
@@ -168,7 +143,7 @@ namespace Tayra.Services
                     { "itemPrice", shopItem.DiscountPrice?.ToString() ?? shopItem.Price.ToString() },
                     { "itemId", shopItem.ItemId.ToString() },
                     { "purchaseStatus", purchaseStatus.ToString() },
-                    { "segmentId", "1" },
+                    { "segmentId", sugmentId.ToString()},
                     { "itemName", shopItem.Item.Name }
                 },
                 ProfileId = profileId,
@@ -182,7 +157,7 @@ namespace Tayra.Services
                 DbContext.Add(new ShopItem
                 {
                     Price = dto.Price,
-                    QuantityReserved = dto.Quantity,
+                    QuantityReservedRemaining = dto.Quantity,
                     Item = new Item
                     {
                         Name = dto.Name,
@@ -205,7 +180,7 @@ namespace Tayra.Services
             shopItem.EnsureNotNull(dto.ItemId);
 
             shopItem.Price = dto.Price;
-            shopItem.QuantityReserved = dto.Quantity;
+            shopItem.QuantityReservedRemaining = dto.Quantity;
 
             var item = dto.AffectOwnedItems ? shopItem.Item : new Item();
             shopItem.Item = item;

@@ -7,15 +7,17 @@ using Tayra.Services;
 
 namespace Tayra.API.Controllers
 {
-    public class TeamsController : BaseDataController
+    public class TeamsController : BaseController
     {
         #region Constructor
 
-        public TeamsController(IServiceProvider serviceProvider, OrganizationDbContext context) : base(serviceProvider, context)
+        public TeamsController(IServiceProvider serviceProvider, OrganizationDbContext context) : base(serviceProvider)
         {
         }
 
         #endregion
+
+        public OrganizationDbContext OrganizationContext { get; set; }
 
         #region Action Methods
 
@@ -28,13 +30,7 @@ namespace Tayra.API.Controllers
         [HttpPost("search")]
         public ActionResult<GridData<TeamViewGridDTO>> Search([FromBody] TeamViewGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(TeamViewGridDTO.Name);
-                gridParams.Sord = "ASC";
-            }
-            
-            return TeamsService.GetViewGridData(CurrentSegment.Id, gridParams);
+            return TeamsService.GetViewGridData(CurrentUser.TeamsIds, gridParams);
         }
 
         [HttpPost("searchMembers")]
@@ -48,23 +44,23 @@ namespace Tayra.API.Controllers
             return TeamsService.GetTeamMembersGridData(gridParams);
         }
 
-        [HttpPost("create")]
-        public IActionResult CreateTeam([FromBody]TeamCreateDTO dto)
-        {
-            TeamsService.Create(CurrentSegment.Id, dto);
-            OrganizationContext.SaveChanges();
+        //[HttpPost("create")]
+        //public IActionResult CreateTeam([FromBody]TeamCreateDTO dto)
+        //{
+        //    TeamsService.Create(CurrentSegment.Id, dto);
+        //    OrganizationContext.SaveChanges();
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
-        [HttpPut("update")]
-        public IActionResult UpdateTeam([FromBody] TeamUpdateDTO dto)
-        {
-            TeamsService.Update(CurrentSegment.Id, dto);
-            OrganizationContext.SaveChanges();
+        //[HttpPut("update")]
+        //public IActionResult UpdateTeam([FromBody] TeamUpdateDTO dto)
+        //{
+        //    TeamsService.Update(CurrentSegment.Id, dto);
+        //    OrganizationContext.SaveChanges();
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
         [HttpPost("addMembers")]
         public IActionResult AddMembers([FromQuery]string teamKey, [FromBody]IList<TeamAddMemberDTO> dto)

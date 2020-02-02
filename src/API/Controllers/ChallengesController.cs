@@ -6,28 +6,31 @@ using Tayra.Services;
 
 namespace Tayra.API.Controllers
 {
-    public class ChallengesController : BaseDataController
+    public class ChallengesController : BaseController
     {
         #region Constructor
 
-        public ChallengesController(IServiceProvider serviceProvider, OrganizationDbContext context) : base(serviceProvider, context)
+        public ChallengesController(IServiceProvider serviceProvider, OrganizationDbContext context) : base(serviceProvider)
         {
+            OrganizationContext = context;
         }
 
         #endregion
 
+        public OrganizationDbContext OrganizationContext { get; set; }
+
         #region Action Methods
 
         [HttpPost("search")]
-        public ActionResult<GridData<ChallengeViewGridDTO>> GetSegmentChallenges([FromBody] ChallengeViewGridParams gridParams)
+        public ActionResult<GridData<ChallengeViewGridDTO>> GetChallengesGrid([FromBody] ChallengeViewGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(ChallengeViewGridDTO.ActiveUntil);
-                gridParams.Sord = "ASC";
-            }
+            return ChallengesService.GetChallengesGrid(gridParams);
+        }
 
-            return ChallengesService.GetSegmentChallengesGrid(CurrentSegment.Id, gridParams);
+        [HttpPost("searchCommits")]
+        public ActionResult<GridData<ChallengeCommitGridDTO>> GetChallengeCommits([FromBody] ChallengeCommitGridParams gridParams)
+        {
+            return ChallengesService.GetChallengeCommitsGrid(CurrentUser.ProfileId, gridParams);
         }
 
         [HttpGet("{challengeId:int}")]
@@ -40,7 +43,7 @@ namespace Tayra.API.Controllers
         [HttpPost("create")]
         public IActionResult CreateChallenge([FromBody] ChallengeCreateDTO dto)
         {
-            ChallengesService.Create(CurrentSegment.Id, dto);
+            ChallengesService.Create(dto);
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -49,7 +52,16 @@ namespace Tayra.API.Controllers
         [HttpPut("update")]
         public IActionResult UpdateChallenge([FromBody] ChallengeUpdateDTO dto)
         {
-            ChallengesService.Update(CurrentSegment.Id, dto);
+            ChallengesService.Update(dto);
+            OrganizationContext.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPost("completeGoal")]
+        public IActionResult CompleteGoal([FromBody] ChallengeGoalCompleteDTO dto)
+        {
+            ChallengesService.CompleteGoal(CurrentUser.ProfileId, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();

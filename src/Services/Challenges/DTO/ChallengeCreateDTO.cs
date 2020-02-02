@@ -16,8 +16,9 @@ namespace Tayra.Services
 
         public DateTime? ActiveUntil { get; set; }
 
+        public List<int> Segments { get; set; }
         public List<GoalDTO> Goals { get; set; }
-        public List<RewardDTO> Rewards { get; set; }
+        public List<RewardDTO> Rewards { get; set; }        
 
         public class RewardDTO
         {

@@ -5,7 +5,8 @@ namespace Tayra.Services
     {
         public string Name { get; set; }
         public string Key { get; set; }
-        public string Avatar { get; set; }
-        public DateTime MemberFrom { get; set; }
+        public string AvatarColor { get; set; }
+        public int MembersCount { get; set; }
+        public DateTime Created { get; set; }
     }
 }

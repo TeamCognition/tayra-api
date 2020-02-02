@@ -21,6 +21,8 @@ namespace Tayra.Services
         public DateTime? ActiveUntil { get; set; }
         public DateTime? EndedAt { get; set; }
 
+        public DateTime? CommittedOn { get; set; }
+
         public ICollection<GoalDTO> Goals { get; set; }
         public ICollection<RewardDTO> Rewards { get; set; }
 

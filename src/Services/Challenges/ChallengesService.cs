@@ -6,6 +6,7 @@ using System.Linq;
 using Firdaws.DAL;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using MoreLinq;
 
 namespace Tayra.Services
 {
@@ -26,29 +27,41 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public GridData<ChallengeViewGridDTO> GetSegmentChallengesGrid(int segmentId, ChallengeViewGridParams gridParams)
+        public GridData<ChallengeViewGridDTO> GetChallengesGrid(ChallengeViewGridParams gridParams)
         {
-            IQueryable<Challenge> scope = DbContext.Challenges.Where(x => x.SegmentId == segmentId);
-            if (gridParams.Statuses != null)
-            {
-                scope = scope.Where(x => gridParams.Statuses.Contains(x.Status));
-            }
-
-            var query = from c in scope
+            IQueryable<ChallengeSegment> scope = DbContext.ChallengeSegments.Where(x => gridParams.Segments.Contains(x.SegmentId));
+            
+            var query = (from cs in scope
                         select new ChallengeViewGridDTO
                         {
-                            Id = c.Id,
-                            Name = c.Name,
-                            Image = c.Image,
-                            Status = c.Status,
-                            RewardValue = c.RewardValue,
-                            CompletionsRemaining = c.CompletionsRemaining,
-                            Created = c.Created,
-                            ActiveUntil = c.ActiveUntil,
-                            EndedAt = c.EndedAt
-                        };
+                            Id = cs.Challenge.Id,
+                            Name = cs.Challenge.Name,
+                            Image = cs.Challenge.Image,
+                            Status = cs.Challenge.Status,
+                            RewardValue = cs.Challenge.RewardValue,
+                            CompletionsRemaining = cs.Challenge.CompletionsRemaining,
+                            Created = cs.Challenge.Created,
+                            ActiveUntil = cs.Challenge.ActiveUntil,
+                            EndedAt = cs.Challenge.EndedAt
+                        }).DistinctBy(x => x.Id); //slow?
 
             GridData<ChallengeViewGridDTO> gridData = query.GetGridData(gridParams);
+
+            return gridData;
+        }
+
+        public GridData<ChallengeCommitGridDTO> GetChallengeCommitsGrid(int profileId, ChallengeCommitGridParams gridParams)
+        {
+            IQueryable<ChallengeCommit> scope = DbContext.ChallengeCommits.Where(x => x.ProfileId == profileId);
+
+            var query = from cc in scope
+                        select new ChallengeCommitGridDTO
+                        {
+                            ChallengeId = cc.ChallengeId,
+                            CommittedOn = cc.Created
+                        };
+
+            GridData<ChallengeCommitGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
         }
@@ -69,6 +82,7 @@ namespace Tayra.Services
                                  Created = c.Created,
                                  ActiveUntil = c.ActiveUntil,
                                  EndedAt = c.EndedAt,
+                                 CommittedOn = c.Commits.Where(x => x.ProfileId == profileId).Select(x => x.Created).FirstOrDefault(),
                                  Rewards = c.Rewards.Select(x => new ChallengeViewDTO.RewardDTO
                                  {
                                      ItemId = x.ItemId,
@@ -90,7 +104,7 @@ namespace Tayra.Services
             return challenge;
         }
 
-        public void Create(int segmentId, ChallengeCreateDTO dto)
+        public void Create(ChallengeCreateDTO dto)
         {
             if (!ChallengeRules.IsActiveUntilValid(dto.ActiveUntil))
             {
@@ -104,7 +118,7 @@ namespace Tayra.Services
                             ItemId = i.Id,
                             Worth = i.WorthValue,
                             QuantityAvailable = i.IsQuantityLimited ? i.Reservations.Sum(x => x.QuantityChange) : (int?)null,
-                            QuantityToReserve = dto.Rewards.FirstOrDefault(y => y.ItemId == i.Id).Quantity
+                            QuantityToReserve = dto.Rewards.FirstOrDefault(y => y.ItemId == i.Id).Quantity * (dto.CompletionsLimit ?? 1)
                         }).ToList();
 
             foreach (var i in items)
@@ -136,16 +150,20 @@ namespace Tayra.Services
                 CompletionsRemaining = dto.CompletionsLimit,
                 IsEasterEgg = dto.IsEasterEgg,
                 ActiveUntil = dto.ActiveUntil,
-                SegmentId = segmentId,
                 RewardValue = items.Sum(x => x.Worth * x.QuantityToReserve),
-                Rewards = dto.Rewards.Select(x => new ChallengeReward { ItemId = x.ItemId, QuantityReserved = x.Quantity }).ToArray(),
+                Segments = dto.Segments.Select(x => new ChallengeSegment { SegmentId = x }).ToArray(),
+                Rewards = dto.Rewards.Select(x => new ChallengeReward { ItemId = x.ItemId, Quantity = x.Quantity }).ToArray(),
                 Goals = dto.Goals.Select(x => new ChallengeGoal { Title = x.Title, IsCommentRequired = x.IsCommentRequired }).ToArray()
             });
         }
 
-        public void Update(int segmentId, ChallengeUpdateDTO dto)
+        public void Update(ChallengeUpdateDTO dto)
         {
-            var challenge = DbContext.Challenges.FirstOrDefault(x => x.Id == dto.ChallengeId);
+            var challenge = DbContext.Challenges
+                .Include(x => x.Segments)
+                .Include(x => x.Goals)
+                .Include(x => x.Rewards)
+                .FirstOrDefault(x => x.Id == dto.ChallengeId);
 
             challenge.EnsureNotNull(dto.ChallengeId);
 
@@ -158,10 +176,30 @@ namespace Tayra.Services
             challenge.Name = dto.Name;
             challenge.Description = dto.Description;
             challenge.Image = dto.Image;
-            //challenge.CompletionsRemaining = dto.CompletionsRemaining;
-            challenge.IsEasterEgg = dto.IsEasterEgg;
             challenge.ActiveUntil = dto.ActiveUntil;
-            challenge.SegmentId = segmentId;
+
+            //Update Segments
+            challenge.Segments.ToList().RemoveAll(x => !dto.Segments.Contains(x.SegmentId));
+            dto.Segments.RemoveAll(x => !challenge.Segments.Select(dtos => dtos.SegmentId).Contains(x));
+            dto.Segments.ForEach(sId => challenge.Segments.Add(new ChallengeSegment { ChallengeId = challenge.Id, SegmentId = sId }));
+
+            //Update Goals
+            challenge.Goals.ToList().RemoveAll(x => !dto.Goals.Where(dtog => dtog.GoalId.HasValue).Select(y => y.GoalId).Contains(x.Id));
+            dto.Goals.Where(x => x.GoalId.HasValue).ToList().ForEach(x =>
+            {
+                var cg = challenge.Goals.First(g => g.Id == x.GoalId);
+                cg.Title = x.Title;
+                cg.IsCommentRequired = x.IsCommentRequired;
+            });
+            dto.Goals.Where(x => !x.GoalId.HasValue).ToList().ForEach(x =>
+            {
+                challenge.Goals.Add(new ChallengeGoal { ChallengeId = challenge.Id, Title = x.Title, IsCommentRequired = x.IsCommentRequired });
+            });
+
+            //Update Rewards
+            challenge.Rewards.ToList().RemoveAll(x => !dto.Rewards.Select(dtor => dtor.ItemId).Contains(x.ItemId));
+            dto.Rewards.RemoveAll(x => !challenge.Rewards.Select(r => r.ItemId).Contains(x.ItemId));
+            dto.Rewards.ForEach(r => challenge.Rewards.Add(new ChallengeReward { ChallengeId = challenge.Id, ItemId = r.ItemId, Quantity = r.Quantity }));
         }
 
         public void CompleteGoal(int profileId, ChallengeGoalCompleteDTO dto)
@@ -192,6 +230,19 @@ namespace Tayra.Services
                     { "goalTitle", goal.Title }
                 },
                 ProfileId = profile.Id,
+            });
+        }
+
+        public void CommitToChallenge(int profileId, ChallengeCommitDTO dto)
+        {
+            var challenge = DbContext.Challenges.FirstOrDefault(x => x.Id == dto.ChallengeId);
+
+            challenge.EnsureNotNull(dto.ChallengeId);
+
+            DbContext.Add(new ChallengeCommit
+            {
+                ProfileId = profileId,
+                ChallengeId = challenge.Id
             });
         }
 

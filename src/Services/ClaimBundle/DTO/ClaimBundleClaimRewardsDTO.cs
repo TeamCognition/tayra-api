@@ -16,8 +16,11 @@ namespace Tayra.Services
 
         public class InventoryItem
         {
+            public int ItemId { get; set; }
             public string Name { get; set; }
             public string Image { get; set; }
+            public ItemRarities Rarity { get; set; }
+            public ItemTypes Type { get; set; }
         }
     }
 }
