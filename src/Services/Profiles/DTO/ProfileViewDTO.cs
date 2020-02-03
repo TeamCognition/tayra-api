@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tayra.Common;
 
 namespace Tayra.Services
@@ -26,6 +27,8 @@ namespace Tayra.Services
         public IList<ItemActiveDTO> Badges { get; set; }
         public ItemActiveDTO Title { get; set; }
         public ItemActiveDTO Border { get; set; }
+
+        public DateTime? LastUppedAt { get; set; }
 
         public virtual IList<Token> CustomTokens { get; set; } //Ienumerable when fixed profileViewGET
 

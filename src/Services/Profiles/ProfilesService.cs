@@ -49,7 +49,7 @@ namespace Tayra.Services
                     }
                 }).ToList();
 
-            var activeItems = GetProfileActiveItems(profileId);
+            var activeItems = GetProfileActiveItems(DbContext, profileId);
 
             return (from p in DbContext.Profiles.Where(x => x.Id == profileId)
                     select new ProfileSessionCacheDTO
@@ -267,7 +267,23 @@ namespace Tayra.Services
             GridData<ProfileCompletedChallengesGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
+        }
 
+        public GridData<ProfileCommittedChallengesGridDTO> GetCommittedChallengesGridDTO(ProfileCommittedChallengesGridParams gridParams)
+        {
+            var query = from cc in DbContext.ChallengeCommits
+                        where cc.ProfileId == gridParams.ProfileId
+                        select new ProfileCommittedChallengesGridDTO
+                        {
+                            ChallengeId = cc.ChallengeId,
+                            Name = cc.Challenge.Name,
+                            Image = cc.Challenge.Image,
+                            CommittedAt = cc.Created
+                        };
+
+            GridData<ProfileCommittedChallengesGridDTO> gridData = query.GetGridData(gridParams);
+
+            return gridData;
         }
 
         public void UpdateProfile(int profileId, ProfileUpdateDTO dto)
@@ -334,7 +350,7 @@ namespace Tayra.Services
             };
         }
 
-        public ProfileViewDTO GetProfileViewDTO(Expression<Func<Profile, bool>> condition)
+        public ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition)
         {
             var profileDto = (from p in DbContext.Profiles.Where(condition)
                               let tt = p.Tokens.Where(x => !x.ClaimRequired || x.ClaimedAt.HasValue).GroupBy( //TokenScope
@@ -355,12 +371,22 @@ namespace Tayra.Services
                                   CustomTokens = tt.Where(x => x.Type == TokenType.Custom).ToList(),
                               }).FirstOrDefault();
 
-            var activeItems = GetProfileActiveItems(profileDto.ProfileId);
+            profileDto.EnsureNotNull();
+
+            if (profileId != profileDto.ProfileId)
+            {
+                profileDto.LastUppedAt = (from u in DbContext.ProfileOneUps
+                                          where u.CreatedBy == profileId
+                                          where u.UppedProfileId == profileDto.ProfileId
+                                          orderby u.DateId descending
+                                          select u.Created).FirstOrDefault();
+            }
+            var activeItems = GetProfileActiveItems(DbContext, profileDto.ProfileId);
             profileDto.Badges = activeItems.Badges;
             profileDto.Title = activeItems.Title;
             profileDto.Border = activeItems.Border;
 
-            var weeklyStats = DbContext.ProfileReportsWeekly.LastOrDefault(x => x.ProfileId == profileDto.ProfileId);
+            var weeklyStats = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).FirstOrDefault(x => x.ProfileId == profileDto.ProfileId);
             profileDto.Heat = weeklyStats?.Heat;
             profileDto.Speed = weeklyStats?.SpeedAverage;
             profileDto.OImpact = weeklyStats?.OImpactAverage;
@@ -379,18 +405,18 @@ namespace Tayra.Services
 
         #endregion
 
-        #region Private methods
+        #region Static methods
 
-        private class ProfileActiveItemsDTO
+        public class ProfileActiveItemsDTO
         {
             public IList<ItemActiveDTO> Badges { get; set; }
             public ItemActiveDTO Title { get; set; }
             public ItemActiveDTO Border { get; set; }
         }
 
-        private ProfileActiveItemsDTO GetProfileActiveItems(int profileId)
+        public static ProfileActiveItemsDTO GetProfileActiveItems(OrganizationDbContext dbContext, int profileId)
         {
-            var activeItems = (from ii in DbContext.ProfileInventoryItems
+            var activeItems = (from ii in dbContext.ProfileInventoryItems
                                where ii.ProfileId == profileId
                                //where !ii.ClaimRequired || ii.ClaimedAt.HasValue
                                where ii.IsActive
@@ -409,7 +435,7 @@ namespace Tayra.Services
                 Title = activeItems.FirstOrDefault(x => x.Type == ItemTypes.TayraTitle),
                 Border = activeItems.FirstOrDefault(x => x.Type == ItemTypes.TayraBorder)
             };
-    }
+        }
 
         #endregion
     }

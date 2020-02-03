@@ -71,22 +71,15 @@ namespace Tayra.API.Controllers
             return IdentitiesService.GetInvitationsGridData(gridParams);
         }
 
+        [HttpPost("searchEmails")]
+        public ActionResult<GridData<IdentityEmailsGridDTO>> GetIdentityEmails([FromBody] IdentityEmailsGridParams gridParams)
+        {
+            return IdentitiesService.GetIdentityEmailsGridData(CurrentUser.ProfileId, gridParams);
+        }
         [AllowAnonymous, HttpGet("invitation")]
         public ActionResult<IdentityInvitationViewDTO> Getinvitation([FromQuery] string InvitationCode)
         {
             return Ok(IdentitiesService.GetInvitation(InvitationCode));
-        }
-
-        [HttpPost("searchEmails")]
-        public ActionResult<GridData<IdentityEmailsGridDTO>> GetIdentityEmails([FromBody] IdentityEmailsGridParams gridParams)
-        {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(IdentityEmailsGridDTO.AddedOn);
-                gridParams.Sord = "DESC";
-            }
-
-            return IdentitiesService.GetIdentityEmailsGridData(CurrentUser.ProfileId, gridParams);
         }
 
         [HttpGet("isEmailUnique")]

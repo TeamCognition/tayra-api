@@ -43,35 +43,16 @@ namespace Tayra.Services
 
         public GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(int profileId, ProfileRoles role, ShopPurchasesGridParams gridParams)
         {
-            if (gridParams.PurchaseStatusesQuery == null || gridParams.PurchaseStatusesQuery.Count == 0)
-            {
-                throw new ApplicationException("PurchaseStatusesQuery is empty");
-            }
-
-            if (gridParams.ItemTypesQuery == null || gridParams.ItemTypesQuery.Count == 0)
-            {
-                throw new ApplicationException("ItemTypesQuery is empty");
-            }
-
             var scope = role == ProfileRoles.Member
                 ? DbContext.ShopPurchases.Where(x => x.ProfileId == profileId)
                 : DbContext.ShopPurchases;
 
+            if(!string.IsNullOrEmpty(gridParams.ItemNameQuery))
             {
-                if (gridParams.CreatedFrom != null)
-                {
-                    scope = scope.Where(x => x.Created.Date >= gridParams.CreatedFrom.Value.Date);
-                }
-
-                if (gridParams.CreatedTo != null)
-                {
-                    scope = scope.Where(x => x.Created.Date <= gridParams.CreatedTo.Value.Date);
-                }
+                scope = scope.Where(x => x.Item.Name.Contains(gridParams.ItemNameQuery));
             }
 
             var query = from sp in scope
-                        where gridParams.PurchaseStatusesQuery.Contains(sp.Status)
-                        where gridParams.ItemTypesQuery.Contains(sp.ItemType)
                         select new ShopPurchasesGridDTO
                         {
                             ShopPurchaseId = sp.Id,
@@ -80,6 +61,7 @@ namespace Tayra.Services
                             Status = sp.Status,
                             Created = sp.Created,
                             LastModified = sp.LastModified ?? sp.Created,
+                            ItemType = sp.ItemType,
                             Item = new ShopPurchasesGridDTO.ItemDTO
                             {
                                 Id = sp.ItemId,

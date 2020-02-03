@@ -65,11 +65,6 @@ namespace Tayra.Services
 
             IQueryable<ProfileInventoryItem> scope = DbContext.ProfileInventoryItems;
 
-            if (gridParams.ItemTypesQuery != null && gridParams.ItemTypesQuery.Count > 0)
-            {
-                scope = scope.Where(x => gridParams.ItemTypesQuery.Contains(x.Item.Type));
-            }
-
             var query = from i in scope
                         where i.ProfileId == profile.Id
                         where i.Item.Name.Contains(gridParams.ItemNameQuery)
@@ -149,13 +144,16 @@ namespace Tayra.Services
             }
 
             DbContext.ProfileInventoryItems.Remove(invItem);
-            DbContext.Add(new ProfileInventoryItem
+            var giftedEntity = DbContext.Add(new ProfileInventoryItem
             {
                 ItemId = invItem.ItemId,
                 ProfileId = dto.ReceiverId,
-                AcquireMethod = InventoryAcquireMethods.MemberGift
-            });
-
+                AcquireMethod = InventoryAcquireMethods.MemberGift,
+                ClaimRequired = true
+            }).Entity;
+            
+            DbContext.GetTrackedClaimBundle(profileId, ClaimBundleTypes.Gift).AddItems(giftedEntity);
+            
             var gifterUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
             var receiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId).Username;
             LogsService.LogEvent(new LogCreateDTO
@@ -223,13 +221,16 @@ namespace Tayra.Services
 
             shopItem.EnsureNotNull(profileId, dto.ItemId);
 
-            DbContext.Add(new ProfileInventoryItem
+            var givenItem = DbContext.Add(new ProfileInventoryItem
             {
                 ItemId = shopItem.ItemId,
                 ProfileId = dto.ReceiverId,
                 ItemType = shopItem.Item.Type,
-                AcquireMethod = InventoryAcquireMethods.ManagerGift
-            });
+                AcquireMethod = InventoryAcquireMethods.ManagerGift,
+                ClaimRequired = true
+            }).Entity;
+
+            DbContext.GetTrackedClaimBundle(profileId, ClaimBundleTypes.GiftFromAdmin).AddItems(givenItem);
         }
         #endregion
     }

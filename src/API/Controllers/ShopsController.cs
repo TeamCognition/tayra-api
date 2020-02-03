@@ -31,12 +31,6 @@ namespace Tayra.API.Controllers
         [HttpPost("purchaseSearch")]
         public ActionResult<GridData<ShopPurchasesGridDTO>> GetShopPurchasesSearch([FromBody] ShopPurchasesGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(ShopPurchasesGridDTO.Created);
-                gridParams.Sord = "DESC";
-            }
-
             return ShopsService.GetShopPurchasesGridDTO(CurrentUser.ProfileId, CurrentUser.Role, gridParams);
         }
 

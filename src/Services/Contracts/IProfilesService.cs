@@ -17,10 +17,11 @@ namespace Tayra.Services
         int OneUpProfile(int profileId, ProfileOneUpDTO dto);
         GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams);
         GridData<ProfileSummaryGridDTO> GetGridDataWithSummary(int profileId, ProfileSummaryGridParams gridParams);
-        GridData<ProfileCompletedChallengesGridDTO> GetCompletedChallengesGridDTO(ProfileCompletedChallengesGridParams gridParams);        
+        GridData<ProfileCompletedChallengesGridDTO> GetCompletedChallengesGridDTO(ProfileCompletedChallengesGridParams gridParams);
+        GridData<ProfileCommittedChallengesGridDTO> GetCommittedChallengesGridDTO(ProfileCommittedChallengesGridParams gridParams);
         void UpdateProfile(int profileId, ProfileUpdateDTO dto);
         ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId);
-        ProfileViewDTO GetProfileViewDTO(Expression<Func<Profile, bool>> condition);
+        ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition);
         void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto);
     }
 

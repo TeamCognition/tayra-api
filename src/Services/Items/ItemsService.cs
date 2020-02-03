@@ -63,17 +63,6 @@ namespace Tayra.Services
 
             IQueryable<Item> scope = DbContext.Items;
 
-            if (gridParams.ItemTypesQuery != null && gridParams.ItemTypesQuery.Count > 0)
-            {
-                scope = scope.Where(x => gridParams.ItemTypesQuery.Contains(x.Type));
-            }
-
-            if (gridParams.OnlyUnlimitedQuantity.HasValue)
-            {
-                scope = scope.Where(x => x.IsQuantityLimited == !gridParams.OnlyUnlimitedQuantity);
-            }
-
-
             var query = from i in scope
                         select new ItemGridDTO
                         {

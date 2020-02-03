@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Tayra.Common;
 
 namespace Tayra.Services
@@ -13,6 +14,9 @@ namespace Tayra.Services
         public DateTime LastModified { get; set; }
 
         public ItemDTO Item { get; set; }
+
+        [JsonIgnore]
+        public ItemTypes ItemType { get; set; }
 
         public class ItemDTO
         {

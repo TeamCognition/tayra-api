@@ -5,7 +5,6 @@ using Tayra.Services;
 
 namespace Tayra.API.Controllers
 {
-    [ApiController]
     public class LogsController : BaseController
     {
         #region Constructor
@@ -22,15 +21,9 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpPost("")] //TODO: name it search
+        [HttpPost("search")]
         public ActionResult<GridData<LogGridDTO>> Search([FromBody] LogGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(LogGridDTO.Created);
-                gridParams.Sord = "DESC";
-            }
-
             if(!gridParams.ProfileId.HasValue && !string.IsNullOrEmpty(gridParams.ProfileUsername))
             {
                 var x = ProfilesService.GetByUsername(gridParams.ProfileUsername);

@@ -26,7 +26,6 @@ namespace Tayra.Services
         {
             var query = from c in DbContext.Competitions
                         where c.SegmentId == segmentId
-                        where c.Status == gridParams.Status
                         join twinner in DbContext.Competitors on c.WinnerId equals twinner.Id into g
                         from winner in g.DefaultIfEmpty()
                         select new CompetitionViewGridDTO

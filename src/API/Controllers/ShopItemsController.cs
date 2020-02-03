@@ -30,12 +30,6 @@ namespace Tayra.API.Controllers
         [HttpPost("search")]
         public ActionResult<GridData<ShopItemViewGridDTO>> GetShopItemsViewGrid([FromBody] ShopItemViewGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(ShopItemViewGridDTO.Created);
-                gridParams.Sord = "DESC";
-            }
-
             return ShopItemsService.GetShopItemViewGridDTO(CurrentUser.Role, gridParams);
         }
 

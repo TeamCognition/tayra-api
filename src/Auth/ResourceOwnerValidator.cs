@@ -47,7 +47,7 @@ namespace Tayra.Auth
 
                 return Task.CompletedTask;
             }
-            
+
             context.Result = new GrantValidationResult(
                 subject: identity.Id.ToString(),
                 authenticationMethod: OidcConstants.AuthenticationMethods.Password);

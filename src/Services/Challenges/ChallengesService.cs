@@ -50,21 +50,42 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public GridData<ChallengeCommitGridDTO> GetChallengeCommitsGrid(int profileId, ChallengeCommitGridParams gridParams)
+        public GridData<ChallengeCommitteesGridDTO> GetChallengeCommitteesGrid(int profileId, ChallengeCommitteesGridParams gridParams)
         {
-            IQueryable<ChallengeCommit> scope = DbContext.ChallengeCommits.Where(x => x.ProfileId == profileId);
+            IQueryable<ChallengeCommit> scope = DbContext.ChallengeCommits.Where(x => x.ChallengeId == gridParams.ChallengeId);
 
             var query = from cc in scope
-                        select new ChallengeCommitGridDTO
+                        select new ChallengeCommitteesGridDTO
                         {
-                            ChallengeId = cc.ChallengeId,
+                            ProfileId = cc.ProfileId,
+                            Username = cc.Profile.Username,
+                            Avatar = cc.Profile.Avatar,
                             CommittedOn = cc.Created
                         };
 
-            GridData<ChallengeCommitGridDTO> gridData = query.GetGridData(gridParams);
+            GridData<ChallengeCommitteesGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
         }
+
+        public GridData<ChallengeCompletitionsGridDTO> GetChallengeCompletitionsGrid(int profileId, ChallengeCompletitionsGridParams gridParams)
+        {
+            IQueryable<ChallengeCompletion> scope = DbContext.ChallengeCompletions.Where(x => x.ChallengeId == gridParams.ChallengeId);
+
+            var query = from cc in scope
+                        select new ChallengeCompletitionsGridDTO
+                        {
+                            ProfileId = cc.ProfileId,
+                            Username = cc.Profile.Username,
+                            Avatar = cc.Profile.Avatar,
+                            CompletedAt = cc.Created
+                        };
+
+            GridData<ChallengeCompletitionsGridDTO> gridData = query.GetGridData(gridParams);
+
+            return gridData;
+        }
+
 
         public ChallengeViewDTO GetChallengeViewDTO(int profileId, int challengeId)
         {
@@ -89,6 +110,7 @@ namespace Tayra.Services
                                      Name = x.Item.Name,
                                      Image = x.Item.Image,
                                      Type = x.Item.Type,
+                                     Rarity = x.Item.Rarity,
                                      WorthValue = x.Item.WorthValue
                                  }).ToArray(),
                                  Goals = c.Goals.Select(x => new ChallengeViewDTO.GoalDTO
@@ -128,7 +150,7 @@ namespace Tayra.Services
                     throw new ApplicationException($"Quantity too high for item {i.ItemId}");
                 }
 
-                if (!ChallengeRules.IsCompletionLimitValid(dto.CompletionsLimit, i.QuantityToReserve))
+                if (!ChallengeRules.IsCompletionLimitValid(dto.CompletionsLimit))//, i.QuantityToReserve))
                 {
                     throw new ApplicationException($"Invalid {nameof(Challenge.CompletionsLimit)}");
                 }

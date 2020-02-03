@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using IdentityServer4.ResponseHandling;
+using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,7 +34,8 @@ namespace Tayra.Auth
                     .AddInMemoryApiResources(Config.GetApis())
                     .AddInMemoryClients(Config.GetClients())
                     .AddProfileService<ProfileService>()
-                    .AddResourceOwnerValidator<ResourceOwnerValidator>();
+                    .AddResourceOwnerValidator<ResourceOwnerValidator>()
+                    .AddCustomTokenRequestValidator<CustomTokenRequestValidator>();
 
 
             //.AddConfigurationStore(options =>
@@ -58,7 +61,7 @@ namespace Tayra.Auth
                 c.AddPolicy("AllowAllOrigins", options => options.AllowAnyOrigin()
                                                                  .AllowAnyHeader());
             });
-
+            
             if (Environment.IsDevelopment())
             {
                 identityServer.AddDeveloperSigningCredential();

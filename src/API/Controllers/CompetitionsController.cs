@@ -22,23 +22,12 @@ namespace Tayra.API.Controllers
         [HttpPost("search")]
         public ActionResult<GridData<CompetitionViewGridDTO>> GetSegmentCompetitions([FromBody] CompetitionViewGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(CompetitionViewGridDTO.EndedAt);
-                gridParams.Sord = "DESC";
-            }
-
             return CompetitionsService.GetSegmentCompetitionsGrid(CurrentSegment.Id, gridParams);
         }
 
-        [HttpPost("competitors")] //TODO: competitorsSearch / searchCompetitors
+        [HttpPost("searchCompetitors")]
         public ActionResult<GridData<CompetitionGridDTO>> GetCompetitorsGrid([FromBody] CompetitionGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(CompetitionGridDTO.Points);
-            }
-
             return CompetitionsService.GetGridData(gridParams);
         }
 

@@ -34,7 +34,6 @@ namespace Tayra.Services
         {
             var query = from c in DbContext.ClaimBundles
                         where c.ProfileId == profileId
-                        where c.Type == gridParams.Type
                         where c.RewardClaimedAt == null
                         select new ClaimBundleViewGridDTO
                         {

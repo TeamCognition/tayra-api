@@ -111,7 +111,7 @@ namespace Tayra.Services
                                     Name = s.Name,
                                     Key = s.Key,
                                     Avatar = s.Avatar,
-                                    TokensEarned = s.ReportsDaily.Select(x => x.CompanyTokensTotal).LastOrDefault(),
+                                    TokensEarned = s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensTotal).FirstOrDefault(),
                                     TokensSpent = s.ShopPurchases.Where(x => x.Status == ShopPurchaseStatuses.Fulfilled).Sum(x => x.Price),
                                     ChallengesActive = s.Challenges.Count(x => x.Status == ChallengeStatuses.Active),
                                     ChallengesCompleted = s.Challenges.Count(x => x.Status == ChallengeStatuses.Ended),

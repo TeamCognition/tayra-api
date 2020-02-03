@@ -73,7 +73,7 @@ namespace Tayra.API.Controllers
 
             var assigneProfile = ProfilesService.GetByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
             var teamMember = DbContext.TeamMembers.FirstOrDefault(x => x.ProfileId == assigneProfile.Id);
-            var currentSegmentId = DbContext.Teams.Where(x => x.Id == teamMember.TeamId).Select(x => x.SegmentId).FirstOrDefault();
+            var currentSegmentId = teamMember != null ? DbContext.Teams.Where(x => x.Id == teamMember.TeamId).Select(x => x.SegmentId).FirstOrDefault() : (int?)null;
 
             var activeCompetitions = CompetitionsService.GetActiveCompetitions(assigneProfile.Id);
             var jiraBaseUrl = we.JiraIssue.Self.Substring(0, we.JiraIssue.Self.IndexOf('/', 10));

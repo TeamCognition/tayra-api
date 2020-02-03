@@ -7,70 +7,49 @@ namespace Tayra.Common
 {
     public static class Cipher
     {
-        private static readonly string KEY = "r}2P_(q`m.rU+M2Q";
+        private static readonly string ENCRYPTION_KEY = "r}2P_(q`m.rU+M2Q";
 
-        public static string Encrypt(string text)
+        public static string Encrypt(string clearText)
         {
-            var key = Encoding.UTF8.GetBytes(KEY);//16 bit or 32 bit key string
-
-            using (var aesAlg = Aes.Create())
+            byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
+            using (Aes encryptor = Aes.Create())
             {
-                using (var encryptor = aesAlg.CreateEncryptor(key, aesAlg.IV))
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(ENCRYPTION_KEY, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    using (var msEncrypt = new MemoryStream())
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
                     {
-                        using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                        using (var swEncrypt = new StreamWriter(csEncrypt))
-                        {
-                            swEncrypt.Write(text);
-                        }
-
-                        var iv = aesAlg.IV;
-
-                        var decryptedContent = msEncrypt.ToArray();
-
-                        var result = new byte[iv.Length + decryptedContent.Length];
-
-                        Buffer.BlockCopy(iv, 0, result, 0, iv.Length);
-                        Buffer.BlockCopy(decryptedContent, 0, result, iv.Length, decryptedContent.Length);
-
-                        return Convert.ToBase64String(result);
+                        cs.Write(clearBytes, 0, clearBytes.Length);
+                        cs.Close();
                     }
+                    clearText = Convert.ToBase64String(ms.ToArray());
                 }
             }
+            return clearText;
         }
 
         public static string Decrypt(string cipherText)
         {
-            var fullCipher = Convert.FromBase64String(cipherText);
-
-            var iv = new byte[16];
-            var cipher = new byte[16];
-
-            Buffer.BlockCopy(fullCipher, 0, iv, 0, iv.Length);
-            Buffer.BlockCopy(fullCipher, iv.Length, cipher, 0, iv.Length);
-            var key = Encoding.UTF8.GetBytes(KEY);
-
-            using (var aesAlg = Aes.Create())
+            cipherText = cipherText.Replace(" ", "+");
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+            using (Aes encryptor = Aes.Create())
             {
-                using (var decryptor = aesAlg.CreateDecryptor(key, iv))
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(ENCRYPTION_KEY, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    string result;
-                    using (var msDecrypt = new MemoryStream(cipher))
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
                     {
-                        using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                        {
-                            using (var srDecrypt = new StreamReader(csDecrypt))
-                            {
-                                result = srDecrypt.ReadToEnd();
-                            }
-                        }
+                        cs.Write(cipherBytes, 0, cipherBytes.Length);
+                        cs.Close();
                     }
-
-                    return result;
+                    cipherText = Encoding.Unicode.GetString(ms.ToArray());
                 }
             }
-
+            return cipherText;
         }
     }
 }

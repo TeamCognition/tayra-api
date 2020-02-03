@@ -27,16 +27,21 @@ namespace Tayra.API.Controllers
             return ChallengesService.GetChallengesGrid(gridParams);
         }
 
-        [HttpPost("searchCommits")]
-        public ActionResult<GridData<ChallengeCommitGridDTO>> GetChallengeCommits([FromBody] ChallengeCommitGridParams gridParams)
+        [HttpPost("searchCommittees")]
+        public ActionResult<GridData<ChallengeCommitteesGridDTO>> GetChallengeCommits([FromBody] ChallengeCommitteesGridParams gridParams)
         {
-            return ChallengesService.GetChallengeCommitsGrid(CurrentUser.ProfileId, gridParams);
+            return ChallengesService.GetChallengeCommitteesGrid(CurrentUser.ProfileId, gridParams);
+        }
+
+        [HttpPost("searchCompletitions")]
+        public ActionResult<GridData<ChallengeCompletitionsGridDTO>> GetChallengeCompletitions([FromBody] ChallengeCompletitionsGridParams gridParams)
+        {
+            return ChallengesService.GetChallengeCompletitionsGrid(CurrentUser.ProfileId, gridParams);
         }
 
         [HttpGet("{challengeId:int}")]
         public ActionResult<ChallengeViewDTO> GetSegmentChallenges([FromRoute] int challengeId)
         {
-
             return ChallengesService.GetChallengeViewDTO(CurrentUser.ProfileId, challengeId);
         }
 

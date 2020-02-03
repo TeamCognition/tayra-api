@@ -8,7 +8,6 @@ using Tayra.Services;
 
 namespace Tayra.API.Controllers
 {
-    [ApiController]
     public class ProfilesController : BaseController
     {
         #region Constructor
@@ -28,7 +27,7 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpGet("sessionCache")]
+        [HttpGet("sessionCache")] //TODO: Delete this API, unused
         public ActionResult<ProfileSessionCacheDTO> GetSessionCache()
         {
             return Ok(ProfilesService.GetSessionCache(CurrentUser.ProfileId));
@@ -37,51 +36,41 @@ namespace Tayra.API.Controllers
         [HttpGet("me")]
         public ActionResult<ProfileViewDTO> GetCurrentUser()
         {
-            return Ok(ProfilesService.GetProfileViewDTO(x => x.Id == CurrentUser.ProfileId));
+            return Ok(ProfilesService.GetProfileViewDTO(CurrentUser.ProfileId, x => x.Id == CurrentUser.ProfileId));
         }
 
         [HttpGet("{username}")]
         public ActionResult<ProfileViewDTO> GetCurrentUser([FromRoute] string username)
         {
-            return Ok(ProfilesService.GetProfileViewDTO(x => x.Username == username));
+            return Ok(ProfilesService.GetProfileViewDTO(CurrentUser.ProfileId, x => x.Username == username));
         }
 
-        [AllowAnonymous, HttpPost("search")]
+        [HttpPost("search")]
         public ActionResult<GridData<ProfileGridDTO>> Search([FromBody] ProfileGridParams gridParams)
         {
-            if(string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(ProfileGridDTO.Name);
-                gridParams.Sord = "ASC";
-            }
-
-            return ProfilesService.GetGridData(5, gridParams);
+            return ProfilesService.GetGridData(CurrentUser.ProfileId, gridParams);
         }
 
         [HttpPost("searchWithSummary")]
         public ActionResult<GridData<ProfileSummaryGridDTO>> SearchWithSummary([FromBody] ProfileSummaryGridParams gridParams)
         {
-            if(string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(ProfileGridDTO.Name);
-                gridParams.Sord = "ASC";
-            }
-
             return ProfilesService.GetGridDataWithSummary(CurrentUser.ProfileId, gridParams);
         }
 
-        [HttpPost("completedChallengesSearch")]
+        [HttpPost("searchCompletedChallenges")]
         public ActionResult<GridData<ProfileCompletedChallengesGridDTO>> GetCompletedChallengesGrid([FromBody] ProfileCompletedChallengesGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(ProfileCompletedChallengesGridDTO.CompletedAt);
-                gridParams.Sord = "DESC";
-            }
-
             //gridParams.ProfileUsernameQuery ??= CurrentUser.Username
             gridParams.ProfileId = gridParams.ProfileId ?? CurrentUser.ProfileId;
             return ProfilesService.GetCompletedChallengesGridDTO(gridParams);
+        }
+
+        [HttpPost("searchCommittedChallenges")]
+        public ActionResult<GridData<ProfileCommittedChallengesGridDTO>> GetCommittedChallengesGrid([FromBody] ProfileCommittedChallengesGridParams gridParams)
+        {
+            //gridParams.ProfileUsernameQuery ??= CurrentUser.Username
+            gridParams.ProfileId = gridParams.ProfileId ?? CurrentUser.ProfileId;
+            return ProfilesService.GetCommittedChallengesGridDTO(gridParams);
         }
 
         [HttpGet, Route("integrations")]

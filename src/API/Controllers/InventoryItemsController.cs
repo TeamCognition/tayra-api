@@ -30,12 +30,6 @@ namespace Tayra.API.Controllers
         [HttpPost("search")]
         public ActionResult<GridData<InventoryItemGridDTO>> GetInventoryItemViewGridData([FromBody] InventoryItemGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(InventoryItemGridDTO.Created);
-                gridParams.Sord = "DESC";
-            }
-
             return InventoriesService.GetInventoryItemViewGridDTO(gridParams);
         }
 

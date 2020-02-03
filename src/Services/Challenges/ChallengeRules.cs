@@ -22,10 +22,10 @@ namespace Tayra.Services
             return status == ChallengeStatuses.Active;
         }
 
-        public static bool IsCompletionLimitValid(int? completitionLimit, int? itemRewardQuantity)
+        public static bool IsCompletionLimitValid(int? completitionLimit)
         {
-            return (!completitionLimit.HasValue || completitionLimit > 0)
-                && (!itemRewardQuantity.HasValue || (!completitionLimit.HasValue && completitionLimit.Value >= itemRewardQuantity.Value));
+            return !completitionLimit.HasValue || completitionLimit > 0;
+                //&& (!itemRewardQuantity.HasValue || (!completitionLimit.HasValue && completitionLimit.Value >= itemRewardQuantity.Value));
         }
 
         public static bool CanGoalBeCompleted(ChallengeStatuses status)

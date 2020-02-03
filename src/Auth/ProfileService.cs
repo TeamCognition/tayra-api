@@ -75,13 +75,14 @@ namespace Tayra.Auth
 
                 var claimList = new List<Claim>
                 {
+                    new Claim(FirdawsClaimTypes.CurrentTenantKey, tenant.Name),
                     new Claim(FirdawsClaimTypes.ProfileId, profile.Id.ToString()), //For CreatedBy column
                     new Claim(FirdawsClaimTypes.IdentityId, profile.IdentityId.ToString()),
                     new Claim(TayraClaimTypes.Role, profile.Role.ToString()),
                 };
 
                 claimList.AddRange(sAndtIds.Select(x => x.SegmentId).Distinct().Select(sId => new Claim(TayraClaimTypes.Segment, sId.ToString())));
-                claimList.AddRange(sAndtIds.Where(x => x.TeamKey != null).Select(x => x.TeamId).Distinct().Select(tId => new Claim(TayraClaimTypes.Team, tId.ToString())));
+                claimList.AddRange(sAndtIds/*.Where(x => x.TeamKey != null)*/.Select(tId => new Claim(TayraClaimTypes.Team, tId.TeamId.ToString())));
 
                 context.IssuedClaims = claimList;
                 
@@ -96,7 +97,7 @@ namespace Tayra.Auth
                     orgContext.SaveChanges();
                 }
                 catch (Exception) { }
-
+                
                 return Task.FromResult(0);
             }        
         }

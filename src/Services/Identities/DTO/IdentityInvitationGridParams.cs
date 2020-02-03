@@ -1,10 +1,9 @@
 ﻿using Firdaws.Core;
-using Tayra.Common;
 
 namespace Tayra.Services
 {
     public class IdentityInvitationGridParams : GridParams
     {
-        public bool ActiveStatusesOnly { get; set; }
+        public bool ActiveStatusesOnly { get; set; } //maybe use gridParams.filters here
     }
 }

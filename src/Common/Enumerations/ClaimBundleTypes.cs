@@ -3,7 +3,9 @@
     public enum ClaimBundleTypes
     {
         EarnedFromWork = 1,
-        CompetitionWinner = 2,
-        ChallengeCompleted = 3
+        ChallengeCompleted = 2,
+        Gift = 3,
+        GiftFromAdmin = 4,
+        CompetitionWinner = 100
     }
 }
