@@ -121,8 +121,11 @@ namespace Tayra.Services
             {
                 ClaimedItems = claimBundles.SelectMany(x => x.Items).Select(x => new ClaimBundleClaimRewardsDTO.InventoryItem
                 {
+                    ItemId = x.ProfileInventoryItem.ItemId,
                     Image = x.ProfileInventoryItem.Item.Image,
-                    Name = x.ProfileInventoryItem.Item.Name
+                    Name = x.ProfileInventoryItem.Item.Name,
+                    Type = x.ProfileInventoryItem.Item.Type,
+                    Rarity = x.ProfileInventoryItem.Item.Rarity
                 }).ToList(),
 
                 ClaimedTokens = claimBundles

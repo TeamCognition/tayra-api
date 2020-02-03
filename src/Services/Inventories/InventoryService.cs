@@ -152,7 +152,7 @@ namespace Tayra.Services
                 ClaimRequired = true
             }).Entity;
             
-            DbContext.GetTrackedClaimBundle(profileId, ClaimBundleTypes.Gift).AddItems(giftedEntity);
+            DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.Gift).AddItems(giftedEntity);
             
             var gifterUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
             var receiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId).Username;
@@ -230,7 +230,7 @@ namespace Tayra.Services
                 ClaimRequired = true
             }).Entity;
 
-            DbContext.GetTrackedClaimBundle(profileId, ClaimBundleTypes.GiftFromAdmin).AddItems(givenItem);
+            DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.GiftFromAdmin).AddItems(givenItem);
         }
         #endregion
     }
