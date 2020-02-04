@@ -54,10 +54,10 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPut("update")]
-        public IActionResult UpdateChallenge([FromBody] ChallengeUpdateDTO dto)
+        [HttpPut("update/{challengeId:int}")]
+        public IActionResult UpdateChallenge([FromRoute]int challengeId, [FromBody] ChallengeUpdateDTO dto)
         {
-            ChallengesService.Update(dto);
+            ChallengesService.Update(challengeId, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -76,6 +76,15 @@ namespace Tayra.API.Controllers
         public IActionResult CompleteChallenge([FromBody] ChallengeCompleteDTO dto)
         {
             ChallengesService.CompleteChallenge(dto);
+            OrganizationContext.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPost("commit")]
+        public IActionResult CommitToChallenge([FromBody] ChallengeCommitDTO dto)
+        {
+            ChallengesService.CommitToChallenge(CurrentUser.ProfileId, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();

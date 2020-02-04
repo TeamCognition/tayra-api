@@ -227,6 +227,57 @@ namespace Tayra.Services
             return invitation;
         }
 
+        public GridData<IdentityManageGridDTO> GetIdentityManageGridData(IdentityManageGridParams gridParams)
+        {
+            IQueryable<Profile> scope = DbContext.Profiles;
+
+            if (gridParams.SegmentId != null)
+            {
+                var profileIds = DbContext.TeamMembers.Where(x => x.Team.SegmentId == gridParams.SegmentId).Select(x => x.ProfileId).ToArray();
+                scope = scope.Where(x => profileIds.Contains(x.Id)); //can be optimized, use 2 different but single query
+            }
+
+            IQueryable<IdentityManageGridDTO> query = from p in scope
+                                                      select new IdentityManageGridDTO
+                                                      {
+                                                          ProfileId = p.Id,
+                                                          FirstName = p.FirstName,
+                                                          LastName = p.LastName,
+                                                          Avatar = p.Avatar,
+                                                          JoinedAt = p.Created,
+                                                          Integrations = gridParams.SegmentId == null ? null :
+                                                            p.Integrations.Where(x => x.SegmentId == gridParams.SegmentId)
+                                                            .Select(x => new IdentityManageGridDTO.IntegrationDTO
+                                                            {
+                                                                Type = x.Type
+                                                            }).ToArray()
+                                                      };
+
+            GridData<IdentityManageGridDTO> gridData = query.GetGridData(gridParams);
+            return gridData;
+        }
+
+        public IdentityManageAssignsDTO GetIdentityManageAssignsData(int[] segmentIds, int memberProfileId)
+        {
+            var memberTeamIds = (from t in DbContext.TeamMembers
+                               where t.ProfileId == memberProfileId
+                               select t.TeamId).ToArray();
+
+            var allSegments = (from s in DbContext.Segments
+                                where segmentIds.Contains(s.Id)
+                                select new IdentityManageAssignsDTO.AssignDTO
+                                {
+                                    SegmentId = s.Id,
+                                    TeamIds = s.Teams.Where(x => !memberTeamIds.Contains(x.Id)).Select(x => x.Id).ToArray()
+                                }).ToList();
+
+            return new IdentityManageAssignsDTO
+            {
+                Current = memberTeamIds,
+                Available = allSegments.Where(x => x.TeamIds.Any()).ToArray()
+            };
+        }
+
         public GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams)
         {
             IQueryable<IdentityInvitationGridDTO> query = from i in DbContext.Invitations

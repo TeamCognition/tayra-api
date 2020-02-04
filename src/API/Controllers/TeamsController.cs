@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Firdaws.Core;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Models.Organizations;
@@ -30,7 +29,7 @@ namespace Tayra.API.Controllers
         [HttpPost("search")]
         public ActionResult<GridData<TeamViewGridDTO>> Search([FromBody] TeamViewGridParams gridParams)
         {
-            return TeamsService.GetViewGridData(CurrentUser.TeamsIds, gridParams);
+            return TeamsService.GetViewGridData(CurrentUser.SegmentsIds, gridParams);
         }
 
         [HttpPost("searchMembers")]
@@ -62,17 +61,17 @@ namespace Tayra.API.Controllers
         //    return Ok();
         //}
 
-        [HttpPost("addMembers")]
-        public IActionResult AddMembers([FromQuery]string teamKey, [FromBody]IList<TeamAddMemberDTO> dto)
-        {
-            TeamsService.AddMembers(teamKey, dto);
-            OrganizationContext.SaveChanges();
+        //[HttpPost("addMembers")]
+        //public IActionResult AddMembers([FromQuery]string teamKey, [FromBody]IList<TeamAddMemberDTO> dto)
+        //{
+        //    TeamsService.AddMembers(teamKey, dto);
+        //    OrganizationContext.SaveChanges();
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
-        [HttpDelete("delete")]
-        public IActionResult Delete([FromQuery]string teamKey)
+        [HttpDelete("{teamKey}")]
+        public IActionResult Delete([FromRoute]string teamKey)
         {
             TeamsService.Archive(CurrentUser.ProfileId, teamKey);
             OrganizationContext.SaveChanges();

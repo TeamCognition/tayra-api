@@ -30,6 +30,7 @@ namespace Tayra.Models.Organizations
         public int IdentityId { get; set; }
 
         public virtual ICollection<ProfileOneUp> OneUps { get; set; }
+        public virtual ICollection<Integration> Integrations { get; set; }
         public virtual ICollection<ProfileInventoryItem> InventoryItems { get; set; }
         public virtual ICollection<TeamMember> Teams { get; set; }
         public virtual ICollection<TokenTransaction> Tokens { get; set; }

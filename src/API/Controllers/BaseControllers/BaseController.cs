@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tayra.Common;
-using Tayra.Models.Organizations;
 using Tayra.Services;
 
 namespace Tayra.API.Controllers

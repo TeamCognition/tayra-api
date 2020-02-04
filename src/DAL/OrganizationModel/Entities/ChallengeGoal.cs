@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
@@ -11,6 +12,8 @@ namespace Tayra.Models.Organizations
 
         public int ChallengeId { get; set; }
         public virtual Challenge Challenge { get; set; }
+
+        public virtual ICollection<ChallengeGoalCompletion> Completitions { get; set; }
 
         #region ITimeStampedEntity
 

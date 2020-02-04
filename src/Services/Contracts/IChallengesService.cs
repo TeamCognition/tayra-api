@@ -9,7 +9,7 @@ namespace Tayra.Services
         GridData<ChallengeCompletitionsGridDTO> GetChallengeCompletitionsGrid(int profileId, ChallengeCompletitionsGridParams gridParams);
         ChallengeViewDTO GetChallengeViewDTO(int profileId, int challengeId);
         void Create(ChallengeCreateDTO dto);
-        void Update(ChallengeUpdateDTO dto);
+        void Update(int challengeId, ChallengeUpdateDTO dto);
         void CompleteGoal(int profileId, ChallengeGoalCompleteDTO dto);
         void CommitToChallenge(int profileId, ChallengeCommitDTO dto);
         void CompleteChallenge(ChallengeCompleteDTO dto);

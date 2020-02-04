@@ -39,12 +39,13 @@ namespace Tayra.Services
 
         public GridData<TeamViewGridDTO> GetViewGridData(int[] segmentIds, TeamViewGridParams gridParams)
         {
+            //this query is garbo
             IQueryable<TeamViewGridDTO> query = from s in DbContext.Segments
                                                 where segmentIds.Contains(s.Id)
                                                 select new TeamViewGridDTO
                                                 {
                                                     SegmentId = s.Id,
-                                                    Teams = s.Teams.Select(x => new TeamViewGridDTO.TeamDTO
+                                                    Teams = s.Teams.Where(x => x.Key != null).Select(x => new TeamViewGridDTO.TeamDTO
                                                     {
                                                         TeamId = x.Id,
                                                         Key = x.Key,

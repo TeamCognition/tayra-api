@@ -2,7 +2,6 @@
 {
     public static class TayraClaimTypes
     {
-        public const string CurrentOrganizationId = "http://Tayra/Claims/CurrentOrganizationId";
         public const string Role = "http://Tayra/Claims/Role";
         public const string Segment  = "http://Tayra/Claims/Segment";
         public const string Team = "http://Tayra/Claims/Team";

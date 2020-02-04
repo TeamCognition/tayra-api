@@ -76,7 +76,7 @@ namespace Tayra.API.Controllers
         [HttpGet, Route("integrations")]
         public ActionResult<List<IntegrationProfileConfigDTO>> GetProfileIntegrations()
         {
-            return IntegrationsService.GetProfileIntegrationsWithPending(CurrentUser.ProfileId);
+            return IntegrationsService.GetProfileIntegrationsWithPending(CurrentUser.SegmentsIds, CurrentUser.ProfileId);
         }
 
         [HttpPut]

@@ -23,6 +23,7 @@ namespace Tayra.Services
 
         public DateTime? CommittedOn { get; set; }
 
+        public ICollection<int> Segments { get; set; }
         public ICollection<GoalDTO> Goals { get; set; }
         public ICollection<RewardDTO> Rewards { get; set; }
 

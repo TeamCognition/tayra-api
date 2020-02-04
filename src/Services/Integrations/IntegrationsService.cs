@@ -49,13 +49,10 @@ namespace Tayra.Services
             DbContext.Remove(integration);
         }
 
-        public List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(int profileId)
+        public List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(int[] segmentIds, int profileId)
         {
-            //could this be taken out of access token?
-            var profileSegmentIds = DbContext.TeamMembers.Where(x => x.ProfileId == profileId).Select(x => x.Team.SegmentId).Distinct().ToArray();
-
             var integrations = DbContext.Integrations
-                .Where(x => (x.ProfileId == profileId || x.ProfileId == null) && profileSegmentIds.Contains(x.SegmentId))
+                .Where(x => (x.ProfileId == profileId || x.ProfileId == null) && segmentIds.Contains(x.SegmentId))
                 .Select(x => new IntegrationProfileConfigDTO
                 {
                     Id = x.Id,

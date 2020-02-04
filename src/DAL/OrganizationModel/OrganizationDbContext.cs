@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using Firdaws.Core;
@@ -104,6 +105,7 @@ namespace Tayra.Models.Organizations
         public DbSet<Token> Tokens { get; set; }
         public DbSet<TokenTransaction> TokenTransactions { get; set; }
         public DbSet<WebhookEventLog> WebhookEventLogs { get; set; }
+
 
         #endregion
 
@@ -342,20 +344,27 @@ namespace Tayra.Models.Organizations
         // Only static methods are allowed in calls into base class c'tors
         private static DbContextOptions CreateDDRConnection(ShardMap shardMap, int shardingKey, string connectionStr)
         {
-            // Ask shard map to broker a validated connection for the given key
-            SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
+            try
+            {
+                // Ask shard map to broker a validated connection for the given key
+                SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
 
-            //// Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
-            //SqlCommand cmd = sqlConn.CreateCommand();
-            //cmd.CommandText = @"exec sp_set_session_context @key=N'OrganizationId', @value=@shardingKey";
-            //cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
-            //cmd.ExecuteNonQuery();
+                //// Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
+                //SqlCommand cmd = sqlConn.CreateCommand();
+                //cmd.CommandText = @"exec sp_set_session_context @key=N'OrganizationId', @value=@shardingKey";
+                //cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
+                //cmd.ExecuteNonQuery();
 
-            var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
-            var options = optionsBuilder.UseSqlServer(sqlConn).Options;
-            optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>(); //TODO: this goes to FirdawsDB as well?
+                var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
+                var options = optionsBuilder.UseSqlServer(sqlConn).Options;
+                optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>(); //TODO: this goes to FirdawsDB as well?
 
-            return options;
+                return options;
+            }
+            catch(Exception e)
+            {
+                throw new FirdawsSecurityException(e.Message, "OrganizationDbcontext.CreateDDRConnection");
+            }
         }
 
         private static DbContextOptions ConfigureDbContextOptions(string connectionString)

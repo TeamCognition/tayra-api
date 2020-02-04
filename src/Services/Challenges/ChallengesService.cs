@@ -103,7 +103,8 @@ namespace Tayra.Services
                                  Created = c.Created,
                                  ActiveUntil = c.ActiveUntil,
                                  EndedAt = c.EndedAt,
-                                 CommittedOn = c.Commits.Where(x => x.ProfileId == profileId).Select(x => x.Created).FirstOrDefault(),
+                                 CommittedOn = c.Commits.Where(x => x.ProfileId == profileId).Select(x => (DateTime?)x.Created).FirstOrDefault(),
+                                 Segments = c.Segments.Select(x => x.SegmentId).ToArray(),
                                  Rewards = c.Rewards.Select(x => new ChallengeViewDTO.RewardDTO
                                  {
                                      ItemId = x.ItemId,
@@ -118,8 +119,8 @@ namespace Tayra.Services
                                      GoalId = x.Id,
                                      Title = x.Title,
                                      IsCommentRequired = x.IsCommentRequired,
-                                     Comment = null,
-                                     IsCompleted = false
+                                     Comment = x.Completitions.Where(gc => gc.ProfileId == profileId).Select(gc => gc.Comment).FirstOrDefault(),
+                                     IsCompleted = x.Completitions.Where(gc => gc.ProfileId == profileId).Any()
                                  }).ToArray()
                              }).FirstOrDefault();
 
@@ -179,15 +180,15 @@ namespace Tayra.Services
             });
         }
 
-        public void Update(ChallengeUpdateDTO dto)
+        public void Update(int challengeId, ChallengeUpdateDTO dto)
         {
             var challenge = DbContext.Challenges
                 .Include(x => x.Segments)
                 .Include(x => x.Goals)
                 .Include(x => x.Rewards)
-                .FirstOrDefault(x => x.Id == dto.ChallengeId);
+                .FirstOrDefault(x => x.Id == challengeId);
 
-            challenge.EnsureNotNull(dto.ChallengeId);
+            challenge.EnsureNotNull(challengeId);
 
             if (!ChallengeRules.IsActiveUntilValid(dto.ActiveUntil))
             {

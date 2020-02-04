@@ -6,8 +6,6 @@ namespace Tayra.Services
 {
     public class ChallengeUpdateDTO : DTO
     {
-        public int ChallengeId { get; set; }
-
         public string Name { get; set; }
         public string Description { get; set; }
         public string Image { get; set; }

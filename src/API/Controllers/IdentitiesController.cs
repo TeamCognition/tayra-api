@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Firdaws.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -65,6 +66,23 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
+        [HttpPost("manage/search")]
+        public ActionResult<GridData<IdentityManageGridDTO>> ManageSearch([FromBody] IdentityManageGridParams gridParams)
+        {
+            if(gridParams.SegmentId.HasValue && !CurrentUser.SegmentsIds.Contains(gridParams.SegmentId.Value))
+            {
+                throw new FirdawsSecurityException("You don' have perrmission to segment " + gridParams.SegmentId);
+            }
+
+            return IdentitiesService.GetIdentityManageGridData(gridParams);
+        }
+
+        [HttpGet("manage/assigns/{memberProfileId:int}")]
+        public ActionResult<IdentityManageAssignsDTO> GetManageTeamAssignData([FromRoute] int memberProfileId)
+        {
+            return IdentitiesService.GetIdentityManageAssignsData(CurrentUser.SegmentsIds, memberProfileId);
+        }
+
         [HttpPost("searchInvitations")]
         public ActionResult<GridData<IdentityInvitationGridDTO>> SearchInvitation([FromBody] IdentityInvitationGridParams gridParams)
         {
@@ -76,6 +94,7 @@ namespace Tayra.API.Controllers
         {
             return IdentitiesService.GetIdentityEmailsGridData(CurrentUser.ProfileId, gridParams);
         }
+
         [AllowAnonymous, HttpGet("invitation")]
         public ActionResult<IdentityInvitationViewDTO> Getinvitation([FromQuery] string InvitationCode)
         {
