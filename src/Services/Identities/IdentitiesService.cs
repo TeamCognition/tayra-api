@@ -275,7 +275,7 @@ namespace Tayra.Services
                                 select new IdentityManageAssignsDTO.AvailableAssignDTO
                                 {
                                     SegmentId = s.Id,
-                                    Teams = s.Teams.Where(x => !memberTeamIds.Select(c => c.TeamId).Contains(x.Id)).Select(x => ValueTuple.Create(x.Id, x.Name)).ToArray()
+                                    Teams = s.Teams.Where(x => !memberTeamIds.Select(c => c.TeamId).Contains(x.Id)).Select(x => new IdentityManageAssignsDTO.AvailableAssignDTO.TeamDTO{ TeamId = x.Id, Name = x.Name }).ToArray()
                                 }).ToList();
 
             return new IdentityManageAssignsDTO

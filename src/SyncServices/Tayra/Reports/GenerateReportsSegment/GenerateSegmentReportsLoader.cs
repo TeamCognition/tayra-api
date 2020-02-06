@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Firdaws.Core;
 using Microsoft.EntityFrameworkCore;
+using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
@@ -53,12 +54,14 @@ namespace Tayra.SyncServices.Tayra
                             select new
                             {
                                 SegmentId = s.Id,
-                                MemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId)).Select(x => x.ProfileId).ToList()
+                                MemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId) && x.Profile.Role == ProfileRoles.Member).Select(x => x.ProfileId).ToList(),
+                                NonMemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId) && x.Profile.Role != ProfileRoles.Member).Select(x => x.ProfileId).ToList()
                             }).ToList();
 
             foreach (var s in segments)
             {
                 var mr = profileReportsDaily.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
+                var nmr = profileReportsDaily.Where(x => s.NonMemberIds.Contains(x.ProfileId)).ToList();
 
                 reportsToInsert.Add(new SegmentReportDaily
                 {
@@ -67,6 +70,7 @@ namespace Tayra.SyncServices.Tayra
                     IterationCount = 1,
                     TaskCategoryId = 1,
                     MembersCountTotal = mr.Count(),
+                    NonMembersCountTotal = nmr.Count(),
 
                     ComplexityChange = mr.Sum(x => x.ComplexityChange),
                     ComplexityTotal = mr.Sum(x => x.ComplexityTotal),
@@ -146,18 +150,19 @@ namespace Tayra.SyncServices.Tayra
                             select new
                             {
                                 SegmentId = s.Id,
-                                MemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId)).Select(x => x.ProfileId).ToList()
+                                MemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId) && x.Profile.Role == ProfileRoles.Member).Select(x => x.ProfileId).ToList(),
+                                NonMemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId) && x.Profile.Role != ProfileRoles.Member).Select(x => x.ProfileId).ToList()
                             }).ToList();
 
             foreach (var s in segments)
             {
-                var drs = profileReportsDaily.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
-                var drsCount = drs.Count();
+                var dmr = profileReportsDaily.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
+                var dnmr = profileReportsDaily.Where(x => s.NonMemberIds.Contains(x.ProfileId)).ToList();
 
-                var wrs = profileReportsWeekly.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
-                var wrsCount = wrs.Count();
+                var wmr = profileReportsWeekly.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
+                var wnmr = profileReportsWeekly.Where(x => s.NonMemberIds.Contains(x.ProfileId)).ToList();
 
-                if (drsCount == 0)
+                if (dmr.Count() == 0)
                     continue;
 
                 reportsToInsert.Add(new SegmentReportWeekly
@@ -166,57 +171,58 @@ namespace Tayra.SyncServices.Tayra
                     DateId = dateId,
                     IterationCount = 1,
                     TaskCategoryId = 1,
-                    MembersCountTotal = drsCount,
+                    MembersCountTotal = dmr.Count(),
+                    NonMembersCountTotal = dnmr.Count(),
 
-                    ComplexityChange = drs.Sum(x => x.ComplexityChange),
-                    ComplexityAverage = (float)drs.Average(x => x.ComplexityChange),
+                    ComplexityChange = dmr.Sum(x => x.ComplexityChange),
+                    ComplexityAverage = (float)dmr.Average(x => x.ComplexityChange),
 
-                    CompanyTokensChange = drs.Sum(x => x.CompanyTokensChange),
-                    CompanyTokensAverage = drs.Average(x => x.CompanyTokensChange),
+                    CompanyTokensChange = dmr.Sum(x => x.CompanyTokensChange),
+                    CompanyTokensAverage = dmr.Average(x => x.CompanyTokensChange),
 
-                    EffortScoreChange = drs.Sum(x => x.EffortScoreChange),
-                    EffortScoreAverage = drs.Average(x => x.EffortScoreChange),
+                    EffortScoreChange = dmr.Sum(x => x.EffortScoreChange),
+                    EffortScoreAverage = dmr.Average(x => x.EffortScoreChange),
 
-                    OneUpsGivenChange = drs.Sum(x => x.OneUpsGivenChange),
-                    OneUpsGivenAverage = (float)drs.Average(x => x.OneUpsGivenChange),
+                    OneUpsGivenChange = dmr.Sum(x => x.OneUpsGivenChange),
+                    OneUpsGivenAverage = (float)dmr.Average(x => x.OneUpsGivenChange),
 
-                    OneUpsReceivedChange = drs.Sum(x => x.OneUpsReceivedChange),
-                    OneUpsReceivedAverage = (float)drs.Average(x => x.OneUpsReceivedChange),
+                    OneUpsReceivedChange = dmr.Sum(x => x.OneUpsReceivedChange),
+                    OneUpsReceivedAverage = (float)dmr.Average(x => x.OneUpsReceivedChange),
 
-                    AssistsChange = drs.Sum(x => x.AssistsChange),
-                    AssistsAverage = (float)drs.Average(x => x.AssistsChange),
+                    AssistsChange = dmr.Sum(x => x.AssistsChange),
+                    AssistsAverage = (float)dmr.Average(x => x.AssistsChange),
 
-                    TasksCompletedChange = drs.Sum(x => x.TasksCompletedChange),
-                    TasksCompletedAverage = (float)drs.Average(x => x.TasksCompletedChange),
+                    TasksCompletedChange = dmr.Sum(x => x.TasksCompletedChange),
+                    TasksCompletedAverage = (float)dmr.Average(x => x.TasksCompletedChange),
 
-                    TurnoverChange = drs.Sum(x => x.TurnoverChange),
-                    TurnoverAverage = (float)drs.Average(x => x.TurnoverChange),
+                    TurnoverChange = dmr.Sum(x => x.TurnoverChange),
+                    TurnoverAverage = (float)dmr.Average(x => x.TurnoverChange),
 
-                    ErrorChange = drs.Sum(x => x.ErrorChange),
-                    ErrorAverage = drs.Average(x => x.ErrorChange),
+                    ErrorChange = dmr.Sum(x => x.ErrorChange),
+                    ErrorAverage = dmr.Average(x => x.ErrorChange),
 
-                    ContributionChange = drs.Sum(x => x.ContributionChange),
-                    ContributionAverage = drs.Average(x => x.ContributionChange),
+                    ContributionChange = dmr.Sum(x => x.ContributionChange),
+                    ContributionAverage = dmr.Average(x => x.ContributionChange),
 
-                    SavesChange = drs.Sum(x => x.SavesChange),
-                    SavesAverage = (float)drs.Average(x => x.SavesChange),
+                    SavesChange = dmr.Sum(x => x.SavesChange),
+                    SavesAverage = (float)dmr.Average(x => x.SavesChange),
 
-                    TacklesChange = drs.Sum(x => x.TacklesChange),
-                    TacklesAverage = (float)drs.Average(x => x.TacklesChange),
+                    TacklesChange = dmr.Sum(x => x.TacklesChange),
+                    TacklesAverage = (float)dmr.Average(x => x.TacklesChange),
 
-                    OImpactAverage = wrs.Average(x => x.OImpactAverage),
-                    OImpactAverageTotal = wrs.Sum(x => x.OImpactAverage),
+                    OImpactAverage = wmr.Average(x => x.OImpactAverage),
+                    OImpactAverageTotal = wmr.Sum(x => x.OImpactAverage),
 
-                    DImpactAverage = wrs.Average(x => x.DImpactAverage),
-                    DImpactAverageTotal = wrs.Sum(x => x.OImpactAverage),
+                    DImpactAverage = wmr.Average(x => x.DImpactAverage),
+                    DImpactAverageTotal = wmr.Sum(x => x.OImpactAverage),
 
-                    PowerAverage = wrs.Average(x => x.PowerAverage),
-                    PowerAverageTotal = wrs.Sum(x => x.PowerAverage),
+                    PowerAverage = wmr.Average(x => x.PowerAverage),
+                    PowerAverageTotal = wmr.Sum(x => x.PowerAverage),
 
-                    SpeedAverage = wrs.Average(x => x.SpeedAverage),
-                    SpeedAverageTotal = wrs.Sum(x => x.SpeedAverage),
+                    SpeedAverage = wmr.Average(x => x.SpeedAverage),
+                    SpeedAverageTotal = wmr.Sum(x => x.SpeedAverage),
 
-                    HeatAverageTotal = wrs.Average(x => x.Heat)
+                    HeatAverageTotal = wmr.Average(x => x.Heat)
                 });
             }
 

@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/src/API/bin/Debug/netcoreapp2.2/Tayra.API.dll",
-            "args": [],
+            "args": ["watch"],
             "cwd": "${workspaceFolder}/src/API",
             "stopAtEntry": false,
             "serverReadyAction": {

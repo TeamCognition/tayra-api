@@ -7,6 +7,7 @@ namespace Tayra.Models.Organizations
     {
         public int DateId { get; set; }
         public int IterationCount { get; set; }
+        public int SegmentId { get; set; }
 
         public int TeamId { get; set; }
         public virtual Team Team { get; set; }
@@ -74,6 +75,7 @@ namespace Tayra.Models.Organizations
         #region Team Stats
 
         public int MembersCountTotal { get; set; }
+        public int NonMembersCountTotal { get; set; }
 
         #endregion
 

@@ -18,18 +18,72 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public ReportSegmentPerformanceChartDTO GetReportSegmentPerformanceChartDTO(int segmentId)
+        public ReportOverviewDTO GetOverviewReport(ReportParams reportParams)
         {
-            return DbContext.SegmentReportsWeekly
-                .OrderByDescending(x => x.DateId)
-                .Where(x => x.SegmentId == segmentId)
-                .Select(x => new ReportSegmentPerformanceChartDTO
+            var avg = (from trw in DbContext.SegmentReportsWeekly
+                      where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
+                      where trw.SegmentId == reportParams.SegmentId
+                      group trw by 1 into r
+                      select new 
+                      {
+                          OImpactAverage = r.Average(x => x.OImpactAverage),
+                          SpeedAverage = r.Average(x => x.SpeedAverage),
+                          HeatAverage = r.Average(x => x.HeatAverageTotal)
+                      }).FirstOrDefault();
+
+            return new ReportOverviewDTO
+            {
+                Categories = new ReportOverviewDTO.CategoryDTO[]
                 {
-                    //MembersTotal = x.MembersTotal,
-                    //ScoreAverage = Math.Round(x.ScoreAverage, 0),
-                    //TasksCompletedTotal = x.TasksCompletedTotal,
-                    //TokensEarnedTotal = Math.Round(x.TokensEarnedTotal, 0)
-                }).FirstOrDefault();
+                    new ReportOverviewDTO.CategoryDTO
+                    {
+                        Id = 1,
+                        Name = "OImpact",
+                        MaxValue = 30,
+                        AverageValue = avg?.OImpactAverage ?? 0
+                    },
+                    new ReportOverviewDTO.CategoryDTO
+                    {
+                        Id = 1,
+                        Name = "Speed",
+                        MaxValue = 30,
+                        AverageValue = avg?.SpeedAverage ?? 0
+                    },
+                    new ReportOverviewDTO.CategoryDTO
+                    {
+                        Id = 3,
+                        Name = "Heat",
+                        MaxValue = 40,
+                        AverageValue = avg?.HeatAverage ?? 0
+                    }
+                },
+                Nodes = (from trw in DbContext.TeamReportsWeekly
+                      where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
+                      where trw.SegmentId == reportParams.SegmentId && trw.MembersCountTotal > 0
+                      group trw by trw.TeamId into r
+                      select new ReportOverviewDTO.NodeDTO
+                      {
+                          Name = r.First().Team.Name,
+                          Data = new ReportOverviewDTO.NodeDTO.DataDTO[]
+                          {
+                              new ReportOverviewDTO.NodeDTO.DataDTO
+                              {
+                                  Id = 1,
+                                  Value = r.Average(a => a.OImpactAverage)
+                              },
+                              new ReportOverviewDTO.NodeDTO.DataDTO
+                              {
+                                  Id = 2,
+                                  Value = r.Average(a => a.SpeedAverage)
+                              },
+                              new ReportOverviewDTO.NodeDTO.DataDTO
+                              {
+                                  Id = 3,
+                                  Value = r.Average(a => a.HeatAverageTotal)
+                              }
+                          }
+                      }).ToArray()
+            };
         }
 
         public ReportTeamPerformanceChartDTO GetReportTeamPerformanceChartDTO(int teamId, int periodInDays)

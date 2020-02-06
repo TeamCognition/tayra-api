@@ -74,6 +74,7 @@ namespace Tayra.Models.Organizations
         #region Segment Stats
 
         public int MembersCountTotal { get; set; }
+        public int NonMembersCountTotal { get; set; }
 
         #endregion
 

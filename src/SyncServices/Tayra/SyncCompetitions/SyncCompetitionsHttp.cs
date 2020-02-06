@@ -9,13 +9,13 @@ namespace Tayra.SyncServices
 {
     public static class SyncCompetitionsHttp
     {
-        [FunctionName(nameof(SyncCompetitionsHttp))]
-        public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest request,
-            ExecutionContext context, ILogger logger)
-        {
-            SyncHelper.RunFromHttp(JobTypes.SyncCompetitions, request, context, logger);
-            return new OkResult();
-        }
+        //[FunctionName(nameof(SyncCompetitionsHttp))]
+        //public static IActionResult Run(
+        //    [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest request,
+        //    ExecutionContext context, ILogger logger)
+        //{
+        //    SyncHelper.RunFromHttp(JobTypes.SyncCompetitions, request, context, logger);
+        //    return new OkResult();
+        //}
     }
 }

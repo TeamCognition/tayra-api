@@ -40,7 +40,6 @@
     <Folder Include="Tayra\" />
     <Folder Include="Tayra\SyncCompetitions\" />
     <Folder Include="Tayra\Reports\" />
-    <Folder Include="Tayra\Reports\GenerateReportsProject\" />
     <Folder Include="Tayra\Reports\GenerateReportsProfile\" />
     <Folder Include="Tayra\Reports\GenerateReportsTeam\" />
     <Folder Include="Tayra\Reports\GenerateReports\" />

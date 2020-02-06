@@ -1,5 +1,6 @@
 ﻿using System;
 using Firdaws.DAL;
+using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
@@ -8,6 +9,7 @@ namespace Tayra.Models.Organizations
     {
         public int DateId { get; set; }
         public int IterationCount { get; set; }
+        public ProfileRoles ProfileRole { get; set; }
 
         public int ProfileId { get; set; }
         public virtual Profile Profile { get; set; }

@@ -221,11 +221,16 @@ namespace Tayra.Services
 
         public void Archive(int segmentId)
         {
-            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
+            var segment = DbContext.Segments.Include(x => x.Teams).FirstOrDefault(x => x.Id == segmentId);
 
             segment.EnsureNotNull(segment.Key);
 
             DbContext.Remove(segment);
+
+            foreach(var t in segment.Teams) //is this needed?
+            {
+                DbContext.Remove(t);
+            }
         }
 
         #endregion

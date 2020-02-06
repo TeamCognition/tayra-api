@@ -126,18 +126,19 @@ namespace Tayra.SyncServices.Tayra
                                   })
                                     .ToList();
 
-            var profiles = organizationDb.Profiles.Select(x => x.Id).ToList();
+            var profiles = organizationDb.Profiles.Select(x => new { x.Id, x.Role }).ToList();
             foreach (var p in profiles)
             {
-                var ts = taskStats.FirstOrDefault(x => x.ProfileId == p);
-                var t = tokens.FirstOrDefault(x => x.ProfileId == p);
-                var upsG = oneUpsGiven.FirstOrDefault(x => x.ProfileId == p);
-                var upsR = oneUpsReceived.FirstOrDefault(x => x.ProfileId == p);
+                var ts = taskStats.FirstOrDefault(x => x.ProfileId == p.Id);
+                var t = tokens.FirstOrDefault(x => x.ProfileId == p.Id);
+                var upsG = oneUpsGiven.FirstOrDefault(x => x.ProfileId == p.Id);
+                var upsR = oneUpsReceived.FirstOrDefault(x => x.ProfileId == p.Id);
                 var iterationCount = 1;
 
                 reportsToInsert.Add(new ProfileReportDaily
                 {
-                    ProfileId = p,
+                    ProfileId = p.Id,
+                    ProfileRole = p.Role,
                     DateId = dateId,
                     IterationCount = iterationCount,
                     TaskCategoryId = 1,
@@ -216,11 +217,12 @@ namespace Tayra.SyncServices.Tayra
                                //let dgCountWorked = dg.Count()
                                let last1 = dg.Where(x => x.DateId > dateId1ago) //last 1 iteration
                                let last4 = dg.Where(x => x.DateId > dateId4ago)
-                               let ic = (dgCount + 7 - 1) / 7
+                               let ic = (dgCount + iterationDays - 1) / iterationDays
                                let icMax4 = Math.Min(4, ic)
                                select new ProfileReportWeekly
                                {
                                    ProfileId = dg.Key,
+                                   ProfileRole = dg.First().ProfileRole,
                                    DateId = dateId,
                                    IterationCount = ic,
                                    TaskCategoryId = 1,
