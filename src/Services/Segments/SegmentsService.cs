@@ -31,26 +31,27 @@ namespace Tayra.Services
                 .FirstOrDefault(i => i.Key == segmentKey);
         }
 
-        public GridData<SegmentGridDTO> GetGridData(int profileId, SegmentGridParams gridParams)
+        public GridData<SegmentGridDTO> GetGridData(int[] segmentIds, SegmentGridParams gridParams)
         {
-            var query = (from tm in DbContext.TeamMembers
-                         where tm.ProfileId == profileId
-                         let s = tm.Team.Segment
-                         select new SegmentGridDTO
-                         {
-                             SegmentId = s.Id,
-                             Name = s.Name,
-                             Key = s.Key,
-                             Avatar = s.Avatar,
-                             Created = s.Created,
-                             ChallengesActive = s.Challenges.Count(x => x.Status == ChallengeStatuses.Active),
-                             ChallengesCompleted = s.Challenges.Count(x => x.Status == ChallengeStatuses.Ended),
-                             ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
-                             Integrations = s.Integrations.Where(x => x.ProfileId == null).Select(x => x.Type).ToArray(),
-                             ActionPointsCount = s.ActionPoints.Count(x => x.ConcludedOn == null)
-                         }).DistinctBy(x => x.Key);
+            var query = from s in DbContext.Segments
+                        where segmentIds.Contains(s.Id)
+                        select new SegmentGridDTO
+                        {
+                            SegmentId = s.Id,
+                            Name = s.Name,
+                            Key = s.Key,
+                            Avatar = s.Avatar,
+                            Created = s.Created,
+                            ChallengesActive = s.Challenges.Count(x => x.Status == ChallengeStatuses.Active),
+                            ChallengesCompleted = s.Challenges.Count(x => x.Status == ChallengeStatuses.Ended),
+                            ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
+                            Integrations = s.Integrations.Where(x => x.ProfileId == null).Select(x => x.Type).ToArray(),
+                            ActionPointsCount = s.ActionPoints.Count(x => x.ConcludedOn == null)
+                        };
 
             GridData<SegmentGridDTO> gridData = query.GetGridData(gridParams);
+
+            gridData.Records = gridData.Records.DistinctBy(x => x.SegmentId).ToList();
 
             return gridData;
         }
@@ -76,6 +77,8 @@ namespace Tayra.Services
                                                    };
 
             GridData<SegmentMemberGridDTO> gridData = query.GetGridData(gridParams);
+
+            gridData.Records = gridData.Records.DistinctBy(x => x.Username).ToList();
 
             return gridData;
         }
@@ -123,11 +126,11 @@ namespace Tayra.Services
             return segmentDTO;
         }
 
-        public void AddMember(string segmentKey, SegmentMemberAddRemoveDTO dto)
+        public void AddMember(int segmentId, SegmentMemberAddRemoveDTO dto)
         {
-            var segment = DbContext.Segments.FirstOrDefault(x => x.Key == segmentKey);
+            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
 
-            segment.EnsureNotNull(segmentKey);
+            segment.EnsureNotNull(segmentId);
 
             var teamScope = DbContext.Teams.Where(x => x.SegmentId == segment.Id);
 
@@ -144,11 +147,11 @@ namespace Tayra.Services
             });
         }
 
-        public void RemoveMember(string segmentKey, SegmentMemberAddRemoveDTO dto)
+        public void RemoveMember(int segmentId, SegmentMemberAddRemoveDTO dto)
         {
-            var segment = DbContext.Segments.FirstOrDefault(x => x.Key == segmentKey);
+            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
 
-            segment.EnsureNotNull(segmentKey);
+            segment.EnsureNotNull(segmentId);
 
             var teamScope = DbContext.Teams.Where(x => x.SegmentId == segment.Id);
 

@@ -168,7 +168,7 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ClaimBundleItem>().HasKey(x => new { x.ClaimBundleId, x.ProfileInventoryItemId });
             modelBuilder.Entity<ClaimBundleTokenTxn>().HasKey(x => new { x.ClaimBundleId, x.TokenTransactionId });
-            
+
             modelBuilder.Entity<CompetitionLog>(entity =>
             {
                 entity.HasKey(x => new { x.CompetitionId, x.LogId });
@@ -201,8 +201,11 @@ namespace Tayra.Models.Organizations
                 entity.Property(x => x.Id).ValueGeneratedNever();
             });
 
-            modelBuilder.Entity<Profile>().HasIndex(x => x.Username).IsUnique();
-
+            modelBuilder.Entity<Profile>(entity =>
+            {
+                entity.HasIndex(x => x.IdentityId);
+                entity.HasIndex(x => x.Username).IsUnique();
+            });
             modelBuilder.Entity<ProfileExternalId>(entity =>
             {
                 entity.HasKey(x => new { x.ProfileId, x.SegmentId, x.IntegrationType });

@@ -227,9 +227,9 @@ namespace Tayra.Services
             return invitation;
         }
 
-        public GridData<IdentityManageGridDTO> GetIdentityManageGridData(IdentityManageGridParams gridParams)
+        public GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, IdentityManageGridParams gridParams)
         {
-            IQueryable<Profile> scope = DbContext.Profiles;
+            IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
 
             if (gridParams.SegmentId != null)
             {
@@ -244,6 +244,7 @@ namespace Tayra.Services
                                                           FirstName = p.FirstName,
                                                           LastName = p.LastName,
                                                           Avatar = p.Avatar,
+                                                          Role = p.Role,
                                                           JoinedAt = p.Created,
                                                           Integrations = gridParams.SegmentId == null ? null :
                                                             p.Integrations.Where(x => x.SegmentId == gridParams.SegmentId)
@@ -261,20 +262,26 @@ namespace Tayra.Services
         {
             var memberTeamIds = (from t in DbContext.TeamMembers
                                where t.ProfileId == memberProfileId
-                               select t.TeamId).ToArray();
+                               select new IdentityManageAssignsDTO.CurrentAssignDTO
+                               {
+                                   SegmentId = t.Team.SegmentId,
+                                   SegmentName = t.Team.Segment.Name,
+                                   TeamId = t.Team.Id,
+                                   TeamName = t.Team.Name
+                               }).ToArray();
 
             var allSegments = (from s in DbContext.Segments
                                 where segmentIds.Contains(s.Id)
-                                select new IdentityManageAssignsDTO.AssignDTO
+                                select new IdentityManageAssignsDTO.AvailableAssignDTO
                                 {
                                     SegmentId = s.Id,
-                                    TeamIds = s.Teams.Where(x => !memberTeamIds.Contains(x.Id)).Select(x => x.Id).ToArray()
+                                    Teams = s.Teams.Where(x => !memberTeamIds.Select(c => c.TeamId).Contains(x.Id)).Select(x => ValueTuple.Create(x.Id, x.Name)).ToArray()
                                 }).ToList();
 
             return new IdentityManageAssignsDTO
             {
                 Current = memberTeamIds,
-                Available = allSegments.Where(x => x.TeamIds.Any()).ToArray()
+                Available = allSegments.Where(x => x.Teams.Any()).ToArray()
             };
         }
 
@@ -354,7 +361,8 @@ namespace Tayra.Services
             {
                 IdentityId = identityId,
                 Email = email,
-                IsPrimary = !scope.Where(x => x.IdentityId == identityId).Any()
+                IsPrimary = !scope.Where(x => x.IdentityId == identityId).Any(),
+                Created = DateTime.UtcNow
             };
 
             CatalogDb.IdentityEmails.Add(emailEntry);
@@ -377,6 +385,7 @@ namespace Tayra.Services
 
             emails.ForEach(x => x.IsPrimary = false);
             emailEntry.IsPrimary = true;
+            emailEntry.LastModified = DateTime.UtcNow;
 
             CatalogDb.SaveChanges();
         }
@@ -399,6 +408,34 @@ namespace Tayra.Services
             identityEmail.DeletedAt = DateTime.UtcNow;
             var affectedRecords = CatalogDb.SaveChanges();
             return affectedRecords > 0;
+        }
+
+        public void ChangeProfileRole(ProfileRoles role, int memberProfileId, ProfileRoles toRole)
+        {
+            var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == memberProfileId);
+
+            profile.EnsureNotNull(memberProfileId);
+
+            if (!IdentityRules.CanChangeRole(role, toRole))
+            {
+                throw new FirdawsSecurityException("You don't have permissions to change to this role");
+            }
+
+            profile.Role = toRole;
+        }
+
+        public void ArchiveProfile(ProfileRoles role, int memberProfileId)
+        {
+            var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == memberProfileId);
+
+            profile.EnsureNotNull(memberProfileId);
+
+            if(!IdentityRules.CanArchiveProfile(role, profile.Role))
+            {
+                throw new FirdawsSecurityException("You don't have permissions to archive this profile");
+            }
+
+            DbContext.Remove(profile);
         }
 
         #endregion

@@ -30,7 +30,7 @@ namespace Tayra.API.Controllers
         [HttpPost("search")]
         public ActionResult<GridData<SegmentGridDTO>> Search([FromBody] SegmentGridParams gridParams)
         {
-            return SegmentsService.GetGridData(CurrentUser.ProfileId, gridParams);
+            return SegmentsService.GetGridData(CurrentUser.SegmentsIds, gridParams);
         }
 
         [HttpPost("{segmentKey}/searchMembers")]
@@ -75,18 +75,18 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPost("{segmentKey}/addMember")]
-        public IActionResult AddMember([FromRoute] string segmentKey, [FromBody] SegmentMemberAddRemoveDTO dto)
+        [HttpPost("{segmentId:int}/addMember")]
+        public IActionResult AddMember([FromRoute] int segmentId, [FromBody] SegmentMemberAddRemoveDTO dto)
         {
-            SegmentsService.AddMember(segmentKey, dto);
+            SegmentsService.AddMember(segmentId, dto);
             DbContext.SaveChanges();
             return Ok();
         }
 
-        [HttpDelete("{segmentKey}/removeMember")]
-        public IActionResult RemoveMember([FromRoute] string segmentKey, [FromBody] SegmentMemberAddRemoveDTO dto)
+        [HttpDelete("{segmentId:int}/removeMember")] //TODO: delete shouldn't have body?
+        public IActionResult RemoveMember([FromRoute] int segmentId, [FromBody] SegmentMemberAddRemoveDTO dto)
         {
-            SegmentsService.RemoveMember(segmentKey, dto);
+            SegmentsService.RemoveMember(segmentId, dto);
             DbContext.SaveChanges();
             return Ok();
         }

@@ -6,7 +6,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Profile : IAuditedEntity
+    public class Profile : IAuditedEntity, IArchivableEntity
     {
         public int Id { get; set; }
 
@@ -14,6 +14,7 @@ namespace Tayra.Models.Organizations
         public string FirstName { get; set; }
         [MaxLength(50)]
         public string LastName { get; set; }
+        [MaxLength(20)]
         public string Username { get; set; }
 
         [MaxLength(2000)]

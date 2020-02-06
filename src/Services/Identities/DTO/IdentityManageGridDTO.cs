@@ -10,6 +10,7 @@ namespace Tayra.Services
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Avatar { get; set; }
+        public ProfileRoles Role { get; set; }
         public DateTime JoinedAt { get; set; }
 
         public ICollection<IntegrationDTO> Integrations { get; set; }

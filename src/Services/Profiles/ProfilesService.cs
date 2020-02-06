@@ -286,6 +286,20 @@ namespace Tayra.Services
             return gridData;
         }
 
+        public ProfileUpdateDTO GetUpdateProfileData(int profileId)
+        {
+            return DbContext.Profiles.Where(x => x.Id == profileId).Select(x => new ProfileUpdateDTO
+            {
+                Avatar = x.Avatar,
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                JobPosition = x.JobPosition,
+                BornOn = x.BornOn,
+                EmployedOn = x.EmployedOn,
+                Username = x.Username
+            }).FirstOrDefault();
+        }
+
         public void UpdateProfile(int profileId, ProfileUpdateDTO dto)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);

@@ -79,7 +79,13 @@ namespace Tayra.API.Controllers
             return IntegrationsService.GetProfileIntegrationsWithPending(CurrentUser.SegmentsIds, CurrentUser.ProfileId);
         }
 
-        [HttpPut]
+        [HttpGet("update")]
+        public ActionResult<ProfileUpdateDTO> GetUpdateProfile()
+        {
+            return ProfilesService.GetUpdateProfileData(CurrentUser.ProfileId);
+        }
+
+        [HttpPut("update")]
         public IActionResult UpdateProfile([FromBody] ProfileUpdateDTO dto)
         {
             ProfilesService.UpdateProfile(CurrentUser.ProfileId, dto);

@@ -3,6 +3,7 @@ using System.Linq;
 using Firdaws.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -66,23 +67,6 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPost("manage/search")]
-        public ActionResult<GridData<IdentityManageGridDTO>> ManageSearch([FromBody] IdentityManageGridParams gridParams)
-        {
-            if(gridParams.SegmentId.HasValue && !CurrentUser.SegmentsIds.Contains(gridParams.SegmentId.Value))
-            {
-                throw new FirdawsSecurityException("You don' have perrmission to segment " + gridParams.SegmentId);
-            }
-
-            return IdentitiesService.GetIdentityManageGridData(gridParams);
-        }
-
-        [HttpGet("manage/assigns/{memberProfileId:int}")]
-        public ActionResult<IdentityManageAssignsDTO> GetManageTeamAssignData([FromRoute] int memberProfileId)
-        {
-            return IdentitiesService.GetIdentityManageAssignsData(CurrentUser.SegmentsIds, memberProfileId);
-        }
-
         [HttpPost("searchInvitations")]
         public ActionResult<GridData<IdentityInvitationGridDTO>> SearchInvitation([FromBody] IdentityInvitationGridParams gridParams)
         {
@@ -132,6 +116,41 @@ namespace Tayra.API.Controllers
         public ActionResult ChangePassword([FromBody] IdentityChangePasswordDTO dto)
         {
             IdentitiesService.ChangePasswordWithSaveChange(CurrentUser.IdentityId, dto);
+            return Ok();
+        }
+
+        [HttpPost("manage/search")]
+        public ActionResult<GridData<IdentityManageGridDTO>> ManageSearch([FromBody] IdentityManageGridParams gridParams)
+        {
+            if (gridParams.SegmentId.HasValue && !CurrentUser.SegmentsIds.Contains(gridParams.SegmentId.Value))
+            {
+                throw new FirdawsSecurityException("You don' have perrmission to segment " + gridParams.SegmentId);
+            }
+
+            return IdentitiesService.GetIdentityManageGridData(CurrentUser.ProfileId, gridParams);
+        }
+
+        [HttpGet("manage/assigns/{profileId:int}")]
+        public ActionResult<IdentityManageAssignsDTO> GetManageTeamAssignData([FromRoute] int profileId)
+        {
+            return IdentitiesService.GetIdentityManageAssignsData(CurrentUser.SegmentsIds, profileId);
+        }
+
+        [HttpPut("manage/changeRole/{profileId:int}")]
+        public IActionResult ChangeProfile([FromRoute] int profileId, [FromBody] ProfileRoles toRole)
+        {
+            IdentitiesService.ChangeProfileRole(CurrentUser.Role, profileId, toRole);
+            DbContext.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpDelete("manage/archive/{profileId:int}")]
+        public IActionResult ArchiveProfile([FromRoute] int profileId)
+        {
+            IdentitiesService.ArchiveProfile(CurrentUser.Role, profileId);
+            DbContext.SaveChanges();
+
             return Ok();
         }
 

@@ -27,14 +27,23 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public GridData<ChallengeViewGridDTO> GetChallengesGrid(ChallengeViewGridParams gridParams)
+        public GridData<ChallengeViewGridDTO> GetChallengesGrid(int[] segmentIds, ChallengeViewGridParams gridParams)
         {
-            IQueryable<ChallengeSegment> scope = DbContext.ChallengeSegments.Where(x => gridParams.Segments.Contains(x.SegmentId));
+            IQueryable<ChallengeSegment> scope = DbContext.ChallengeSegments;
+
+            if(gridParams.Segments != null && gridParams.Segments.Any())
+            {
+                scope = scope.Where(x => gridParams.Segments.Contains(x.SegmentId));
+            }
+            else
+            {
+                scope = scope.Where(x => segmentIds.Contains(x.SegmentId));
+            }
             
-            var query = (from cs in scope
+            var query = from cs in scope
                         select new ChallengeViewGridDTO
                         {
-                            Id = cs.Challenge.Id,
+                            ChallengeId = cs.Challenge.Id,
                             Name = cs.Challenge.Name,
                             Image = cs.Challenge.Image,
                             Status = cs.Challenge.Status,
@@ -43,9 +52,11 @@ namespace Tayra.Services
                             Created = cs.Challenge.Created,
                             ActiveUntil = cs.Challenge.ActiveUntil,
                             EndedAt = cs.Challenge.EndedAt
-                        }).DistinctBy(x => x.Id); //slow?
+                        };
 
             GridData<ChallengeViewGridDTO> gridData = query.GetGridData(gridParams);
+
+            gridData.Records = gridData.Records.DistinctBy(x => x.ChallengeId).ToList();
 
             return gridData;
         }

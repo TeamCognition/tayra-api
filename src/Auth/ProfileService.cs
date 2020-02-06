@@ -60,7 +60,11 @@ namespace Tayra.Auth
                         });
                         orgContext.SaveChanges();
                     }
-                    catch (Exception) { }
+                    catch (Exception)
+                    {
+                        throw new ApplicationException("Profile not found for identity " + subject);
+                    }
+
                     return Task.FromResult(0);
                 }
 

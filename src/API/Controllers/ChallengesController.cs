@@ -24,7 +24,7 @@ namespace Tayra.API.Controllers
         [HttpPost("search")]
         public ActionResult<GridData<ChallengeViewGridDTO>> GetChallengesGrid([FromBody] ChallengeViewGridParams gridParams)
         {
-            return ChallengesService.GetChallengesGrid(gridParams);
+            return ChallengesService.GetChallengesGrid(CurrentUser.SegmentsIds, gridParams);
         }
 
         [HttpPost("searchCommittees")]
