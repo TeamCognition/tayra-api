@@ -24,6 +24,18 @@ namespace Tayra.API.Controllers
             return Ok(ReportsService.GetOverviewReport(reportParams));
         }
 
+        [HttpGet("statistics/segmentMetrics")]
+        public ActionResult<ReportOverviewDTO> GetStatisticsSegmentMetrics([FromQuery] ReportParams reportParams)
+        {
+            return Ok(ReportsService.GetStatisticsSegmentMetricsReport(reportParams));
+        }
+
+        [HttpGet("statistics/teamMetrics")]
+        public ActionResult<ReportOverviewDTO> GetTeamSegmentMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
+        {
+            return Ok(ReportsService.GetStatisticsTeamMetricsReport(teamId, reportParams));
+        }
+
         // [HttpGet("segmentPerformance")]
         // public ActionResult<ReportSegmentPerformanceChartDTO> GetSegmentPerformanceReport()
         // {

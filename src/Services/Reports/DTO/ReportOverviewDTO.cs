@@ -4,10 +4,10 @@ namespace Tayra.Services
 {
     public class ReportOverviewDTO
     {
-        public CategoryDTO[] Categories { get;set; }
+        public MetricDTO[] Metrics { get;set; }
         public NodeDTO[] Nodes { get; set; }
 
-        public class CategoryDTO
+        public class MetricDTO
         {
             public int Id { get; set; }
             public string Name { get; set; }

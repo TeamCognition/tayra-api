@@ -184,14 +184,12 @@ namespace Tayra.Services
             }
 
             var query = from p in scope
-                        from pdr in DbContext.ProfileReportsDaily.Where(x => p.Id == x.ProfileId)
-                        .OrderByDescending(x => x.DateId).Take(1).DefaultIfEmpty()
                         select new ProfileGridDTO
                         {
                             ProfileId = p.Id,
                             Name = p.FirstName + " " + p.LastName,
                             Username = p.Username,
-                            TokensTotal = (float)Math.Round(pdr.CompanyTokensTotal, 2),
+                            Avatar = p.Avatar,
                             Created = p.Created
                         };
 
