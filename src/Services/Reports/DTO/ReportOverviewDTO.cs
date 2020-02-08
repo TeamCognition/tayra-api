@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Tayra.Common;
 
 namespace Tayra.Services
 {
@@ -9,8 +10,7 @@ namespace Tayra.Services
 
         public class MetricDTO
         {
-            public int Id { get; set; }
-            public string Name { get; set; }
+            public MetricTypes Id { get; set; }
             public float AverageValue { get; set; }
             public float MaxValue { get; set; }
         }
@@ -22,10 +22,7 @@ namespace Tayra.Services
 
             public class DataDTO
             {
-                /// <summary>
-                /// Category Id
-                /// </summary>
-                public int Id { get; set; }
+                public MetricTypes MetricId { get; set; }
                 public float Value { get; set; }
             }
         }

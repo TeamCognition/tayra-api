@@ -52,6 +52,9 @@ namespace Tayra.Models.Organizations
         public int TacklesChange { get; set; }
         public float TacklesTotalAverage { get; set; }
 
+        public int TasksCompletionTimeChange { get; set; }
+        public int TasksCompletionTimeAverage { get; set; }
+
         public int RangeChange { get; set; }
         public int RangeTotalAverage { get; set; }
 

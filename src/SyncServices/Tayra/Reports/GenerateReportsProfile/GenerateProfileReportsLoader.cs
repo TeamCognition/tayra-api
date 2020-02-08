@@ -85,7 +85,10 @@ namespace Tayra.SyncServices.Tayra
                                  TurnoversTotal = 0,
 
                                  Tackles = 0,
-                                 TacklesTotal = 0
+                                 TacklesTotal = 0,
+
+                                 MinutesSpent = change.Sum(x => x.TimeSpentInMinutes),
+                                 MinutesSpentTotal = total.Sum(x => x.TimeSpentInMinutes)
                              }).ToList();
 
             var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
@@ -178,6 +181,9 @@ namespace Tayra.SyncServices.Tayra
 
                     TacklesChange = ts?.Tackles ?? 0,
                     TacklesTotal = ts?.TacklesTotal ?? 0,
+                    
+                    TasksCompletionTimeChange = ts?.MinutesSpent ?? 0,
+                    TasksCompletionTimeTotal = ts?.MinutesSpentTotal ?? 0,
                 });
             }
 
@@ -262,6 +268,9 @@ namespace Tayra.SyncServices.Tayra
 
                                    TacklesChange = last1.Sum(x => x.TacklesChange),
                                    TacklesTotalAverage = (float)dg.Sum(c => c.TacklesChange) / ic,
+
+                                   TasksCompletionTimeChange = last1.Sum(x => x.TasksCompletionTimeChange),
+                                   TasksCompletionTimeAverage = dg.Sum(c => c.TasksCompletionTimeChange) / ic,
 
                                    OImpactAverage = (float)last4.Sum(x => x.ComplexityChange + x.TasksCompletedChange + x.AssistsChange) / icMax4,
                                    OImpactTotalAverage = (float)dg.Sum(x => x.ComplexityChange + x.TasksCompletedChange + x.AssistsChange) / ic,

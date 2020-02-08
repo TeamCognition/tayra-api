@@ -107,6 +107,9 @@ namespace Tayra.SyncServices.Tayra
 
                     TacklesChange = mr.Sum(x => x.TacklesChange),
                     TacklesTotal = mr.Sum(x => x.TacklesTotal),
+
+                    TasksCompletionTimeChange = mr.Sum(x => x.TasksCompletionTimeChange),
+                    TasksCompletionTimeTotal = mr.Sum(x => x.TasksCompletionTimeTotal)
                 });
             }
 
@@ -209,6 +212,9 @@ namespace Tayra.SyncServices.Tayra
 
                     TacklesChange = dmr.Sum(x => x.TacklesChange),
                     TacklesAverage = (float)dmr.Average(x => x.TacklesChange),
+
+                    TasksCompletionTimeChange = dmr.Sum(x => x.TasksCompletionTimeChange),
+                    TasksCompletionTimeAverage = (int)dmr.Average(x => x.TasksCompletionTimeChange),
 
                     OImpactAverage = wmr.Average(x => x.OImpactAverage),
                     OImpactAverageTotal = wmr.Sum(x => x.OImpactAverage),

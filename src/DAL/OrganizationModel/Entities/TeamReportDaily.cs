@@ -52,6 +52,9 @@ namespace Tayra.Models.Organizations
         public int TacklesChange { get; set; }
         public int TacklesTotal { get; set; }
 
+        public int TasksCompletionTimeChange { get; set; }
+        public int TasksCompletionTimeTotal { get; set; }
+
         #region Team Stats
 
         public int MembersCountTotal { get; set; }
