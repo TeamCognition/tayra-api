@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -24,6 +25,18 @@ namespace Tayra.API.Controllers
             return Ok(ReportsService.GetOverviewReport(reportParams));
         }
 
+        [HttpGet("delivery/segmentMetrics")]
+        public ActionResult<ReportOverviewDTO> GetDeliverySegmentMetrics([FromQuery] ReportParams reportParams)
+        {
+            return Ok(ReportsService.GetDeliverySegmentMetricsReport(reportParams));
+        }
+
+        [HttpGet("delivery/teamMetrics")]
+        public ActionResult<ReportOverviewDTO> GetDeliverySegmentMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
+        {
+            return Ok(ReportsService.GetDeliveryTeamMetricsReport(teamId, reportParams));
+        }
+
         [HttpGet("statistics/segmentMetrics")]
         public ActionResult<ReportOverviewDTO> GetStatisticsSegmentMetrics([FromQuery] ReportParams reportParams)
         {
@@ -31,9 +44,21 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("statistics/teamMetrics")]
-        public ActionResult<ReportOverviewDTO> GetTeamSegmentMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
+        public ActionResult<ReportOverviewDTO> GetStatisticsSegmentMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
         {
             return Ok(ReportsService.GetStatisticsTeamMetricsReport(teamId, reportParams));
+        }
+
+        [HttpGet("tokens/segmentMetrics")]
+        public ActionResult<ReportOverviewDTO> GetTokensSegmentMetrics([FromQuery] ReportParams reportParams)
+        {
+            return Ok(ReportsService.GetTokensSegmentMetricsReport(reportParams));
+        }
+
+        [HttpGet("tokens/teamMetrics")]
+        public ActionResult<ReportOverviewDTO> GetTokensTeamMetrics([FromQuery] ReportParams reportParams)
+        {
+            return Ok(ReportsService.GetTokensTeamMetricsReport(ReportAggregationMethods.Average, ReportTimeIntervals.Month, reportParams));
         }
 
         // [HttpGet("segmentPerformance")]
