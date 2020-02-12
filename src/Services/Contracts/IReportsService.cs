@@ -1,4 +1,6 @@
-﻿namespace Tayra.Services
+﻿using Tayra.Common;
+
+namespace Tayra.Services
 {
     public interface IReportsService
     {
@@ -9,5 +11,11 @@
 
         ReportStatisticsSegmentMetricsDTO GetStatisticsSegmentMetricsReport(ReportParams reportParams);
         ReportStatisticsTeamMetricsDTO GetStatisticsTeamMetricsReport(int teamId, ReportParams reportParams);
+
+        ReportTokensSegmentMetricsDTO GetTokensSegmentMetricsReport(ReportParams reportParams);
+        ReportTokensTeamMetricsDTO GetTokensTeamMetricsReport(ReportAggregationMethods aggrType, ReportTimeIntervals timeInternal, ReportParams reportParams);
+
+        ReportItemsSegmentMetricsDTO GetItemsSegmentMetricsReport(ReportParams reportParams);
+        ReportItemsTeamMetricsDTO GetItemTeamMetricsReport(int teamId, ReportParams reportParams);
     }
 }

@@ -19,8 +19,11 @@ namespace Tayra.Models.Organizations
         public int ComplexityChange { get; set; }
         public float ComplexityTotalAverage { get; set; }
 
-        public float CompanyTokensChange { get; set; }
-        public float CompanyTokensTotalAverage { get; set; }
+        public float CompanyTokensEarnedChange { get; set; }
+        public float CompanyTokensEarnedTotalAverage { get; set; }
+
+        public float CompanyTokensSpentChange { get; set; }
+        public float CompanyTokensSpentTotalAverage { get; set; }
 
         public float EffortScoreChange { get; set; }
         public float EffortScoreTotalAverage { get; set; }
@@ -57,6 +60,18 @@ namespace Tayra.Models.Organizations
 
         public int RangeChange { get; set; }
         public int RangeTotalAverage { get; set; }
+
+        public int InventoryCountTotal { get; set; }
+        public float InventoryValueTotal { get; set; }
+
+        public int ItemsBoughtChange { get; set; }
+
+        public int ItemsGiftedChange { get; set; }
+
+        public int ItemsDisenchantedChange { get; set; }
+
+        public int ItemsCreatedChange { get; set; }
+
 
         #region Weekly Only Stats
 

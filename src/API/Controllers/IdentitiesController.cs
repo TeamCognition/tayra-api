@@ -36,8 +36,8 @@ namespace Tayra.API.Controllers
             //var o = Resolve<IOrganizationsService>();
             //o.Create(new OrganizationCreateDTO
             //{
-            //    Key = "localhost:3000",
-            //    Name = "Localhost 3000",
+            //    Key = "tajra",
+            //    Name = "tajra demo",
             //    Timezone = "Europe Central",
             //    DatabaseServer = "sqlserver-tayra.database.windows.net",
             //    DatabaseName = "sqldb-tayra-tenants_free-prod",
@@ -133,6 +133,11 @@ namespace Tayra.API.Controllers
         [HttpGet("manage/assigns/{profileId:int}")]
         public ActionResult<IdentityManageAssignsDTO> GetManageTeamAssignData([FromRoute] int profileId)
         {
+            if(profileId == CurrentUser.ProfileId)
+            {
+                throw new FirdawsSecurityException("You can't assign yourself to a team or segment");
+            }
+
             return IdentitiesService.GetIdentityManageAssignsData(CurrentUser.SegmentsIds, profileId);
         }
 

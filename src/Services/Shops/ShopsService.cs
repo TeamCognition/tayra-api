@@ -25,10 +25,10 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public ShopViewDTO GetShopViewDTO(int shopId)
+        public ShopViewDTO GetShopViewDTO()
         {
             var shopDto = (from s in DbContext.Shops
-                           where s.Id == shopId
+                           //where s.Id == shopId
                            select new ShopViewDTO
                            {
                                Name = s.Name,
@@ -36,7 +36,7 @@ namespace Tayra.Services
                                Created = s.Created
                            }).FirstOrDefault();
 
-            shopDto.EnsureNotNull(shopId);
+            shopDto.EnsureNotNull();
 
             return shopDto;
         }

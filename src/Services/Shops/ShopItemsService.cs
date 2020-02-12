@@ -91,7 +91,7 @@ namespace Tayra.Services
             var token = DbContext.Tokens.FirstOrDefault(x => x.Type == TokenType.CompanyToken);
             var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
             var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == token.Id).Sum(x => x.Value);
-            var sugmentId = DbContext.TeamMembers.Where(x => x.ProfileId == profileId).Select(x => x.Team.SegmentId).FirstOrDefault();
+            var segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => x.SegmentId).FirstOrDefault();
 
             shop.EnsureNotNull(shop.Id);
             shopItem.EnsureNotNull(shop.Id, dto.ItemId);
@@ -117,7 +117,7 @@ namespace Tayra.Services
                 Price = shopItem.Price,
                 PriceDiscountedFor = shopItem.Price - shopItem.DiscountPrice,
                 GiftFor = null,
-                SegmentId = sugmentId
+                SegmentId = segmentId
             });
 
             if (purchaseStatus == ShopPurchaseStatuses.Fulfilled)
@@ -143,7 +143,7 @@ namespace Tayra.Services
                     { "itemPrice", shopItem.DiscountPrice?.ToString() ?? shopItem.Price.ToString() },
                     { "itemId", shopItem.ItemId.ToString() },
                     { "purchaseStatus", purchaseStatus.ToString() },
-                    { "segmentId", sugmentId.ToString()},
+                    { "segmentId", segmentId.ToString()},
                     { "itemName", shopItem.Item.Name }
                 },
                 ProfileId = profileId,

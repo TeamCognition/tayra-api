@@ -11,7 +11,7 @@ namespace Tayra.Services
         {
             public int SegmentId { get; set; }
             public string SegmentName { get; set; }
-            public int TeamId { get; set; }
+            public int? TeamId { get; set; }
             public string TeamName { get; set; }
         }
 

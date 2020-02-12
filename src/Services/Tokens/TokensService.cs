@@ -83,7 +83,7 @@ namespace Tayra.Services
 
         private void UpdateCompetitorsTokenValue(TokenTransaction txn)
         {
-            var teamIds = DbContext.TeamMembers
+            var teamIds = DbContext.ProfileAssignments
                 .Where(x => x.ProfileId == txn.ProfileId)
                 .Select(x => x.TeamId)
                 .ToList();

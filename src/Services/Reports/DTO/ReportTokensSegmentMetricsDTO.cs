@@ -1,10 +1,13 @@
-﻿using System;
-namespace Tayra.Services
+﻿namespace Tayra.Services
 {
     public class ReportTokensSegmentMetricsDTO
     {
-        public ReportTokensSegmentMetricsDTO()
-        {
-        }
+        public int StartDateId { get; set; }
+        public int EndDateId { get; set; }
+
+        public float TokensEarnedAverage { get; set; }
+        public float TokensSpentAverage { get; set; }
+
+        public float[] Earnings { get; set; }
     }
 }

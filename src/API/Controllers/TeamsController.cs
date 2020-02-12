@@ -10,8 +10,9 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public TeamsController(IServiceProvider serviceProvider, OrganizationDbContext context) : base(serviceProvider)
+        public TeamsController(IServiceProvider serviceProvider, OrganizationDbContext dbContext) : base(serviceProvider)
         {
+            OrganizationContext = dbContext;
         }
 
         #endregion
@@ -43,32 +44,23 @@ namespace Tayra.API.Controllers
             return TeamsService.GetTeamMembersGridData(gridParams);
         }
 
-        //[HttpPost("create")]
-        //public IActionResult CreateTeam([FromBody]TeamCreateDTO dto)
-        //{
-        //    TeamsService.Create(CurrentSegment.Id, dto);
-        //    OrganizationContext.SaveChanges();
+        [HttpPost("create")]
+        public IActionResult CreateTeam([FromBody]TeamCreateDTO dto)
+        {
+            TeamsService.Create(dto.SegmentId, dto);
+            OrganizationContext.SaveChanges();
 
-        //    return Ok();
-        //}
+            return Ok();
+        }
 
-        //[HttpPut("update")]
-        //public IActionResult UpdateTeam([FromBody] TeamUpdateDTO dto)
-        //{
-        //    TeamsService.Update(CurrentSegment.Id, dto);
-        //    OrganizationContext.SaveChanges();
+        [HttpPut("{teamId:int}/update")]
+        public IActionResult UpdateTeam([FromQuery]int teamId, [FromBody] TeamUpdateDTO dto)
+        {
+            TeamsService.Update(teamId, dto);
+            OrganizationContext.SaveChanges();
 
-        //    return Ok();
-        //}
-
-        //[HttpPost("addMembers")]
-        //public IActionResult AddMembers([FromQuery]string teamKey, [FromBody]IList<TeamAddMemberDTO> dto)
-        //{
-        //    TeamsService.AddMembers(teamKey, dto);
-        //    OrganizationContext.SaveChanges();
-
-        //    return Ok();
-        //}
+            return Ok();
+        }
 
         [HttpDelete("{teamKey}")]
         public IActionResult Delete([FromRoute]string teamKey)

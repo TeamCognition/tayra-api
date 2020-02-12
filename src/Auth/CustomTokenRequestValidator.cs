@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using MoreLinq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -70,30 +71,24 @@ namespace Tayra.Auth
                                Avatar = p.Avatar
                            }).FirstOrDefault();
 
-            var sAndtIds = dbContext.TeamMembers
-                    .Where(x => x.ProfileId == profile.ProfileId)
-                    .Select(x => new
-                    {
-                        Team = new ProfileSessionCacheDTO.TeamDTO
-                        {
-                            Id = x.Team.Id,
-                            Key = x.Team.Key,
-                            Name = x.Team.Name,
-                            AvatarColor = x.Team.AvatarColor,
-                            SegmentId = x.Team.Segment.Id
-                        },
-                        Segment = new ProfileSessionCacheDTO.SegmentDTO
-                        {
-                            Id = x.Team.Segment.Id,
-                            Key = x.Team.Segment.Key,
-                            Name = x.Team.Segment.Name,
-                            Avatar = x.Team.Segment.Avatar,
-                        }
-                    }).ToList();
+            (IQueryable<Segment> qs, IQueryable<Team> qt) = ProfileService.GetSegmentAndTeamQueries(dbContext, profile.ProfileId, profile.Role);
 
-            
-            profile.Teams = sAndtIds.Select(x => x.Team).Where(x => x.Key != null).ToList();
-            profile.Segments = sAndtIds.Select(x => x.Segment).DistinctBy(x => x.Id).ToList();
+            profile.Segments = qs.Select(s => new ProfileSessionCacheDTO.SegmentDTO
+            {
+                Id = s.Id,
+                Key = s.Key,
+                Name = s.Name,
+                Avatar = s.Avatar
+            }).ToArray();
+
+            profile.Teams = qt.Select(t => new ProfileSessionCacheDTO.TeamDTO
+            {
+                Id = t.Id,
+                Key = t.Key,
+                Name = t.Name,
+                AvatarColor = t.AvatarColor,
+                SegmentId = t.SegmentId
+            }).ToArray();
 
             var activeItems = ProfilesService.GetProfileActiveItems(dbContext, profile.ProfileId);
 

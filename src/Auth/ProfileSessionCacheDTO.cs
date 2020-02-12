@@ -17,7 +17,6 @@ namespace Tayra.Auth
         public ItemActiveDTO Title { get; set; }
         public ItemActiveDTO Border { get; set; }
 
-
         public ICollection<TeamDTO> Teams { get; set; }
         public ICollection<SegmentDTO> Segments { get; set; }
 

@@ -16,7 +16,7 @@ namespace Tayra.Services
             public class MetricDTO
             {
                 public MetricTypes Id { get; set; }
-                public float Average { get; set; }
+                public double Average { get; set; }
             }
         }
     }

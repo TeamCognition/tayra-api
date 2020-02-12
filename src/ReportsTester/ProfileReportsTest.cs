@@ -243,10 +243,10 @@ namespace ReportsTester
                 }
             };
 
-            var teamMembers = new List<TeamMember>();
+            var teamMembers = new List<ProfileAssignment>();
             foreach (var p in profiles)
             {
-                teamMembers.Add(new TeamMember { TeamId = 1, ProfileId = p.Id });
+                teamMembers.Add(new ProfileAssignment { TeamId = 1, ProfileId = p.Id });
             }
 
             dbContext.AddRange(teams);

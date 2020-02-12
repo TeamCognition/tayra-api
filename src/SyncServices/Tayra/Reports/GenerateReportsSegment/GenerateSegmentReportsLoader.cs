@@ -50,12 +50,11 @@ namespace Tayra.SyncServices.Tayra
             var reportsToInsert = new List<SegmentReportDaily>();
 
             var segments = (from s in organizationDb.Segments
-                            let teamIds = s.Teams.Select(x => x.Id).ToList()
                             select new
                             {
                                 SegmentId = s.Id,
-                                MemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId) && x.Profile.Role == ProfileRoles.Member).Select(x => x.ProfileId).ToList(),
-                                NonMemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId) && x.Profile.Role != ProfileRoles.Member).Select(x => x.ProfileId).ToList()
+                                MemberIds = s.Members.Where(x => x.Profile.Role == ProfileRoles.Member).Select(x => x.ProfileId).ToList(),
+                                NonMemberIds = s.Members.Where(x => x.Profile.Role != ProfileRoles.Member).Select(x => x.ProfileId).ToList()
                             }).ToList();
 
             foreach (var s in segments)
@@ -75,8 +74,11 @@ namespace Tayra.SyncServices.Tayra
                     ComplexityChange = mr.Sum(x => x.ComplexityChange),
                     ComplexityTotal = mr.Sum(x => x.ComplexityTotal),
 
-                    CompanyTokensChange = mr.Sum(x => x.CompanyTokensChange),
-                    CompanyTokensTotal = mr.Sum(x => x.CompanyTokensTotal),
+                    CompanyTokensEarnedChange = mr.Sum(x => x.CompanyTokensEarnedChange),
+                    CompanyTokensEarnedTotal = mr.Sum(x => x.CompanyTokensEarnedTotal),
+
+                    CompanyTokensSpentChange = mr.Sum(x => x.CompanyTokensSpentChange),
+                    CompanyTokensSpentTotal = mr.Sum(x => x.CompanyTokensSpentTotal),
 
                     EffortScoreChange = mr.Sum(x => x.EffortScoreChange),
                     EffortScoreTotal = mr.Sum(x => x.EffortScoreTotal),
@@ -109,7 +111,12 @@ namespace Tayra.SyncServices.Tayra
                     TacklesTotal = mr.Sum(x => x.TacklesTotal),
 
                     TasksCompletionTimeChange = mr.Sum(x => x.TasksCompletionTimeChange),
-                    TasksCompletionTimeTotal = mr.Sum(x => x.TasksCompletionTimeTotal)
+                    TasksCompletionTimeTotal = mr.Sum(x => x.TasksCompletionTimeTotal),
+
+                    ItemsBoughtChange = mr.Sum(x => x.ItemsBoughtChange),
+                    ItemsCreatedChange = nmr.Sum(x => x.ItemsCreatedChange),
+                    ItemsDisenchantedChange = mr.Sum(x => x.ItemsDisenchantedChange),
+                    ItemsGiftedChange = mr.Sum(x => x.ItemsGiftedChange)
                 });
             }
 
@@ -153,8 +160,8 @@ namespace Tayra.SyncServices.Tayra
                             select new
                             {
                                 SegmentId = s.Id,
-                                MemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId) && x.Profile.Role == ProfileRoles.Member).Select(x => x.ProfileId).ToList(),
-                                NonMemberIds = organizationDb.TeamMembers.Where(x => teamIds.Contains(x.TeamId) && x.Profile.Role != ProfileRoles.Member).Select(x => x.ProfileId).ToList()
+                                MemberIds = s.Members.Where(x => x.Profile.Role == ProfileRoles.Member).Select(x => x.ProfileId).ToList(),
+                                NonMemberIds = s.Members.Where(x => x.Profile.Role != ProfileRoles.Member).Select(x => x.ProfileId).ToList()
                             }).ToList();
 
             foreach (var s in segments)
@@ -180,8 +187,11 @@ namespace Tayra.SyncServices.Tayra
                     ComplexityChange = dmr.Sum(x => x.ComplexityChange),
                     ComplexityAverage = (float)dmr.Average(x => x.ComplexityChange),
 
-                    CompanyTokensChange = dmr.Sum(x => x.CompanyTokensChange),
-                    CompanyTokensAverage = dmr.Average(x => x.CompanyTokensChange),
+                    CompanyTokensEarnedChange = dmr.Sum(x => x.CompanyTokensEarnedChange),
+                    CompanyTokensEarnedAverage = dmr.Average(x => x.CompanyTokensEarnedChange),
+
+                    CompanyTokensSpentChange = dmr.Sum(x => x.CompanyTokensSpentChange),
+                    CompanyTokensSpentAverage = dmr.Average(x => x.CompanyTokensSpentChange),
 
                     EffortScoreChange = dmr.Sum(x => x.EffortScoreChange),
                     EffortScoreAverage = dmr.Average(x => x.EffortScoreChange),
@@ -215,6 +225,11 @@ namespace Tayra.SyncServices.Tayra
 
                     TasksCompletionTimeChange = dmr.Sum(x => x.TasksCompletionTimeChange),
                     TasksCompletionTimeAverage = (int)dmr.Average(x => x.TasksCompletionTimeChange),
+
+                    ItemsBoughtChange = dmr.Sum(x => x.ItemsBoughtChange),
+                    ItemsCreatedChange = dnmr.Sum(x => x.ItemsCreatedChange),
+                    ItemsDisenchantedChange = dmr.Sum(x => x.ItemsDisenchantedChange),
+                    ItemsGiftedChange = dmr.Sum(x => x.ItemsGiftedChange),
 
                     OImpactAverage = wmr.Average(x => x.OImpactAverage),
                     OImpactAverageTotal = wmr.Sum(x => x.OImpactAverage),

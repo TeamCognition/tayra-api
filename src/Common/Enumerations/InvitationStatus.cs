@@ -1,5 +1,4 @@
-﻿using System;
-namespace Tayra.Common
+﻿namespace Tayra.Common
 {
     public enum InvitationStatus
     {

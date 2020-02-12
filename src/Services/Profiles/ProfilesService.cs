@@ -33,38 +33,39 @@ namespace Tayra.Services
 
         public ProfileSessionCacheDTO GetSessionCache(int profileId)
         {
-            var teams = DbContext.TeamMembers.Where(x => x.ProfileId == profileId)
-                .Select( x=> new ProfileSessionCacheDTO.TeamDTO
-                {
-                    Id = x.TeamId,
-                    Key = x.Team.Key,
-                    Name = x.Team.Name,
-                    AvatarColor = x.Team.AvatarColor,
-                    Segment = new ProfileSessionCacheDTO.SegmentDTO
-                    {
-                        Id = x.Team.Segment.Id,
-                        Key = x.Team.Segment.Key,
-                        Name = x.Team.Segment.Name,
-                        Avatar = x.Team.Segment.Avatar,
-                    }
-                }).ToList();
+            //var teams = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId)
+            //    .Select(x => new ProfileSessionCacheDTO.TeamDTO
+            //    {
+            //        Id = x.TeamId,
+            //        Key = x.Team.Key,
+            //        Name = x.Team.Name,
+            //        AvatarColor = x.Team.AvatarColor,
+            //        Segment = new ProfileSessionCacheDTO.SegmentDTO
+            //        {
+            //            Id = x.Team.Segment.Id,
+            //            Key = x.Team.Segment.Key,
+            //            Name = x.Team.Segment.Name,
+            //            Avatar = x.Team.Segment.Avatar,
+            //        }
+            //    }).ToList();
 
-            var activeItems = GetProfileActiveItems(DbContext, profileId);
+            //var activeItems = GetProfileActiveItems(DbContext, profileId);
 
-            return (from p in DbContext.Profiles.Where(x => x.Id == profileId)
-                    select new ProfileSessionCacheDTO
-                    {
-                        ProfileId = p.Id,
-                        FirstName = p.FirstName,
-                        LastName = p.LastName,
-                        Username = p.Username,
-                        Role = p.Role,
-                        Avatar = p.Avatar,
-                        Teams = teams,
-                        Title = activeItems.Title,
-                        Badges = activeItems.Badges,
-                        Border = activeItems.Border
-                    }).FirstOrDefault();
+            //return (from p in DbContext.Profiles.Where(x => x.Id == profileId)
+            //        select new ProfileSessionCacheDTO
+            //        {
+            //            ProfileId = p.Id,
+            //            FirstName = p.FirstName,
+            //            LastName = p.LastName,
+            //            Username = p.Username,
+            //            Role = p.Role,
+            //            Avatar = p.Avatar,
+            //            Teams = teams,
+            //            Title = activeItems.Title,
+            //            Badges = activeItems.Badges,
+            //            Border = activeItems.Border
+            //        }).FirstOrDefault();
+            return null;
         }
 
 
@@ -165,12 +166,11 @@ namespace Tayra.Services
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
 
-            //if (!string.IsNullOrEmpty(gridParams.SegmentKeyQuery))
-            //{
-            //    var segment = DbContext.Segments.FirstOrDefault(x => x.Key == gridParams.SegmentKeyQuery);
-            //    var profileIds = DbContext.SegmentMembers.Where(x => x.SegmentId == segment.Id).Select(x => x.ProfileId).ToList();
-            //    scope = scope.Where(x => profileIds.Contains(x.Id));
-            //}
+            if (gridParams.SegmentIdExclude.HasValue)
+            {
+                var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == gridParams.SegmentIdExclude).Select(x => x.ProfileId).ToList();
+                scope = scope.Where(x => !profileIds.Contains(x.Id));
+            }
 
             if (!string.IsNullOrEmpty(gridParams.UsernameQuery) && !string.IsNullOrEmpty(gridParams.NameQuery))
                 scope = scope.Chain(ChainType.OR, byUsername, byName);
@@ -326,7 +326,7 @@ namespace Tayra.Services
                                 .Where(x => x.DateId <= profileWeeklyDateId)
                                 .FirstOrDefault(x => x.ProfileId == profileId);
 
-            var tm = DbContext.TeamMembers.FirstOrDefault(x => x.ProfileId == profileId);
+            var tm = DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == profileId && x.TeamId.HasValue);
 
             var trw = new List<TeamReportWeekly>();
             if (tm != null)

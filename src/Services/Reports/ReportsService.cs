@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Firdaws.Core;
+using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 
@@ -23,7 +24,7 @@ namespace Tayra.Services
             var avg = (from trw in DbContext.SegmentReportsWeekly
                       where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
                       where trw.SegmentId == reportParams.SegmentId
-                      orderby trw.DateId ascending
+                      //orderby trw.DateId ascending
                       group trw by 1 into r
                       select new 
                       {
@@ -62,21 +63,21 @@ namespace Tayra.Services
                       select new ReportOverviewDTO.NodeDTO
                       {
                           Name = r.First().Team.Name,
-                          Data = new ReportOverviewDTO.NodeDTO.DataDTO[]
+                          Metrics = new ReportOverviewDTO.NodeDTO.MetricDTO[]
                           {
-                              new ReportOverviewDTO.NodeDTO.DataDTO
+                              new ReportOverviewDTO.NodeDTO.MetricDTO
                               {
-                                  MetricId = MetricTypes.OImpact,
+                                  Id = MetricTypes.OImpact,
                                   Value = r.Average(a => a.OImpactAverage)
                               },
-                              new ReportOverviewDTO.NodeDTO.DataDTO
+                              new ReportOverviewDTO.NodeDTO.MetricDTO
                               {
-                                  MetricId = MetricTypes.Speed,
+                                  Id = MetricTypes.Speed,
                                   Value = r.Average(a => a.SpeedAverage)
                               },
-                              new ReportOverviewDTO.NodeDTO.DataDTO
+                              new ReportOverviewDTO.NodeDTO.MetricDTO
                               {
-                                  MetricId = MetricTypes.Heat,
+                                  Id = MetricTypes.Heat,
                                   Value = r.Average(a => a.HeatAverageTotal)
                               }
                           }
@@ -96,8 +97,8 @@ namespace Tayra.Services
                       {
                           trw.TeamId,
                           trw.DateId,
-                          MinutesSpentAverage = trw.TasksCompletionTimeChange / trw.TasksCompletedChange
-                      }).ToList();
+                          MinutesSpentAverage = trw.TasksCompletedChange != 0 ? trw.TasksCompletionTimeChange / trw.TasksCompletedChange : 0
+                      }).ToArray();
 
             if(wr == null)
             {
@@ -106,7 +107,7 @@ namespace Tayra.Services
 
             var startDateId = wr.First().DateId;
             var endDateId = wr.Last().DateId;
-            var weeks = ((endDateId - startDateId) / 7) + 1;
+            var weeks = wr.Length; //((endDateId - startDateId) / 7) + 1;
             return new ReportDeliverySegmentMetricsDTO
             {
                 StartDateId = startDateId,
@@ -123,7 +124,7 @@ namespace Tayra.Services
         {
             var tm = (from trd in DbContext.TeamReportsWeekly
                       where trd.DateId >= reportParams.From && trd.DateId <= reportParams.To
-                      where trd.SegmentId == reportParams.SegmentId
+                      where trd.TeamId == teamId
                       group trd by 1 into g
                       select new
                       {
@@ -134,17 +135,17 @@ namespace Tayra.Services
 
             var ms = (from trd in DbContext.TeamReportsDaily
                       where trd.DateId >= reportParams.From && trd.DateId <= reportParams.To
-                      where trd.SegmentId == reportParams.SegmentId
+                      where trd.TeamId == teamId
                       orderby trd.DateId ascending
                       select new
                       {
                           DateId = trd.DateId,
-                          MinutesSpentAverage = trd.TasksCompletionTimeChange / trd.TasksCompletedChange
+                          MinutesSpentAverage = trd.TasksCompletedChange != 0 ? trd.TasksCompletionTimeChange / trd.TasksCompletedChange : 0
                       }).ToArray();
 
             var tasks = (from trd in DbContext.Tasks
                          where trd.LastModifiedDateId >= reportParams.From && trd.LastModifiedDateId <= reportParams.To
-                         where trd.SegmentId == reportParams.SegmentId
+                         where trd.TeamId == teamId
                          select new
                          {
                              DateId = trd.LastModifiedDateId,
@@ -206,7 +207,7 @@ namespace Tayra.Services
         public ReportStatisticsTeamMetricsDTO GetStatisticsTeamMetricsReport(int teamId, ReportParams reportParams)
         {
             //TODO: make this secure
-            var profileIds = DbContext.TeamMembers.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
+            var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
 
             var ms = (from prw in DbContext.ProfileReportsWeekly
                       where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To
@@ -220,13 +221,12 @@ namespace Tayra.Services
                           Avatar = pr.First().Profile.Avatar,
                           Metrics = new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO[]
                           {
-
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.OImpact, Average = pr.Average(x => x.OImpactAverage) },
-                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.OImpact, Average = pr.Average(x => x.SpeedTotalAverage) },
-                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.OImpact, Average = pr.Average(x => x.Heat) },
-                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.OImpact, Average = pr.Average(x => x.ComplexityTotalAverage) },
-                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.OImpact, Average = pr.Average(x => x.AssistsTotalAverage) },
-                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.OImpact, Average = pr.Average(x => x.TasksCompletedTotalAverage) },
+                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Speed, Average = pr.Average(x => x.SpeedTotalAverage) },
+                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Heat, Average = pr.Average(x => x.Heat) },
+                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Complexity, Average = pr.Average(x => x.ComplexityChange) },
+                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Assist, Average = pr.Average(x => x.AssistsChange) },
+                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.TaskCompletion, Average = pr.Average(x => x.TasksCompletedChange) },
                           }
                       }).ToArray();
 
@@ -234,6 +234,177 @@ namespace Tayra.Services
             {
                 Members = ms
             };
+        }
+
+        public ReportTokensSegmentMetricsDTO GetTokensSegmentMetricsReport(ReportParams reportParams)
+        {
+            var tm = (from trd in DbContext.SegmentReportsWeekly
+                      where trd.DateId >= reportParams.From && trd.DateId <= reportParams.To
+                      where trd.SegmentId == reportParams.SegmentId
+                      group trd by 1 into g
+                      select new
+                      {
+                          TokensEarnedAverage = g.Average(x => x.CompanyTokensEarnedChange),
+                          TokensSpentAverage = g.Average(x => x.CompanyTokensSpentChange)
+                      }).FirstOrDefault();
+
+
+            var ms = (from trd in DbContext.SegmentReportsDaily
+                      where trd.DateId >= reportParams.From && trd.DateId <= reportParams.To
+                      where trd.SegmentId == reportParams.SegmentId
+                      orderby trd.DateId ascending
+                      select new
+                      {
+                          DateId = trd.DateId,
+                          Earning = trd.CompanyTokensEarnedChange
+                      }).ToArray();
+
+
+            return new ReportTokensSegmentMetricsDTO
+            {
+                StartDateId = ms.First().DateId,
+                EndDateId = ms.Last().DateId,
+                TokensEarnedAverage = tm.TokensEarnedAverage,
+                TokensSpentAverage = tm.TokensSpentAverage,
+                Earnings = ms.Select(x => x.Earning).ToArray()
+            };
+        }
+
+        public ReportTokensTeamMetricsDTO GetTokensTeamMetricsReport(ReportAggregationMethods aggrType, ReportTimeIntervals timeInterval, ReportParams reportParams)
+        {
+            int i = GetTimeIntervalModifier(timeInterval);
+
+            var teamQ = from trw in DbContext.TeamReportsWeekly
+                        where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
+                        && trw.MembersCountTotal > 0
+                        where trw.SegmentId == reportParams.SegmentId
+                        group trw by trw.TeamId;
+
+            var dataQ = from trd in DbContext.SegmentReportsWeekly
+                        where trd.DateId >= reportParams.From && trd.DateId <= reportParams.To
+                        where trd.SegmentId == reportParams.SegmentId
+                        group trd by trd.DateId / i;
+
+            ReportTokensTeamMetricsDTO.TeamDTO[] teamsSummary = null;
+            ReportTokensTeamMetricsDTO.DataDTO[] teamsData = null;
+            if (aggrType == ReportAggregationMethods.Average)
+            {
+                teamsSummary = teamQ.Select(g => new ReportTokensTeamMetricsDTO.TeamDTO
+                {
+                    TeamId = g.Key,
+                    TokensEarned = g.Average(x => x.CompanyTokensEarnedChange),
+                    TokensSpent = g.Average(x => x.CompanyTokensSpentChange)
+                }).ToArray();
+
+                teamsData = dataQ.Select(g => new ReportTokensTeamMetricsDTO.DataDTO
+                {
+                    DateId = g.Key * i + (i == 1 ? 0 : 1),
+                    Value = g.Average(x => x.CompanyTokensEarnedChange)
+                }).ToArray();
+            }
+            else if (aggrType == ReportAggregationMethods.Sum)
+            {
+                teamsSummary = teamQ.Select(g => new ReportTokensTeamMetricsDTO.TeamDTO
+                {
+                    TeamId = g.Key,
+                    TokensEarned = g.Sum(x => x.CompanyTokensEarnedChange),
+                    TokensSpent = g.Sum(x => x.CompanyTokensSpentChange)
+                }).ToArray();
+
+                teamsData = dataQ.Select(g => new ReportTokensTeamMetricsDTO.DataDTO
+                {
+                    DateId = g.Key * i + (i == 1 ? 0 : 1),
+                    Value = g.Sum(x => x.CompanyTokensEarnedChange)
+                }).ToArray();
+            }
+
+            return new ReportTokensTeamMetricsDTO
+            {
+                Teams = teamsSummary,
+                Data = teamsData
+            };
+        }
+
+        public ReportItemsSegmentMetricsDTO GetItemsSegmentMetricsReport(ReportParams reportParams)
+        {
+            var stats = (from trw in DbContext.SegmentReportsWeekly
+                         where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
+                         where trw.SegmentId == reportParams.SegmentId
+                         group trw by 1 into g
+                         select new
+                         {
+                             Created = g.Sum(x => x.ItemsCreatedChange),
+                             Gifted = g.Sum(x => x.ItemsGiftedChange),
+                             Dissed = g.Sum(x => x.ItemsDisenchantedChange)
+                         }).FirstOrDefault();
+
+            var wr = (from trw in DbContext.SegmentReportsWeekly
+                      where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
+                      where trw.SegmentId == reportParams.SegmentId
+                      orderby trw.DateId ascending
+                      select new
+                      {
+                          DateId = trw.DateId,
+                          Bought = trw.ItemsBoughtChange,
+                          BoughtAvg = trw.ItemsBoughtChange / trw.MembersCountTotal
+                      }).ToList();
+
+            return new ReportItemsSegmentMetricsDTO
+            {
+                StartDateId = wr.First().DateId,
+                EndDateId = wr.Last().DateId,
+
+                ItemsCreated = stats.Created,
+                ItemsGifted = stats.Gifted,
+                ItemsDisenchanted = stats.Dissed,
+                Purchases = wr.Select(x => new ReportItemsSegmentMetricsDTO.PurchasesDTO
+                {
+                    Total = x.Bought,
+                    Average = x.BoughtAvg
+                }).ToArray()
+            };
+        }
+
+        public ReportItemsTeamMetricsDTO GetItemTeamMetricsReport(int teamId, ReportParams reportParams)
+        {
+            //TODO: make this secure
+            var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
+
+            var ms = (from prw in DbContext.ProfileReportsWeekly
+                      where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To
+                      where prw.ProfileRole == ProfileRoles.Member && profileIds.Contains(prw.ProfileId)
+                      orderby prw.DateId ascending
+                      group prw by prw.ProfileId into pr
+                      select new ReportItemsTeamMetricsDTO.MemberDTO
+                      {
+                          ProfileId = pr.Key,
+                          Name = pr.First().Profile.FirstName + " " + pr.First().Profile.LastName,
+                          InventoryValue = pr.Last().InventoryValueTotal,
+                          InventoryCount = pr.Last().InventoryCountTotal,
+                          DisenchantCount = pr.Sum(x => x.ItemsDisenchantedChange),
+                          GiftedCount = pr.Sum(x => x.ItemsDisenchantedChange)
+                      }).ToArray();
+
+            return new ReportItemsTeamMetricsDTO
+            {
+                InventoryValueAverage = ms.Sum(x => x.InventoryValue) / ms.Count(),
+                Members = ms
+            };
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static int GetTimeIntervalModifier(ReportTimeIntervals i)
+        {
+            switch(i)
+            {
+                case ReportTimeIntervals.Month:
+                    return 100;
+
+                default: return 1;
+            }
         }
 
         #endregion

@@ -26,39 +26,51 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("delivery/segmentMetrics")]
-        public ActionResult<ReportOverviewDTO> GetDeliverySegmentMetrics([FromQuery] ReportParams reportParams)
+        public ActionResult<ReportDeliverySegmentMetricsDTO> GetDeliverySegmentMetrics([FromQuery] ReportParams reportParams)
         {
             return Ok(ReportsService.GetDeliverySegmentMetricsReport(reportParams));
         }
 
         [HttpGet("delivery/teamMetrics")]
-        public ActionResult<ReportOverviewDTO> GetDeliverySegmentMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
+        public ActionResult<ReportDeliveryTeamMetricsDTO> GetDeliveryTeamMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
         {
             return Ok(ReportsService.GetDeliveryTeamMetricsReport(teamId, reportParams));
         }
 
         [HttpGet("statistics/segmentMetrics")]
-        public ActionResult<ReportOverviewDTO> GetStatisticsSegmentMetrics([FromQuery] ReportParams reportParams)
+        public ActionResult<ReportStatisticsSegmentMetricsDTO> GetStatisticsSegmentMetrics([FromQuery] ReportParams reportParams)
         {
             return Ok(ReportsService.GetStatisticsSegmentMetricsReport(reportParams));
         }
 
         [HttpGet("statistics/teamMetrics")]
-        public ActionResult<ReportOverviewDTO> GetStatisticsSegmentMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
+        public ActionResult<ReportStatisticsTeamMetricsDTO> GetStatisticsSegmentMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
         {
             return Ok(ReportsService.GetStatisticsTeamMetricsReport(teamId, reportParams));
         }
 
         [HttpGet("tokens/segmentMetrics")]
-        public ActionResult<ReportOverviewDTO> GetTokensSegmentMetrics([FromQuery] ReportParams reportParams)
+        public ActionResult<ReportTokensSegmentMetricsDTO> GetTokensSegmentMetrics([FromQuery] ReportParams reportParams)
         {
             return Ok(ReportsService.GetTokensSegmentMetricsReport(reportParams));
         }
 
         [HttpGet("tokens/teamMetrics")]
-        public ActionResult<ReportOverviewDTO> GetTokensTeamMetrics([FromQuery] ReportParams reportParams)
+        public ActionResult<ReportTokensTeamMetricsDTO> GetTokensTeamMetrics([FromQuery] ReportParams reportParams)
         {
             return Ok(ReportsService.GetTokensTeamMetricsReport(ReportAggregationMethods.Average, ReportTimeIntervals.Month, reportParams));
+        }
+
+        [HttpGet("items/segmentMetrics")]
+        public ActionResult<ReportItemsSegmentMetricsDTO> GetItemsSegmentMetrics([FromQuery] ReportParams reportParams)
+        {
+            return Ok(ReportsService.GetItemsSegmentMetricsReport(reportParams));
+        }
+
+        [HttpGet("items/teamMetrics")]
+        public ActionResult<ReportItemsTeamMetricsDTO> GetItemsTeamMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
+        {
+            return Ok(ReportsService.GetItemTeamMetricsReport(teamId, reportParams));
         }
 
         // [HttpGet("segmentPerformance")]

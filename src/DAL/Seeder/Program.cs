@@ -14,7 +14,7 @@ namespace Tayra.Models.Seeder
             var shardMapProvider = new ShardMapProvider(config);
 
             //Seeder.SeedAll(shardMapProvider, config);
-            //Seeder.Seed(shardMapProvider, "localhost:5001");
+            //Seeder.Seed(shardMapProvider, "tajra");
             Console.WriteLine("Seed finished!");
         }
 

@@ -51,11 +51,11 @@ namespace Tayra.Services
                 IsPrimary = true,
                 Identity = identity
             });
-
+            
             CatalogDb.Add(new TenantIdentity
             {
                 Identity = identity,
-                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(TenantUtilities.GenerateShardingKey(dto.TenantHost))
+                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(DbContext.CurrentTenantId)
             });
 
             //get identity Id
@@ -149,22 +149,24 @@ namespace Tayra.Services
 
             if (invitation.SegmentId.HasValue)
             {
-                
-                
-                DbContext.Add(new TeamMember
+                DbContext.Add(new ProfileAssignment
                 {
                     Profile = profile,
-                    TeamId = invitation.TeamId.Value,
+                    SegmentId = invitation.SegmentId.Value,
+                    TeamId = invitation.TeamId,
                 });
             }
-
-            
 
             DbContext.SaveChanges();
         }
 
         public void CreateInvitation(int profileId, string host, IdentityInviteDTO dto)
         {
+            if(dto.TeamId.HasValue && !dto.SegmentId.HasValue)
+            {
+                throw new FirdawsSecurityException("If teamId is sent, you must also send segmentId");
+            }
+
             var invitation = new Invitation
             {
                 Code = Guid.NewGuid(),
@@ -231,9 +233,9 @@ namespace Tayra.Services
         {
             IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
 
-            if (gridParams.SegmentId != null)
+            if (gridParams.SegmentId.HasValue)
             {
-                var profileIds = DbContext.TeamMembers.Where(x => x.Team.SegmentId == gridParams.SegmentId).Select(x => x.ProfileId).ToArray();
+                var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == gridParams.SegmentId).Select(x => x.ProfileId).ToArray();
                 scope = scope.Where(x => profileIds.Contains(x.Id)); //can be optimized, use 2 different but single query
             }
 
@@ -241,6 +243,7 @@ namespace Tayra.Services
                                                       select new IdentityManageGridDTO
                                                       {
                                                           ProfileId = p.Id,
+                                                          Username = p.Username,
                                                           FirstName = p.FirstName,
                                                           LastName = p.LastName,
                                                           Avatar = p.Avatar,
@@ -260,14 +263,14 @@ namespace Tayra.Services
 
         public IdentityManageAssignsDTO GetIdentityManageAssignsData(int[] segmentIds, int memberProfileId)
         {
-            var memberTeamIds = (from t in DbContext.TeamMembers
-                               where t.ProfileId == memberProfileId
+            var memberTeamIds = (from a in DbContext.ProfileAssignments
+                               where a.ProfileId == memberProfileId
                                select new IdentityManageAssignsDTO.CurrentAssignDTO
                                {
-                                   SegmentId = t.Team.SegmentId,
-                                   SegmentName = t.Team.Segment.Name,
-                                   TeamId = t.Team.Id,
-                                   TeamName = t.Team.Name
+                                   SegmentId = a.SegmentId,
+                                   SegmentName = a.Segment.Name,
+                                   TeamId = a.TeamId,
+                                   TeamName = a.Team.Name
                                }).ToArray();
 
             var allSegments = (from s in DbContext.Segments

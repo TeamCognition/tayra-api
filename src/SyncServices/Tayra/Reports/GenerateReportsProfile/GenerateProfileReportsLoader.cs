@@ -96,13 +96,16 @@ namespace Tayra.SyncServices.Tayra
                 throw new Exception("COMPANY TOKEN NOT FOUND");
 
             var tokens = (from tt in organizationDb.TokenTransactions
+                          where tt.TokenId == companyTokenId
                           group tt by tt.ProfileId into total
                           let change = total.Where(x => x.Created.Date == fromDay.Date)
                           select new
                           {
                               ProfileId = total.Key,
-                              CompanyTokens = change.Where(x => x.TokenId == companyTokenId).Sum(x => x.Value),
-                              CompanyTokensTotal = total.Where(x => x.TokenId == companyTokenId).Sum(x => x.Value)
+                              CompanyTokensEarned = change.Where(x => x.Value > 0).Sum(x => x.Value),
+                              CompanyTokensEarnedTotal = total.Where(x => x.Value > 0).Sum(x => x.Value),
+                              CompanyTokensSpent = change.Where(x => x.Value < 0).Sum(x => x.Value),
+                              CompanyTokensSpentTotal = total.Where(x => x.Value < 0).Sum(x => x.Value)
                           }).ToList();
 
             var oneUpsGiven = (from u in organizationDb.ProfileOneUps
@@ -123,11 +126,60 @@ namespace Tayra.SyncServices.Tayra
                                   select new
                                   {
                                       ProfileId = total.Key,
-
                                       Count = change.Count(),
                                       CountTotal = total.Count()
-                                  })
-                                    .ToList();
+                                  }).ToList();
+
+            var itemsCreated = (from i in organizationDb.Items
+                                group i by i.CreatedBy into total
+                                let change = total.Where(x => x.Created.Date == DateHelper2.ParseDate(dateId))
+                                select new
+                                {
+                                    ProfileId = total.Key,
+                                    Count = change.Count(),
+                                    CountTotal = total.Count()
+                                }).ToList();
+
+
+            var itemsDissed = (from i in organizationDb.ItemDisenchants
+                               group i by i.ProfileId into total
+                               let change = total.Where(x => x.Created.Date == DateHelper2.ParseDate(dateId))
+                               select new
+                               {
+                                   ProfileId = total.Key,
+                                   Count = change.Count(),
+                                   CountTotal = total.Count()
+                               }).ToList();
+
+            var itemsGifted = (from i in organizationDb.ItemGifts
+                               group i by i.SenderId into total
+                               let change = total.Where(x => x.Created.Date == DateHelper2.ParseDate(dateId))
+                               select new
+                               {
+                                   ProfileId = total.Key,
+                                   Count = change.Count(),
+                                   CountTotal = total.Count()
+                               }).ToList();
+
+            var shopPurchases = (from sp in organizationDb.ShopPurchases
+                                where sp.Status == ShopPurchaseStatuses.Fulfilled
+                                group sp by sp.ProfileId into total
+                                let change = total.Where(x => x.Created.Date == DateHelper2.ParseDate(dateId))
+                                select new
+                                {
+                                    ProfileId = total.Key,
+                                    Count = change.Count(),
+                                    CountTotal = total.Count()
+                                }).ToList();
+
+            var inventory = (from pinv in organizationDb.ProfileInventoryItems
+                                  group pinv by pinv.ProfileId into total
+                                  select new
+                                  {
+                                      ProfileId = total.Key,
+                                      TotalCount = total.Count(),
+                                      TotalValue = total.Sum(x => x.Item.WorthValue)
+                                  }).ToList();
 
             var profiles = organizationDb.Profiles.Select(x => new { x.Id, x.Role }).ToList();
             foreach (var p in profiles)
@@ -136,6 +188,11 @@ namespace Tayra.SyncServices.Tayra
                 var t = tokens.FirstOrDefault(x => x.ProfileId == p.Id);
                 var upsG = oneUpsGiven.FirstOrDefault(x => x.ProfileId == p.Id);
                 var upsR = oneUpsReceived.FirstOrDefault(x => x.ProfileId == p.Id);
+                var sp = shopPurchases.FirstOrDefault(x => x.ProfileId == p.Id);
+                var iGifted = itemsGifted.FirstOrDefault(x => x.ProfileId == p.Id);
+                var iCreated = itemsCreated.FirstOrDefault(x => x.ProfileId == p.Id);
+                var iDissed = itemsDissed.FirstOrDefault(x => x.ProfileId == p.Id);
+                var inv = inventory.FirstOrDefault(x => x.ProfileId == p.Id);
                 var iterationCount = 1;
 
                 reportsToInsert.Add(new ProfileReportDaily
@@ -149,8 +206,11 @@ namespace Tayra.SyncServices.Tayra
                     ComplexityChange = ts?.Complexity ?? 0,
                     ComplexityTotal = ts?.ComplexityTotal ?? 0,
 
-                    CompanyTokensChange = (float)(t?.CompanyTokens ?? 0),
-                    CompanyTokensTotal = (float)(t?.CompanyTokensTotal ?? 0),
+                    CompanyTokensEarnedChange = (float)(t?.CompanyTokensEarned ?? 0),
+                    CompanyTokensEarnedTotal = (float)(t?.CompanyTokensEarnedTotal ?? 0),
+
+                    CompanyTokensSpentChange = (float)(t?.CompanyTokensSpent ?? 0),
+                    CompanyTokensSpentTotal = (float)(t?.CompanyTokensSpentTotal ?? 0),
 
                     EffortScoreChange = ts?.EffortScore ?? 0f,
                     EffortScoreTotal = ts?.EffortScoreTotal ?? 0f,
@@ -184,6 +244,21 @@ namespace Tayra.SyncServices.Tayra
                     
                     TasksCompletionTimeChange = ts?.MinutesSpent ?? 0,
                     TasksCompletionTimeTotal = ts?.MinutesSpentTotal ?? 0,
+
+                    InventoryCountTotal = inv?.TotalCount ?? 0,
+                    InventoryValueTotal = inv?.TotalValue ?? 0,
+
+                    ItemsBoughtChange = (sp?.Count) ?? 0,
+                    ItemsBoughtTotal = (sp?.CountTotal) ?? 0,
+
+                    ItemsCreatedChange = (iCreated?.Count) ?? 0,
+                    ItemsCreatedTotal = (iCreated?.CountTotal) ?? 0,
+
+                    ItemsDisenchantedChange = (iDissed?.Count) ?? 0,
+                    ItemsDisenchantedTotal = (iDissed?.CountTotal) ?? 0,
+
+                    ItemsGiftedChange = (iGifted?.Count) ?? 0,
+                    ItemsGiftedTotal = (iGifted?.CountTotal) ?? 0,
                 });
             }
 
@@ -236,8 +311,11 @@ namespace Tayra.SyncServices.Tayra
                                    ComplexityChange = last1.Sum(x => x.ComplexityChange),
                                    ComplexityTotalAverage = (float)dg.Sum(c => c.ComplexityChange) / ic,
 
-                                   CompanyTokensChange = last1.Sum(x => x.CompanyTokensChange),
-                                   CompanyTokensTotalAverage = dg.Sum(c => c.CompanyTokensChange) / ic,
+                                   CompanyTokensEarnedChange = last1.Sum(x => x.CompanyTokensEarnedChange),
+                                   CompanyTokensEarnedTotalAverage = dg.Sum(c => c.CompanyTokensEarnedChange) / ic,
+
+                                   CompanyTokensSpentChange = last1.Sum(x => x.CompanyTokensSpentChange),
+                                   CompanyTokensSpentTotalAverage = dg.Sum(c => c.CompanyTokensSpentChange) / ic,
 
                                    EffortScoreChange = last1.Sum(x => x.EffortScoreChange),
                                    EffortScoreTotalAverage = dg.Sum(c => c.EffortScoreChange) / ic,
@@ -271,6 +349,14 @@ namespace Tayra.SyncServices.Tayra
 
                                    TasksCompletionTimeChange = last1.Sum(x => x.TasksCompletionTimeChange),
                                    TasksCompletionTimeAverage = dg.Sum(c => c.TasksCompletionTimeChange) / ic,
+
+                                   InventoryCountTotal = last1.OrderByDescending(x => x.DateId).Select(x => x.InventoryCountTotal).FirstOrDefault(),
+                                   InventoryValueTotal = last1.OrderByDescending(x => x.DateId).Select(x => x.InventoryValueTotal).FirstOrDefault(),
+
+                                   ItemsBoughtChange = last1.Sum(x => x.ItemsBoughtChange),
+                                   ItemsCreatedChange = last1.Sum(x => x.ItemsCreatedChange),
+                                   ItemsDisenchantedChange = last1.Sum(x => x.ItemsDisenchantedChange),
+                                   ItemsGiftedChange = last1.Sum(x => x.ItemsGiftedChange),
 
                                    OImpactAverage = (float)last4.Sum(x => x.ComplexityChange + x.TasksCompletedChange + x.AssistsChange) / icMax4,
                                    OImpactTotalAverage = (float)dg.Sum(x => x.ComplexityChange + x.TasksCompletedChange + x.AssistsChange) / ic,

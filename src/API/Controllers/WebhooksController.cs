@@ -72,8 +72,8 @@ namespace Tayra.API.Controllers
             }
 
             var assigneProfile = ProfilesService.GetByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
-            var teamMember = DbContext.TeamMembers.FirstOrDefault(x => x.ProfileId == assigneProfile.Id);
-            var currentSegmentId = teamMember != null ? DbContext.Teams.Where(x => x.Id == teamMember.TeamId).Select(x => x.SegmentId).FirstOrDefault() : (int?)null;
+            var profileAssignment = DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
+            var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (int?)null;
 
             var activeCompetitions = CompetitionsService.GetActiveCompetitions(assigneProfile.Id);
             var jiraBaseUrl = we.JiraIssue.Self.Substring(0, we.JiraIssue.Self.IndexOf('/', 10));
@@ -94,7 +94,7 @@ namespace Tayra.API.Controllers
                     Labels = fields.Labels,
                     AssigneeProfileId = assigneProfile.Id,
                     ReporterProfileId = 0,
-                    TeamId = teamMember?.TeamId,
+                    TeamId = profileAssignment?.TeamId,
                     SegmentId = currentSegmentId
                 });
 
@@ -197,7 +197,7 @@ namespace Tayra.API.Controllers
                 Labels = fields.Labels,
                 AssigneeProfileId = assigneProfile.Id,
                 ReporterProfileId = 0,
-                TeamId = teamMember?.TeamId,
+                TeamId = profileAssignment?.TeamId,
                 SegmentId = currentSegmentId
             });
 

@@ -1,6 +1,4 @@
-﻿using Tayra.Common;
-
-namespace Tayra.Services
+﻿namespace Tayra.Services
 {
     public class ReportDeliverySegmentMetricsDTO
     {

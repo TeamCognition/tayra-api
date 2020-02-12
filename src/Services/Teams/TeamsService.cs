@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Firdaws.Core;
 using Firdaws.DAL;
+using Microsoft.EntityFrameworkCore;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -66,7 +66,7 @@ namespace Tayra.Services
 
             team.EnsureNotNull(gridParams.TeamKey);
 
-            var scope = DbContext.TeamMembers
+            var scope = DbContext.ProfileAssignments
                 .Where(x => x.TeamId == team.Id);
 
             IQueryable<TeamMembersGridDTO> query = from t in scope
@@ -98,41 +98,29 @@ namespace Tayra.Services
             });
         }
 
-        public void Update(int segmentId, TeamUpdateDTO dto)
+        public void Update(int teamId, TeamUpdateDTO dto)
         {
-            var team = DbContext.Teams.FirstOrDefault(x => x.Key == dto.TeamKey);
+            var team = DbContext.Teams.FirstOrDefault(x => x.Id == teamId);
 
-            team.EnsureNotNull(dto.TeamKey);
+            team.EnsureNotNull(teamId);
 
-            team.SegmentId = dto.NewSegmentId ?? segmentId;
             team.Key = dto.Key.Trim();
             team.Name = dto.Name.Trim();
             team.AvatarColor = dto.AvatarColor;
         }
 
-        public void AddMembers(string teamKey, IList<TeamAddMemberDTO> dto)
-        {
-            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
-
-            team.EnsureNotNull(teamKey);
-
-            foreach (var m in dto)
-            {
-                DbContext.TeamMembers.Add(new TeamMember
-                {
-                    TeamId = team.Id,
-                    ProfileId = m.ProfileId,
-                });
-            }
-        }
-
         public void Archive(int profileId, string teamKey)
         {
-            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
+            var team = DbContext.Teams.Include(x => x.Members).FirstOrDefault(x => x.Key == teamKey);
 
             team.EnsureNotNull(team.Key);
 
             DbContext.Remove(team);
+
+            foreach (var m in team.Members) //is this needed?
+            {
+                DbContext.Remove(m);
+            }
         }
 
 

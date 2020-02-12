@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200211140747_BETA47")]
+    partial class BETA47
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1045,47 +1047,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.ToTable("Profiles");
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.ProfileAssignment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("CreatedBy");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int?>("LastModifiedBy");
-
-                    b.Property<int>("ProfileId");
-
-                    b.Property<int>("SegmentId");
-
-                    b.Property<int?>("TeamId");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasAlternateKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProfileId");
-
-                    b.HasIndex("SegmentId", "ProfileId");
-
-                    b.HasIndex("TeamId", "ProfileId");
-
-                    b.HasIndex("SegmentId", "TeamId", "ProfileId")
-                        .IsUnique()
-                        .HasFilter("[TeamId] IS NOT NULL");
-
-                    b.ToTable("ProfileAssignments");
-                });
-
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileExternalId", b =>
                 {
                     b.Property<int>("ProfileId");
@@ -2117,6 +2078,33 @@ namespace Tayra.Models.Organizations.Migrations
                     b.ToTable("Teams");
                 });
 
+            modelBuilder.Entity("Tayra.Models.Organizations.TeamMember", b =>
+                {
+                    b.Property<int>("TeamId");
+
+                    b.Property<int>("ProfileId");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<int>("CreatedBy");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.Property<int?>("LastModifiedBy");
+
+                    b.HasKey("TeamId", "ProfileId", "OrganizationId");
+
+                    b.HasAlternateKey("TeamId", "ProfileId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("TeamMembers");
+                });
+
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportDaily", b =>
                 {
                     b.Property<int>("DateId");
@@ -2955,32 +2943,6 @@ namespace Tayra.Models.Organizations.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.ProfileAssignment", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
-                        .WithMany("Teams")
-                        .HasForeignKey("ProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
-                        .WithMany("Members")
-                        .HasForeignKey("SegmentId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Team", "Team")
-                        .WithMany("Members")
-                        .HasForeignKey("TeamId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileExternalId", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Organization")
@@ -3329,6 +3291,26 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("Teams")
                         .HasForeignKey("SegmentId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.TeamMember", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
+                        .WithMany("Teams")
+                        .HasForeignKey("ProfileId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Tayra.Models.Organizations.Team", "Team")
+                        .WithMany("Members")
+                        .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
                 });

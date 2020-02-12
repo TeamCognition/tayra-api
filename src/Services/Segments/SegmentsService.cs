@@ -51,23 +51,18 @@ namespace Tayra.Services
 
             GridData<SegmentGridDTO> gridData = query.GetGridData(gridParams);
 
-            gridData.Records = gridData.Records.DistinctBy(x => x.SegmentId).ToList();
-
             return gridData;
         }
 
         public GridData<SegmentMemberGridDTO> GetSegmentMembersGridData(string segmentKey, SegmentMemberGridParams gridParams)
         {
-            var teamIds = DbContext.Segments
-                .Where(x => x.Key == segmentKey)
-                .Select(x => x.Teams.Select(y => y.Id))
-                .FirstOrDefault();
+            var segment = DbContext.Segments.Where(s => s.Key == segmentKey).FirstOrDefault();
 
-            teamIds.EnsureNotNull(segmentKey);
+            segment.EnsureNotNull(segmentKey);
 
             //var teamIds = segment.Teams.Select(x => x.TeamId).ToList(); //lazy load works?
 
-            IQueryable<SegmentMemberGridDTO> query = from s in DbContext.TeamMembers.Where(x => teamIds.Contains(x.TeamId))
+            IQueryable<SegmentMemberGridDTO> query = from s in DbContext.ProfileAssignments.Where(x => x.SegmentId == segment.Id)
                                                    select new SegmentMemberGridDTO
                                                    {
                                                        Name = s.Profile.FirstName + " " + s.Profile.LastName,
@@ -114,8 +109,8 @@ namespace Tayra.Services
                                     Name = s.Name,
                                     Key = s.Key,
                                     Avatar = s.Avatar,
-                                    TokensEarned = s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensTotal).FirstOrDefault(),
-                                    TokensSpent = s.ShopPurchases.Where(x => x.Status == ShopPurchaseStatuses.Fulfilled).Sum(x => x.Price),
+                                    TokensEarned = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensEarnedTotal).FirstOrDefault(), 2),
+                                    TokensSpent = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensSpentTotal).FirstOrDefault(), 2),
                                     ChallengesActive = s.Challenges.Count(x => x.Status == ChallengeStatuses.Active),
                                     ChallengesCompleted = s.Challenges.Count(x => x.Status == ChallengeStatuses.Ended),
                                     ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
@@ -126,40 +121,104 @@ namespace Tayra.Services
             return segmentDTO;
         }
 
+        public SegmentImpactPieChartDTO GetImpactPieChart(int segmentId)
+        {
+            var lastDateId = DbContext.TeamReportsWeekly.OrderByDescending(x => x.DateId).Select(x => x.DateId).FirstOrDefault();
+
+            if (lastDateId == 0)
+                return null;
+
+            var wr = (from trw in DbContext.TeamReportsWeekly
+                      where trw.SegmentId == segmentId
+                      && trw.DateId == lastDateId
+                      select new
+                      {
+                          TeamName = trw.Team.Name,
+                          OImpact = trw.OImpactAverage
+                      }).ToList();
+
+            if (wr == null || !wr.Any())
+            {
+                return null;
+            }
+
+            var impactSum = wr.Sum(x => x.OImpact);
+
+            return new SegmentImpactPieChartDTO
+            {
+                Teams = wr.Select(x => new SegmentImpactPieChartDTO.TeamDTO
+                {
+                    Name = x.TeamName,
+                    ImpactPercentage = x.OImpact / impactSum * 100
+                }).ToArray()
+            };
+        }
+
+        public SegmentImpactLineChartDTO GetImpactLineChart(int segmentId)
+        {
+            var wr = (from trw in DbContext.SegmentReportsWeekly
+                      where trw.SegmentId == segmentId
+                      orderby trw.DateId descending
+                      select new
+                      {
+                          DateId = trw.DateId,
+                          OImpact = trw.OImpactAverage
+                      }).Take(30).ToList();
+
+            if(wr == null || !wr.Any())
+            {
+                return null;
+            }
+
+            return new SegmentImpactLineChartDTO
+            {
+                StartDateId = wr.Last().DateId,
+                EndDateId = wr.First().DateId,
+                Averages = wr.Select(x => x.OImpact).Reverse().ToArray()
+            };
+        }
+
         public void AddMember(int segmentId, SegmentMemberAddRemoveDTO dto)
         {
-            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
+            var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId);
+            profile.EnsureNotNull(segmentId);
 
+            if(!SegmentRules.CanAddProfileToSegment(profile.Role, dto.TeamId))
+            {
+                throw new ApplicationException("If you are adding a member you must provide a teamId");
+            }
+
+            if(profile.Role == ProfileRoles.Member)
+            {
+                var team = DbContext.TeamsScopeOfSegment(segmentId).Where(x => x.Id == dto.TeamId.Value).FirstOrDefault();
+                team.EnsureNotNull(dto.TeamId);
+            }
+
+            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
             segment.EnsureNotNull(segmentId);
 
-            var teamScope = DbContext.Teams.Where(x => x.SegmentId == segment.Id);
-
-            var team = dto.TeamId.HasValue
-                ? teamScope.FirstOrDefault(x => x.Id == dto.TeamId.Value)
-                : teamScope.FirstOrDefault(x => x.Key == null);
-
-            team.EnsureNotNull(dto.TeamId);
-
-            DbContext.TeamMembers.Add(new TeamMember
+            DbContext.Add(new ProfileAssignment
             {
-                TeamId = team.Id,
-                ProfileId = dto.ProfileId
+                ProfileId = dto.ProfileId,
+                SegmentId = segment.Id,
+                TeamId = dto.TeamId
             });
         }
 
         public void RemoveMember(int segmentId, SegmentMemberAddRemoveDTO dto)
         {
-            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
+            var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId);
+            profile.EnsureNotNull(segmentId);
 
+            if (!SegmentRules.CanRemoveProfileToSegment(profile.Role, dto.TeamId))
+            {
+                throw new ApplicationException("If you are removing a member you must provide a teamId");
+            }
+
+            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
             segment.EnsureNotNull(segmentId);
 
-            var teamScope = DbContext.Teams.Where(x => x.SegmentId == segment.Id);
-
-            var team = dto.TeamId.HasValue
-                ? teamScope.FirstOrDefault(x => x.Id == dto.TeamId.Value)
-                : teamScope.FirstOrDefault(x => x.Key == null);
-
-            DbContext.Remove(DbContext.TeamMembers.FirstOrDefault(x => x.ProfileId == dto.ProfileId && x.TeamId == team.Id));
+            DbContext.Remove(DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == dto.ProfileId && x.TeamId == dto.TeamId));
         }
 
         public void Create(int profileId, SegmentCreateDTO dto)
@@ -183,10 +242,11 @@ namespace Tayra.Services
                 Key = null                
             }).Entity;
 
-            DbContext.Add(new TeamMember
+            DbContext.Add(new ProfileAssignment
             {
+                ProfileId = profileId,
+                SegmentId = segment.Id,
                 Team = team,
-                ProfileId = profileId
             });
         }
 
@@ -221,7 +281,7 @@ namespace Tayra.Services
 
         public void Archive(int segmentId)
         {
-            var segment = DbContext.Segments.Include(x => x.Teams).FirstOrDefault(x => x.Id == segmentId);
+            var segment = DbContext.Segments.Include(x => x.Teams).Include(x => x.Members).FirstOrDefault(x => x.Id == segmentId);
 
             segment.EnsureNotNull(segment.Key);
 
@@ -230,6 +290,11 @@ namespace Tayra.Services
             foreach(var t in segment.Teams) //is this needed?
             {
                 DbContext.Remove(t);
+            }
+
+            foreach (var m in segment.Members) //is this needed?
+            {
+                DbContext.Remove(m);
             }
         }
 

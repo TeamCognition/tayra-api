@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200212151808_BETA48")]
+    partial class BETA48
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1047,9 +1049,11 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileAssignment", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("SegmentId");
+
+                    b.Property<int?>("TeamId");
+
+                    b.Property<int>("ProfileId");
 
                     b.Property<int>("OrganizationId");
 
@@ -1061,15 +1065,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int?>("LastModifiedBy");
 
-                    b.Property<int>("ProfileId");
+                    b.HasKey("SegmentId", "TeamId", "ProfileId", "OrganizationId");
 
-                    b.Property<int>("SegmentId");
-
-                    b.Property<int?>("TeamId");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasAlternateKey("Id");
+                    b.HasAlternateKey("SegmentId", "TeamId", "ProfileId");
 
                     b.HasIndex("OrganizationId");
 
@@ -1078,10 +1076,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("SegmentId", "ProfileId");
 
                     b.HasIndex("TeamId", "ProfileId");
-
-                    b.HasIndex("SegmentId", "TeamId", "ProfileId")
-                        .IsUnique()
-                        .HasFilter("[TeamId] IS NOT NULL");
 
                     b.ToTable("ProfileAssignments");
                 });

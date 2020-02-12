@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
-using Tayra.Services;
 using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.Auth
@@ -68,14 +67,7 @@ namespace Tayra.Auth
                     return Task.FromResult(0);
                 }
 
-                var sAndtIds = orgContext.TeamMembers
-                    .Where(x => x.ProfileId == profile.Id)
-                    .Select(x => new
-                    {
-                        TeamId = x.Team.Id,
-                        SegmentId = x.Team.Segment.Id,
-                        TeamKey = x.Team.Key
-                    }).ToList();
+                (IQueryable<Segment> qs, IQueryable<Team> qt) = GetSegmentAndTeamQueries(orgContext, profile.Id, profile.Role);
 
                 var claimList = new List<Claim>
                 {
@@ -85,11 +77,11 @@ namespace Tayra.Auth
                     new Claim(TayraClaimTypes.Role, profile.Role.ToString()),
                 };
 
-                claimList.AddRange(sAndtIds.Select(x => x.SegmentId).Distinct().Select(sId => new Claim(TayraClaimTypes.Segment, sId.ToString())));
-                claimList.AddRange(sAndtIds/*.Where(x => x.TeamKey != null)*/.Select(tId => new Claim(TayraClaimTypes.Team, tId.TeamId.ToString())));
+                claimList.AddRange(qs.Select(s => new Claim(TayraClaimTypes.Segment, s.Id.ToString())));
+                claimList.AddRange(qt.Select(t => new Claim(TayraClaimTypes.Team, t.Id.ToString())));
 
                 context.IssuedClaims = claimList;
-                
+
                 try
                 {
                     orgContext.Add(new LoginLog
@@ -101,9 +93,9 @@ namespace Tayra.Auth
                     orgContext.SaveChanges();
                 }
                 catch (Exception) { }
-                
+
                 return Task.FromResult(0);
-            }        
+            }
         }
 
         /// <summary>
@@ -115,6 +107,30 @@ namespace Tayra.Auth
             context.IsActive = true;
 
             return Task.FromResult(0);
+        }
+
+        public static (IQueryable<Segment>, IQueryable<Team>) GetSegmentAndTeamQueries(OrganizationDbContext dbContext, int profileId, ProfileRoles role)
+        {
+            IQueryable<Segment> qs = dbContext.Segments;
+            IQueryable<Team> qt = dbContext.Teams;
+
+            if (role != ProfileRoles.Admin)
+            {
+                var segmentIds = dbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => x.SegmentId).Distinct().ToArray();
+                qs = qs.Where(x => segmentIds.Contains(x.Id));
+
+                if (role == ProfileRoles.Manager)
+                {
+                    qt = qt.Where(x => segmentIds.Contains(x.SegmentId));
+                }
+                else //is non-admin and non-manager. Is Member
+                {
+                    var teamIds = dbContext.ProfileAssignments.Where(x => x.ProfileId == profileId && x.TeamId.HasValue).Select(x => x.TeamId).ToArray();
+                    qt = qt.Where(x => teamIds.Contains(x.Id));
+                }
+            }
+
+            return (qs, qt);
         }
     }
 }

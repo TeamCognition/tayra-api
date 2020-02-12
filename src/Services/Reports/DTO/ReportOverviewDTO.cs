@@ -18,11 +18,11 @@ namespace Tayra.Services
         public class NodeDTO
         {
             public string Name { get; set; }
-            public IEnumerable<DataDTO> Data { get; set; }
+            public IEnumerable<MetricDTO> Metrics { get; set; }
 
-            public class DataDTO
+            public class MetricDTO
             {
-                public MetricTypes MetricId { get; set; }
+                public MetricTypes Id { get; set; }
                 public float Value { get; set; }
             }
         }

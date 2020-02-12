@@ -3,14 +3,18 @@ using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class TeamMember : ITimeStampedEntity, IUserStampedEntity
+    public class ProfileAssignment : ITimeStampedEntity, IUserStampedEntity
     {
-        //Composite Key
-        public int TeamId { get; set; }
-        public virtual Team Team { get; set; }
-
+        public int Id { get; set; }
+        
         public int ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
+
+        public int SegmentId { get; set; }
+        public virtual Segment Segment { get; set; }
+
+        public int? TeamId { get; set; }
+        public virtual Team Team { get; set; }
 
         #region ITimeAndIUser
 

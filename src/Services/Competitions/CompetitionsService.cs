@@ -52,9 +52,9 @@ namespace Tayra.Services
         public List<CompetitionViewCompetitorDTO> GetActiveCompetitions(int profileId)
         {
             return (from c in DbContext.Competitors
-                    let teams = (DbContext.TeamMembers.Where(x => x.ProfileId == profileId).Select(x => x.TeamId).ToList())
+                    let teamIds = (DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => x.TeamId).ToList())
                     where c.Competition.Status == CompetitionStatus.Started
-                    where c.ProfileId == profileId || (c.TeamId.HasValue && teams.Contains(c.TeamId.Value))
+                    where c.ProfileId == profileId || (c.TeamId.HasValue && teamIds.Contains(c.TeamId.Value))
 
                     select new CompetitionViewCompetitorDTO
                     {

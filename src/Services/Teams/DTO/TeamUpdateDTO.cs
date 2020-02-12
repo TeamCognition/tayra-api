@@ -1,8 +1,9 @@
 ﻿namespace Tayra.Services
 {
-    public class TeamUpdateDTO : TeamCreateDTO
+    public class TeamUpdateDTO
     {
-        public string TeamKey { get; set; }
-        public int? NewSegmentId { get; set; }
+        public string Key { get; set; }
+        public string Name { get; set; }
+        public string AvatarColor { get; set; }
     }
 }

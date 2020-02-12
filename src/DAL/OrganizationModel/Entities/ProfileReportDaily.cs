@@ -20,8 +20,11 @@ namespace Tayra.Models.Organizations
         public int ComplexityChange { get; set; }
         public int ComplexityTotal { get; set; }
 
-        public float CompanyTokensChange { get; set; }
-        public float CompanyTokensTotal { get; set; }
+        public float CompanyTokensEarnedChange { get; set; }
+        public float CompanyTokensEarnedTotal { get; set; }
+
+        public float CompanyTokensSpentChange { get; set; }
+        public float CompanyTokensSpentTotal { get; set; }
 
         public float EffortScoreChange { get; set; }
         public float EffortScoreTotal { get; set; }
@@ -55,6 +58,21 @@ namespace Tayra.Models.Organizations
 
         public int TasksCompletionTimeChange { get; set; }
         public int TasksCompletionTimeTotal { get; set; }
+
+        public int InventoryCountTotal { get; set; }
+        public float InventoryValueTotal { get; set; }
+
+        public int ItemsBoughtChange { get; set; }
+        public int ItemsBoughtTotal { get; set; }
+
+        public int ItemsGiftedChange { get; set; }
+        public int ItemsGiftedTotal { get; set; }
+
+        public int ItemsDisenchantedChange { get; set; }
+        public int ItemsDisenchantedTotal { get; set; }
+
+        public int ItemsCreatedChange { get; set; }
+        public int ItemsCreatedTotal { get; set; }
 
         #region ITimeStampedEntity
 

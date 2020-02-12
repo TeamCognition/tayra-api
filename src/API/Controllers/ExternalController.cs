@@ -17,18 +17,15 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public ExternalController(CatalogDbContext catalogDb, IServiceProvider serviceProvider, IConnectorResolver connectorResolver, OrganizationDbContext db) : base(serviceProvider)
+        public ExternalController(CatalogDbContext catalogDb, IServiceProvider serviceProvider, IConnectorResolver connectorResolver) : base(serviceProvider)
         {
             ConnectorResolver = connectorResolver;
-            _db = db;
             _catalogContext = catalogDb;
         }
 
         #endregion
 
         public IConnectorResolver ConnectorResolver { get; }
-
-        private OrganizationDbContext _db;
 
         private CatalogDbContext _catalogContext { get; }
 
@@ -37,6 +34,8 @@ namespace Tayra.API.Controllers
         [HttpGet, Route("callback/{type?}")]
         public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
         {
+            Request.QueryString = Request.QueryString.Add("tenant", "localhost:3000");
+
             var stateData = Cipher.Decrypt(state).Split('|');
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try

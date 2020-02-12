@@ -19,8 +19,11 @@ namespace Tayra.Models.Organizations
         public int ComplexityChange { get; set; }
         public int ComplexityTotal { get; set; }
 
-        public float CompanyTokensChange { get; set; }
-        public float CompanyTokensTotal { get; set; }
+        public float CompanyTokensEarnedChange { get; set; }
+        public float CompanyTokensEarnedTotal { get; set; }
+
+        public float CompanyTokensSpentChange { get; set; }
+        public float CompanyTokensSpentTotal { get; set; }
 
         public float EffortScoreChange { get; set; }
         public float EffortScoreTotal { get; set; }

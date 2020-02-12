@@ -80,6 +80,7 @@ namespace Tayra.Models.Organizations
         public DbSet<LoginLog> LoginLogs { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Profile> Profiles { get; set; }
+        public DbSet<ProfileAssignment> ProfileAssignments { get; set; }
         public DbSet<ProfileExternalId> ProfileExternalIds { get; set; }
         public DbSet<ProfileInventoryItem> ProfileInventoryItems { get; set; }
         public DbSet<ProfileLog> ProfileLogs { get; set; }
@@ -99,7 +100,6 @@ namespace Tayra.Models.Organizations
         public DbSet<TaskCategory> TaskCategories { get; set; }
         public DbSet<TaskLog> TaskLogs { get; set; }
         public DbSet<Team> Teams { get; set; }
-        public DbSet<TeamMember> TeamMembers { get; set; }
         public DbSet<TeamReportDaily> TeamReportsDaily { get; set; }
         public DbSet<TeamReportWeekly> TeamReportsWeekly { get; set; }
         public DbSet<Token> Tokens { get; set; }
@@ -206,6 +206,14 @@ namespace Tayra.Models.Organizations
                 entity.HasIndex(x => x.IdentityId);
                 entity.HasIndex(x => x.Username).IsUnique();
             });
+
+            modelBuilder.Entity<ProfileAssignment>(entity =>
+            {
+                entity.HasIndex(x => new { x.SegmentId, x.TeamId, x.ProfileId }).IsUnique();
+                entity.HasIndex(x => new { x.SegmentId, x.ProfileId });
+                entity.HasIndex(x => new { x.TeamId, x.ProfileId });
+            });
+
             modelBuilder.Entity<ProfileExternalId>(entity =>
             {
                 entity.HasKey(x => new { x.ProfileId, x.SegmentId, x.IntegrationType });
@@ -268,11 +276,6 @@ namespace Tayra.Models.Organizations
             modelBuilder.Entity<Team>(entity =>
             {
                 entity.HasIndex(nameof(Team.SegmentId), nameof(Team.Key), ArchivedAtProp).IsUnique();
-            });
-
-            modelBuilder.Entity<TeamMember>(entity =>
-            {
-                entity.HasKey(x => new { x.TeamId, x.ProfileId });
             });
 
             modelBuilder.Entity<TeamReportDaily>(entity =>
@@ -364,7 +367,7 @@ namespace Tayra.Models.Organizations
 
                 return options;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new FirdawsSecurityException(e.Message, "OrganizationDbcontext.CreateDDRConnection");
             }

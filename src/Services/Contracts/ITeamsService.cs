@@ -9,8 +9,7 @@ namespace Tayra.Services
         GridData<TeamViewGridDTO> GetViewGridData(int[] teamIds, TeamViewGridParams gridParams);
         GridData<TeamMembersGridDTO> GetTeamMembersGridData(TeamMembersGridParams gridParams);
         void Create(int segmentId, TeamCreateDTO dto);
-        void Update(int segmentId, TeamUpdateDTO dto);
-        void AddMembers(string teamKey, IList<TeamAddMemberDTO> dto);
+        void Update(int teamId, TeamUpdateDTO dto);
         void Archive(int profileId, string teamKey);
     }
 }

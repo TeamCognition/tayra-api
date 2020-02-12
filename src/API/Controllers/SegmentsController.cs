@@ -48,7 +48,19 @@ namespace Tayra.API.Controllers
         [HttpGet]
         public ActionResult<SegmentViewDTO> GetSegment([FromQuery] string segmentKey)
         {
-            return Ok(SegmentsService.GetSegmnetViewDTO(segmentKey));
+            return SegmentsService.GetSegmnetViewDTO(segmentKey);
+        }
+
+        [HttpGet("chart/pieimpact")]
+        public ActionResult<SegmentImpactPieChartDTO> GetSegmentImpactPieChart([FromQuery] int segmentId)
+        {
+            return SegmentsService.GetImpactPieChart(segmentId);
+        }
+
+        [HttpGet("chart/lineimpact")]
+        public ActionResult<SegmentImpactLineChartDTO> GetSegmentImpactLineChart([FromQuery] int segmentId)
+        {
+            return SegmentsService.GetImpactLineChart(segmentId);
         }
 
         [HttpPost]
