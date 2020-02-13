@@ -224,9 +224,16 @@ namespace Tayra.Services
                 invitation.Status = InvitationStatus.Viewed;
             }
 
-            DbContext.SaveChanges();
-
             return invitation;
+        }
+
+        public void DeleteInvitation(int invitationId)
+        {
+            var invitation = DbContext.Invitations.Where(x => x.Id == invitationId).FirstOrDefault();
+
+            invitation.EnsureNotNull(invitationId);
+
+            DbContext.Remove(invitation);
         }
 
         public GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, IdentityManageGridParams gridParams)
@@ -278,7 +285,7 @@ namespace Tayra.Services
                                 select new IdentityManageAssignsDTO.AvailableAssignDTO
                                 {
                                     SegmentId = s.Id,
-                                    Teams = s.Teams.Where(x => !memberTeamIds.Select(c => c.TeamId).Contains(x.Id)).Select(x => new IdentityManageAssignsDTO.AvailableAssignDTO.TeamDTO{ TeamId = x.Id, Name = x.Name }).ToArray()
+                                    Teams = s.Teams.Where(x => !memberTeamIds.Select(c => c.TeamId).Contains(x.Id) && x.Key != null).Select(x => new IdentityManageAssignsDTO.AvailableAssignDTO.TeamDTO{ TeamId = x.Id, Name = x.Name }).ToArray()
                                 }).ToList();
 
             return new IdentityManageAssignsDTO

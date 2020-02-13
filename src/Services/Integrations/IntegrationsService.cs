@@ -150,8 +150,6 @@ namespace Tayra.Services
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_PROJECT_ID, Value = projId });
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + projId, Value = rewardStatus });
             }
-
-            DbContext.SaveChanges();
         }
 
         #endregion

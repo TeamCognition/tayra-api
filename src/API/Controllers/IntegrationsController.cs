@@ -13,12 +13,17 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public IntegrationsController(IServiceProvider serviceProvider, IConnectorResolver connectorResolver, OrganizationDbContext context) : base(serviceProvider, context)
+        public IntegrationsController(IServiceProvider serviceProvider, IConnectorResolver connectorResolver, ITenantProvider tenantProvider, OrganizationDbContext context) : base(serviceProvider, context)
         {
             ConnectorResolver = connectorResolver;
+            DbContext = context;
+            TenantProvider = tenantProvider;
         }
 
         #endregion
+
+        public ITenantProvider TenantProvider { get; set; }
+        OrganizationDbContext DbContext { get; set; }
 
         public IConnectorResolver ConnectorResolver { get; }
 
@@ -26,14 +31,14 @@ namespace Tayra.API.Controllers
 
         [HttpGet, Route("connect/{type?}")]
         public IActionResult Connect([FromRoute] IntegrationType type, [FromQuery] string returnPath)
-        {
+        {   
             if(string.IsNullOrEmpty(returnPath))
             {
                 throw new ApplicationException("You have to provide returnPath");
             }
-
+            
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-            return Redirect(connector.GetAuthUrl(Cipher.Encrypt($"{CurrentUser.ProfileId}|{CurrentUser.Role}|{CurrentSegment.Id}|{returnPath}")));
+            return Redirect(connector.GetAuthUrl(Cipher.Encrypt(string.Join('|', TenantProvider.GetTenant().Host, CurrentUser.ProfileId, CurrentUser.Role, CurrentSegment.Id, returnPath))));
         }
 
         [HttpGet, Route("settings/atj")]
@@ -46,6 +51,7 @@ namespace Tayra.API.Controllers
         public ActionResult SetJiraSettings([FromBody]JiraSettingsUpdateDTO dto)
         {
             IntegrationsService.UpdateJiraSettings(CurrentSegment.Id, dto);
+            DbContext.SaveChanges();
             return Ok();
         }
 

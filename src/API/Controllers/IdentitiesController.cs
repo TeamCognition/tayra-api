@@ -73,16 +73,28 @@ namespace Tayra.API.Controllers
             return IdentitiesService.GetInvitationsGridData(gridParams);
         }
 
+        [AllowAnonymous, HttpGet("invitation")]
+        public ActionResult<IdentityInvitationViewDTO> Getinvitation([FromQuery] string InvitationCode)
+        {
+            var invitation = IdentitiesService.GetInvitation(InvitationCode);
+            DbContext.SaveChanges();
+            return invitation;
+        }
+
+        [HttpDelete("invitation/{invitationId:int}")]
+        public IActionResult Deleteinvitation([FromRoute] int invitationId)
+        {
+            IdentitiesService.DeleteInvitation(invitationId);
+
+            DbContext.SaveChanges();
+            return Ok();
+        }
+
+
         [HttpPost("searchEmails")]
         public ActionResult<GridData<IdentityEmailsGridDTO>> GetIdentityEmails([FromBody] IdentityEmailsGridParams gridParams)
         {
             return IdentitiesService.GetIdentityEmailsGridData(CurrentUser.ProfileId, gridParams);
-        }
-
-        [AllowAnonymous, HttpGet("invitation")]
-        public ActionResult<IdentityInvitationViewDTO> Getinvitation([FromQuery] string InvitationCode)
-        {
-            return Ok(IdentitiesService.GetInvitation(InvitationCode));
         }
 
         [HttpGet("isEmailUnique")]

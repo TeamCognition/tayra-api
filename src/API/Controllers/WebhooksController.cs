@@ -60,7 +60,7 @@ namespace Tayra.API.Controllers
 
             if (rewardStatusField == null)
             {
-                throw new ApplicationException($"issue is located in {jiraProjectId} jira segment which is not connected to any tayra segments");
+                throw new ApplicationException($"Jira project with Id: {jiraProjectId} is not connected to any tayra segments");
             }
 
             var jiraConnector = new AtlassianJiraConnector(null, DbContext);

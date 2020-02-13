@@ -8,7 +8,6 @@ using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Mailer;
 using Tayra.Models.Catalog;
-using Tayra.Models.Organizations;
 
 namespace Tayra.API.Controllers
 {
@@ -34,24 +33,23 @@ namespace Tayra.API.Controllers
         [HttpGet, Route("callback/{type?}")]
         public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
         {
-            Request.QueryString = Request.QueryString.Add("tenant", "localhost:3000");
-
             var stateData = Cipher.Decrypt(state).Split('|');
+            Request.QueryString = Request.QueryString.Add("tenant", stateData[0]);
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try
             {
                 connector.Authenticate(
-                    profileId: int.Parse(stateData[0]),
-                    profileRole: Enum.Parse<ProfileRoles>(stateData[1]),
-                    segmentId: int.Parse(stateData[2]),
+                    profileId: int.Parse(stateData[1]),
+                    profileRole: Enum.Parse<ProfileRoles>(stateData[2]),
+                    segmentId: int.Parse(stateData[3]),
                     userState: state);
             }
             catch
             {
-                return Redirect(connector.GetAuthDoneUrl(stateData[3], false));
+                return Redirect(connector.GetAuthDoneUrl(stateData[4], false));
             }
 
-            return Redirect(connector.GetAuthDoneUrl(stateData[3], true));
+            return Redirect(connector.GetAuthDoneUrl(stateData[4], true));
         }
 
         public class ContactFormDTO

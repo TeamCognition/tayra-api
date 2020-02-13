@@ -88,7 +88,7 @@ namespace Tayra.Auth
                 Name = t.Name,
                 AvatarColor = t.AvatarColor,
                 SegmentId = t.SegmentId
-            }).ToArray();
+            }).ToArray().Where(x => x.Key != null).ToArray();
 
             var activeItems = ProfilesService.GetProfileActiveItems(dbContext, profile.ProfileId);
 

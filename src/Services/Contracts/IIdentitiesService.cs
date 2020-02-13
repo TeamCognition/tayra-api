@@ -10,10 +10,11 @@ namespace Tayra.Services
         Identity GetByEmail(string email);
         void InvitationJoinWithSaveChanges(IdentityJoinDTO dto);
         void CreateInvitation(int profileId, string host, IdentityInviteDTO dto);
+        GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams);
+        IdentityInvitationViewDTO GetInvitation(string InvitationCode);
+        void DeleteInvitation(int invitationId);
         GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, IdentityManageGridParams gridParams);
         IdentityManageAssignsDTO GetIdentityManageAssignsData(int[] segmentIds, int memberProfileId);
-        IdentityInvitationViewDTO GetInvitation(string InvitationCode);
-        GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams);
         GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams);
         void ChangePasswordWithSaveChange(int identityId, IdentityChangePasswordDTO dto);
         bool IsEmailAddressUnique(string email);
