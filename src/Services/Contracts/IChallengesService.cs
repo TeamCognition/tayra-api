@@ -5,7 +5,7 @@ namespace Tayra.Services
     public interface IChallengesService
     {
         GridData<ChallengeViewGridDTO> GetChallengesGrid(int[] segmentIds, ChallengeViewGridParams gridParams);
-        GridData<ChallengeCommitteesGridDTO> GetChallengeCommitteesGrid(int profileId, ChallengeCommitteesGridParams gridParams);
+        GridData<ChallengeCommitsGridDTO> GetChallengeCommitsGrid(int profileId, ChallengeCommitsGridParams gridParams);
         GridData<ChallengeCompletitionsGridDTO> GetChallengeCompletitionsGrid(int profileId, ChallengeCompletitionsGridParams gridParams);
         ChallengeViewDTO GetChallengeViewDTO(int profileId, int challengeId);
         void Create(ChallengeCreateDTO dto);

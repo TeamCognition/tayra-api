@@ -1,18 +1,18 @@
 ﻿using System;
 using Firdaws.DAL;
+using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ChallengeCommit : ITimeStampedEntity
+    public class LogQueue : ITimeStampedEntity
     {
-        //Composite Key
         public int ProfileId { get; set; }
-        public virtual Profile Profile { get; set; }
-
-        public int ChallengeId { get; set; }
-        public virtual Challenge Challenge { get; set; }
+        public int LogDeviceId { get; set; }
+        public LogEvents LogEvent { get; set; }
+        public DateTime DeliverAt { get; set; }
 
         public DateTime? CompletedAt { get; set; }
+        public string Status { get; set; }
 
         #region ITimeStampedEntity
 

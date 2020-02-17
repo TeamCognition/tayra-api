@@ -65,7 +65,7 @@ namespace Tayra.Services
 
             if (value > 0 && reason == TransactionReason.JiraIssueCompleted)
             {
-                UpdateCompetitorsTokenValue(txn);
+                //UpdateCompetitorsTokenValue(txn);
             }
 
             if (claimBundleType.HasValue)

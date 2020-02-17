@@ -2,7 +2,7 @@
 
 namespace Tayra.Services
 {
-    public class ChallengeCommitteesGridParams : GridParams
+    public class ChallengeCommitsGridParams : GridParams
     {
         public int ChallengeId { get; set; }
     }

@@ -8,7 +8,6 @@ namespace Tayra.Services
 {
     public interface IProfilesService
     {
-        ProfileSessionCacheDTO GetSessionCache(int profileId);
         Profile GetByIdentityId(int identityId);
         Profile GetByUsername(string username);
         Profile GetByEmail(string email);

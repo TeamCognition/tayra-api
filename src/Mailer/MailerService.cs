@@ -12,9 +12,6 @@ namespace Tayra.Mailer
 
         public static Response SendEmail(string recipient, ITemplateEmailDTO dto)
         {
-            //var manager = new MailChimpManager(apiKey);
-
-            //manager.Campaigns.send
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(noReplyAddress);
             var to = new EmailAddress(recipient);

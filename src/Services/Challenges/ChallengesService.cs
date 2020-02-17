@@ -31,7 +31,7 @@ namespace Tayra.Services
         {
             IQueryable<ChallengeSegment> scope = DbContext.ChallengeSegments;
 
-            if(gridParams.Segments != null && gridParams.Segments.Any())
+            if (gridParams.Segments != null && gridParams.Segments.Any())
             {
                 scope = scope.Where(x => gridParams.Segments.Contains(x.SegmentId));
             }
@@ -39,7 +39,7 @@ namespace Tayra.Services
             {
                 scope = scope.Where(x => segmentIds.Contains(x.SegmentId));
             }
-            
+
             var query = from cs in scope
                         select new ChallengeViewGridDTO
                         {
@@ -61,12 +61,12 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public GridData<ChallengeCommitteesGridDTO> GetChallengeCommitteesGrid(int profileId, ChallengeCommitteesGridParams gridParams)
+        public GridData<ChallengeCommitsGridDTO> GetChallengeCommitsGrid(int profileId, ChallengeCommitsGridParams gridParams)
         {
             IQueryable<ChallengeCommit> scope = DbContext.ChallengeCommits.Where(x => x.ChallengeId == gridParams.ChallengeId);
 
             var query = from cc in scope
-                        select new ChallengeCommitteesGridDTO
+                        select new ChallengeCommitsGridDTO
                         {
                             ProfileId = cc.ProfileId,
                             Username = cc.Profile.Username,
@@ -74,7 +74,7 @@ namespace Tayra.Services
                             CommittedOn = cc.Created
                         };
 
-            GridData<ChallengeCommitteesGridDTO> gridData = query.GetGridData(gridParams);
+            GridData<ChallengeCommitsGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
         }
@@ -146,18 +146,18 @@ namespace Tayra.Services
             }
 
             var items = (from i in DbContext.Items
-                        where dto.Rewards.Select(y => y.ItemId).Contains(i.Id)
-                        select new
-                        {
-                            ItemId = i.Id,
-                            Worth = i.WorthValue,
-                            QuantityAvailable = i.IsQuantityLimited ? i.Reservations.Sum(x => x.QuantityChange) : (int?)null,
-                            QuantityToReserve = dto.Rewards.FirstOrDefault(y => y.ItemId == i.Id).Quantity * (dto.CompletionsLimit ?? 1)
-                        }).ToList();
+                         where dto.Rewards.Select(y => y.ItemId).Contains(i.Id)
+                         select new
+                         {
+                             ItemId = i.Id,
+                             Worth = i.WorthValue,
+                             QuantityAvailable = i.IsQuantityLimited ? i.Reservations.Sum(x => x.QuantityChange) : (int?)null,
+                             QuantityToReserve = dto.Rewards.FirstOrDefault(y => y.ItemId == i.Id).Quantity * (dto.CompletionsLimit ?? 1)
+                         }).ToList();
 
             foreach (var i in items)
             {
-                if(!ItemRules.CanReserveQuantity(i.QuantityAvailable, i.QuantityToReserve))
+                if (!ItemRules.CanReserveQuantity(i.QuantityAvailable, i.QuantityToReserve))
                 {
                     throw new ApplicationException($"Quantity too high for item {i.ItemId}");
                 }
@@ -297,6 +297,8 @@ namespace Tayra.Services
                 ChallengeId = dto.ChallengeId,
                 ProfileId = profile.Id
             });
+
+            //var challengeCommit =
 
             LogsService.LogEvent(new LogCreateDTO
             {

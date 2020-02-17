@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Firdaws.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,10 +31,18 @@ namespace Tayra.API.Controllers
 
         #region Public Methods
 
+        [HttpGet("sleepFor5")]
+        public IActionResult TestSleepFor5()
+        {
+            System.Threading.Thread.Sleep(5000);
+
+            return Ok("harris");
+        }
+
         [HttpGet, Route("callback/{type?}")]
         public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
         {
-            var stateData = Cipher.Decrypt(state).Split('|');
+            var stateData = Cipher.Decrypt(state.Base64UrlDecode()).Split('|');
             Request.QueryString = Request.QueryString.Add("tenant", stateData[0]);
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try

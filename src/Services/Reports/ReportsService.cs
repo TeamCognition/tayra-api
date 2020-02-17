@@ -62,7 +62,7 @@ namespace Tayra.Services
                       group trw by trw.TeamId into r
                       select new ReportOverviewDTO.NodeDTO
                       {
-                          Name = r.First().Team.Name,
+                          Name = r.FirstOrDefault().Team.Name,
                           Metrics = new ReportOverviewDTO.NodeDTO.MetricDTO[]
                           {
                               new ReportOverviewDTO.NodeDTO.MetricDTO
@@ -217,8 +217,8 @@ namespace Tayra.Services
                       select new ReportStatisticsTeamMetricsDTO.MemberDTO
                       {
                           ProfileId = pr.Key,
-                          Name = pr.First().Profile.FirstName + " " + pr.First().Profile.LastName,
-                          Avatar = pr.First().Profile.Avatar,
+                          Name = pr.FirstOrDefault().Profile.FirstName + " " + pr.FirstOrDefault().Profile.LastName,
+                          Avatar = pr.FirstOrDefault().Profile.Avatar,
                           Metrics = new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO[]
                           {
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.OImpact, Average = pr.Average(x => x.OImpactAverage) },
@@ -378,9 +378,9 @@ namespace Tayra.Services
                       select new ReportItemsTeamMetricsDTO.MemberDTO
                       {
                           ProfileId = pr.Key,
-                          Name = pr.First().Profile.FirstName + " " + pr.First().Profile.LastName,
-                          InventoryValue = pr.Last().InventoryValueTotal,
-                          InventoryCount = pr.Last().InventoryCountTotal,
+                          Name = pr.FirstOrDefault().Profile.FirstName + " " + pr.FirstOrDefault().Profile.LastName,
+                          InventoryValue = pr.LastOrDefault().InventoryValueTotal,
+                          InventoryCount = pr.LastOrDefault().InventoryCountTotal,
                           DisenchantCount = pr.Sum(x => x.ItemsDisenchantedChange),
                           GiftedCount = pr.Sum(x => x.ItemsDisenchantedChange)
                       }).ToArray();

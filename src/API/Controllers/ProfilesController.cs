@@ -27,12 +27,6 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpGet("sessionCache")] //TODO: Delete this API, unused
-        public ActionResult<ProfileSessionCacheDTO> GetSessionCache()
-        {
-            return Ok(ProfilesService.GetSessionCache(CurrentUser.ProfileId));
-        }
-
         [HttpGet("me")]
         public ActionResult<ProfileViewDTO> GetCurrentUser()
         {
@@ -82,6 +76,7 @@ namespace Tayra.API.Controllers
         [HttpGet("update")]
         public ActionResult<ProfileUpdateDTO> GetUpdateProfile()
         {
+            //throw new Exception("ttttttttttttttt");
             return ProfilesService.GetUpdateProfileData(CurrentUser.ProfileId);
         }
 
@@ -121,6 +116,15 @@ namespace Tayra.API.Controllers
 
         [HttpPost("modifyTokens")]
         public IActionResult ModifyTokens([FromBody] ProfileModifyTokensDTO dto)
+        {
+            ProfilesService.ModifyTokens(CurrentUser.Role, dto);
+            DbContext.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPost("notification/settings")]
+        public IActionResult NotificationSettings([FromBody] ProfileModifyTokensDTO dto)
         {
             ProfilesService.ModifyTokens(CurrentUser.Role, dto);
             DbContext.SaveChanges();

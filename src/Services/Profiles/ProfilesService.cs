@@ -31,44 +31,6 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public ProfileSessionCacheDTO GetSessionCache(int profileId)
-        {
-            //var teams = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId)
-            //    .Select(x => new ProfileSessionCacheDTO.TeamDTO
-            //    {
-            //        Id = x.TeamId,
-            //        Key = x.Team.Key,
-            //        Name = x.Team.Name,
-            //        AvatarColor = x.Team.AvatarColor,
-            //        Segment = new ProfileSessionCacheDTO.SegmentDTO
-            //        {
-            //            Id = x.Team.Segment.Id,
-            //            Key = x.Team.Segment.Key,
-            //            Name = x.Team.Segment.Name,
-            //            Avatar = x.Team.Segment.Avatar,
-            //        }
-            //    }).ToList();
-
-            //var activeItems = GetProfileActiveItems(DbContext, profileId);
-
-            //return (from p in DbContext.Profiles.Where(x => x.Id == profileId)
-            //        select new ProfileSessionCacheDTO
-            //        {
-            //            ProfileId = p.Id,
-            //            FirstName = p.FirstName,
-            //            LastName = p.LastName,
-            //            Username = p.Username,
-            //            Role = p.Role,
-            //            Avatar = p.Avatar,
-            //            Teams = teams,
-            //            Title = activeItems.Title,
-            //            Badges = activeItems.Badges,
-            //            Border = activeItems.Border
-            //        }).FirstOrDefault();
-            return null;
-        }
-
-
         public Profile GetByIdentityId(int identityId)
         {
             return DbContext.Profiles
@@ -276,6 +238,8 @@ namespace Tayra.Services
                             ChallengeId = cc.ChallengeId,
                             Name = cc.Challenge.Name,
                             Image = cc.Challenge.Image,
+                            Status = cc.Challenge.Status,
+                            CompletedAt = cc.CompletedAt,
                             CommittedAt = cc.Created
                         };
 

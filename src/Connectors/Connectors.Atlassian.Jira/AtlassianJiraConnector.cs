@@ -50,7 +50,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                 var loggedInUser = AtlassianJiraService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
 
                 var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == profileId && x.Type == Type);
-                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == null && x.Type == Type);
+                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == segmentId && x.ProfileId == null && x.Type == Type);
                 if (segmentIntegration == null && profileRole == ProfileRoles.Member)
                 {
                     throw new FirdawsSecurityException($"profileId: {profileId} tried to integrate {Type} before segment integration");

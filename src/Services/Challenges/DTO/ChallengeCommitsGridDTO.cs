@@ -2,7 +2,7 @@
 
 namespace Tayra.Services
 {
-    public class ChallengeCommitteesGridDTO
+    public class ChallengeCommitsGridDTO
     {
         public int ProfileId { get; set; }
         public string Username { get; set; }

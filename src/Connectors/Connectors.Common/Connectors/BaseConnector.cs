@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Firdaws.DAL;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 using Tayra.Common;
@@ -90,8 +91,16 @@ namespace Tayra.Connectors.Common
                 {
                     var eId = OrganizationContext.ProfileExternalIds.FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == Type);
                     if (eId != null)
-                        OrganizationContext.Remove(eId);
+                    {
+                        var someoneElsesI = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.ProfileId == eId.ProfileId);
+                        if(someoneElsesI != null)
+                        {
+                            someoneElsesI.Fields.ToList().ForEach(x => OrganizationContext.Remove(x));
+                            OrganizationContext.Remove(someoneElsesI);
+                        }
 
+                        OrganizationContext.Remove(eId);
+                    }
                     OrganizationContext.Add(new ProfileExternalId
                     {
                         ProfileId = profileId.Value,

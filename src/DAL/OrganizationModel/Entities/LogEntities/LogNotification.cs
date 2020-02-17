@@ -1,15 +1,16 @@
 ﻿using System;
 using Firdaws.DAL;
-using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class StatType : IAuditedEntity
+    public class Notification : IAuditedEntity
     {
-        public int Id { get; set; } //what about custom values from jira
+        public int Id { get; set; }
+        public DateTime? ReadAt { get; set; }
 
-        public string Name { get; set; }
-        public IntegrationType IntegrationType { get; set; }
+        public int LogId { get; set; }
+        public virtual Log Log { get; set; }
+
 
         #region IAuditedEntity
 

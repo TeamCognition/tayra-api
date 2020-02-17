@@ -99,6 +99,11 @@ namespace Tayra.Services
 
             ValidateInvitationWithSaveChanges(invitation);
 
+            if (!invitation.IsActive)
+            {
+                throw new ApplicationException($"The invitation expired or is not valid anymore");
+            }
+
             if (!ProfilesService.IsUsernameUnique(DbContext, dto.Username))
             {
                 throw new ApplicationException($"Username already exists");
@@ -194,7 +199,7 @@ namespace Tayra.Services
                 throw new EntityNotFoundException<Team>(dto.TeamId);
             }
 
-            invitation.TeamId = invitation.TeamId ?? DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
+            //invitation.TeamId = invitation.TeamId ?? DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
             //invitation.TeamId ??= DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
 
             var resp = MailerService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
@@ -298,9 +303,10 @@ namespace Tayra.Services
         public GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams)
         {
             IQueryable<IdentityInvitationGridDTO> query = from i in DbContext.Invitations
-                                                          where i.IsActive == !gridParams.ActiveStatusesOnly
+                                                          where i.IsActive == gridParams.ActiveStatusesOnly
                                                           select new IdentityInvitationGridDTO
                                                           {
+                                                              InvitationId = i.Id,
                                                               EmailAddress = i.EmailAddress,
                                                               Status = i.Status,
                                                               FirstName = i.FirstName,

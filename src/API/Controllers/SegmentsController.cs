@@ -95,8 +95,8 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("{segmentId:int}/removeMember")] //TODO: delete shouldn't have body?
-        public IActionResult RemoveMember([FromRoute] int segmentId, [FromBody] SegmentMemberAddRemoveDTO dto)
+        [HttpDelete("{segmentId:int}/removeMember")]
+        public IActionResult RemoveMember([FromRoute] int segmentId, [FromQuery] SegmentMemberAddRemoveDTO dto)
         {
             SegmentsService.RemoveMember(segmentId, dto);
             DbContext.SaveChanges();

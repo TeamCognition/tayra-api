@@ -77,7 +77,9 @@ namespace Tayra.Models.Organizations
         public DbSet<ItemGift> ItemGifts { get; set; }
         public DbSet<ItemReservation> ItemReservations { get; set; }
         public DbSet<Log> Logs { get; set; }
+        public DbSet<LogDevice> LogDevices { get; set; }
         public DbSet<LoginLog> LoginLogs { get; set; }
+        public DbSet<LogSetting> LogSettings { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<ProfileAssignment> ProfileAssignments { get; set; }
@@ -105,13 +107,6 @@ namespace Tayra.Models.Organizations
         public DbSet<Token> Tokens { get; set; }
         public DbSet<TokenTransaction> TokenTransactions { get; set; }
         public DbSet<WebhookEventLog> WebhookEventLogs { get; set; }
-
-
-        #endregion
-
-        #region Db Stat Sets
-
-        public DbSet<StatType> StatTypes { get; set; }
 
         #endregion
 
@@ -216,7 +211,7 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileExternalId>(entity =>
             {
-                entity.HasKey(x => new { x.ExternalId, x.IntegrationType });
+                entity.HasKey(x => new { x.OrganizationId, x.ExternalId, x.IntegrationType });
             });
 
             modelBuilder.Entity<ProfileInventoryItem>(entity =>
@@ -299,20 +294,24 @@ namespace Tayra.Models.Organizations
             var orgPKey = orgEntity.FindPrimaryKey();
             foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
             {
-                //OrganizationId
-                var id = entityType.GetProperties().FirstOrDefault(x => x.IsPrimaryKey() && x.Name == "Id");
-                if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;
+                //Checks if TenantIdFk property has been added manually
+                if (entityType.FindProperty(TenantIdFK) == null)
+                {
+                    //OrganizationId
+                    var id = entityType.GetProperties().FirstOrDefault(x => x.IsPrimaryKey() && x.Name == "Id");
+                    if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;
 
-                var orgId = entityType.GetOrAddProperty(TenantIdFK, typeof(int));
-                entityType.GetOrAddForeignKey(orgId, orgPKey, orgEntity);
-                entityType.SetPrimaryKey(entityType.FindPrimaryKey().Properties.Append(orgId).ToList());
+                    var orgId = entityType.GetOrAddProperty(TenantIdFK, typeof(int));
+                    entityType.GetOrAddForeignKey(orgId, orgPKey, orgEntity);
+                    entityType.SetPrimaryKey(entityType.FindPrimaryKey().Properties.Append(orgId).ToList());
+                }
 
                 //Set Global Query
                 var clrType = entityType.ClrType;
                 var method = SetGlobalQueryMethod.MakeGenericMethod(clrType);
                 method.Invoke(this, new object[] { modelBuilder });
             }
-
+            
             base.OnModelCreating(modelBuilder);
         }
 

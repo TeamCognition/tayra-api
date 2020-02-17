@@ -2,7 +2,10 @@
 using System.Linq;
 using Firdaws.Core;
 using Firdaws.DAL;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Tayra.Common;
+using Tayra.Mailer;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -62,6 +65,16 @@ namespace Tayra.Services
                 });
             }
 
+        }
+
+        public void SendNotification(int profileId, LogEvents logEvent, ITemplateEmailDTO dto)
+        {
+            var settings = DbContext.LogDevices.Where(x => x.ProfileId == profileId).Select(x => new
+            {
+                LogDeviceType = x.Type,
+                Address = x.Address,
+                IsEnabled = x.Settings.Where(s => s.LogEvent == logEvent && s.IsEnabled == false).Any()
+            })
         }
 
         public GridData<LogGridDTO> GetGridData(LogGridParams gridParams)
