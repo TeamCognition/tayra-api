@@ -34,9 +34,9 @@ namespace Tayra.Services
                                {
                                    ItemId = si.ItemId,
                                    Quantity = si.QuantityReservedRemaining,
-                                   Price = si.Price,
                                    Created = si.Created,
                                    IsDisabled = si.DisabledAt.HasValue,
+                                   Price = si.Item.Price,
                                    Name = si.Item.Name,
                                    Description = si.Item.Description,
                                    Image = si.Item.Image,
@@ -67,9 +67,9 @@ namespace Tayra.Services
                         {
                             ItemId = si.ItemId,
                             Quantity = si.QuantityReservedRemaining,
-                            Price = si.Price,
                             Created = si.Created,
                             IsDisabled = si.DisabledAt.HasValue,
+                            Price = si.Item.Price,
                             Name = si.Item.Name,
                             Description = si.Item.Description,
                             Image = si.Item.Image,
@@ -89,21 +89,21 @@ namespace Tayra.Services
         {
             var shop = DbContext.Shops.FirstOrDefault();
             var token = DbContext.Tokens.FirstOrDefault(x => x.Type == TokenType.CompanyToken);
-            var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
+            var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs and price*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
             var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == token.Id).Sum(x => x.Value);
             var segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => x.SegmentId).FirstOrDefault();
 
             shop.EnsureNotNull(shop.Id);
             shopItem.EnsureNotNull(shop.Id, dto.ItemId);
 
-            if (!ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Price, shopItem.QuantityReservedRemaining))
+            if (!ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Item.Price, shopItem.QuantityReservedRemaining))
             {
                 throw new ApplicationException("We are unable to perform the action :)");
             }
 
             shopItem.QuantityReservedRemaining--;
 
-            TokensService.CreateTransaction(token.Id, profileId, shopItem.Price * -1, TransactionReason.ShopItemPurchase, null);
+            TokensService.CreateTransaction(token.Id, profileId, shopItem.Item.Price * -1, TransactionReason.ShopItemPurchase, null);
 
             var purchaseStatus = ItemRules.IsItemTypeTayra(shopItem.Item.Type) ? ShopPurchaseStatuses.Fulfilled : ShopPurchaseStatuses.PendingApproval;
             DbContext.Add(new ShopPurchase
@@ -114,8 +114,8 @@ namespace Tayra.Services
                 ItemType = shopItem.Item.Type,
                 IsFeatured = shopItem.FeaturedUntil > DateTime.UtcNow,
                 IsDiscounted = shopItem.DiscountEndsAt > DateTime.UtcNow,
-                Price = shopItem.Price,
-                PriceDiscountedFor = shopItem.Price - shopItem.DiscountPrice,
+                Price = shopItem.Item.Price,
+                PriceDiscountedFor = shopItem.Item.Price - shopItem.DiscountPrice,
                 GiftFor = null,
                 SegmentId = segmentId
             });
@@ -140,7 +140,7 @@ namespace Tayra.Services
                 {
                     { "timestamp", DateTime.UtcNow.ToString() },
                     { "profileUsername", buyerUsername },
-                    { "itemPrice", shopItem.DiscountPrice?.ToString() ?? shopItem.Price.ToString() },
+                    { "itemPrice", shopItem.DiscountPrice?.ToString() ?? shopItem.Item.Price.ToString() },
                     { "itemId", shopItem.ItemId.ToString() },
                     { "purchaseStatus", purchaseStatus.ToString() },
                     { "segmentId", segmentId.ToString()},
@@ -149,53 +149,6 @@ namespace Tayra.Services
                 ProfileId = profileId,
                 ShopId = shop.Id
             });
-        }
-
-        public ShopItem CreateShopItem(ShopItemCreateDTO dto)
-        {
-            return
-                DbContext.Add(new ShopItem
-                {
-                    Price = dto.Price,
-                    QuantityReservedRemaining = dto.Quantity,
-                    Item = new Item
-                    {
-                        Name = dto.Name,
-                        Description = dto.Description,
-                        Image = dto.Image,
-                        IsActivable = dto.IsActivable,
-                        IsDisenchantable = dto.IsDisenchantable,
-                        IsGiftable = dto.IsGiftable,
-                        Type = dto.Type,
-                        Rarity = dto.Rarity,
-                        WorthValue = (float)Math.Round(dto.Price * 0.90f, 2)
-                    }
-                }).Entity;
-        }
-
-        public ShopItem UpdateShopItem(ShopItemUpdateDTO dto)
-        {
-            var shopItem = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);
-
-            shopItem.EnsureNotNull(dto.ItemId);
-
-            shopItem.Price = dto.Price;
-            shopItem.QuantityReservedRemaining = dto.Quantity;
-
-            var item = dto.AffectOwnedItems ? shopItem.Item : new Item();
-            shopItem.Item = item;
-
-            item.Name = dto.Name;
-            item.Description = dto.Description;
-            item.Image = dto.Image;
-            item.IsActivable = dto.IsActivable;
-            item.IsDisenchantable = dto.IsDisenchantable;
-            item.IsGiftable = dto.IsGiftable;
-            item.Type = dto.Type;
-            item.Rarity = dto.Rarity;
-            item.WorthValue = (float)Math.Round(dto.Price * 0.90f, 2);
-
-            return shopItem;
         }
 
         public void EnableShopItem(int itemId)

@@ -76,7 +76,6 @@ namespace Tayra.API.Controllers
         [HttpGet("update")]
         public ActionResult<ProfileUpdateDTO> GetUpdateProfile()
         {
-            //throw new Exception("ttttttttttttttt");
             return ProfilesService.GetUpdateProfileData(CurrentUser.ProfileId);
         }
 
@@ -123,13 +122,27 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPost("notification/settings")]
-        public IActionResult NotificationSettings([FromBody] ProfileModifyTokensDTO dto)
+        [HttpGet("notification/settings")]
+        public ActionResult<ProfileNotificationSettingsDTO> GetNotificationSettings()
         {
-            ProfilesService.ModifyTokens(CurrentUser.Role, dto);
+            return ProfilesService.GetNotificationSettings(CurrentUser.ProfileId);
+
+        }
+
+        [HttpPut("notification/settings")]
+        public IActionResult UpdateNotificationSettings([FromBody] ProfileNotificationSettingsDTO dto)
+        {
+            ProfilesService.UpdateNotificationSettings(CurrentUser.ProfileId, dto);
             DbContext.SaveChanges();
 
             return Ok();
+        }
+
+        [HttpGet("activityChart/{profileId:int}")] //this actually returns array of strings
+        public ActionResult<ProfileActivityChartDTO[]> GetActivityChart(int profileId)
+        {
+            return Ok(ProfilesService.GetProfileActivityChart(profileId));
+
         }
 
         #endregion

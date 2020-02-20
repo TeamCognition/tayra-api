@@ -5,7 +5,9 @@ using System.Linq.Expressions;
 using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Tayra.Common;
+using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
@@ -81,10 +83,10 @@ namespace Tayra.Services
                                 ).FirstOrDefault();
 
 
-            //if(!ProfileRules.CanUpProfile(profileId, dto.ProfileId, lastUppedAt))
-            //{
-            //    throw new ApplicationException("Profile already upped by same user today");
-            //}
+            if (!ProfileRules.CanUpProfile(profileId, dto.ProfileId, lastUppedAt))
+            {
+                throw new ApplicationException("Profile already upped by same user today");
+            }
 
             DbContext.Add(new ProfileOneUp
             {
@@ -92,8 +94,8 @@ namespace Tayra.Services
                 DateId = DateHelper2.ToDateId(DateTime.UtcNow)
             });
 
-            var oneUpGiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
-            var oneUpReceiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId).Username;
+            var oneUpGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
+            var oneUpReceiverUsername = DbContext.Profiles.Where(x => x.Id == dto.ProfileId).Select(x => x.Username).FirstOrDefault();
             LogsService.LogEvent(new LogCreateDTO
             {
                 Event = LogEvents.ProfileOneUpGave,
@@ -117,6 +119,8 @@ namespace Tayra.Services
                 },
                 ProfileId = dto.ProfileId,
             });
+
+            LogsService.SendLog(dto.ProfileId, LogEvents.ProfileOneUpReceived, new EmailOneUpReceivedDTO(oneUpGiverUsername));
 
             var totalUps = TokensService.CreateTransaction(TokenType.OneUp, dto.ProfileId, 1, TransactionReason.OneUpProfile, null);
             return Convert.ToInt32(totalUps);
@@ -378,6 +382,50 @@ namespace Tayra.Services
             }
             TokensService.CreateTransaction(TokenType.CompanyToken, dto.ProfileId, dto.TokenValue, TransactionReason.Manual, null);
         }
+
+        public ProfileNotificationSettingsDTO GetNotificationSettings(int profileId)
+        {
+            var devices = DbContext.LogDevices.Where(x => x.ProfileId == profileId && x.Type == LogDeviceTypes.Email).Include(x => x.Settings).FirstOrDefault();
+
+            return new ProfileNotificationSettingsDTO
+            {
+                Settings = devices.Settings.Select(x => new ProfileNotificationSettingsDTO.SettingDTO
+                {
+                    LogEvent = x.LogEvent,
+                    IsEnabled = x.IsEnabled
+                }).ToArray()
+            };
+        }
+
+        public void UpdateNotificationSettings(int profileId, ProfileNotificationSettingsDTO dto)
+        {
+            var devices = DbContext.LogDevices.Where(x => x.ProfileId == profileId && x.Type == LogDeviceTypes.Email).Include(x => x.Settings).ToList();
+
+            foreach(var d in devices)
+            {
+                foreach(var sdto in dto.Settings)
+                { 
+                    var s = d.Settings.Where(x => x.LogEvent == sdto.LogEvent).FirstOrDefault();
+                    if(s == null)
+                    {
+                        s = new LogSetting
+                        {
+                            ProfileId = profileId,
+                            LogDeviceId = d.Id,
+                            LogEvent = sdto.LogEvent
+                        };
+                        d.Settings.Add(s);
+                    }
+                    s.IsEnabled = sdto.IsEnabled;
+                }
+            }
+        }
+
+        public string[] GetProfileActivityChart(int profileId)
+        {
+            return DbContext.ProfileReportsDaily.Where(x => x.ProfileId == profileId && x.ActivityChartJson != null).OrderBy(x => x.DateId).Select(x => x.ActivityChartJson).Take(30).ToArray();
+        }
+
 
         #endregion
 

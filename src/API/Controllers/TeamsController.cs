@@ -54,7 +54,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPut("{teamId:int}/update")]
-        public IActionResult UpdateTeam([FromQuery]int teamId, [FromBody] TeamUpdateDTO dto)
+        public IActionResult UpdateTeam([FromRoute]int teamId, [FromBody] TeamUpdateDTO dto)
         {
             TeamsService.Update(teamId, dto);
             OrganizationContext.SaveChanges();

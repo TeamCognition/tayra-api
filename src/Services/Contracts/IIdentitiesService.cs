@@ -18,8 +18,8 @@ namespace Tayra.Services
         GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams);
         void ChangePasswordWithSaveChange(int identityId, IdentityChangePasswordDTO dto);
         bool IsEmailAddressUnique(string email);
-        void AddEmail(int identityId, string email);
-        void SetPrimaryEmail(int identityId, string email);
+        void AddEmail(int identityId, int profileId, string email);
+        void SetPrimaryEmail(int identityId, int profileId, string email);
         bool RemoveEmail(int identityId, string email);
         void ChangeProfileRole(ProfileRoles role, int memberProfileId, ProfileRoles toRole);
         void ArchiveProfile(ProfileRoles role, int memberProfileId);

@@ -42,24 +42,6 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPost("create")]
-        public ActionResult<IDTO> CreateShopItem([FromBody] ShopItemCreateDTO dto)
-        {
-            var shopItem = ShopItemsService.CreateShopItem(dto);
-            OrganizationContext.SaveChanges();
-
-            return Ok(new { Id = shopItem.ItemId });
-        }
-
-        [HttpPut("update")]
-        public ActionResult<IDTO> UpdateShopItem([FromBody] ShopItemUpdateDTO dto)
-        {
-            var shopItem = ShopItemsService.UpdateShopItem(dto);
-            OrganizationContext.SaveChanges();
-
-            return Ok(new { Id = shopItem.ItemId });
-        }
-
         [HttpPost("disable")]
         public IActionResult DisableShopItem([FromBody] ShopItemEnabledToggleDTO dto)
         {

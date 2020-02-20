@@ -74,6 +74,8 @@ namespace Tayra.Models.Organizations
         public int ItemsCreatedChange { get; set; }
         public int ItemsCreatedTotal { get; set; }
 
+        public string ActivityChartJson { get; set; }
+
         #region ITimeStampedEntity
 
         public DateTime Created { get; set; }

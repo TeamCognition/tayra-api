@@ -2,7 +2,7 @@
 
 namespace Tayra.Services
 {
-    public class ShopItemCreateDTO
+    public class ItemCreateDTO
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -17,5 +17,8 @@ namespace Tayra.Services
 
         public int? Quantity { get; set; }
         public float Price { get; set; }
+
+        public bool PlaceInShop { get; set; }
+        public int? ShopQuantity  { get; set; }
     }
 }

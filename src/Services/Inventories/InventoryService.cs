@@ -5,6 +5,7 @@ using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
+using Tayra.Mailer;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -38,7 +39,7 @@ namespace Tayra.Services
                                   Name = pi.Item.Name,
                                   Description = pi.Item.Description,
                                   Image = pi.Item.Image,
-                                  WorthValue = pi.Item.WorthValue,
+                                  Price = pi.Item.Price,
                                   IsActivable = pi.Item.IsActivable,
                                   IsDisenchantable = pi.Item.IsDisenchantable,
                                   IsGiftable = pi.Item.IsGiftable,
@@ -82,7 +83,7 @@ namespace Tayra.Services
                             IsActivable = i.Item.IsActivable,
                             IsDisenchantable = i.Item.IsDisenchantable,
                             IsGiftable = i.Item.IsGiftable,
-                            WorthValue = i.Item.WorthValue
+                            Price = i.Item.Price
                         };
 
             GridData<InventoryItemGridDTO> gridData = query.GetGridData(gridParams);
@@ -181,6 +182,8 @@ namespace Tayra.Services
                 },
                 ProfileId = dto.ReceiverId,
             });
+
+            LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername, invItem.Item.Type ));
         }
 
         public void Disenchant(int profileId, InventoryItemDisenchantDTO dto)
@@ -195,6 +198,7 @@ namespace Tayra.Services
                 ProfileId = profileId
             });
 
+            var disenchantValue = Math.Round(invItem.Item.Price * 0.90, 2);
             LogsService.LogEvent(new LogCreateDTO
             {
                 Event = LogEvents.InventoryItemDisenchanted,
@@ -203,7 +207,7 @@ namespace Tayra.Services
                     { "profileId", profileId.ToString() },
                     { "itemId", invItem.ItemId.ToString() },
                     { "ItemName", invItem.Item.Name},
-                    { "itemWorth", invItem.Item.WorthValue.ToString() },
+                    { "disenchantValue", disenchantValue.ToString() },
                     { "timestamp", DateTime.UtcNow.ToString() }
                 },
 
@@ -212,7 +216,7 @@ namespace Tayra.Services
 
             DbContext.Remove(invItem);
 
-            TokensService.CreateTransaction(TokenType.CompanyToken, profileId, invItem.Item.WorthValue, TransactionReason.ItemDisenchant, null);
+            TokensService.CreateTransaction(TokenType.CompanyToken, profileId, disenchantValue, TransactionReason.ItemDisenchant, null);
         }
 
         public void Give(int profileId, InventoryGiveDTO dto)

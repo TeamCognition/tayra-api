@@ -123,7 +123,7 @@ namespace Tayra.Services
                                      Image = x.Item.Image,
                                      Type = x.Item.Type,
                                      Rarity = x.Item.Rarity,
-                                     WorthValue = x.Item.WorthValue
+                                     Price = x.Item.Price
                                  }).ToArray(),
                                  Goals = c.Goals.Select(x => new ChallengeViewDTO.GoalDTO
                                  {
@@ -150,7 +150,7 @@ namespace Tayra.Services
                          select new
                          {
                              ItemId = i.Id,
-                             Worth = i.WorthValue,
+                             Price = i.Price,
                              QuantityAvailable = i.IsQuantityLimited ? i.Reservations.Sum(x => x.QuantityChange) : (int?)null,
                              QuantityToReserve = dto.Rewards.FirstOrDefault(y => y.ItemId == i.Id).Quantity * (dto.CompletionsLimit ?? 1)
                          }).ToList();
@@ -184,7 +184,7 @@ namespace Tayra.Services
                 CompletionsRemaining = dto.CompletionsLimit,
                 IsEasterEgg = dto.IsEasterEgg,
                 ActiveUntil = dto.ActiveUntil,
-                RewardValue = items.Sum(x => x.Worth * x.QuantityToReserve),
+                RewardValue = items.Sum(x => x.Price * x.QuantityToReserve),
                 Segments = dto.Segments.Select(x => new ChallengeSegment { SegmentId = x }).ToArray(),
                 Rewards = dto.Rewards.Select(x => new ChallengeReward { ItemId = x.ItemId, Quantity = x.Quantity }).ToArray(),
                 Goals = dto.Goals.Select(x => new ChallengeGoal { Title = x.Title, IsCommentRequired = x.IsCommentRequired }).ToArray()
@@ -298,7 +298,16 @@ namespace Tayra.Services
                 ProfileId = profile.Id
             });
 
-            //var challengeCommit =
+            var challengeCommit = DbContext.ChallengeCommits.Where(x => x.ProfileId == profile.Id && x.ChallengeId == challenge.Id).FirstOrDefault();
+            if(challengeCommit == null)
+            {
+                challengeCommit = DbContext.Add(new ChallengeCommit
+                {
+                    ChallengeId = dto.ChallengeId,
+                    ProfileId = profile.Id
+                }).Entity;
+            }
+            challengeCommit.CompletedAt = DateTime.UtcNow;
 
             LogsService.LogEvent(new LogCreateDTO
             {

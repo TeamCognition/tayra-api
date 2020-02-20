@@ -2,7 +2,6 @@
 using System.Linq;
 using Firdaws.Core;
 using Firdaws.DAL;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Mailer;
@@ -67,14 +66,19 @@ namespace Tayra.Services
 
         }
 
-        public void SendNotification(int profileId, LogEvents logEvent, ITemplateEmailDTO dto)
+        public void SendLog(int profileId, LogEvents logEvent, ITemplateEmailDTO dto)
         {
-            var settings = DbContext.LogDevices.Where(x => x.ProfileId == profileId).Select(x => new
+            var devices = DbContext.LogDevices.Where(x => x.ProfileId == profileId).Select(x => new
             {
                 LogDeviceType = x.Type,
                 Address = x.Address,
                 IsEnabled = x.Settings.Where(s => s.LogEvent == logEvent && s.IsEnabled == false).Any()
-            })
+            }).ToList();
+
+            foreach(var d in devices)
+            {
+                MailerService.SendEmail(d.Address, dto);
+            }
         }
 
         public GridData<LogGridDTO> GetGridData(LogGridParams gridParams)
@@ -102,10 +106,11 @@ namespace Tayra.Services
                             Created = l.Log.Created
                         };
             }
-            else if(gridParams.ShopId.HasValue)
+            else if(gridParams.ShopLogs.HasValue && gridParams.ShopLogs.Value)
             {
+                var shopId = DbContext.Shops.Select(x => x.Id).FirstOrDefault();
                 query = from l in DbContext.ShopLogs
-                        where l.ShopId == gridParams.ShopId
+                        where l.ShopId == shopId
                         select new LogGridDTO
                         {
                             Data = JsonConvert.DeserializeObject(l.Log.Data),

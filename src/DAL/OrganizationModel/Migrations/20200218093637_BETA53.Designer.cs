@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200218093637_BETA53")]
+    partial class BETA53
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -815,11 +817,11 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<string>("Name")
                         .HasMaxLength(100);
 
-                    b.Property<float>("Price");
-
                     b.Property<int>("Rarity");
 
                     b.Property<int>("Type");
+
+                    b.Property<float>("WorthValue");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -953,11 +955,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<string>("Address");
 
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int?>("ProfileId");
+                    b.Property<int>("ProfileId");
 
                     b.Property<int>("Type");
 
@@ -1266,8 +1264,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<int>("TaskCategoryId");
 
                     b.Property<int>("OrganizationId");
-
-                    b.Property<string>("ActivityChartJson");
 
                     b.Property<int>("AssistsChange");
 
@@ -1839,6 +1835,8 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<DateTime?>("LastModified");
 
                     b.Property<int?>("LastModifiedBy");
+
+                    b.Property<float>("Price");
 
                     b.Property<int?>("QuantityReservedRemaining");
 

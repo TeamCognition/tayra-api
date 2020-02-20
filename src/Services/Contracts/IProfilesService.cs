@@ -23,6 +23,9 @@ namespace Tayra.Services
         ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId);
         ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition);
         void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto);
+        ProfileNotificationSettingsDTO GetNotificationSettings(int profileId);
+        void UpdateNotificationSettings(int profileId, ProfileNotificationSettingsDTO dto);
+        string[] GetProfileActivityChart(int profileId);
     }
 
 }

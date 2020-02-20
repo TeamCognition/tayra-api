@@ -21,7 +21,7 @@ namespace Tayra.Services
         public bool IsGiftable { get; set; }
 
         public InventoryAcquireMethods AcquireMethod { get; set; }
-        public float WorthValue { get; set; }
+        public float Price { get; set; }
         
         public DateTime Created { get; set; }
     }

@@ -189,6 +189,10 @@ namespace Tayra.Models.Organizations
                 entity.HasIndex(x => new { x.ProfileId, x.SegmentId });
             });
 
+            modelBuilder.Entity<LogSetting>(entity =>
+            {
+                entity.HasKey(x => new { x.LogDeviceId, x.LogEvent });
+            });
 
             modelBuilder.Entity<Organization>(entity =>
             {

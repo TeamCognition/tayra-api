@@ -14,7 +14,7 @@ namespace Tayra.Models.Organizations
         public string Name { get; set; }
         public string Description { get; set; }
         public string Image { get; set; }
-        public float WorthValue { get; set; }
+        public float Price { get; set; }
 
         public bool IsActivable { get; set; }
         public bool IsDisenchantable { get; set; }

@@ -34,7 +34,7 @@ namespace Tayra.Services
             public string Image { get; set; }
             public ItemTypes Type { get; set; }
             public ItemRarities Rarity { get; set; }
-            public float WorthValue { get; set; }
+            public float Price { get; set; }
         }
 
         public class GoalDTO

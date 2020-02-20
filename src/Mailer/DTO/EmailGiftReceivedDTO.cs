@@ -7,11 +7,11 @@ namespace Tayra.Mailer
         public string TemplateId { get => "d-2fce25d657004f1f861a38e50823427f"; }
         public object TemplateData { get; set; }
 
-        public EmailGiftReceivedDTO(string senderFullName, ItemTypes itemType)
+        public EmailGiftReceivedDTO(string gifterUsername, ItemTypes itemType)
         {
             TemplateData = new
             {
-                FullName = senderFullName,
+                Username = gifterUsername,
                 ItemType = itemType
             };
         }

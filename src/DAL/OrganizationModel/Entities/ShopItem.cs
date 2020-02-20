@@ -16,7 +16,6 @@ namespace Tayra.Models.Organizations
 
         public int? QuantityReservedRemaining { get; set; }
         
-        public float Price { get; set; }
         public float? DiscountPrice { get; set; }
         public DateTime? DiscountEndsAt { get; set; }
         public DateTime? FeaturedUntil { get; set; }

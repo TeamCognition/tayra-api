@@ -37,7 +37,7 @@ namespace Tayra.Services
 
             var salt = PasswordHelper.GenerateSalt();
 
-            var identity = CatalogDb.Add(new Identity
+            var identity = CatalogDb.Add(new Models.Catalog.Identity
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -61,7 +61,7 @@ namespace Tayra.Services
             //get identity Id
             CatalogDb.SaveChanges();
 
-            var profile = DbContext.Add(new Profile
+            var profile = DbContext.Add(new Models.Organizations.Profile
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -71,19 +71,18 @@ namespace Tayra.Services
                 IdentityId = identity.Id
             }).Entity;
 
-            //var segment = DbContext.Segments.FirstOrDefault();
-            //DbContext.Add(new SegmentMember
-            //{
-            //    Profile = profile,
-            //    SegmentId = segment.Id,
-
-            //});
+            DbContext.Add(new LogDevice
+            {
+                Profile = profile,
+                Type = LogDeviceTypes.Email,
+                Address = dto.Email
+            });
 
             DbContext.SaveChanges();
 
         }
 
-        public Identity GetByEmail(string email) //TODO: this should be used by Auth.ResourceOwnerValidator?
+        public Models.Catalog.Identity GetByEmail(string email) //TODO: this should be used by Auth.ResourceOwnerValidator?
         {
             return CatalogDb.IdentityEmails
                 .Include(x => x.Identity)
@@ -116,7 +115,7 @@ namespace Tayra.Services
 
             var salt = PasswordHelper.GenerateSalt();
 
-            var identity = CatalogDb.Add(new Identity
+            var identity = CatalogDb.Add(new Models.Catalog.Identity
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -141,7 +140,7 @@ namespace Tayra.Services
             //get identity Id
             CatalogDb.SaveChanges();
 
-            var profile = DbContext.Add(new Profile
+            var profile = DbContext.Add(new Models.Organizations.Profile
             {
                 Avatar = dto.Avatar,
                 FirstName = dto.FirstName,
@@ -151,6 +150,13 @@ namespace Tayra.Services
                 Role = invitation.Role,
                 IdentityId = identity.Id
             }).Entity;
+
+            DbContext.Add(new LogDevice
+            {
+                Profile = profile,
+                Type = LogDeviceTypes.Email,
+                Address = invitation.EmailAddress
+            });
 
             if (invitation.SegmentId.HasValue)
             {
@@ -243,7 +249,7 @@ namespace Tayra.Services
 
         public GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, IdentityManageGridParams gridParams)
         {
-            IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
+            IQueryable<Models.Organizations.Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
 
             if (gridParams.SegmentId.HasValue)
             {
@@ -364,7 +370,7 @@ namespace Tayra.Services
             return !CatalogDb.IdentityEmails.Any(x => x.Email == email && x.DeletedAt == null);
         }
 
-        public void AddEmail(int identityId, string email)
+        public void AddEmail(int identityId, int profileId, string email)
         {
             var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt == null);
 
@@ -381,11 +387,21 @@ namespace Tayra.Services
                 Created = DateTime.UtcNow
             };
 
+            if(emailEntry.IsPrimary)
+            {
+                DbContext.Add(new LogDevice
+                {
+                    Type = LogDeviceTypes.Email,
+                    ProfileId = profileId,
+                    Address = emailEntry.Email
+                });
+            }
+
             CatalogDb.IdentityEmails.Add(emailEntry);
             CatalogDb.SaveChanges();
         }
 
-        public void SetPrimaryEmail(int identityId, string email)
+        public void SetPrimaryEmail(int identityId, int profileId, string email)
         {
             var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt == null);
 
@@ -398,6 +414,18 @@ namespace Tayra.Services
             {
                 throw new ApplicationException("Email " + email + " is not used");
             }
+
+            var device = DbContext.LogDevices.Where(x => x.ProfileId == profileId && x.Type == LogDeviceTypes.Email).FirstOrDefault();
+            if (device == null)
+            {
+                device = DbContext.Add(new LogDevice
+                {
+                    Type = LogDeviceTypes.Email,
+                    ProfileId = profileId,
+                }).Entity;
+            }
+
+            device.Address = emailEntry.Email;
 
             emails.ForEach(x => x.IsPrimary = false);
             emailEntry.IsPrimary = true;

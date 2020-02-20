@@ -4,9 +4,11 @@ using System.Linq;
 using Firdaws.Core;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
+using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
+using Tayra.Services;
 using Tayra.SyncServices.Common;
 
 namespace Tayra.SyncServices.Tayra
@@ -67,6 +69,7 @@ namespace Tayra.SyncServices.Tayra
                                  ComplexityTotal = total.Sum(x => x.Complexity),
 
                                  Completed = change.Count(),
+                                 CompletedNames = change.Select(x => x.Summary).ToArray(),
                                  CompletedTotal = total.Count(),
 
                                  ProductionBugsFixed = change.Count(x => x.IsProductionBugFixing),
@@ -115,10 +118,10 @@ namespace Tayra.SyncServices.Tayra
                                {
                                    ProfileId = total.Key,
 
+                                   Usernames = change.Select(x => x.UppedProfile.Username).ToArray(),
                                    Count = change.Count(),
                                    CountTotal = total.Count()
-                               })
-                                .ToList();
+                               }).ToList();
 
             var oneUpsReceived = (from u in organizationDb.ProfileOneUps
                                   group u by u.UppedProfileId into total
@@ -126,6 +129,8 @@ namespace Tayra.SyncServices.Tayra
                                   select new
                                   {
                                       ProfileId = total.Key,
+
+                                      Usernames = organizationDb.Profiles.Where(x => change.Select(c => c.CreatedBy).Contains(x.Id)).Select(x => x.Username).ToArray(),
                                       Count = change.Count(),
                                       CountTotal = total.Count()
                                   }).ToList();
@@ -147,19 +152,31 @@ namespace Tayra.SyncServices.Tayra
                                select new
                                {
                                    ProfileId = total.Key,
+
+                                   Names = change.Select(x => x.Item.Name).ToArray(),
                                    Count = change.Count(),
                                    CountTotal = total.Count()
                                }).ToList();
 
-            var itemsGifted = (from i in organizationDb.ItemGifts
-                               group i by i.SenderId into total
-                               let change = total.Where(x => x.Created.Date == DateHelper2.ParseDate(dateId))
-                               select new
-                               {
-                                   ProfileId = total.Key,
-                                   Count = change.Count(),
-                                   CountTotal = total.Count()
-                               }).ToList();
+            var giftsSent = (from u in organizationDb.ItemGifts
+                             group u by u.SenderId into total
+                             let change = total.Where(x => x.Created.Date == DateHelper2.ParseDate(dateId))
+                             select new
+                             {
+                                 ProfileId = total.Key,
+                                 Gifts = change.Select(x => x.Receiver.Username + " - " + x.Item.Name).ToArray(),
+                                 Count = change.Count(),
+                                 CountTotal = total.Count()
+                             }).ToList();
+
+            var giftsReceived = (from u in organizationDb.ItemGifts
+                                 group u by u.ReceiverId into total
+                                 let change = total.Where(x => x.Created.Date == DateHelper2.ParseDate(dateId))
+                                 select new
+                                 {
+                                     ProfileId = total.Key,
+                                     Gifts = change.Select(x => x.Sender.Username + " - " + x.Item.Name).ToArray()
+                                 }).ToList();
 
             var shopPurchases = (from sp in organizationDb.ShopPurchases
                                 where sp.Status == ShopPurchaseStatuses.Fulfilled
@@ -168,6 +185,8 @@ namespace Tayra.SyncServices.Tayra
                                 select new
                                 {
                                     ProfileId = total.Key,
+
+                                    Names = change.Select(x => x.Item.Name).ToArray(),
                                     Count = change.Count(),
                                     CountTotal = total.Count()
                                 }).ToList();
@@ -178,8 +197,10 @@ namespace Tayra.SyncServices.Tayra
                                   {
                                       ProfileId = total.Key,
                                       TotalCount = total.Count(),
-                                      TotalValue = total.Sum(x => x.Item.WorthValue)
+                                      TotalValue = total.Sum(x => x.Item.Price)
                                   }).ToList();
+
+
 
             var profiles = organizationDb.Profiles.Select(x => new { x.Id, x.Role }).ToList();
             foreach (var p in profiles)
@@ -189,11 +210,34 @@ namespace Tayra.SyncServices.Tayra
                 var upsG = oneUpsGiven.FirstOrDefault(x => x.ProfileId == p.Id);
                 var upsR = oneUpsReceived.FirstOrDefault(x => x.ProfileId == p.Id);
                 var sp = shopPurchases.FirstOrDefault(x => x.ProfileId == p.Id);
-                var iGifted = itemsGifted.FirstOrDefault(x => x.ProfileId == p.Id);
                 var iCreated = itemsCreated.FirstOrDefault(x => x.ProfileId == p.Id);
                 var iDissed = itemsDissed.FirstOrDefault(x => x.ProfileId == p.Id);
+                var iGiftS = giftsSent.FirstOrDefault(x => x.ProfileId == p.Id);
+                var iGiftR = giftsReceived.FirstOrDefault(x => x.ProfileId == p.Id);
                 var inv = inventory.FirstOrDefault(x => x.ProfileId == p.Id);
                 var iterationCount = 1;
+
+                var activityChart = new ProfileActivityChartDTO
+                {
+                    DateId = dateId,
+                    AssistsData = new ProfileActivityChartDTO.AssistsDTO
+                    {
+                        Endorsed = upsG?.Usernames,
+                        EndorsedBy = upsR?.Usernames
+                    },
+                    DeliveryData = new ProfileActivityChartDTO.DeliveryDTO
+                    {
+                        TaskName = ts?.CompletedNames,
+                        TokensGained = t?.CompanyTokensEarned ?? 0d
+                    },
+                    ItemActivityData = new ProfileActivityChartDTO.ItemActivityDTO
+                    {
+                        GiftsSent = iGiftS?.Gifts,
+                        GiftsReceived = iGiftR?.Gifts,
+                        Bought = sp?.Names,
+                        Disenchanted = iDissed?.Names
+                    }
+                };
 
                 reportsToInsert.Add(new ProfileReportDaily
                 {
@@ -257,8 +301,10 @@ namespace Tayra.SyncServices.Tayra
                     ItemsDisenchantedChange = (iDissed?.Count) ?? 0,
                     ItemsDisenchantedTotal = (iDissed?.CountTotal) ?? 0,
 
-                    ItemsGiftedChange = (iGifted?.Count) ?? 0,
-                    ItemsGiftedTotal = (iGifted?.CountTotal) ?? 0,
+                    ItemsGiftedChange = (iGiftS?.Count) ?? 0,
+                    ItemsGiftedTotal = (iGiftS?.CountTotal) ?? 0,
+
+                    ActivityChartJson = JsonConvert.SerializeObject(activityChart)
                 });
             }
 
@@ -367,8 +413,8 @@ namespace Tayra.SyncServices.Tayra
                                    PowerAverage = last4.Sum(x => x.ComplexityChange / (float)x.TasksCompletedChange) / icMax4,
                                    PowerTotalAverage = dg.Sum(x => x.ComplexityChange / (float)x.TasksCompletedChange) / ic,
 
-                                   SpeedAverage = last4.Sum(x => x.ComplexityChange) / icMax4,
-                                   SpeedTotalAverage = (float)dg.Sum(x => x.ComplexityChange) / ic,
+                                   SpeedAverage = last4.Sum(x => x.TasksCompletedChange) / icMax4,
+                                   SpeedTotalAverage = (float)dg.Sum(x => x.TasksCompletedChange) / ic,
 
                                    HeatIndex = last1.Sum(x => x.ComplexityChange) / (float)dg.Where(x => x.DateId > dateId2ago && x.DateId <= dateId1ago).Sum(x => x.ComplexityChange)
                                }).ToList();

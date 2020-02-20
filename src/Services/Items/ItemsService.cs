@@ -2,6 +2,7 @@
 using System.Linq;
 using Firdaws.Core;
 using Firdaws.DAL;
+using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 
@@ -27,24 +28,32 @@ namespace Tayra.Services
             }
 
             var itemDto = (from i in DbContext.Items
-                              where i.Id == itemId
-                              select new ItemViewDTO
-                              {
-                                  Name = i.Name,
-                                  Description = i.Description,
-                                  Image = i.Image,
-                                  WorthValue = i.WorthValue,
-                                  IsActivable = i.IsActivable,
-                                  IsDisenchantable = i.IsDisenchantable,
-                                  IsGiftable = i.IsGiftable,
-                                  Type = i.Type,
-                                  Rarity = i.Rarity,
-                                  Quantity = i.IsQuantityLimited ? i.Reservations.Sum(x => x.QuantityChange) : (int?)null,
-                                  Created = i.Created,
-                                  LastModified = i.LastModified
-                              }).FirstOrDefault();
+                           where i.Id == itemId
+                           select new ItemViewDTO
+                           {
+                               ItemId = i.Id,
+                               Name = i.Name,
+                               Description = i.Description,
+                               Image = i.Image,
+                               Price = i.Price,
+                               IsActivable = i.IsActivable,
+                               IsDisenchantable = i.IsDisenchantable,
+                               IsGiftable = i.IsGiftable,
+                               Type = i.Type,
+                               Rarity = i.Rarity,
+                               Quantity = i.IsQuantityLimited ? i.Reservations.Sum(x => x.QuantityChange) : (int?)null,
+                               Created = i.Created,
+                               LastModified = i.LastModified
+                           }).FirstOrDefault();
 
             itemDto.EnsureNotNull(itemId);
+
+            var shopItem = DbContext.ShopItems.Where(x => x.ItemId == itemId).FirstOrDefault();
+            if(shopItem != null)
+            {
+                itemDto.ShopRemainingQuantity = shopItem.QuantityReservedRemaining;
+                itemDto.PlaceInShop = true;
+            }
 
             return itemDto;
         }
@@ -70,7 +79,7 @@ namespace Tayra.Services
                             Name = i.Name,
                             Description = i.Description,
                             Image = i.Image,
-                            WorthValue = i.WorthValue,
+                            Price = i.Price,
                             IsActivable = i.IsActivable,
                             IsDisenchantable = i.IsDisenchantable,
                             IsGiftable = i.IsGiftable,
@@ -84,6 +93,113 @@ namespace Tayra.Services
             GridData<ItemGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
+        }
+
+        public Item CreateItem(ItemCreateDTO dto)
+        {
+            var item = DbContext.Add(new Item
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+                Image = dto.Image,
+                IsActivable = dto.IsActivable,
+                IsDisenchantable = dto.IsDisenchantable,
+                IsGiftable = dto.IsGiftable,
+                Type = dto.Type,
+                Rarity = dto.Rarity,
+                Price = dto.Price,
+                IsQuantityLimited = dto.Quantity.HasValue,
+                Reservations = !dto.Quantity.HasValue ? null : new ItemReservation[]
+                {
+                    new ItemReservation
+                    {
+                        QuantityChange = dto.Quantity.Value
+                    }
+                }
+            }).Entity;
+
+            if(dto.PlaceInShop)
+            {
+                DbContext.Add(new ShopItem
+                {
+                    Item = item,
+                    QuantityReservedRemaining = dto.ShopQuantity,
+                    IsGlobal = true
+                });
+            }
+
+            return item;
+        }
+
+        public Item UpdateItem(ItemUpdateDTO dto)
+        {
+            var item = DbContext.Items.Include(x => x.Reservations).FirstOrDefault(x => x.Id == dto.ItemId);
+            item.EnsureNotNull(dto.ItemId);
+
+            item.Price = dto.Price;
+            item.IsQuantityLimited = dto.Quantity.HasValue;
+
+            if(dto.Quantity.HasValue && item.Reservations.Sum(x => x.QuantityChange) != dto.Quantity)
+            {
+                DbContext.Add(new ItemReservation
+                {
+                    ItemId = item.Id,
+                    QuantityChange = dto.Quantity.Value - item.Reservations.Sum(x => x.QuantityChange)
+                });
+            }
+            else if (!dto.Quantity.HasValue)
+            {
+                DbContext.RemoveRange(item.Reservations);
+            }
+
+            var shopItem = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);
+
+            if(!dto.PlaceInShop)
+            {
+                if (shopItem != null)
+                {
+                    DbContext.Remove(shopItem);
+                }
+                return item;
+            }
+            
+            shopItem = shopItem ?? DbContext.Add(new ShopItem { ItemId = item.Id, IsGlobal = true}).Entity;
+
+            if((!dto.ShopQuantity.HasValue && dto.Quantity.HasValue)
+            || dto.Quantity <= (dto.ShopQuantity ?? 0 - shopItem.QuantityReservedRemaining ?? 0)) //checks if there is enough quantity now
+            {
+                throw new ApplicationException("shop quantity exceeds item quantity"); 
+            }
+
+            //         new quantity - shopNewQuantity -        shopCurrentRemainingQuantity -             currentQuantity
+            var newQ = dto.Quantity - (dto.ShopQuantity ?? 0 - shopItem.QuantityReservedRemaining ?? 0) - item?.Reservations.Sum(x => x.QuantityChange);
+            if (dto.Quantity.HasValue && newQ != dto.Quantity)
+            {
+                item.Reservations.Add(DbContext.Add(new ItemReservation
+                {
+                    ItemId = item.Id,
+                    QuantityChange = dto.Quantity.Value - item.Reservations.Sum(x => x.QuantityChange)
+                }).Entity);
+            }
+            if (!dto.Quantity.HasValue)
+            {
+                DbContext.RemoveRange(item.Reservations);
+            }
+
+            shopItem.QuantityReservedRemaining = dto.ShopQuantity;
+            var newItem = dto.AffectOwnedItems ? shopItem.Item : new Item();
+            shopItem.Item = newItem;
+
+            newItem.Name = dto.Name;
+            newItem.Description = dto.Description;
+            newItem.Image = dto.Image;
+            newItem.IsActivable = dto.IsActivable;
+            newItem.IsDisenchantable = dto.IsDisenchantable;
+            newItem.IsGiftable = dto.IsGiftable;
+            newItem.Type = dto.Type;
+            newItem.Rarity = dto.Rarity;
+
+            return newItem;
         }
 
         #endregion

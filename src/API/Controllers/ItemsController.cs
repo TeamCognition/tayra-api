@@ -33,6 +33,24 @@ namespace Tayra.API.Controllers
             return Ok(ItemsService.GetGridData(CurrentUser.Role, gridParams));
         }
 
+        [HttpPost("create")]
+        public ActionResult<IDTO> CreateItem([FromBody] ItemCreateDTO dto)
+        {
+            var item = ItemsService.CreateItem(dto);
+            OrganizationContext.SaveChanges();
+
+            return Ok(new { Id = item.Id});
+        }
+
+        [HttpPut("update")]
+        public ActionResult<IDTO> UpdateItem([FromBody] ItemUpdateDTO dto)
+        {
+            var item = ItemsService.UpdateItem(dto);
+            OrganizationContext.SaveChanges();
+
+            return Ok(new { Id = item.Id });
+        }
+
         #endregion
     }
 }
