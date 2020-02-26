@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200221104145_BETA60")]
+    partial class BETA60
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1259,13 +1261,13 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileReportDaily", b =>
                 {
-                    b.Property<int>("OrganizationId");
-
                     b.Property<int>("DateId");
 
                     b.Property<int>("ProfileId");
 
                     b.Property<int>("TaskCategoryId");
+
+                    b.Property<int>("OrganizationId");
 
                     b.Property<string>("ActivityChartJson");
 
@@ -1353,7 +1355,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("TurnoverTotal");
 
-                    b.HasKey("OrganizationId", "DateId", "ProfileId", "TaskCategoryId");
+                    b.HasKey("DateId", "ProfileId", "TaskCategoryId", "OrganizationId");
+
+                    b.HasAlternateKey("DateId", "ProfileId", "TaskCategoryId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("ProfileId");
 
@@ -1364,13 +1370,13 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileReportWeekly", b =>
                 {
-                    b.Property<int>("OrganizationId");
-
                     b.Property<int>("DateId");
 
                     b.Property<int>("ProfileId");
 
                     b.Property<int>("TaskCategoryId");
+
+                    b.Property<int>("OrganizationId");
 
                     b.Property<int>("AssistsChange");
 
@@ -1472,7 +1478,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<float>("TurnoverTotalAverage");
 
-                    b.HasKey("OrganizationId", "DateId", "ProfileId", "TaskCategoryId");
+                    b.HasKey("DateId", "ProfileId", "TaskCategoryId", "OrganizationId");
+
+                    b.HasAlternateKey("DateId", "ProfileId", "TaskCategoryId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("ProfileId");
 
@@ -1561,13 +1571,13 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportDaily", b =>
                 {
-                    b.Property<int>("OrganizationId");
-
                     b.Property<int>("DateId");
 
                     b.Property<int>("SegmentId");
 
                     b.Property<int>("TaskCategoryId");
+
+                    b.Property<int>("OrganizationId");
 
                     b.Property<int>("AssistsChange");
 
@@ -1643,7 +1653,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("TurnoverTotal");
 
-                    b.HasKey("OrganizationId", "DateId", "SegmentId", "TaskCategoryId");
+                    b.HasKey("DateId", "SegmentId", "TaskCategoryId", "OrganizationId");
+
+                    b.HasAlternateKey("DateId", "SegmentId", "TaskCategoryId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("SegmentId");
 
@@ -1654,13 +1668,13 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportWeekly", b =>
                 {
-                    b.Property<int>("OrganizationId");
-
                     b.Property<int>("DateId");
 
                     b.Property<int>("SegmentId");
 
                     b.Property<int>("TaskCategoryId");
+
+                    b.Property<int>("OrganizationId");
 
                     b.Property<float>("AssistsAverage");
 
@@ -1758,7 +1772,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("TurnoverChange");
 
-                    b.HasKey("OrganizationId", "DateId", "SegmentId", "TaskCategoryId");
+                    b.HasKey("DateId", "SegmentId", "TaskCategoryId", "OrganizationId");
+
+                    b.HasAlternateKey("DateId", "SegmentId", "TaskCategoryId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("SegmentId");
 
@@ -2128,13 +2146,13 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportDaily", b =>
                 {
-                    b.Property<int>("OrganizationId");
-
                     b.Property<int>("DateId");
 
                     b.Property<int>("TeamId");
 
                     b.Property<int>("TaskCategoryId");
+
+                    b.Property<int>("OrganizationId");
 
                     b.Property<int>("AssistsChange");
 
@@ -2206,7 +2224,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("TurnoverTotal");
 
-                    b.HasKey("OrganizationId", "DateId", "TeamId", "TaskCategoryId");
+                    b.HasKey("DateId", "TeamId", "TaskCategoryId", "OrganizationId");
+
+                    b.HasAlternateKey("DateId", "TeamId", "TaskCategoryId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("TaskCategoryId");
 
@@ -2217,13 +2239,13 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportWeekly", b =>
                 {
-                    b.Property<int>("OrganizationId");
-
                     b.Property<int>("DateId");
 
                     b.Property<int>("TeamId");
 
                     b.Property<int>("TaskCategoryId");
+
+                    b.Property<int>("OrganizationId");
 
                     b.Property<float>("AssistsAverage");
 
@@ -2315,7 +2337,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("TurnoverChange");
 
-                    b.HasKey("OrganizationId", "DateId", "TeamId", "TaskCategoryId");
+                    b.HasKey("DateId", "TeamId", "TaskCategoryId", "OrganizationId");
+
+                    b.HasAlternateKey("DateId", "TeamId", "TaskCategoryId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("TaskCategoryId");
 
@@ -3087,6 +3113,11 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileReportDaily", b =>
                 {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("StatsDaily")
                         .HasForeignKey("ProfileId")
@@ -3102,6 +3133,11 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileReportWeekly", b =>
                 {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("StatsWeekly")
                         .HasForeignKey("ProfileId")
@@ -3133,6 +3169,11 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportDaily", b =>
                 {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("ReportsDaily")
                         .HasForeignKey("SegmentId")
@@ -3148,6 +3189,11 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportWeekly", b =>
                 {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("ReportsWeekly")
                         .HasForeignKey("SegmentId")
@@ -3337,6 +3383,11 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportDaily", b =>
                 {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Tayra.Models.Organizations.TaskCategory", "TaskCategory")
                         .WithMany()
                         .HasForeignKey("TaskCategoryId")
@@ -3352,6 +3403,11 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportWeekly", b =>
                 {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Tayra.Models.Organizations.TaskCategory", "TaskCategory")
                         .WithMany()
                         .HasForeignKey("TaskCategoryId")

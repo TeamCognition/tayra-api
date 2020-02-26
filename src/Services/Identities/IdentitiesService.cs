@@ -61,7 +61,7 @@ namespace Tayra.Services
             //get identity Id
             CatalogDb.SaveChanges();
 
-            var profile = DbContext.Add(new Models.Organizations.Profile
+            var profile = DbContext.Add(new Profile
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -79,10 +79,9 @@ namespace Tayra.Services
             });
 
             DbContext.SaveChanges();
-
         }
 
-        public Models.Catalog.Identity GetByEmail(string email) //TODO: this should be used by Auth.ResourceOwnerValidator?
+        public Identity GetByEmail(string email) //TODO: this should be used by Auth.ResourceOwnerValidator?
         {
             return CatalogDb.IdentityEmails
                 .Include(x => x.Identity)

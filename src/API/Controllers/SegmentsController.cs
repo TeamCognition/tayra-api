@@ -87,18 +87,22 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPost("{segmentId:int}/addMember")]
-        public IActionResult AddMember([FromRoute] int segmentId, [FromBody] SegmentMemberAddRemoveDTO dto)
+        [HttpPost("addMember")]
+        public IActionResult AddMember([FromBody] SegmentMemberAddRemoveDTO[] dtos)
         {
-            SegmentsService.AddMember(segmentId, dto);
+            foreach (var dto in dtos)
+            {
+                SegmentsService.AddMember(dto);
+            }
+
             DbContext.SaveChanges();
             return Ok();
         }
 
-        [HttpDelete("{segmentId:int}/removeMember")]
-        public IActionResult RemoveMember([FromRoute] int segmentId, [FromQuery] SegmentMemberAddRemoveDTO dto)
+        [HttpDelete("removeMember")]
+        public IActionResult RemoveMember([FromQuery] SegmentMemberAddRemoveDTO dto)
         {
-            SegmentsService.RemoveMember(segmentId, dto);
+            SegmentsService.RemoveMember(dto);
             DbContext.SaveChanges();
             return Ok();
         }

@@ -26,7 +26,7 @@ namespace Tayra.Models.Organizations
         {
         }
         protected internal OrganizationDbContext(DbContextOptions<OrganizationDbContext> options) : base(options)
-        {//deliete this after done with migrations
+        {//for tests
         }
 
 
@@ -234,18 +234,18 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileReportDaily>(entity =>
             {
-                entity.HasKey(x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.OrganizationId, x.DateId, x.ProfileId, x.TaskCategoryId });
             });
 
             modelBuilder.Entity<ProfileReportWeekly>(entity =>
             {
-                entity.HasKey(x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.OrganizationId, x.DateId, x.ProfileId, x.TaskCategoryId });
             });
 
             modelBuilder.Entity<Segment>().HasIndex(nameof(Segment.Key), ArchivedAtProp).IsUnique();
             modelBuilder.Entity<SegmentArea>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
-            modelBuilder.Entity<SegmentReportWeekly>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
+            modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.OrganizationId, x.DateId, x.SegmentId, x.TaskCategoryId });
+            modelBuilder.Entity<SegmentReportWeekly>().HasKey(x => new { x.OrganizationId, x.DateId, x.SegmentId, x.TaskCategoryId });
 
             modelBuilder.Entity<ShopItem>(entity =>
             {
@@ -279,12 +279,12 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<TeamReportDaily>(entity =>
             {
-                entity.HasKey(x => new { x.DateId, x.TeamId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.OrganizationId, x.DateId, x.TeamId, x.TaskCategoryId });
             });
 
             modelBuilder.Entity<TeamReportWeekly>(entity =>
             {
-                entity.HasKey(x => new { x.DateId, x.TeamId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.OrganizationId, x.DateId, x.TeamId, x.TaskCategoryId });
             });
 
             modelBuilder.Ignore<Date>();
@@ -331,6 +331,9 @@ namespace Tayra.Models.Organizations
 
         public void SetGlobalQuery<T>(ModelBuilder builder) where T : class
         {
+            if (CurrentTenantId <= 0)//for tests
+                return;
+
             if (typeof(IArchivableEntity).IsAssignableFrom(typeof(T)))
             {
                 builder.Entity<T>().HasQueryFilter(e =>

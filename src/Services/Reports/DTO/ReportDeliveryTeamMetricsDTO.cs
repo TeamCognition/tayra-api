@@ -12,7 +12,7 @@
 
         public class DataDTO
         {
-            public int AverageTimeCompletionTime { get; set; }
+            public int DateId { get; set; }
             public TaskDTO[] Tasks { get; set; }
 
             public class TaskDTO
@@ -20,6 +20,7 @@
                 public string Name { get; set; }
                 public int MinutesSpent { get; set; }
                 public int Complexity { get; set; }
+                public string AssigneeName { get; set; }
             }
         }
     }

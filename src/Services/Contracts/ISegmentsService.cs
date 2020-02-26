@@ -14,8 +14,8 @@ namespace Tayra.Services
         SegmentImpactLineChartDTO GetImpactLineChart(int segmentId);
         void Create(int profileId, SegmentCreateDTO dto);
         void Update(int segmentId, SegmentCreateDTO dto);
-        void AddMember(int segmentId, SegmentMemberAddRemoveDTO dto);
-        void RemoveMember(int segmentId, SegmentMemberAddRemoveDTO dto);
+        void AddMember(SegmentMemberAddRemoveDTO dto);
+        void RemoveMember(SegmentMemberAddRemoveDTO dto);
         bool IsSegmentKeyUnique(string segmentKey);
         void Archive(int segmentId);
     }

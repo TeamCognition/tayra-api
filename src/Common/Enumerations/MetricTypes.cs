@@ -10,8 +10,8 @@ namespace Tayra.Common
         [Description("Speed")]
         Speed = 2,
 
-        [Description("Heat")]
-        Heat = 3,
+        [Description("Power")]
+        Power = 3,
 
         [Description("Complexity")]
         Complexity = 4,

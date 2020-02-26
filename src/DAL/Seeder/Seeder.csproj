@@ -36,4 +36,7 @@
   <ItemGroup>
     <Folder Include="Seed\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Inputs\tasks.txt" />
+  </ItemGroup>
 </Project>

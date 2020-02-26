@@ -173,6 +173,7 @@ namespace Tayra.API.Controllers
                 var hours = (enteredRewardStatus.Value - enteredInProgress.Value).TotalHours;
 
                 autoTimeSpent = (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes;
+                autoTimeSpent /= 3;
             }
 
             var timeSpentToUse = fields.Timespent ?? autoTimeSpent;

@@ -69,6 +69,7 @@ namespace Tayra.Services
             var query = from i in scope
                         where i.ProfileId == profile.Id
                         where i.Item.Name.Contains(gridParams.ItemNameQuery)
+                        where !i.ClaimRequired || i.ClaimedAt.HasValue
                         select new InventoryItemGridDTO
                         {
                             InventoryItemId = i.Id,
@@ -139,7 +140,7 @@ namespace Tayra.Services
 
             invItem.EnsureNotNull(dto.InventoryItemId);
 
-            if (!InventoryRules.CanGiftInventoryItem(profileId, dto.ReceiverId, invItem.ProfileId, invItem.Item.IsGiftable))
+            if (!InventoryRules.CanGiftInventoryItem(profileId, dto.ReceiverId, invItem.ProfileId, invItem.Item.IsGiftable, invItem.IsActive))
             {
                 throw new ApplicationException("We are unable to perform this action :)");
             }
@@ -150,7 +151,8 @@ namespace Tayra.Services
                 ItemId = invItem.ItemId,
                 ProfileId = dto.ReceiverId,
                 AcquireMethod = InventoryAcquireMethods.MemberGift,
-                ClaimRequired = true
+                ClaimRequired = true,
+                ItemType = invItem.Item.Type
             }).Entity;
             
             DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.Gift).AddItems(giftedEntity);
@@ -188,7 +190,7 @@ namespace Tayra.Services
 
         public void Disenchant(int profileId, InventoryItemDisenchantDTO dto)
         {
-            var invItem = DbContext.ProfileInventoryItems.Include(x => x.Item).FirstOrDefault(x => x.ProfileId == profileId && x.Id == dto.InventoryItemId);
+            var invItem = DbContext.ProfileInventoryItems.Include(x => x.Item).Include(x => x.Profile).FirstOrDefault(x => x.ProfileId == profileId && x.Id == dto.InventoryItemId);
 
             invItem.EnsureNotNull(profileId, dto.InventoryItemId);
 
@@ -205,6 +207,7 @@ namespace Tayra.Services
                 Data = new Dictionary<string, string>
                 {
                     { "profileId", profileId.ToString() },
+                    { "profileUsername", invItem.Profile.Username },
                     { "itemId", invItem.ItemId.ToString() },
                     { "ItemName", invItem.Item.Name},
                     { "disenchantValue", disenchantValue.ToString() },

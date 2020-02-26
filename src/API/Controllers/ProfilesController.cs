@@ -138,11 +138,10 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpGet("activityChart/{profileId:int}")] //this actually returns array of strings
+        [HttpGet("activityChart/{profileId:int}")]
         public ActionResult<ProfileActivityChartDTO[]> GetActivityChart(int profileId)
         {
-            return Ok(ProfilesService.GetProfileActivityChart(profileId));
-
+            return ProfilesService.GetProfileActivityChart(profileId);
         }
 
         #endregion

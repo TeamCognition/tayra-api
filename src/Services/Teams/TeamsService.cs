@@ -45,7 +45,7 @@ namespace Tayra.Services
                                                 select new TeamViewGridDTO
                                                 {
                                                     SegmentId = s.Id,
-                                                    Teams = s.Teams.Where(x => x.Key != null).Select(x => new TeamViewGridDTO.TeamDTO
+                                                    Teams = s.Teams.Where(x => x.Key != null && EF.Property<int?>(x, "ArchievedAt") == null).Select(x => new TeamViewGridDTO.TeamDTO
                                                     {
                                                         TeamId = x.Id,
                                                         Key = x.Key,
@@ -74,10 +74,11 @@ namespace Tayra.Services
                                                    .OrderByDescending(x => x.DateId).Take(1).DefaultIfEmpty()
                                                    select new TeamMembersGridDTO
                                                    {
+                                                       ProfileId = t.ProfileId,
                                                        Name = t.Profile.FirstName + " " + t.Profile.LastName,
                                                        Username = t.Profile.Username,
                                                        Speed = Math.Round(t.Profile.StatsWeekly.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
-                                                       Heat = Math.Round(t.Profile.StatsWeekly.Select(x => x.Heat).FirstOrDefault(), 2),
+                                                       Power = Math.Round(t.Profile.StatsWeekly.Select(x => x.PowerAverage).FirstOrDefault(), 2),
                                                        Impact = Math.Round(t.Profile.StatsWeekly.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
                                                        MemberFrom = t.Created
                                                    };

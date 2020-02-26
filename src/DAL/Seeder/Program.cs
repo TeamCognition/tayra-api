@@ -15,6 +15,7 @@ namespace Tayra.Models.Seeder
 
             //Seeder.SeedAll(shardMapProvider, config);
             //Seeder.Seed(shardMapProvider, "tajra");
+            Seeder.SeedTasksFromTxt(shardMapProvider, "tajra");
             Console.WriteLine("Seed finished!");
         }
 

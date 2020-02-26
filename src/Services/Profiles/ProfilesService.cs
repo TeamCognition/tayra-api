@@ -206,7 +206,7 @@ namespace Tayra.Services
                             OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value),
                             CompletedChallenges = p.CompletedChallenges.Count(),
                             Speed = (float)Math.Round(prw.SpeedAverage, 2),
-                            Heat = (float)Math.Round(prw.Heat, 2),
+                            Power = (float)Math.Round(prw.PowerAverage, 2),
                             Impact = (float)Math.Round(prw.OImpactAverage, 2),
                             TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == expTokenId).Sum(x => x.Value), 2) //There might be a problem with this
                         };
@@ -336,7 +336,7 @@ namespace Tayra.Services
                               let tt = p.Tokens.Where(x => !x.ClaimRequired || x.ClaimedAt.HasValue).GroupBy( //TokenScope
                               x => x.Token,
                               x => x,
-                              (t, tnxs) => new ProfileViewDTO.Token { Name = t.Name, Type = t.Type, Value = tnxs.Sum(x => x.Value) })
+                              (t, tnxs) => new ProfileViewDTO.TokenDTO { Name = t.Name, Type = t.Type, Value = tnxs.Sum(x => x.Value) })
                               select new ProfileViewDTO
                               {
                                   ProfileId = p.Id,
@@ -366,10 +366,16 @@ namespace Tayra.Services
             profileDto.Title = activeItems.Title;
             profileDto.Border = activeItems.Border;
 
-            var weeklyStats = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).FirstOrDefault(x => x.ProfileId == profileDto.ProfileId);
-            profileDto.Heat = weeklyStats?.Heat;
-            profileDto.Speed = weeklyStats?.SpeedAverage;
-            profileDto.OImpact = weeklyStats?.OImpactAverage;
+            var weeklyStats = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).Where(x => x.ProfileId == profileDto.ProfileId).Take(4).ToArray();
+            var lastWeeklyStats = weeklyStats.FirstOrDefault();
+            profileDto.Power = lastWeeklyStats?.PowerAverage;
+            profileDto.Speed = lastWeeklyStats?.SpeedAverage;
+            profileDto.OImpact = lastWeeklyStats?.OImpactAverage;
+            profileDto.Heat = lastWeeklyStats == null ? null : new ProfileViewDTO.HeatDTO
+            {
+                LastDateId = lastWeeklyStats.DateId,
+                Values = weeklyStats.Select(x => x.Heat).ToArray()
+            };
 
             return profileDto;
         }
@@ -421,9 +427,9 @@ namespace Tayra.Services
             }
         }
 
-        public string[] GetProfileActivityChart(int profileId)
+        public ProfileActivityChartDTO[] GetProfileActivityChart(int profileId)
         {
-            return DbContext.ProfileReportsDaily.Where(x => x.ProfileId == profileId && x.ActivityChartJson != null).OrderBy(x => x.DateId).Select(x => x.ActivityChartJson).Take(30).ToArray();
+            return DbContext.ProfileReportsDaily.Where(x => x.ProfileId == profileId && x.ActivityChartJson != null).OrderBy(x => x.DateId).Select(x => x.ActivityChartJson).Take(30).ToArray().Select(JsonConvert.DeserializeObject<ProfileActivityChartDTO>).ToArray();
         }
 
 

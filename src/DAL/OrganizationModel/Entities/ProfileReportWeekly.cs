@@ -6,6 +6,9 @@ namespace Tayra.Models.Organizations
 {
     public class ProfileReportWeekly : ITimeStampedEntity
     {
+        //dont delete
+        public int OrganizationId { get; set; }
+
         public int DateId { get; set; }
         public int IterationCount { get; set; }
         public ProfileRoles ProfileRole { get; set; }

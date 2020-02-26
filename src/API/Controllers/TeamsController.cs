@@ -36,11 +36,6 @@ namespace Tayra.API.Controllers
         [HttpPost("searchMembers")]
         public ActionResult<GridData<TeamMembersGridDTO>> GetTeamMembers([FromBody] TeamMembersGridParams gridParams)
         {
-            if (string.IsNullOrEmpty(gridParams.Sidx))
-            {
-                gridParams.Sidx = nameof(TeamMembersGridDTO.Name);
-            }
-
             return TeamsService.GetTeamMembersGridData(gridParams);
         }
 

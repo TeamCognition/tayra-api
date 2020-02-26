@@ -134,11 +134,9 @@ namespace Tayra.Services
         public Item UpdateItem(ItemUpdateDTO dto)
         {
             var item = DbContext.Items.Include(x => x.Reservations).FirstOrDefault(x => x.Id == dto.ItemId);
-            item.EnsureNotNull(dto.ItemId);
+            item.EnsureNotNull(dto.ItemId); 
 
-            item.Price = dto.Price;
-            item.IsQuantityLimited = dto.Quantity.HasValue;
-
+            //Is this even needed?
             if(dto.Quantity.HasValue && item.Reservations.Sum(x => x.QuantityChange) != dto.Quantity)
             {
                 DbContext.Add(new ItemReservation
@@ -187,19 +185,24 @@ namespace Tayra.Services
             }
 
             shopItem.QuantityReservedRemaining = dto.ShopQuantity;
-            var newItem = dto.AffectOwnedItems ? shopItem.Item : new Item();
-            shopItem.Item = newItem;
+            if(!dto.AffectOwnedItems)
+            {
+                DbContext.Remove(shopItem.Item);
+                shopItem.Item = new Item();
+            }
 
-            newItem.Name = dto.Name;
-            newItem.Description = dto.Description;
-            newItem.Image = dto.Image;
-            newItem.IsActivable = dto.IsActivable;
-            newItem.IsDisenchantable = dto.IsDisenchantable;
-            newItem.IsGiftable = dto.IsGiftable;
-            newItem.Type = dto.Type;
-            newItem.Rarity = dto.Rarity;
+            shopItem.Item.Price = dto.Price;
+            shopItem.Item.IsQuantityLimited = dto.Quantity.HasValue;
+            shopItem.Item.Name = dto.Name;
+            shopItem.Item.Description = dto.Description;
+            shopItem.Item.Image = dto.Image;
+            shopItem.Item.IsActivable = dto.IsActivable;
+            shopItem.Item.IsDisenchantable = dto.IsDisenchantable;
+            shopItem.Item.IsGiftable = dto.IsGiftable;
+            shopItem.Item.Type = dto.Type;
+            shopItem.Item.Rarity = dto.Rarity;
 
-            return newItem;
+            return shopItem.Item;
         }
 
         #endregion

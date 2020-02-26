@@ -15,9 +15,10 @@ namespace Tayra.Services
 
         public string Avatar { get; set; }
 
-        public float? Heat { get; set; }
+        public float? Power { get; set; }
         public float? Speed { get; set; }
         public float? OImpact { get; set; }
+        public HeatDTO Heat { get; set; }
 
         public double CompanyTokens { get; set; }
         public int Experience { get; set; }
@@ -30,13 +31,19 @@ namespace Tayra.Services
 
         public DateTime? LastUppedAt { get; set; }
 
-        public virtual IList<Token> CustomTokens { get; set; } //Ienumerable when fixed profileViewGET
+        public virtual IList<TokenDTO> CustomTokens { get; set; } //Ienumerable when fixed profileViewGET
 
-        public class Token
+        public class TokenDTO
         {
             public string Name { get; set; }
             public TokenType Type { get; set; }
             public double Value { get; set; }
+        }
+
+        public class HeatDTO
+        {
+            public int LastDateId { get; set; }
+            public float[] Values { get; set; }
         }
     }
 }

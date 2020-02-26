@@ -19,37 +19,31 @@ namespace ReportsTester
         {
             startDate,
             startDate.AddDays(1),
-            startDate.AddDays(2),
-            startDate.AddDays(3),
             startDate.AddDays(1).AddWeeks(1),
-            startDate.AddDays(2).AddWeeks(1),
-            startDate.AddDays(3).AddWeeks(1),
             startDate.AddDays(1).AddWeeks(2),
-            startDate.AddDays(2).AddWeeks(2),
-            startDate.AddDays(3).AddWeeks(2),
             startDate.AddDays(1).AddWeeks(3),
-            startDate.AddDays(2).AddWeeks(3),
-            startDate.AddDays(3).AddWeeks(3),
             startDate.AddDays(1).AddWeeks(4),
-            startDate.AddDays(2).AddWeeks(4),
-            startDate.AddDays(3).AddWeeks(4),
             startDate.AddDays(1).AddWeeks(5),
-            startDate.AddDays(2).AddWeeks(5),
-            startDate.AddDays(3).AddWeeks(5),
+
         };
 
         [Fact]
         public void Test1()
         {
             var options = new DbContextOptionsBuilder<OrganizationDbContext>()
-                .UseInMemoryDatabase(databaseName: "report_testing")
+                .UseInMemoryDatabase(databaseName: "reportss_testing")
                 .Options;
 
             // Run the test against one instance of the context
-            using (var context = new OrganizationDbContext(null, null, null))
+            using (var context = OrganizationContextFactoryForTests.CreateDbContext(options))
             {
                 Seed(context);
                 context.SaveChanges();
+
+                if (context.Tasks != null)
+                {
+                    Console.WriteLine("dsaas" + context.Tasks.Count());
+                }
 
                 var logService = new LogService(new NullLogger<ProfileReportsTest>());
                 var date = workDays.First();
@@ -69,7 +63,7 @@ namespace ReportsTester
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
-            using (var context = new OrganizationDbContext(null, null, null))
+            using (var context = OrganizationContextFactoryForTests.CreateDbContext(options))
             {
                 var a = context.ProfileReportsDaily.ToList();
 
@@ -80,6 +74,11 @@ namespace ReportsTester
                 foreach (var r in wl)
                 {
                     Console.WriteLine("*Date: " + r.DateId);
+                    Console.WriteLine("TasksCompletedChange " + r.TasksCompletedChange);
+                    Console.WriteLine("AssistsChange " + r.AssistsChange);
+                    Console.WriteLine("ComplexityChange " + r.ComplexityChange);
+                    Console.WriteLine("HeatIndex " + r.HeatIndex);
+
                     Console.WriteLine("Heat " + r.Heat);
                     Console.WriteLine("Speed " + r.SpeedAverage);
                     Console.WriteLine("OImpact " + r.OImpactAverage);
@@ -152,12 +151,16 @@ namespace ReportsTester
             var p2 = profiles.Last().Id;
 
             var tasks = new List<Task>();
+            int counter = 0;
             foreach (var date in workDays)
             {
                 var dateId = DateHelper2.ToDateId(date);
-                var c = 2;
-                if (dateId >= 20191125)
-                    c = 1;
+                var c = counter == 0 ? 1 : counter == 1 ? 4 : 1;
+                if (counter >= 3)
+                    c = 2;
+                counter++;
+                //if (dateId >= 20200316)
+                //    c = 1;
                 tasks.AddRange(new List<Task>
                 {
                     new Task
@@ -172,30 +175,30 @@ namespace ReportsTester
                         BugPopulationAffect = 1,
                         Status = TaskStatuses.Done
                     },
-                    new Task
-                    {
-                        LastModifiedDateId = dateId,
-                        AssigneeProfileId = p1,
-                        EffortScore = 10.2f,
-                        Complexity = c,
-                        IsProductionBugFixing = false,
-                        IsProductionBugCausing = false,
-                        BugSeverity = 2,
-                        BugPopulationAffect = 1,
-                        Status = TaskStatuses.Done
-                    },
-                    new Task
-                    {
-                        LastModifiedDateId = dateId,
-                        AssigneeProfileId = p2,
-                        EffortScore = 10.2f,
-                        Complexity = c,
-                        IsProductionBugFixing = false,
-                        IsProductionBugCausing = false,
-                        BugSeverity = 2,
-                        BugPopulationAffect = 1,
-                        Status = TaskStatuses.Done
-                    },
+                    //new Task
+                    //{
+                    //    LastModifiedDateId = dateId,
+                    //    AssigneeProfileId = p1,
+                    //    EffortScore = 10.2f,
+                    //    Complexity = c,
+                    //    IsProductionBugFixing = false,
+                    //    IsProductionBugCausing = false,
+                    //    BugSeverity = 2,
+                    //    BugPopulationAffect = 1,
+                    //    Status = TaskStatuses.Done
+                    //},
+                    //new Task
+                    //{
+                    //    LastModifiedDateId = dateId,
+                    //    AssigneeProfileId = p2,
+                    //    EffortScore = 10.2f,
+                    //    Complexity = c,
+                    //    IsProductionBugFixing = false,
+                    //    IsProductionBugCausing = false,
+                    //    BugSeverity = 2,
+                    //    BugPopulationAffect = 1,
+                    //    Status = TaskStatuses.Done
+                    //},
                 });
             };
 
@@ -229,7 +232,7 @@ namespace ReportsTester
                 });
             }
 
-            dbContext.AddRange(oneUps);
+            //dbContext.AddRange(oneUps);
         }
 
         //TODO: this is broken
@@ -265,14 +268,7 @@ namespace ReportsTester
                 }
             };
 
-            // var segmentMembers = new List<SegmentMember>();
-            // foreach (var p in profiles)
-            // {
-            //     segmentMembers.Add(new SegmentMember { SegmentId = 1, ProfileId = p.Id });
-            // }
-
             dbContext.AddRange(segments);
-            //dbContext.AddRange(segmentMembers);
         }
     }
 }

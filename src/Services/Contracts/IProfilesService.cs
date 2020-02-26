@@ -25,7 +25,7 @@ namespace Tayra.Services
         void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto);
         ProfileNotificationSettingsDTO GetNotificationSettings(int profileId);
         void UpdateNotificationSettings(int profileId, ProfileNotificationSettingsDTO dto);
-        string[] GetProfileActivityChart(int profileId);
+        ProfileActivityChartDTO[] GetProfileActivityChart(int profileId);
     }
 
 }

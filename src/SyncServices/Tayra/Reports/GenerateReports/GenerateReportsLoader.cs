@@ -1,4 +1,5 @@
 ﻿using System;
+using Firdaws.Core;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
@@ -22,8 +23,8 @@ namespace Tayra.SyncServices.Tayra
 
         public override void Execute(DateTime date, params Tenant[] tenants)
         {
-            date = date.AddDays(-14);
-            for (int i = 0; i < 14; i++)
+            date = DateHelper2.ParseDate(20191118);
+            do
             {
                 foreach (var tenant in tenants)
                 {
@@ -39,11 +40,11 @@ namespace Tayra.SyncServices.Tayra
                         GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports);
                         GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
 
-                        MakeActionPointsLoader.MakeActionPoints(organizationDb, date, LogService);
+                        //MakeActionPointsLoader.MakeActionPoints(organizationDb, date, LogService);
                     }
                 }
                 date = date.AddDays(1);
-            }
+            } while (date <= DateHelper2.ParseDate(20200224));
         }
 
         #endregion

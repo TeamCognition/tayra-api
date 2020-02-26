@@ -11,11 +11,12 @@ namespace Tayra.Services
                 && item.IsActivable;
         }
 
-        public static bool CanGiftInventoryItem(int senderId, int receiverId, int inventoryItemOwnerId, bool isGiftable)
+        public static bool CanGiftInventoryItem(int senderId, int receiverId, int inventoryItemOwnerId, bool isGiftable, bool isActive)
         {
             return senderId == inventoryItemOwnerId
                 && senderId != receiverId
-                && isGiftable;
+                && isGiftable
+                && !isActive;
         }
     }
 }

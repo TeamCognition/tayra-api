@@ -327,14 +327,14 @@ namespace Tayra.SyncServices.Tayra
         {
             if (!CommonHelper.IsMonday(fromDay))
                 return null;
-
-
+ 
             var reportsToInsert = new List<ProfileReportWeekly>();
 
             var iterationDays = 7;
             var dateId = DateHelper2.ToDateId(fromDay);
             var dateId1ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays));
             var dateId2ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 2));
+            //var dateId3ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 3));
             var dateId4ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 4));
 
             reportsToInsert = (from d in organizationDb.ProfileReportsDaily
@@ -364,7 +364,7 @@ namespace Tayra.SyncServices.Tayra
                                    CompanyTokensSpentTotalAverage = dg.Sum(c => c.CompanyTokensSpentChange) / ic,
 
                                    EffortScoreChange = last1.Sum(x => x.EffortScoreChange),
-                                   EffortScoreTotalAverage = dg.Sum(c => c.EffortScoreChange) / ic,
+                                   EffortScoreTotalAverage = (float)dg.Sum(c => c.EffortScoreChange) / ic,
 
                                    OneUpsGivenChange = last1.Sum(x => x.OneUpsGivenChange),
                                    OneUpsGivenTotalAverage = (float)dg.Sum(c => c.OneUpsGivenChange) / ic,
@@ -382,10 +382,10 @@ namespace Tayra.SyncServices.Tayra
                                    TurnoverTotalAverage = (float)dg.Sum(c => c.TurnoverChange) / ic,
 
                                    ErrorChange = last1.Sum(x => x.ErrorChange),
-                                   ErrorTotalAverage = dg.Sum(c => c.ErrorChange) / ic,
+                                   ErrorTotalAverage = (float)dg.Sum(c => c.ErrorChange) / ic,
 
                                    ContributionChange = last1.Sum(x => x.ContributionChange),
-                                   ContributionTotalAverage = dg.Sum(c => c.ContributionChange) / ic,
+                                   ContributionTotalAverage = (float)dg.Sum(c => c.ContributionChange) / ic,
 
                                    SavesChange = last1.Sum(x => x.SavesChange),
                                    SavesTotalAverage = (float)dg.Sum(c => c.SavesChange) / ic,
@@ -410,21 +410,20 @@ namespace Tayra.SyncServices.Tayra
                                    DImpactAverage = (float)last4.Sum(x => x.SavesChange + x.TacklesChange) / icMax4,
                                    DImpactTotalAverage = (float)dg.Sum(x => x.SavesChange + x.TacklesChange) / ic,
 
-                                   PowerAverage = last4.Sum(x => x.ComplexityChange / (float)x.TasksCompletedChange) / icMax4,
-                                   PowerTotalAverage = dg.Sum(x => x.ComplexityChange / (float)x.TasksCompletedChange) / ic,
+                                   PowerAverage = (float)(last4.Sum(x => x.ComplexityChange) / icMax4) + (last4.Sum(x => x.TasksCompletedChange) / icMax4),
+                                   PowerTotalAverage = (float)(dg.Sum(x => x.ComplexityChange) / ic) + (dg.Sum(x => x.TasksCompletedChange) / ic),
 
-                                   SpeedAverage = last4.Sum(x => x.TasksCompletedChange) / icMax4,
+                                   SpeedAverage = (float)last4.Sum(x => x.TasksCompletedChange) / icMax4,
                                    SpeedTotalAverage = (float)dg.Sum(x => x.TasksCompletedChange) / ic,
-
-                                   HeatIndex = last1.Sum(x => x.ComplexityChange) / (float)dg.Where(x => x.DateId > dateId2ago && x.DateId <= dateId1ago).Sum(x => x.ComplexityChange)
                                }).ToList();
 
-            var lastReportsHeat = (from r in organizationDb.ProfileReportsWeekly
+            var lastReport = (from r in organizationDb.ProfileReportsWeekly
                                    where r.DateId == dateId1ago
                                    select new
                                    {
                                        r.ProfileId,
-                                       r.Heat
+                                       r.Heat,
+                                       r.ComplexityChange
                                    })
                                     .DistinctBy(x => x.ProfileId).ToList(); //SegmentArea is ignored cuz we are only taking 'Totals'
 
@@ -433,17 +432,28 @@ namespace Tayra.SyncServices.Tayra
             {
                 r.PowerAverage = double.IsNaN(r.PowerAverage) || double.IsInfinity(r.PowerAverage) ? 0 : r.PowerAverage;
                 r.PowerTotalAverage = double.IsNaN(r.PowerTotalAverage) || double.IsInfinity(r.PowerTotalAverage) ? 0 : r.PowerTotalAverage;
-                r.HeatIndex = double.IsNaN(r.HeatIndex) || double.IsInfinity(r.HeatIndex) ? 0 : r.HeatIndex;
+                //r.HeatIndex = double.IsNaN(r.HeatIndex) || double.IsInfinity(r.HeatIndex) ? 0 : r.HeatIndex;
 
-                var lastHeat = lastReportsHeat.FirstOrDefault(x => x.ProfileId == r.ProfileId)?.Heat;
+                var lastWeekC = lastReport.FirstOrDefault(x => x.ProfileId == r.ProfileId)?.ComplexityChange;
+                var lastWeekHeat = lastReport.FirstOrDefault(x => x.ProfileId == r.ProfileId)?.Heat;
 
-                if (!lastHeat.HasValue)
+                //you have done some work AND (no previous reports exist OR a week before no work has been done)
+                if (r.ComplexityChange != 0 && (!lastWeekC.HasValue || (lastWeekC.HasValue && lastWeekC.Value == 0)))
                 {
-                    r.Heat = 22f;
+                    r.HeatIndex = -1;
+                    r.Heat = 10f;
                 }
+                //no work been done in a week
+                else if(r.ComplexityChange == 0)
+                {
+                    r.HeatIndex = 0;
+                    r.Heat = 0;
+                }
+                //heat formula
                 else
                 {
-                    r.Heat = lastHeat.Value * r.HeatIndex;
+                    r.HeatIndex = (float)Math.Sqrt(r.ComplexityChange / (float)lastWeekC);
+                    r.Heat = lastWeekHeat.Value * r.HeatIndex;
                 }
             }
 

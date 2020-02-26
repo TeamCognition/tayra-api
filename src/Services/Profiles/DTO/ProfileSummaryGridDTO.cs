@@ -11,7 +11,7 @@
         public int? OneUps { get; set; }
         public int CompletedChallenges { get; set; }
         public float? Speed { get; set; } = 0;
-        public float? Heat { get; set; } = 22;
+        public float? Power { get; set; } = 0;
         public float? Impact { get; set; } = 0;
         public float? TokensTotal { get; set; } = 0;
 

@@ -14,4 +14,12 @@ namespace Tayra.Models.Organizations
             return new OrganizationDbContext(optionsBuilder.Options);
         }
     }
+
+    public static class OrganizationContextFactoryForTests
+    {
+        public static OrganizationDbContext CreateDbContext(DbContextOptions<OrganizationDbContext> options)
+        {
+            return new OrganizationDbContext(options);
+        }
+    }
 }

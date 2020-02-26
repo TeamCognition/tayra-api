@@ -178,45 +178,73 @@ namespace Tayra.Services
             };
         }
 
-        public void AddMember(int segmentId, SegmentMemberAddRemoveDTO dto)
+        public void AddMember(SegmentMemberAddRemoveDTO dto)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId);
-            profile.EnsureNotNull(segmentId);
+            profile.EnsureNotNull(dto.ProfileId);
 
             if(!SegmentRules.CanAddProfileToSegment(profile.Role, dto.TeamId))
             {
                 throw new ApplicationException("If you are adding a member you must provide a teamId");
             }
 
-            if(profile.Role == ProfileRoles.Member)
+            int? segmentId, teamId;
+            if (dto.TeamId.HasValue)
             {
-                var team = DbContext.TeamsScopeOfSegment(segmentId).Where(x => x.Id == dto.TeamId.Value).FirstOrDefault();
+                var team = DbContext.Teams.FirstOrDefault(x => x.Id == dto.TeamId);
                 team.EnsureNotNull(dto.TeamId);
+                teamId = team.Id;
+                segmentId = team.SegmentId;
             }
+            else if (dto.SegmentId.HasValue)
+            {
+                if (profile.Role != ProfileRoles.Manager)
+                    throw new ApplicationException("only managers can be added to segment without teams");
 
-            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
-            segment.EnsureNotNull(segmentId);
+                var segment = DbContext.Segments.FirstOrDefault(x => x.Id == dto.SegmentId);
+                segment.EnsureNotNull(dto.SegmentId);
+                segmentId = segment.Id;
+            }
+            else
+            {
+                throw new ApplicationException("you have to provide either segmentId or teamId");
+            }
 
             DbContext.Add(new ProfileAssignment
             {
                 ProfileId = dto.ProfileId,
-                SegmentId = segment.Id,
+                SegmentId = segmentId.Value,
                 TeamId = dto.TeamId
             });
         }
 
-        public void RemoveMember(int segmentId, SegmentMemberAddRemoveDTO dto)
+        public void RemoveMember(SegmentMemberAddRemoveDTO dto)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId);
-            profile.EnsureNotNull(segmentId);
+            profile.EnsureNotNull(dto.ProfileId);
 
             if (!SegmentRules.CanRemoveProfileToSegment(profile.Role, dto.TeamId))
             {
                 throw new ApplicationException("If you are removing a member you must provide a teamId");
             }
 
-            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
-            segment.EnsureNotNull(segmentId);
+            if (dto.TeamId.HasValue)
+            {
+                var team = DbContext.Teams.FirstOrDefault(x => x.Id == dto.TeamId);
+                team.EnsureNotNull(dto.TeamId);
+            }
+            else if (dto.SegmentId.HasValue)
+            {
+                if(profile.Role != ProfileRoles.Manager)
+                    throw new ApplicationException("only managers can be in segment without a team");
+
+                var segment = DbContext.Segments.FirstOrDefault(x => x.Id == dto.SegmentId);
+                segment.EnsureNotNull(dto.SegmentId);
+            }
+            else
+            {
+                throw new ApplicationException("you have to provide either segmentId or teamId");
+            }
 
             DbContext.Remove(DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == dto.ProfileId && x.TeamId == dto.TeamId));
         }
