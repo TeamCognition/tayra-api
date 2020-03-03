@@ -40,14 +40,14 @@ namespace Tayra.API.Controllers
         }
         
         [HttpGet("chart/pieimpact")]
-        public ActionResult<TeamImpactPieChartDTO> GetSegmentImpactPieChart([FromQuery] int teamId)
+        public ActionResult<TeamImpactPieChartDTO> GetTeamImpactPieChart([FromQuery] int teamId)
         {     
             return TeamsService.GetImpactPieChart(teamId);
         }
 
 
         [HttpGet("chart/lineimpact")]
-        public ActionResult<TeamImpactLineChartDTO> GetSegmentImpactLineChart([FromQuery] int teamId)
+        public ActionResult<TeamImpactLineChartDTO> GetTeamImpactLineChart([FromQuery] int teamId)
         {
             return TeamsService.GetImpactLineChart(teamId);
         }
