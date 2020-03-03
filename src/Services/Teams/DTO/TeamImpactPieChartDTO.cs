@@ -7,7 +7,6 @@ namespace Tayra.Services
     public class TeamImpactPieChartDTO
     {
         public ProfilesDTO[] Profiles { get; set; }
-
         public class ProfilesDTO
         {
             public string Username { get; set; }
