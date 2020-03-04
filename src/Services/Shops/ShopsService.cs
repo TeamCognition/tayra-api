@@ -27,13 +27,31 @@ namespace Tayra.Services
 
         public ShopViewDTO GetShopViewDTO()
         {
+
+            var totalItemsSold = (from srd in DbContext.SegmentReportsDaily
+                          orderby srd.DateId descending
+                          group srd by srd.SegmentId into r
+                          select new { segmentTotal = r.Sum(x => x.ItemsBoughtTotal) }).Sum(x=>x.segmentTotal);
+
+            var islm = (from srd in DbContext.SegmentReportsDaily
+                                     orderby srd.DateId descending
+                                     select new { srd.ItemsBoughtChange }).Take(30).ToArray();
+
+            var itemsSoldLastMonth = islm.Sum(x => x.ItemsBoughtChange);
+
             var shopDto = (from s in DbContext.Shops
-                           //where s.Id == shopId
+                               //where s.Id == shopId
                            select new ShopViewDTO
                            {
                                Name = s.Name,
                                IsClosed = s.ClosedAt.HasValue,
-                               Created = s.Created
+                               Created = s.Created,
+                               shopStatistics = new ShopViewDTO.ShopStatisticDTO[] {
+                                    new ShopViewDTO.ShopStatisticDTO {
+                                        lastMonth = itemsSoldLastMonth,
+                                        total = totalItemsSold
+                                    } 
+                               }
                            }).FirstOrDefault();
 
             shopDto.EnsureNotNull();

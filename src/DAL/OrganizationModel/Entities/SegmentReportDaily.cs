@@ -60,6 +60,8 @@ namespace Tayra.Models.Organizations
         public int TasksCompletionTimeTotal { get; set; }
 
         public int ItemsBoughtChange { get; set; }
+        public int ItemsBoughtTotal { get; set; }
+
 
         public int ItemsGiftedChange { get; set; }
 

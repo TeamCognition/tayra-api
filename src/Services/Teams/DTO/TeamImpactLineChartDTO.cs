@@ -8,7 +8,6 @@ namespace Tayra.Services
     {
         public int StartDateId { get; set; }
         public int EndDateId { get; set; }
-
         public float[] Averages { get; set; }
     }
 }
