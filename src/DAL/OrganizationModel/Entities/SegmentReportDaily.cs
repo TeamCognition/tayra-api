@@ -62,7 +62,6 @@ namespace Tayra.Models.Organizations
         public int ItemsBoughtChange { get; set; }
         public int ItemsBoughtTotal { get; set; }
 
-
         public int ItemsGiftedChange { get; set; }
 
         public int ItemsDisenchantedChange { get; set; }
