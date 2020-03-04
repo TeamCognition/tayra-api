@@ -246,7 +246,7 @@ namespace Tayra.Services
             DbContext.Remove(invitation);
         }
 
-        public GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, IdentityManageGridParams gridParams)
+        public GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, ProfileRoles role, IdentityManageGridParams gridParams)
         {
             IQueryable<Models.Organizations.Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
 
@@ -255,6 +255,8 @@ namespace Tayra.Services
                 var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == gridParams.SegmentId).Select(x => x.ProfileId).ToArray();
                 scope = scope.Where(x => profileIds.Contains(x.Id)); //can be optimized, use 2 different but single query
             }
+            var roleName = role.ToString();
+            Console.WriteLine(roleName);
 
             IQueryable<IdentityManageGridDTO> query = from p in scope
                                                       select new IdentityManageGridDTO
@@ -271,10 +273,32 @@ namespace Tayra.Services
                                                             .Select(x => new IdentityManageGridDTO.IntegrationDTO
                                                             {
                                                                 Type = x.Type
-                                                            }).ToArray()
+                                                            }).ToArray(),
+                                                          Segments = roleName == "Admin" || roleName == "Member" ? null : 
+                                                          DbContext.ProfileAssignments.Where(x => x.ProfileId == p.Id).Include("Segment")
+                                                          .Select(x => new IdentityManageGridDTO.SegmentDataDTO
+                                                          {
+                                                              SegmentId = x.Segment.Id,
+                                                              Name = x.Segment.Name,
+                                                              Key = x.Segment.Key,
+                                                              Avatar = x.Segment.Avatar,
+                                                              Created = x.Segment.Created,
+                                                              ActionPointsCount = x.Segment.Id
+                                                          }).ToArray(),
+                                                          Teams = roleName == "Admin" || roleName == "Manager" ? null : 
+                                                          DbContext.ProfileAssignments.Where(x => x.ProfileId == p.Id).Include("Team")
+                                                          .Select(x => new IdentityManageGridDTO.TeamDataDTO 
+                                                          {  
+                                                              TeamId = x.Team.Id,
+                                                              TeamKey = x.Team.Key,
+                                                              Name=x.Team.Name,
+                                                              AvatarColor=x.Team.AvatarColor,
+                                                              Created=x.
+                                                              Team.Created 
+                                                          }).ToArray()  
                                                       };
 
-            GridData<IdentityManageGridDTO> gridData = query.GetGridData(gridParams);
+            GridData < IdentityManageGridDTO > gridData = query.GetGridData(gridParams);
             return gridData;
         }
 
