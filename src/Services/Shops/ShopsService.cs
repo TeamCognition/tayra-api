@@ -25,7 +25,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public ShopViewDTO GetShopViewDTO()
+        public ShopViewDTO GetShopViewDTO(int profileId, ProfileRoles role)
         {
             var shopDto = (from s in DbContext.Shops
                            //where s.Id == shopId
@@ -33,11 +33,60 @@ namespace Tayra.Services
                            {
                                Name = s.Name,
                                IsClosed = s.ClosedAt.HasValue,
-                               Created = s.Created
+                               Created = s.Created,
                            }).FirstOrDefault();
 
             shopDto.EnsureNotNull();
 
+            //some of this code can be shared when reports become more generic
+            if (role == ProfileRoles.Member)
+            {
+                shopDto.shopStatistics = (from r in DbContext.ProfileReportsDaily
+                                          where r.ProfileId == profileId
+                                          group r by 1 into total
+                                          let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
+                                          select new ShopViewDTO.ShopStatisticDTO[]
+                                          {
+                                              new ShopViewDTO.ShopStatisticDTO
+                                              {
+                                                  Last30 = last30.Sum(x => x.ItemsBoughtChange),
+                                                  Total = total.Sum(x => x.ItemsBoughtChange)
+                                              },
+                                              new ShopViewDTO.ShopStatisticDTO
+                                              {
+                                                  Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                                                  Total = total.Sum(x => x.CompanyTokensSpentChange)
+                                              }
+                                          }).FirstOrDefault();
+            }
+            else
+            {
+                IQueryable<SegmentReportDaily> rQuery = DbContext.SegmentReportsDaily;
+
+                if (role == ProfileRoles.Manager)
+                {
+                    var managersSegmentsIds = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId && x.TeamId == null).Select(x => x.SegmentId).ToArray();
+                    rQuery = rQuery.Where(x => managersSegmentsIds.Contains(x.SegmentId));
+                }
+
+                shopDto.shopStatistics = (from r in rQuery
+                                          group r by 1 into total
+                                          let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
+                                          select new ShopViewDTO.ShopStatisticDTO[]
+                                          {
+                                              new ShopViewDTO.ShopStatisticDTO
+                                              {
+                                                    Last30 = last30.Sum(x => x.ItemsBoughtChange),
+                                                    Total = total.Sum(x => x.ItemsBoughtChange)
+                                              },
+                                              new ShopViewDTO.ShopStatisticDTO
+                                              {
+                                                  Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                                                  Total = total.Sum(x => x.CompanyTokensSpentChange)
+                                              }
+                                          }).FirstOrDefault();
+            }
+            
             return shopDto;
         }
 
@@ -47,7 +96,7 @@ namespace Tayra.Services
                 ? DbContext.ShopPurchases.Where(x => x.ProfileId == profileId)
                 : DbContext.ShopPurchases;
 
-            if(!string.IsNullOrEmpty(gridParams.ItemNameQuery))
+            if (!string.IsNullOrEmpty(gridParams.ItemNameQuery))
             {
                 scope = scope.Where(x => x.Item.Name.Contains(gridParams.ItemNameQuery));
             }

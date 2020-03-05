@@ -1601,6 +1601,8 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("ItemsBoughtChange");
 
+                    b.Property<int>("ItemsBoughtTotal");
+
                     b.Property<int>("ItemsCreatedChange");
 
                     b.Property<int>("ItemsDisenchantedChange");
@@ -1941,7 +1943,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("OrganizationId");
 
-                    b.Property<int>("AssigneeProfileId");
+                    b.Property<string>("AssigneeExternalId");
+
+                    b.Property<int?>("AssigneeProfileId");
 
                     b.Property<int?>("AutoTimeSpentInMinutes");
 
@@ -1956,6 +1960,8 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<float?>("EffortScore");
 
                     b.Property<string>("ExternalId");
+
+                    b.Property<string>("ExternalProjectId");
 
                     b.Property<int>("IntegrationType");
 
@@ -2084,6 +2090,37 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("TeamId");
 
                     b.ToTable("TaskLogs");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.TaskSync", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<int>("DateId");
+
+                    b.Property<string>("ExternalProjectId");
+
+                    b.Property<int>("IntegrationType");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.Property<int>("SegmentId");
+
+                    b.HasKey("Id", "OrganizationId");
+
+                    b.HasAlternateKey("Id");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("SegmentId");
+
+                    b.ToTable("TaskSyncs");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Team", b =>
@@ -2998,7 +3035,7 @@ namespace Tayra.Models.Organizations.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
-                        .WithMany("Teams")
+                        .WithMany("Assignments")
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -3317,6 +3354,20 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasOne("Tayra.Models.Organizations.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.TaskSync", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
+                        .WithMany()
+                        .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
