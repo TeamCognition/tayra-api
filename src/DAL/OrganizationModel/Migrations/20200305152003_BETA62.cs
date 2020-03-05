@@ -24,11 +24,11 @@ namespace Tayra.Models.Organizations.Migrations
                 table: "Tasks",
                 nullable: true);
 
-            migrationBuilder.AddColumn<int>(
-                name: "ItemsBoughtTotal",
-                table: "SegmentReportsDaily",
-                nullable: false,
-                defaultValue: 0);
+            //migrationBuilder.AddColumn<int>(
+            //    name: "ItemsBoughtTotal",
+            //    table: "SegmentReportsDaily",
+            //    nullable: false,
+            //    defaultValue: 0);
 
             migrationBuilder.CreateTable(
                 name: "TaskSyncs",
