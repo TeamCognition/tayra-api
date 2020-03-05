@@ -255,8 +255,6 @@ namespace Tayra.Services
                 var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == gridParams.SegmentId).Select(x => x.ProfileId).ToArray();
                 scope = scope.Where(x => profileIds.Contains(x.Id)); //can be optimized, use 2 different but single query
             }
-            var roleName = role.ToString();
-            Console.WriteLine(roleName);
 
             IQueryable<IdentityManageGridDTO> query = from p in scope
                                                       select new IdentityManageGridDTO
@@ -274,28 +272,26 @@ namespace Tayra.Services
                                                             {
                                                                 Type = x.Type
                                                             }).ToArray(),
-                                                          Segments = roleName == "Admin" || roleName == "Member" ? null : 
-                                                          DbContext.ProfileAssignments.Where(x => x.ProfileId == p.Id).Include("Segment")
-                                                          .Select(x => new IdentityManageGridDTO.SegmentDataDTO
-                                                          {
-                                                              SegmentId = x.Segment.Id,
-                                                              Name = x.Segment.Name,
-                                                              Key = x.Segment.Key,
-                                                              Avatar = x.Segment.Avatar,
-                                                              Created = x.Segment.Created,
-                                                              ActionPointsCount = x.Segment.Id
-                                                          }).ToArray(),
-                                                          Teams = roleName == "Admin" || roleName == "Manager" ? null : 
-                                                          DbContext.ProfileAssignments.Where(x => x.ProfileId == p.Id).Include("Team")
-                                                          .Select(x => new IdentityManageGridDTO.TeamDataDTO 
-                                                          {  
-                                                              TeamId = x.Team.Id,
-                                                              TeamKey = x.Team.Key,
-                                                              Name=x.Team.Name,
-                                                              AvatarColor=x.Team.AvatarColor,
-                                                              Created=x.
-                                                              Team.Created 
-                                                          }).ToArray()  
+                                                          Segments = p.Role != ProfileRoles.Manager ? null : 
+                                                            p.Assignments.Select(x => new IdentityManageGridDTO.SegmentDataDTO
+                                                            {
+                                                                SegmentId = x.Segment.Id,
+                                                                Name = x.Segment.Name,
+                                                                Key = x.Segment.Key,
+                                                                Avatar = x.Segment.Avatar,
+                                                                Created = x.Segment.Created,
+                                                                ActionPointsCount = x.Segment.Id
+                                                            }).ToArray(),
+                                                          Teams = p.Role != ProfileRoles.Member ? null : 
+                                                            p.Assignments.Select(x => new IdentityManageGridDTO.TeamDataDTO 
+                                                            {  
+                                                                TeamId = x.Team.Id,
+                                                                TeamKey = x.Team.Key,
+                                                                Name=x.Team.Name,
+                                                                AvatarColor=x.Team.AvatarColor,
+                                                                Created=x.
+                                                                Team.Created 
+                                                            }).ToArray()  
                                                       };
 
             GridData < IdentityManageGridDTO > gridData = query.GetGridData(gridParams);

@@ -9,9 +9,8 @@ namespace Tayra.Services
         public ShopStatisticDTO[] shopStatistics {get; set;}
         public class ShopStatisticDTO 
         {
-            public string key;
-            public float lastMonth;
-            public float total;
+            public float Last30 { get; set; }
+            public float Total { get; set; }
         }
     }
 }
