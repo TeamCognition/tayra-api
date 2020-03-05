@@ -28,7 +28,7 @@ namespace Tayra.Services
         public ShopViewDTO GetShopViewDTO(int profileId, ProfileRoles role)
         {
             var shopDto = (from s in DbContext.Shops
-                               //where s.Id == shopId
+                           //where s.Id == shopId
                            select new ShopViewDTO
                            {
                                Name = s.Name,
@@ -47,16 +47,16 @@ namespace Tayra.Services
                                           let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
                                           select new ShopViewDTO.ShopStatisticDTO[]
                                           {
-                                    new ShopViewDTO.ShopStatisticDTO
-                                    {
-                                        Last30 = last30.Sum(x => x.ItemsBoughtChange),
-                                        Total = total.Sum(x => x.ItemsBoughtChange)
-                                    },
-                                    new ShopViewDTO.ShopStatisticDTO
-                                    {
-                                        Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
-                                        Total = total.Sum(x => x.CompanyTokensSpentChange)
-                                    }
+                                              new ShopViewDTO.ShopStatisticDTO
+                                              {
+                                                  Last30 = last30.Sum(x => x.ItemsBoughtChange),
+                                                  Total = total.Sum(x => x.ItemsBoughtChange)
+                                              },
+                                              new ShopViewDTO.ShopStatisticDTO
+                                              {
+                                                  Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                                                  Total = total.Sum(x => x.CompanyTokensSpentChange)
+                                              }
                                           }).FirstOrDefault();
             }
             else
@@ -79,11 +79,11 @@ namespace Tayra.Services
                                                     Last30 = last30.Sum(x => x.ItemsBoughtChange),
                                                     Total = total.Sum(x => x.ItemsBoughtChange)
                                               },
-                                            new ShopViewDTO.ShopStatisticDTO
-                                            {
-                                            Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
-                                            Total = total.Sum(x => x.CompanyTokensSpentChange)
-                                            }
+                                              new ShopViewDTO.ShopStatisticDTO
+                                              {
+                                                  Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                                                  Total = total.Sum(x => x.CompanyTokensSpentChange)
+                                              }
                                           }).FirstOrDefault();
             }
             
