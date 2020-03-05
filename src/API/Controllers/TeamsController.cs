@@ -38,6 +38,19 @@ namespace Tayra.API.Controllers
         {
             return TeamsService.GetTeamMembersGridData(gridParams);
         }
+        
+        [HttpGet("chart/pieimpact")]
+        public ActionResult<TeamImpactPieChartDTO> GetTeamImpactPieChart([FromQuery] int teamId)
+        {     
+            return TeamsService.GetImpactPieChart(teamId);
+        }
+
+
+        [HttpGet("chart/lineimpact")]
+        public ActionResult<TeamImpactLineChartDTO> GetTeamImpactLineChart([FromQuery] int teamId)
+        {
+            return TeamsService.GetImpactLineChart(teamId);
+        }
 
         [HttpPost("create")]
         public IActionResult CreateTeam([FromBody]TeamCreateDTO dto)

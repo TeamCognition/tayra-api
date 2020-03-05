@@ -141,7 +141,7 @@ namespace Tayra.API.Controllers
                 throw new FirdawsSecurityException("You don' have perrmission to segment " + gridParams.SegmentId);
             }
 
-            return IdentitiesService.GetIdentityManageGridData(CurrentUser.ProfileId, gridParams);
+            return IdentitiesService.GetIdentityManageGridData(CurrentUser.ProfileId,CurrentUser.Role, gridParams);
         }
 
         [HttpGet("manage/assigns/{profileId:int}")]

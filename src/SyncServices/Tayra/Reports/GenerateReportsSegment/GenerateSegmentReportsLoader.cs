@@ -114,6 +114,8 @@ namespace Tayra.SyncServices.Tayra
                     TasksCompletionTimeTotal = mr.Sum(x => x.TasksCompletionTimeTotal),
 
                     ItemsBoughtChange = mr.Sum(x => x.ItemsBoughtChange),
+                    ItemsBoughtTotal = mr.Sum(x => x.ItemsBoughtTotal),
+
                     ItemsCreatedChange = nmr.Sum(x => x.ItemsCreatedChange),
                     ItemsDisenchantedChange = mr.Sum(x => x.ItemsDisenchantedChange),
                     ItemsGiftedChange = mr.Sum(x => x.ItemsGiftedChange)

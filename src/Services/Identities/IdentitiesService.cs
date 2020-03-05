@@ -246,7 +246,7 @@ namespace Tayra.Services
             DbContext.Remove(invitation);
         }
 
-        public GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, IdentityManageGridParams gridParams)
+        public GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, ProfileRoles role, IdentityManageGridParams gridParams)
         {
             IQueryable<Models.Organizations.Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
 
@@ -271,10 +271,30 @@ namespace Tayra.Services
                                                             .Select(x => new IdentityManageGridDTO.IntegrationDTO
                                                             {
                                                                 Type = x.Type
-                                                            }).ToArray()
+                                                            }).ToArray(),
+                                                          Segments = p.Role != ProfileRoles.Manager ? null : 
+                                                            p.Assignments.Select(x => new IdentityManageGridDTO.SegmentDataDTO
+                                                            {
+                                                                SegmentId = x.Segment.Id,
+                                                                Name = x.Segment.Name,
+                                                                Key = x.Segment.Key,
+                                                                Avatar = x.Segment.Avatar,
+                                                                Created = x.Segment.Created,
+                                                                ActionPointsCount = x.Segment.Id
+                                                            }).ToArray(),
+                                                          Teams = p.Role != ProfileRoles.Member ? null : 
+                                                            p.Assignments.Select(x => new IdentityManageGridDTO.TeamDataDTO 
+                                                            {  
+                                                                TeamId = x.Team.Id,
+                                                                TeamKey = x.Team.Key,
+                                                                Name=x.Team.Name,
+                                                                AvatarColor=x.Team.AvatarColor,
+                                                                Created=x.
+                                                                Team.Created 
+                                                            }).ToArray()  
                                                       };
 
-            GridData<IdentityManageGridDTO> gridData = query.GetGridData(gridParams);
+            GridData < IdentityManageGridDTO > gridData = query.GetGridData(gridParams);
             return gridData;
         }
 

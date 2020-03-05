@@ -25,7 +25,7 @@ namespace Tayra.API.Controllers
         [HttpGet]
         public ActionResult<ShopViewDTO> GetShop()
         {
-            return Ok(ShopsService.GetShopViewDTO());
+            return Ok(ShopsService.GetShopViewDTO(CurrentUser.ProfileId,CurrentUser.Role));
         }
 
         [HttpPost("purchaseSearch")]
