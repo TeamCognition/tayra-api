@@ -27,11 +27,13 @@ namespace Tayra.Services
                 task = new Task
                 {
                     ExternalId = dto.ExternalId,
+                    ExternalProjectId = dto.ExternalProjectId,
                     IntegrationType = dto.IntegrationType
                 };
 
                 DbContext.Add(task);
             }
+
             task.Summary = dto.Summary;
             task.LastModifiedDateId = DateHelper2.ToDateId(DateTime.UtcNow);
             task.Status = TayraPersonalPerformance.MapJiraIssueCategoryToTaskStatus(dto.JiraStatusCategory);
@@ -46,6 +48,7 @@ namespace Tayra.Services
             task.Priority = dto.Priority;
             task.EffortScore = (float) dto.EffortScore;
             task.Labels = string.Join(',', dto.Labels);
+            task.AssigneeExternalId = dto.AssigneeExternalId;
             task.AssigneeProfileId = dto.AssigneeProfileId;
             task.TeamId = dto.TeamId;
             task.SegmentId = dto.SegmentId;

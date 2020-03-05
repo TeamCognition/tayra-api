@@ -107,7 +107,7 @@ namespace Tayra.Services
 
             var startDateId = wr.First().DateId;
             var endDateId = wr.Last().DateId;
-            var weeks = wr.Length; //((endDateId - startDateId) / 7) + 1;
+            var weeks = wr.Count(); //((endDateId - startDateId) / 7) + 1;
             return new ReportDeliverySegmentMetricsDTO
             {
                 StartDateId = startDateId,
@@ -150,11 +150,12 @@ namespace Tayra.Services
             var tasks = (from trd in DbContext.Tasks
                          where trd.LastModifiedDateId >= reportParams.From && trd.LastModifiedDateId <= reportParams.To
                          where trd.TeamId == teamId
+                         where trd.Status == TaskStatuses.Done
                          select new
                          {
                              DateId = trd.LastModifiedDateId,
                              Name = trd.Summary,
-                             MinutesSpent = trd.TimeSpentInMinutes.Value, //check for autoTimeSpentinminutes
+                             MinutesSpent = trd.TimeSpentInMinutes, //check for autoTimeSpentinminutes
                              Complexity = trd.Complexity,
                              AssigneeName = trd.AssigneeProfile.FirstName + " " + trd.AssigneeProfile.LastName
                          }).ToArray();
@@ -171,7 +172,7 @@ namespace Tayra.Services
                     Tasks = tasks.Where(t => t.DateId == x.DateId).Select(t => new ReportDeliveryTeamMetricsDTO.DataDTO.TaskDTO
                     {
                         Name = t.Name,
-                        MinutesSpent = t.MinutesSpent,
+                        MinutesSpent = t.MinutesSpent ?? 0,
                         Complexity = t.Complexity,
                         AssigneeName = t.AssigneeName
                     }).ToArray()

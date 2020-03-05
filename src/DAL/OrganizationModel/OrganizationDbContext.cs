@@ -101,6 +101,7 @@ namespace Tayra.Models.Organizations
         public DbSet<Task> Tasks { get; set; }
         public DbSet<TaskCategory> TaskCategories { get; set; }
         public DbSet<TaskLog> TaskLogs { get; set; }
+        public DbSet<TaskSync> TaskSyncs { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamReportDaily> TeamReportsDaily { get; set; }
         public DbSet<TeamReportWeekly> TeamReportsWeekly { get; set; }
@@ -331,8 +332,8 @@ namespace Tayra.Models.Organizations
 
         public void SetGlobalQuery<T>(ModelBuilder builder) where T : class
         {
-            if (CurrentTenantId <= 0)//for tests
-                return;
+            //if (CurrentTenantId <= 0)//uncomment for tests
+            //    return;
 
             if (typeof(IArchivableEntity).IsAssignableFrom(typeof(T)))
             {

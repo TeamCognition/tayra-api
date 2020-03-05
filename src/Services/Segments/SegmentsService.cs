@@ -309,20 +309,15 @@ namespace Tayra.Services
 
         public void Archive(int segmentId)
         {
-            var segment = DbContext.Segments.Include(x => x.Teams).Include(x => x.Members).FirstOrDefault(x => x.Id == segmentId);
+            var segment = DbContext.Segments.Include(x => x.Teams).FirstOrDefault(x => x.Id == segmentId);
 
-            segment.EnsureNotNull(segment.Key);
+            segment.EnsureNotNull(segmentId);
 
             DbContext.Remove(segment);
 
             foreach(var t in segment.Teams) //is this needed?
             {
                 DbContext.Remove(t);
-            }
-
-            foreach (var m in segment.Members) //is this needed?
-            {
-                DbContext.Remove(m);
             }
         }
 

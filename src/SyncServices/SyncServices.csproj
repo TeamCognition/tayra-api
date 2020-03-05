@@ -44,11 +44,14 @@
     <Folder Include="Tayra\Reports\GenerateReportsTeam\" />
     <Folder Include="Tayra\Reports\GenerateReports\" />
     <Folder Include="Tayra\ActionPoints\" />
+    <Folder Include="Atlassian\" />
+    <Folder Include="Atlassian\PullIssues\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\DAL\CatalogModel\CatalogModel.csproj" />
     <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
+    <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>
 </Project>

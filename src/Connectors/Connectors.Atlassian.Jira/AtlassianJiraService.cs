@@ -30,6 +30,7 @@ namespace Tayra.Connectors.Atlassian.Jira
         private const string GET_USERS = API + "users/search";
         private const string GET_LOGGEDIN_USER = API + "myself";
         private const string CREATE_WEBHOOK = API + "webhook";
+        private const string SEARCH_WITH_JQL = API + "search";
 
         #endregion
 
@@ -94,16 +95,30 @@ namespace Tayra.Connectors.Atlassian.Jira
         //{
         //    request.AddOrUpdateParameter("startAt", startAt.ToString(), ParameterType.QueryString);
 
-        //    var response = client.Execute<List<T>>(request);
-
+        //    var response = client.Execute<PaginatedResponse<T>>(request);
+        //    //var response = client.Execute<T>(request);
         //    if (!response.Data.IsLast)
         //    {
         //        var nextResponse = GetCollectionResponse<T>(client, request, response.Data.StartAt + response.Data.ResultCount);
-        //        response.Data.Values.AddRange(nextResponse.Data.Values);
+        //        response.Data.Values.AddRange(nextResponse.Data);
         //    }
 
         //    return response;
         //}
+
+        private static IRestResponse<SearchResponse> GetSearchResponse(IRestClient client, RestRequest request, int startAt = 0)
+        {
+            request.AddOrUpdateParameter("startAt", startAt.ToString(), ParameterType.QueryString);
+
+            var response = client.Execute<SearchResponse>(request);
+            if (response.Data.StartAt + response.Data.MaxResults < response.Data.Total)
+            {
+                var nextResponse = GetSearchResponse(client, request, response.Data.StartAt + response.Data.MaxResults);
+                response.Data.Issues.AddRange(nextResponse.Data.Issues);
+            }
+
+            return response;
+        }
 
         public static IRestResponse<PaginatedResponse<JiraProject>> GetProjects(string cloudId, string tokenType, string accessToken)
         {
@@ -209,6 +224,22 @@ namespace Tayra.Connectors.Atlassian.Jira
                 .UseSerializer(() => new JsonNetSerializer());
 
             var response = client.Execute(request);
+
+            return response;
+        }
+
+        public static IRestResponse<SearchResponse> GetBulkIssuesWithChangelog(string cloudId, string tokenType, string accessToken, int periodInDays, params string[] projects)
+        {
+            var request = new RestRequest(string.Format(SEARCH_WITH_JQL), Method.GET);
+            request.AddHeader("Authorization", $"{tokenType} {accessToken}");
+            request.AddQueryParameter("jql", $"project in ({string.Join(',', projects)}) AND (created>=-{periodInDays}d OR updated>=-{periodInDays}d)", false);
+            request.AddQueryParameter("maxResults", "100", false);
+            request.AddQueryParameter("expand", "changelog", false);//this will only get last 100 changelogs
+
+            var client = new RestClient(string.Format(BASE_URL, cloudId))
+                .UseSerializer(() => new JsonNetSerializer());
+
+            var response = GetSearchResponse(client, request);
 
             return response;
         }

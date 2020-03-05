@@ -12,7 +12,7 @@ namespace Tayra.Services
         public string Username { get; set; }
 
         public ProfileRoles Role { get; set; }
-
+        public TeamDTO[] Teams { get; set; }
         public string Avatar { get; set; }
 
         public float? Power { get; set; }
@@ -44,6 +44,12 @@ namespace Tayra.Services
         {
             public int LastDateId { get; set; }
             public float[] Values { get; set; }
+        }
+
+        public class TeamDTO
+        {
+            public string Key { get; set; }
+            public string Name { get; set; }
         }
     }
 }

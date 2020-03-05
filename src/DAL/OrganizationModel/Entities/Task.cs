@@ -9,6 +9,10 @@ namespace Tayra.Models.Organizations
         public int Id { get; set; }
 
         public string ExternalId { get; set; }
+        /// <summary>
+        /// ex. jira project id
+        /// </summary>
+        public string ExternalProjectId { get; set; }
 
         public IntegrationType IntegrationType { get; set; }
 
@@ -39,7 +43,9 @@ namespace Tayra.Models.Organizations
 
         public int ReporterProfileId { get; set; }
 
-        public int AssigneeProfileId { get; set; }
+        public string AssigneeExternalId { get; set; }
+
+        public int? AssigneeProfileId { get; set; }
         public virtual Profile AssigneeProfile { get; set; }
 
         public int? TeamId { get; set; }

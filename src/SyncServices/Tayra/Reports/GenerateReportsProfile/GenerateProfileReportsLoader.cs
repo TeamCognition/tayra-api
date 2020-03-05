@@ -364,7 +364,7 @@ namespace Tayra.SyncServices.Tayra
                                    CompanyTokensSpentTotalAverage = dg.Sum(c => c.CompanyTokensSpentChange) / ic,
 
                                    EffortScoreChange = last1.Sum(x => x.EffortScoreChange),
-                                   EffortScoreTotalAverage = (float)dg.Sum(c => c.EffortScoreChange) / ic,
+                                   EffortScoreTotalAverage = dg.Sum(c => c.EffortScoreChange) / ic,
 
                                    OneUpsGivenChange = last1.Sum(x => x.OneUpsGivenChange),
                                    OneUpsGivenTotalAverage = (float)dg.Sum(c => c.OneUpsGivenChange) / ic,
@@ -382,10 +382,10 @@ namespace Tayra.SyncServices.Tayra
                                    TurnoverTotalAverage = (float)dg.Sum(c => c.TurnoverChange) / ic,
 
                                    ErrorChange = last1.Sum(x => x.ErrorChange),
-                                   ErrorTotalAverage = (float)dg.Sum(c => c.ErrorChange) / ic,
+                                   ErrorTotalAverage = dg.Sum(c => c.ErrorChange) / ic,
 
                                    ContributionChange = last1.Sum(x => x.ContributionChange),
-                                   ContributionTotalAverage = (float)dg.Sum(c => c.ContributionChange) / ic,
+                                   ContributionTotalAverage = dg.Sum(c => c.ContributionChange) / ic,
 
                                    SavesChange = last1.Sum(x => x.SavesChange),
                                    SavesTotalAverage = (float)dg.Sum(c => c.SavesChange) / ic,
@@ -410,11 +410,13 @@ namespace Tayra.SyncServices.Tayra
                                    DImpactAverage = (float)last4.Sum(x => x.SavesChange + x.TacklesChange) / icMax4,
                                    DImpactTotalAverage = (float)dg.Sum(x => x.SavesChange + x.TacklesChange) / ic,
 
-                                   PowerAverage = (float)(last4.Sum(x => x.ComplexityChange) / icMax4) + (last4.Sum(x => x.TasksCompletedChange) / icMax4),
-                                   PowerTotalAverage = (float)(dg.Sum(x => x.ComplexityChange) / ic) + (dg.Sum(x => x.TasksCompletedChange) / ic),
+                                   PowerAverage = last4.Sum(x => x.ComplexityChange) / (float)last4.Sum(x => x.TasksCompletedChange),
+                                   PowerTotalAverage = dg.Sum(x => x.ComplexityChange) / (float)dg.Sum(x => x.TasksCompletedChange),
 
                                    SpeedAverage = (float)last4.Sum(x => x.TasksCompletedChange) / icMax4,
                                    SpeedTotalAverage = (float)dg.Sum(x => x.TasksCompletedChange) / ic,
+
+                                   HeatIndex = icMax4
                                }).ToList();
 
             var lastReport = (from r in organizationDb.ProfileReportsWeekly

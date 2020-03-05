@@ -21,6 +21,20 @@ namespace Tayra.Connectors.Atlassian.Jira
         [JsonProperty("fields")]
         public IssueFields Fields { get; set; }
 
+        /// <summary>
+        /// this is for /search api only
+        /// </summary>
+        [JsonProperty("changelog")]
+        public ChangeLogDTO Changelog { get; set; }
+
+        public class ChangeLogDTO
+        {
+            public int StartAt { get; set; }
+
+            [JsonProperty("histories")]
+            public ICollection<JiraIssueChangelog> Histories { get; set; }
+        }
+
         public class IssueFields
         {
             [JsonProperty("statuscategorychangedate")]
@@ -33,7 +47,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             public int? Timespent { get; set; }
 
             [JsonProperty("customfield_10030")]
-            public int? StoryPointsCF { get; set; }
+            public float? StoryPointsCF { get; set; }
 
             [JsonProperty("project")]
             public JiraProject Project { get; set; }

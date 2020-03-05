@@ -6,6 +6,10 @@ namespace Tayra.Services
     public class TaskAddOrUpdateDTO
     {
         public string ExternalId { get; set; }
+        /// <summary>
+        /// jira project id
+        /// </summary>
+        public string ExternalProjectId { get; set; }
 
         public IntegrationType IntegrationType { get; set; }
 
@@ -25,7 +29,8 @@ namespace Tayra.Services
 
         public string[] Labels { get; set; }
 
-        public int AssigneeProfileId { get; set; }
+        public string AssigneeExternalId { get; set; }
+        public int? AssigneeProfileId { get; set; }
 
         public int ReporterProfileId { get; set; }
 

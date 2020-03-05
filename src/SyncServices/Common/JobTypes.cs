@@ -7,6 +7,7 @@
         GenerateReportSegment = 3,
         GenerateReportTeam = 4,
         SyncCompetitions = 5,
-        MakeActionPoints = 6
+        MakeActionPoints = 6,
+        PullIssues = 7
     }
 }

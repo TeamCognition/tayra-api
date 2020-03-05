@@ -320,12 +320,11 @@ namespace Tayra.Services
                 TasksCompletedAverage = Math.Round(prw?.Average(x => x.TasksCompletedChange) ?? 0, 2),
                 TasksCompletedTotal = prd?.TasksCompletedTotal,
 
-                ComplexityAverage = Math.Round(prw?.Average(x => x.ComplexityChange) ?? 0, 2),
+                ComplexityAverage = Math.Round((prw?.Sum(x => x.ComplexityChange) ?? 0) / ((float)Math.Max(prw?.Sum(x => x.TasksCompletedChange) ?? 0, 1)) , 2),
                 ComplexityTotal = prd?.ComplexityTotal,
 
-
                 TeamAssistsAverage = Math.Round(trw?.Average(x => x.AssistsAverage) ?? 0, 2),
-                TeamComplexityAverage = Math.Round(trw?.Average(x => x.ComplexityAverage) ?? 0, 2),
+                TeamComplexityAverage = Math.Round((trw?.Sum(x => x.ComplexityChange) ?? 0) / ((float)Math.Max(trw?.Sum(x => x.TasksCompletedChange) ?? 0, 1)), 2),
                 TeamTasksCompletedAverage = Math.Round(trw?.Average(x => x.TasksCompletedAverage) ?? 0, 2)
             };
         }
@@ -345,6 +344,7 @@ namespace Tayra.Services
                                   Username = p.Username,
                                   Role = p.Role,
                                   Avatar = p.Avatar,
+                                  Teams = p.Teams.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
                                   CompanyTokens = Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),
                                   Experience = Convert.ToInt32(tt.Where(x => x.Type == TokenType.Experience).Select(x => x.Value).FirstOrDefault()),
                                   OneUps = Convert.ToInt32(tt.Where(x => x.Type == TokenType.OneUp).Select(x => x.Value).FirstOrDefault()),

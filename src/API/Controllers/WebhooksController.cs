@@ -72,36 +72,40 @@ namespace Tayra.API.Controllers
             }
 
             var assigneProfile = ProfilesService.GetByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
-            var profileAssignment = DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
+            var profileAssignment = assigneProfile == null ? null : DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
             var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (int?)null;
 
-            var activeCompetitions = CompetitionsService.GetActiveCompetitions(assigneProfile.Id);
-            var jiraBaseUrl = we.JiraIssue.Self.Substring(0, we.JiraIssue.Self.IndexOf('/', 10));
-            if (fields.Status.Id != rewardStatusField.Value)
+            var activeCompetitions = assigneProfile == null ? null : CompetitionsService.GetActiveCompetitions(assigneProfile.Id);
+            var jiraBaseUrl = we.JiraIssue.Self.Substring(0, we.JiraIssue.Self.IndexOf('/', 10)); //TODO: is 10 ok for all integration types?
+            if (assigneProfile == null || fields.Status.Id != rewardStatusField.Value)
             {
                 TasksService.AddOrUpdate(new TaskAddOrUpdateDTO
                 {
                     ExternalId = we.JiraIssue.Key,
+                    ExternalProjectId = fields.Project.Id,
                     IntegrationType = IntegrationType.ATJ,
                     Summary = fields.Summary,
                     JiraStatusCategory = fields.Status.Category.Id,
                     TimeSpentInMinutes = fields.Timespent,
                     TimeOriginalEstimatInMinutes = fields.TimeOriginalEstimate,
-                    StoryPoints = fields.StoryPointsCF,
+                    StoryPoints = (int?)fields.StoryPointsCF,
                     Priority = GetTaskPriority(fields.Priority.Id),
                     Type = GetTaskType(fields.IssueType.Id),
                     EffortScore = null,
                     Labels = fields.Labels,
-                    AssigneeProfileId = assigneProfile.Id,
+                    AssigneeExternalId = fields.Assignee.AccountId,
+                    AssigneeProfileId = assigneProfile?.Id,
                     ReporterProfileId = 0,
                     TeamId = profileAssignment?.TeamId,
                     SegmentId = currentSegmentId
                 });
 
-                LogsService.LogEvent(new LogCreateDTO
+                if (assigneProfile != null)
                 {
-                    Event = LogEvents.IssueStatusChange,
-                    Data = new Dictionary<string, string>
+                    LogsService.LogEvent(new LogCreateDTO
+                    {
+                        Event = LogEvents.IssueStatusChange,
+                        Data = new Dictionary<string, string>
                     {
                         { "timestamp", DateTime.UtcNow.ToString() },
                         { "issueUrl", jiraBaseUrl + "/browse/" + we.JiraIssue.Key },
@@ -112,14 +116,16 @@ namespace Tayra.API.Controllers
                         { "competitorName", assigneProfile.Username }, //prev: activeCompetitions.FirstOrDefault()?.CompetitorName
                         { "timespent", fields.Timespent.ToString()}
                     },
-                    ProfileId = assigneProfile.Id,
-                    CompetitionIds = activeCompetitions.Select(x => x.Id).Distinct()
-                });
+                        ProfileId = assigneProfile.Id,
+                        CompetitionIds = activeCompetitions.Select(x => x.Id).Distinct()
+                    });
+                }
 
                 DbContext.SaveChanges();
                 return Ok();
             }
 
+            //if we came here assigneeProfile is not null
             int? autoTimeSpent = null;
             fields.Timespent = fields.Timespent > 0 ? fields.Timespent : null; //redundant, check above
             if (fields.Timespent == null)
@@ -177,7 +183,7 @@ namespace Tayra.API.Controllers
             }
 
             var timeSpentToUse = fields.Timespent ?? autoTimeSpent;
-            var effortScore = TayraEffortCalculator.CalcEffortScore(timeSpentToUse ?? 0, TayraPersonalPerformance.MapSPToComplexity(fields.StoryPointsCF ?? 0));
+            var effortScore = TayraEffortCalculator.CalcEffortScore(timeSpentToUse ?? 0, TayraPersonalPerformance.MapSPToComplexity((int?)fields.StoryPointsCF ?? 0));
 
             TokensService.CreateTransaction(TokenType.CompanyToken, assigneProfile.Id, effortScore, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
             TokensService.CreateTransaction(TokenType.Experience, assigneProfile.Id, effortScore, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
@@ -191,11 +197,12 @@ namespace Tayra.API.Controllers
                 AutoTimeSpentInMinutes = autoTimeSpent,
                 TimeSpentInMinutes = fields.Timespent,
                 TimeOriginalEstimatInMinutes = fields.TimeOriginalEstimate,
-                StoryPoints = fields.StoryPointsCF,
+                StoryPoints = (int?)fields.StoryPointsCF,
                 Priority = GetTaskPriority(fields.Priority.Id),
                 Type = GetTaskType(fields.IssueType.Id),
                 EffortScore = effortScore,
                 Labels = fields.Labels,
+                AssigneeExternalId = we.JiraIssue.Fields.Assignee.AccountId,
                 AssigneeProfileId = assigneProfile.Id,
                 ReporterProfileId = 0,
                 TeamId = profileAssignment?.TeamId,

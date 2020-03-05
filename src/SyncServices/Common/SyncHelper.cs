@@ -86,6 +86,9 @@ namespace Tayra.SyncServices.Common
 
                 case JobTypes.MakeActionPoints:
                     return new MakeActionPointsLoader(shardMapProvider, logService, coreDatabase);
+
+                case JobTypes.PullIssues:
+                    return new PullIssuesLoader(shardMapProvider, logService, coreDatabase);
             }
 
             throw new NotSupportedException($"{jobTypes} integration are not supported");

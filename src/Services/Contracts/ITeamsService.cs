@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Firdaws.Core;
+using Tayra.Models.Organizations;
 
 namespace Tayra.Services
 {

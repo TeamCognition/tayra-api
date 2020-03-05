@@ -263,6 +263,23 @@ namespace Tayra.Connectors.Atlassian.Jira
             return issueTypes;
         }
 
+        public List<JiraIssue> GetBulkIssuesWithChangelog(int integrationId, params string[] jiraProjects)
+        {
+            var integration = RefreshToken(integrationId);
+            if (integration == null)
+            {
+                throw new ApplicationException("Integration does not exist");
+            }
+
+            var accessToken = ReadAccessToken(integrationId);
+            var accessTokenType = ReadAccessTokenType(integrationId);
+            var cloudId = ReadCloudId(integrationId);
+
+            var issueSearch = AtlassianJiraService.GetBulkIssuesWithChangelog(cloudId, accessTokenType, accessToken, 90, jiraProjects).Data;
+
+            return issueSearch.Issues;
+        }
+
         #endregion
 
         #region Private Methods
