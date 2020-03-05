@@ -88,65 +88,6 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public TeamImpactPieChartDTO GetImpactPieChart(int teamId)
-        {
-            var lastDateId = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).Select(x => x.DateId).FirstOrDefault();
-
-            var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
-
-            if (lastDateId == 0)
-                return null;
-
-            var pr = (from prw in DbContext.ProfileReportsWeekly
-                      where profileIds.Contains(prw.ProfileId)
-                      && prw.DateId == lastDateId
-                      select new
-                      {
-                          Username = prw.Profile.Username,
-                          OImpact = prw.OImpactAverage
-                      }).ToList();
-
-            if (pr == null || !pr.Any())
-            {
-                return null;
-            }
-
-            var impactSum = pr.Sum(x => x.OImpact);
-
-            return new TeamImpactPieChartDTO
-            {
-                Profiles = pr.Select(x => new TeamImpactPieChartDTO.ProfilesDTO
-                {
-                    Username = x.Username,
-                    ImpactPercentage = x.OImpact / impactSum * 100
-                }).ToArray()
-            };
-        }
-
-        public TeamImpactLineChartDTO GetImpactLineChart(int teamId)
-        {
-            var wr = (from trw in DbContext.TeamReportsWeekly
-                      where trw.TeamId == teamId
-                      orderby trw.DateId descending
-                      select new
-                      {
-                          DateId = trw.DateId,
-                          OImpact = trw.OImpactAverage
-                      }).Take(30).ToList();
-
-            if (wr == null || !wr.Any())
-            {
-                return null;
-            }
-
-            return new TeamImpactLineChartDTO
-            {
-                StartDateId = wr.Last().DateId,
-                EndDateId = wr.First().DateId,
-                Averages = wr.Select(x => x.OImpact).Reverse().ToArray()
-            };
-        }
-
         public void Create(int segmentId, TeamCreateDTO dto)
         {
             DbContext.Add(new Team

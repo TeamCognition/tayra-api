@@ -13,7 +13,7 @@ namespace Tayra.Services
         GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams);
         IdentityInvitationViewDTO GetInvitation(string InvitationCode);
         void DeleteInvitation(int invitationId);
-        GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, ProfileRoles role, IdentityManageGridParams gridParams);
+        GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, IdentityManageGridParams gridParams);
         IdentityManageAssignsDTO GetIdentityManageAssignsData(int[] segmentIds, int memberProfileId);
         GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams);
         void ChangePasswordWithSaveChange(int identityId, IdentityChangePasswordDTO dto);
