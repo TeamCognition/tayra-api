@@ -85,6 +85,39 @@ namespace Tayra.Services
             };
         }
 
+        public ReportMembersPerformanceDTO GetMembersPerformanceReport(ReportParams reportParams)
+        {
+
+            var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == reportParams.SegmentId).Select(x => x.ProfileId).ToArray();
+
+            var membersSummary = (from prw in DbContext.ProfileReportsWeekly
+                                  where profileIds.Contains(prw.ProfileId)
+                                  where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To
+                                  orderby prw.DateId descending
+                                  group prw by prw.ProfileId into m
+                                  select new ReportMembersPerformanceDTO.MembersPerformanceDTO
+                                  {
+                                    Name = m.FirstOrDefault().Profile.Username,
+                                    Impact = m.FirstOrDefault().OImpactAverage,
+                                    TasksCompleted = m.Sum(x => x.TasksCompletedChange),
+                                    Complexity = m.Sum(x => x.ComplexityChange),
+                                    Assists = m.Sum(x => x.ComplexityChange),
+                                    AvarageCompletionTime = m.FirstOrDefault().TasksCompletionTimeChange,
+                                    Speed = m.FirstOrDefault().SpeedAverage,
+                                    Heat = m.FirstOrDefault().Heat,
+                                    Tokens = m.FirstOrDefault().CompanyTokensEarnedChange,
+                                    Items = m.FirstOrDefault().ItemsBoughtChange,
+                                    InventoryValue = m.FirstOrDefault().InventoryValueTotal
+                                  }).ToArray();
+
+            return new ReportMembersPerformanceDTO
+            {
+                MembersPerformance = membersSummary
+            };
+
+        }
+          
+       
         public ReportDeliverySegmentMetricsDTO GetDeliverySegmentMetricsReport(ReportParams reportParams)
         {
             var teamIds = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId).Select(x => x.Id);

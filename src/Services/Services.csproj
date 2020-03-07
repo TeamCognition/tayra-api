@@ -29,8 +29,6 @@
     <Folder Include="Logs\DTO\" />
     <Folder Include="Tasks\" />
     <Folder Include="Tasks\DTO\" />
-    <Folder Include="Reports\" />
-    <Folder Include="Reports\DTO\" />
     <Folder Include="Challenges\" />
     <Folder Include="Challenges\DTO\" />
     <Folder Include="ClaimBundle\" />
