@@ -7,9 +7,9 @@ using Tayra.SyncServices.Common;
 
 namespace Tayra.SyncServices
 {
-    public class PullIssuesHttp
+    public class SyncIssuesHttp
     {
-        [FunctionName(nameof(PullIssuesHttp))]
+        [FunctionName(nameof(SyncIssuesHttp))]
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest request,
             ExecutionContext context, ILogger logger)

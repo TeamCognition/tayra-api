@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Linq;
+using Firdaws.Core;
+using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
 
 namespace Tayra.SyncServices
 {
-    public class PullIssuesLoader : BaseLoader
+    public class SyncIssuesLoader : BaseLoader
     {
         #region Private Variables
 
@@ -15,7 +18,7 @@ namespace Tayra.SyncServices
 
         #region Constructor
 
-        public PullIssuesLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public SyncIssuesLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
             _shardMapProvider = shardMapProvider;
         }
@@ -38,8 +41,11 @@ namespace Tayra.SyncServices
 
         public static void PullIssues(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService)
         {
+            //var jiraConnector = new AtlassianJiraConnector(null, organizationDb);
 
+            //var tasks = jiraConnector.GetBulkIssuesWithChangelog()
         }
+
         #endregion
     }
 }

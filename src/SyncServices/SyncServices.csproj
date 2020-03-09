@@ -45,7 +45,7 @@
     <Folder Include="Tayra\Reports\GenerateReports\" />
     <Folder Include="Tayra\ActionPoints\" />
     <Folder Include="Atlassian\" />
-    <Folder Include="Atlassian\PullIssues\" />
+    <Folder Include="Atlassian\SyncIssues\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
