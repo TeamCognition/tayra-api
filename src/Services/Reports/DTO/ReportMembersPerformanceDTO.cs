@@ -5,9 +5,7 @@ namespace Tayra.Services
 {
     public class ReportMembersPerformanceDTO
     {
-
         public MembersPerformanceDTO[] MembersPerformance { get; set; }
-
         public class MembersPerformanceDTO
         {
             public string Name { get; set; }
@@ -17,12 +15,11 @@ namespace Tayra.Services
             public int Assists { get; set; }
             public float AvarageCompletionTime { get; set; }
             public float Speed { get; set; }
-            public float Heat { get; set; }
+            public float Power { get; set; }
             public float Tokens { get; set; }
             public int Items { get; set; }
             public float InventoryValue { get; set; }
+            public int InventoryCount { get; set; }
         }
-
-    
     }
 }

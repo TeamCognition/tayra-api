@@ -52,7 +52,7 @@ namespace Tayra.SyncServices.Common
         public static IConfigurationRoot LoadSettings(ExecutionContext context)
         {
             return new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)               
+                .SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("sharedSettings.json", optional: true)
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()
@@ -88,7 +88,7 @@ namespace Tayra.SyncServices.Common
                     return new MakeActionPointsLoader(shardMapProvider, logService, coreDatabase);
 
                 case JobTypes.PullIssues:
-                    return new PullIssuesLoader(shardMapProvider, logService, coreDatabase);
+                    return new SyncIssuesLoader(shardMapProvider, logService, coreDatabase);
             }
 
             throw new NotSupportedException($"{jobTypes} integration are not supported");

@@ -87,7 +87,6 @@ namespace Tayra.Services
 
         public ReportMembersPerformanceDTO GetMembersPerformanceReport(ReportParams reportParams)
         {
-
             var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == reportParams.SegmentId).Select(x => x.ProfileId).ToArray();
 
             var membersSummary = (from prw in DbContext.ProfileReportsWeekly
@@ -97,24 +96,24 @@ namespace Tayra.Services
                                   group prw by prw.ProfileId into m
                                   select new ReportMembersPerformanceDTO.MembersPerformanceDTO
                                   {
-                                    Name = m.FirstOrDefault().Profile.Username,
-                                    Impact = m.FirstOrDefault().OImpactAverage,
-                                    TasksCompleted = m.Sum(x => x.TasksCompletedChange),
-                                    Complexity = m.Sum(x => x.ComplexityChange),
-                                    Assists = m.Sum(x => x.ComplexityChange),
-                                    AvarageCompletionTime = m.FirstOrDefault().TasksCompletionTimeChange,
-                                    Speed = m.FirstOrDefault().SpeedAverage,
-                                    Heat = m.FirstOrDefault().Heat,
-                                    Tokens = m.FirstOrDefault().CompanyTokensEarnedChange,
-                                    Items = m.FirstOrDefault().ItemsBoughtChange,
-                                    InventoryValue = m.FirstOrDefault().InventoryValueTotal
+                                      Name = $"{m.First().Profile.FirstName} {m.First().Profile.LastName}",
+                                      TasksCompleted = m.Sum(x => x.TasksCompletedChange),
+                                      Complexity = m.Sum(x => x.ComplexityChange),
+                                      Assists = m.Sum(x => x.ComplexityChange),
+                                      AvarageCompletionTime = m.Sum(x => x.TasksCompletionTimeChange),
+                                      Tokens = m.Sum(x => x.CompanyTokensEarnedChange),
+                                      Items = m.Sum(x => x.ItemsBoughtChange),
+                                      InventoryValue = m.FirstOrDefault().InventoryValueTotal,
+                                      InventoryCount = m.FirstOrDefault().InventoryCountTotal,
+                                      Impact = m.FirstOrDefault().OImpactAverage,
+                                      Speed = m.FirstOrDefault().SpeedAverage,
+                                      Power = m.FirstOrDefault().PowerAverage
                                   }).ToArray();
 
             return new ReportMembersPerformanceDTO
             {
                 MembersPerformance = membersSummary
             };
-
         }
           
        
@@ -453,7 +452,7 @@ namespace Tayra.Services
                 case ReportTimeIntervals.Month:
                     return 100;
 
-                default: return 1;
+                default:return 1;
             }
         }
 
