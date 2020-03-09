@@ -41,23 +41,29 @@ namespace Tayra.Services
             //some of this code can be shared when reports become more generic
             if (role == ProfileRoles.Member)
             {
-                shopDto.shopStatistics = (from r in DbContext.ProfileReportsDaily
-                                          where r.ProfileId == profileId
-                                          group r by 1 into total
-                                          let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
-                                          select new ShopViewDTO.ShopStatisticDTO[]
-                                          {
-                                              new ShopViewDTO.ShopStatisticDTO
-                                              {
-                                                  Last30 = last30.Sum(x => x.ItemsBoughtChange),
-                                                  Total = total.Sum(x => x.ItemsBoughtChange)
-                                              },
-                                              new ShopViewDTO.ShopStatisticDTO
-                                              {
-                                                  Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
-                                                  Total = total.Sum(x => x.CompanyTokensSpentChange)
-                                              }
-                                          }).FirstOrDefault();
+                var stats = (from r in DbContext.ProfileReportsDaily
+                            where r.ProfileId == profileId
+                            group r by 1 into total
+                            let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
+                            select new ShopViewDTO.ShopStatisticDTO[]
+                            {
+                                new ShopViewDTO.ShopStatisticDTO
+                                {
+                                    Last30 = last30.Sum(x => x.ItemsBoughtChange),
+                                    Total = total.Sum(x => x.ItemsBoughtChange)
+                                },
+                                new ShopViewDTO.ShopStatisticDTO
+                                {
+                                    Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                                    Total = total.Sum(x => x.CompanyTokensSpentChange)
+                                }
+                            }).FirstOrDefault();
+
+                if (stats != null)
+                {
+                    shopDto.ItemStats = stats[0];
+                    shopDto.TokenStats = stats[1];
+                }
             }
             else
             {
@@ -69,24 +75,30 @@ namespace Tayra.Services
                     rQuery = rQuery.Where(x => managersSegmentsIds.Contains(x.SegmentId));
                 }
 
-                shopDto.shopStatistics = (from r in rQuery
-                                          group r by 1 into total
-                                          let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
-                                          select new ShopViewDTO.ShopStatisticDTO[]
-                                          {
-                                              new ShopViewDTO.ShopStatisticDTO
-                                              {
-                                                    Last30 = last30.Sum(x => x.ItemsBoughtChange),
-                                                    Total = total.Sum(x => x.ItemsBoughtChange)
-                                              },
-                                              new ShopViewDTO.ShopStatisticDTO
-                                              {
-                                                  Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
-                                                  Total = total.Sum(x => x.CompanyTokensSpentChange)
-                                              }
-                                          }).FirstOrDefault();
+                var stats = (from r in rQuery
+                            group r by 1 into total
+                            let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
+                            select new ShopViewDTO.ShopStatisticDTO[]
+                            {
+                                new ShopViewDTO.ShopStatisticDTO
+                                {
+                                    Last30 = last30.Sum(x => x.ItemsBoughtChange),
+                                    Total = total.Sum(x => x.ItemsBoughtChange)
+                                },
+                                new ShopViewDTO.ShopStatisticDTO
+                                {
+                                    Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                                    Total = total.Sum(x => x.CompanyTokensSpentChange)
+                                }
+                            }).FirstOrDefault();
+
+                if (stats != null)
+                {
+                    shopDto.ItemStats = stats[0];
+                    shopDto.TokenStats = stats[1];
+                }
             }
-            
+
             return shopDto;
         }
 
@@ -156,20 +168,20 @@ namespace Tayra.Services
             }
         }
 
-        public void OpenShop(int shopId)
+        public void OpenShop()
         {
-            var shop = DbContext.Shops.FirstOrDefault(x => x.Id == shopId);
+            var shop = DbContext.Shops.FirstOrDefault();
 
-            shop.EnsureNotNull(shopId);
+            shop.EnsureNotNull();
 
             shop.ClosedAt = null;
         }
 
-        public void CloseShop(int shopId)
+        public void CloseShop()
         {
-            var shop = DbContext.Shops.FirstOrDefault(x => x.Id == shopId);
+            var shop = DbContext.Shops.FirstOrDefault();
 
-            shop.EnsureNotNull(shopId);
+            shop.EnsureNotNull();
 
             shop.ClosedAt = DateTime.UtcNow;
         }

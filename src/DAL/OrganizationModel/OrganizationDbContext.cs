@@ -216,7 +216,7 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileExternalId>(entity =>
             {
-                entity.HasKey(x => new { x.OrganizationId, x.ExternalId, x.IntegrationType });
+                entity.HasKey(x => new { x.ExternalId, x.IntegrationType });
             });
 
             modelBuilder.Entity<ProfileInventoryItem>(entity =>
@@ -235,18 +235,18 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileReportDaily>(entity =>
             {
-                entity.HasKey(x => new { x.OrganizationId, x.DateId, x.ProfileId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
             });
 
             modelBuilder.Entity<ProfileReportWeekly>(entity =>
             {
-                entity.HasKey(x => new { x.OrganizationId, x.DateId, x.ProfileId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
             });
 
             modelBuilder.Entity<Segment>().HasIndex(nameof(Segment.Key), ArchivedAtProp).IsUnique();
             modelBuilder.Entity<SegmentArea>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.OrganizationId, x.DateId, x.SegmentId, x.TaskCategoryId });
-            modelBuilder.Entity<SegmentReportWeekly>().HasKey(x => new { x.OrganizationId, x.DateId, x.SegmentId, x.TaskCategoryId });
+            modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
+            modelBuilder.Entity<SegmentReportWeekly>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
 
             modelBuilder.Entity<ShopItem>(entity =>
             {
@@ -267,7 +267,8 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<Task>(entity =>
             {
-                entity.HasIndex(x => new { x.ExternalId, x.IntegrationType }).IsUnique();
+                entity.HasIndex(x => new { x.ExternalId, x.IntegrationType, x.SegmentId }).IsUnique();
+                entity.HasIndex(x => new { x.ExternalId, x.IntegrationType});
                 entity.HasIndex(x => x.AssigneeProfileId);
             });
 
@@ -280,12 +281,12 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<TeamReportDaily>(entity =>
             {
-                entity.HasKey(x => new { x.OrganizationId, x.DateId, x.TeamId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.DateId, x.TeamId, x.TaskCategoryId });
             });
 
             modelBuilder.Entity<TeamReportWeekly>(entity =>
             {
-                entity.HasKey(x => new { x.OrganizationId, x.DateId, x.TeamId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.DateId, x.TeamId, x.TaskCategoryId });
             });
 
             modelBuilder.Ignore<Date>();
@@ -299,24 +300,31 @@ namespace Tayra.Models.Organizations
             var orgPKey = orgEntity.FindPrimaryKey();
             foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
             {
-                //Checks if TenantIdFk property has been added manually
-                if (entityType.FindProperty(TenantIdFK) == null)
+                //OrganizationId
+                var id = entityType.FindPrimaryKey().Properties.FirstOrDefault(x => x.Name == "Id");
+                if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;
+
+                var orgId = entityType.GetOrAddProperty(TenantIdFK, typeof(int));
+                entityType.GetOrAddForeignKey(orgId, orgPKey, orgEntity);
+                var pk = entityType.FindPrimaryKey().Properties;
+                entityType.SetPrimaryKey(pk.Append(orgId).ToArray());
+
+                //remove altenativePrimaryKey
+                if(pk.Count() > 1 || pk[0].Name != "Id")
+                entityType.RemoveKey(pk);
+
+                var idxs = entityType.GetIndexes().Where(x => x.Properties.Count() > 1 || x.Properties[0] != orgId).ToArray();
+                foreach (var idx in idxs)
                 {
-                    //OrganizationId
-                    var id = entityType.GetProperties().FirstOrDefault(x => x.IsPrimaryKey() && x.Name == "Id");
-                    if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;
-
-                    var orgId = entityType.GetOrAddProperty(TenantIdFK, typeof(int));
-                    entityType.GetOrAddForeignKey(orgId, orgPKey, orgEntity);
-                    entityType.SetPrimaryKey(entityType.FindPrimaryKey().Properties.Append(orgId).ToList());
+                    entityType.GetOrAddIndex(idx.Properties.Append(orgId).ToArray());
+                    entityType.RemoveIndex(idx.Properties);
                 }
-
+               
                 //Set Global Query
                 var clrType = entityType.ClrType;
                 var method = SetGlobalQueryMethod.MakeGenericMethod(clrType);
                 method.Invoke(this, new object[] { modelBuilder });
             }
-            
             base.OnModelCreating(modelBuilder);
         }
 

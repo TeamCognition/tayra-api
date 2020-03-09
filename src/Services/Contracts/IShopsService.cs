@@ -8,7 +8,7 @@ namespace Tayra.Services
         ShopViewDTO GetShopViewDTO(int profileId,ProfileRoles role);
         GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(int profileId, ProfileRoles role, ShopPurchasesGridParams gridParams);
         void UpdateShopPurchaseStatus(int profileId, int shopPurchaseId, ShopPurchaseStatuses newStatus);
-        void OpenShop(int shopId);
-        void CloseShop(int shopId);
+        void OpenShop();
+        void CloseShop();
     }
 }

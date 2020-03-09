@@ -7,9 +7,6 @@ namespace Tayra.Models.Organizations
     //Interrupts, Helps, Plusses are missing
     public class ProfileReportDaily : ITimeStampedEntity
     {
-        //dont delete
-        public int OrganizationId { get; set; }
-
         public int DateId { get; set; }
         public int IterationCount { get; set; }
         public ProfileRoles ProfileRole { get; set; }

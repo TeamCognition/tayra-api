@@ -25,7 +25,7 @@ namespace Tayra.API.Controllers
         [HttpGet]
         public ActionResult<ShopViewDTO> GetShop()
         {
-            return Ok(ShopsService.GetShopViewDTO(CurrentUser.ProfileId,CurrentUser.Role));
+            return ShopsService.GetShopViewDTO(CurrentUser.ProfileId, CurrentUser.Role);
         }
 
         [HttpPost("purchaseSearch")]
@@ -37,7 +37,7 @@ namespace Tayra.API.Controllers
         [HttpPost("close")]
         public IActionResult CloseShop()
         {
-            ShopsService.CloseShop(1);
+            ShopsService.CloseShop();
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -46,7 +46,7 @@ namespace Tayra.API.Controllers
         [HttpPost("open")]
         public IActionResult OpenShop()
         {
-            ShopsService.OpenShop(1);
+            ShopsService.OpenShop();
             OrganizationContext.SaveChanges();
 
             return Ok();

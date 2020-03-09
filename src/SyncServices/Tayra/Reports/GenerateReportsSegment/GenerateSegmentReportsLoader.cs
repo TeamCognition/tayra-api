@@ -25,7 +25,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Public Methods
 
-        public override void Execute(DateTime date, params Tenant[] tenants)
+        public override void Execute(DateTime date, Dictionary<string, string> requestParams, params Tenant[] tenants)
         {
             foreach (var tenant in tenants)
             {

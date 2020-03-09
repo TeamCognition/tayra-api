@@ -28,7 +28,7 @@ namespace Tayra.SyncServices.Common
             if (!string.IsNullOrEmpty(dto.OrganizationKey))
             {
                 var date = dto.Date.HasValue ? dto.Date.Value.Date : DateTime.UtcNow.Date.Subtract(TimeSpan.FromDays(1));
-                loader.Execute(date, dto.OrganizationKey);
+                loader.Execute(date, dto.OrganizationKey, dto.Params);
             }
             else
             {
@@ -36,7 +36,7 @@ namespace Tayra.SyncServices.Common
                     ? new List<TimeZoneDTO> { new TimeZoneDTO { Date = dto.Date.Value, Id = dto.TimezoneId } }
                     : GetCurrentTimezones();
 
-                loader.Execute(timezoneInfo.First().Date.Date, timezoneInfo.ToArray());
+                loader.Execute(timezoneInfo.First().Date.Date, dto.Params, timezoneInfo.ToArray());
             }
         }
 
@@ -46,7 +46,7 @@ namespace Tayra.SyncServices.Common
 
             var timezoneInfo = GetCurrentTimezones();
 
-            loader.Execute(timezoneInfo.First().Date.Date, timezoneInfo.ToArray());
+            loader.Execute(timezoneInfo.First().Date.Date, null, timezoneInfo.ToArray());
         }
 
         public static IConfigurationRoot LoadSettings(ExecutionContext context)

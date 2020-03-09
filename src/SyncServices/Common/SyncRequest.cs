@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tayra.SyncServices.Common
 {
@@ -7,5 +8,7 @@ namespace Tayra.SyncServices.Common
         public DateTime? Date { get; set; }
         public string OrganizationKey { get; set; }
         public string TimezoneId { get; set; }
+
+        public Dictionary<string, string> Params { get; set; }
     }
 }

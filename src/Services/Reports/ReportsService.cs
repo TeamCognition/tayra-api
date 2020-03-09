@@ -102,9 +102,8 @@ namespace Tayra.Services
                                       Assists = m.Sum(x => x.ComplexityChange),
                                       AvarageCompletionTime = m.Sum(x => x.TasksCompletionTimeChange),
                                       Tokens = m.Sum(x => x.CompanyTokensEarnedChange),
-                                      Items = m.Sum(x => x.ItemsBoughtChange),
                                       InventoryValue = m.FirstOrDefault().InventoryValueTotal,
-                                      InventoryCount = m.FirstOrDefault().InventoryCountTotal,
+                                      InventoryItems = m.FirstOrDefault().InventoryCountTotal,
                                       Impact = m.FirstOrDefault().OImpactAverage,
                                       Speed = m.FirstOrDefault().SpeedAverage,
                                       Power = m.FirstOrDefault().PowerAverage

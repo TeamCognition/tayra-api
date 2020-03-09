@@ -5,9 +5,6 @@ namespace Tayra.Models.Organizations
 {
     public class TeamReportDaily : ITimeStampedEntity
     {
-        //dont delete
-        public int OrganizationId { get; set; }
-
         public int DateId { get; set; }
         public int IterationCount { get; set; }
         public bool IsUnassigned { get; set; }

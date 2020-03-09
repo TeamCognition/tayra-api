@@ -7,9 +7,6 @@ namespace Tayra.Models.Organizations
 {
     public class ProfileExternalId : ITimeStampedEntity
     {
-        //dont delete
-        public int OrganizationId { get; set; }
-
         //Composite Key
         public int ProfileId { get; set; }
         public virtual Profile Profile { get; set; }

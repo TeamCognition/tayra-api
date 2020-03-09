@@ -17,9 +17,8 @@ namespace Tayra.Services
             public float Speed { get; set; }
             public float Power { get; set; }
             public float Tokens { get; set; }
-            public int Items { get; set; }
             public float InventoryValue { get; set; }
-            public int InventoryCount { get; set; }
+            public int InventoryItems { get; set; }
         }
     }
 }
