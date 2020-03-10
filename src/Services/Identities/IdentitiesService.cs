@@ -274,21 +274,13 @@ namespace Tayra.Services
                                                             }).ToArray(),
                                                           Segments = p.Assignments.Select(x => new IdentityManageGridDTO.SegmentDataDTO
                                                             {
-                                                                SegmentId = x.Segment.Id,
+                                                                SegmentKey = x.Segment.Key,
                                                                 Name = x.Segment.Name,
-                                                                Key = x.Segment.Key,
-                                                                Avatar = x.Segment.Avatar,
-                                                                Created = x.Segment.Created,
-                                                                ActionPointsCount = x.Segment.Id
                                                             }).ToArray(),
                                                           Teams = p.Assignments.Select(x => new IdentityManageGridDTO.TeamDataDTO 
                                                             {  
-                                                                TeamId = x.Team.Id,
                                                                 TeamKey = x.Team.Key,
-                                                                Name=x.Team.Name,
-                                                                AvatarColor=x.Team.AvatarColor,
-                                                                Created=x.
-                                                                Team.Created 
+                                                                Name = x.Team.Name,
                                                             }).ToArray()  
                                                       };
 

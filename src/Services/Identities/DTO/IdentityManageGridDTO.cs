@@ -24,27 +24,15 @@ namespace Tayra.Services
         public SegmentDataDTO[] Segments;
         public class SegmentDataDTO
         {
-            public int SegmentId { get; set; }
+            public string SegmentKey { get; set; }
             public string Name { get; set; }
-            public string Key { get; set; }
-            public string Avatar { get; set; }
-            public DateTime Created { get; set; }
-
-            public int ChallengesActive { get; set; }
-            public int ChallengesCompleted { get; set; }
-            public int ShopItemsBought { get; set; }
-            public IntegrationType[] Integrations { get; set; }
-            public int ActionPointsCount { get; set; }
         }
 
         public TeamDataDTO[] Teams { get; set; }
         public class TeamDataDTO
         {
-            public int TeamId { get; set; }
             public string TeamKey { get; set; }
             public string Name { get; set; }
-            public string AvatarColor { get; set; }
-            public DateTime Created { get; set; }
         }
     }
 }
