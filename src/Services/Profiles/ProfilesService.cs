@@ -58,7 +58,11 @@ namespace Tayra.Services
         {
             var pe = DbContext.ProfileExternalIds.Include(x => x.Profile).FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType);
 
-            pe.EnsureNotNull(externalId, integrationType);
+            //pe.EnsureNotNull(externalId, integrationType);
+            if (pe == null)
+            {
+                return null;
+            }
 
             return pe.Profile;
         }

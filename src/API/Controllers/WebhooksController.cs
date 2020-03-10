@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Firdaws.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -66,12 +67,12 @@ namespace Tayra.API.Controllers
             var jiraConnector = new AtlassianJiraConnector(null, DbContext);
             var statusChangelogs = jiraConnector.GetIssueChangelog(rewardStatusField.IntegrationId, we.JiraIssue.Key, "status");
 
-            if (statusChangelogs.Last().Created.ToUniversalTime() != ConvertUnixEpochTime(we.Timestamp))
+            if (statusChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(we.Timestamp))
             {
                 return Ok();
             }
 
-            var assigneProfile = ProfilesService.GetByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
+            var assigneProfile = fields?.Assignee == null ? null : ProfilesService.GetByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
             var profileAssignment = assigneProfile == null ? null : DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
             var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (int?)null;
 
@@ -89,11 +90,11 @@ namespace Tayra.API.Controllers
                     TimeSpentInMinutes = fields.Timespent,
                     TimeOriginalEstimatInMinutes = fields.TimeOriginalEstimate,
                     StoryPoints = (int?)fields.StoryPointsCF,
-                    Priority = GetTaskPriority(fields.Priority.Id),
-                    Type = GetTaskType(fields.IssueType.Id),
+                    Priority = TaskHelpers.GetTaskPriority(fields.Priority.Id),
+                    Type = TaskHelpers.GetTaskType(fields.IssueType.Id),
                     EffortScore = null,
                     Labels = fields.Labels,
-                    AssigneeExternalId = fields.Assignee.AccountId,
+                    AssigneeExternalId = fields?.Assignee?.AccountId,
                     AssigneeProfileId = assigneProfile?.Id,
                     ReporterProfileId = 0,
                     TeamId = profileAssignment?.TeamId,
@@ -198,8 +199,8 @@ namespace Tayra.API.Controllers
                 TimeSpentInMinutes = fields.Timespent,
                 TimeOriginalEstimatInMinutes = fields.TimeOriginalEstimate,
                 StoryPoints = (int?)fields.StoryPointsCF,
-                Priority = GetTaskPriority(fields.Priority.Id),
-                Type = GetTaskType(fields.IssueType.Id),
+                Priority = TaskHelpers.GetTaskPriority(fields.Priority.Id),
+                Type = TaskHelpers.GetTaskType(fields.IssueType.Id),
                 EffortScore = effortScore,
                 Labels = fields.Labels,
                 AssigneeExternalId = we.JiraIssue.Fields.Assignee.AccountId,
@@ -231,47 +232,6 @@ namespace Tayra.API.Controllers
             DbContext.SaveChanges();
 
             return Ok();
-        }
-
-        private DateTime ConvertUnixEpochTime(long milliseconds)
-        {
-            DateTime Fecha = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            return Fecha.AddMilliseconds(milliseconds);
-        }
-
-
-        private TaskPriorities GetTaskPriority(string jiraIssuePriorityId)
-        {
-            switch (jiraIssuePriorityId)
-            {
-                case "1":
-                    return TaskPriorities.Highest;
-
-                case "2":
-                    return TaskPriorities.High;
-
-                case "3":
-                    return TaskPriorities.Medium;
-
-                case "4":
-                    return TaskPriorities.Low;
-
-                case "5":
-                    return TaskPriorities.Lowest;
-
-                default: return TaskPriorities.Medium;
-            }
-        }
-
-        private TaskTypes GetTaskType(string jiraIssueTypeId)
-        {
-            switch (jiraIssueTypeId)
-            {
-                case "10006":
-                    return TaskTypes.Bug;
-
-                default: return TaskTypes.Task;
-            }
         }
 
         #endregion

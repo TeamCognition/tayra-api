@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Firdaws.Core;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -21,7 +22,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Public Methods
 
-        public override void Execute(DateTime date, params Tenant[] tenants)
+        public override void Execute(DateTime date, Dictionary<string, string> requestParams, params Tenant[] tenants)
         {
             date = DateHelper2.ParseDate(20191118);
             do

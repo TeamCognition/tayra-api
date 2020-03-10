@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Models.Catalog;
@@ -26,11 +27,11 @@ namespace Tayra.SyncServices.Common
 
         #region Abstract Methods
 
-        public void Execute(DateTime date, params TimeZoneDTO[] timeZoneDTO) => Execute(date, GetTenants(timeZoneDTO));
+        public void Execute(DateTime date, Dictionary<string, string> requestParams = null, params TimeZoneDTO[] timeZoneDTO) => Execute(date, requestParams, GetTenants(timeZoneDTO));
 
-        public void Execute(DateTime date, string tenantKey) => Execute(date, GetTenant(tenantKey));
+        public void Execute(DateTime date, string tenantKey, Dictionary<string, string> requestParams = null) => Execute(date, requestParams, GetTenant(tenantKey));
 
-        public abstract void Execute(DateTime date, params Tenant[] tenants);
+        public abstract void Execute(DateTime date, Dictionary<string, string> requestParams = null, params Tenant[] tenants);
 
         #endregion
 

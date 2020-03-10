@@ -5,6 +5,7 @@ namespace Tayra.Services
     public interface IReportsService
     {
         ReportOverviewDTO GetOverviewReport(ReportParams reportParams);
+        ReportMembersPerformanceDTO GetMembersPerformanceReport(ReportParams reportParams);
 
         ReportDeliverySegmentMetricsDTO GetDeliverySegmentMetricsReport(ReportParams reportParams);
         ReportDeliveryTeamMetricsDTO GetDeliveryTeamMetricsReport(int teamId, ReportParams reportParams);

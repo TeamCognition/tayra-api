@@ -45,7 +45,7 @@ namespace Tayra.Services
                                                 select new TeamViewGridDTO
                                                 {
                                                     SegmentId = s.Id,
-                                                    Teams = s.Teams.Where(x => x.Key != null && EF.Property<int?>(x, "ArchievedAt") == null).Select(x => new TeamViewGridDTO.TeamDTO
+                                                    Teams = s.Teams.Where(x => x.Key != null /*&& EF.Property<int?>(x, "ArchievedAt") == null*/).Select(x => new TeamViewGridDTO.TeamDTO
                                                     {
                                                         TeamId = x.Id,
                                                         Key = x.Key,

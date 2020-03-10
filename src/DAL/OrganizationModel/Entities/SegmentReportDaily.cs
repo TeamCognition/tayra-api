@@ -5,9 +5,6 @@ namespace Tayra.Models.Organizations
 {
     public class SegmentReportDaily : ITimeStampedEntity
     {
-        //dont delete
-        public int OrganizationId { get; set; }
-
         public int DateId { get; set; }
         public int IterationCount { get; set; }
 
