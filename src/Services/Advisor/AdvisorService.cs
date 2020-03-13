@@ -78,8 +78,13 @@ namespace Tayra.Services
 
         }
 
-        public void Conclude(int segmentId,int actionPointId)
+        public void Conclude(AdvisorConcludeActionPointDTO dto)
         {
+            var actionPoint = DbContext.ActionPointSegments.FirstOrDefault(x => x.SegmentId == dto.SegmentId && x.ActionPointId == dto.ActionPointId);
+
+            actionPoint.EnsureNotNull(dto.ActionPointId);
+
+            actionPoint.ConcludedOn = DateTime.UtcNow;
         }
 
         #endregion
