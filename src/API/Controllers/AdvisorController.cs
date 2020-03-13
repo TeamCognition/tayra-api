@@ -1,7 +1,6 @@
-﻿using System;
-using Firdaws.Core;
+﻿using Firdaws.Core;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -44,11 +43,12 @@ namespace Tayra.API.Controllers
             return Ok(AdvisorService.GetSegmentActionPointGrid(gridParams,segmentId));
         }
 
-        [HttpPut]
-        public void Conclude([FromQuery] int segmentId)
+        [HttpPut("conclude")]
+        public IActionResult UpdateTeam([FromBody]AdvisorConcludeActionPointDTO dto)
         {
-            AdvisorService.Conclude(segmentId);
-            DbContext.SaveChanges();
+            AdvisorService.Conclude(dto);
+            OrganizationContext.SaveChanges();
+
             return Ok();
         }
 
