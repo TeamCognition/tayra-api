@@ -3,9 +3,9 @@ using Tayra.Common;
 
 namespace Tayra.Services
 {
-    public class AdvisorOverviewDTO
+    public class AdvisorSegmentViewDTO
     {
-        public ActionPointsDTO[] ActionPoints { get; set; }
+        public ActionPointsDTO ActionPoints { get; set; }
         public class ActionPointsDTO
         {
             public int SegmentId { get; set; }
