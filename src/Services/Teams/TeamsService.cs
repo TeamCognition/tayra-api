@@ -120,6 +120,8 @@ namespace Tayra.Services
                 Profiles = pr.Select(x => new TeamImpactPieChartDTO.ProfilesDTO
                 {
                     Username = x.Username,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
                     ImpactPercentage = x.OImpact / impactSum * 100
                 }).ToArray()
             };

@@ -5,6 +5,7 @@ namespace Tayra.Services
     {
         public string Name { get; set; }
         public bool IsClosed { get; set; }
+        public int TotalRequests { get; set; }
         public DateTime Created { get; set; }
         public ShopStatisticDTO ItemStats { get; set; }
         public ShopStatisticDTO TokenStats { get; set; }
