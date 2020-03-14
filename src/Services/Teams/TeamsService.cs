@@ -103,6 +103,8 @@ namespace Tayra.Services
                       select new
                       {
                           Username = prw.Profile.Username,
+                          Name = prw.Profile.FirstName,
+                          LastName = prw.Profile.LastName,
                           OImpact = prw.OImpactAverage
                       }).ToList();
 
