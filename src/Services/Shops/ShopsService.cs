@@ -117,6 +117,8 @@ namespace Tayra.Services
                         select new ShopPurchasesGridDTO
                         {
                             ShopPurchaseId = sp.Id,
+                            FirstName = sp.Profile.FirstName,
+                            LastName = sp.Profile.LastName,
                             BuyerUsername = sp.Profile.Username,
                             Price = sp.Price,
                             Status = sp.Status,
