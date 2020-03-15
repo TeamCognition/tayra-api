@@ -34,6 +34,7 @@ namespace Tayra.Services
                                Name = s.Name,
                                IsClosed = s.ClosedAt.HasValue,
                                Created = s.Created,
+                               TotalRequests = DbContext.ShopPurchases.Where(x => x.Status == ShopPurchaseStatuses.PendingApproval).Count()
                            }).FirstOrDefault();
 
             shopDto.EnsureNotNull();
@@ -117,6 +118,8 @@ namespace Tayra.Services
                         select new ShopPurchasesGridDTO
                         {
                             ShopPurchaseId = sp.Id,
+                            FirstName = sp.Profile.FirstName,
+                            LastName = sp.Profile.LastName,
                             BuyerUsername = sp.Profile.Username,
                             Price = sp.Price,
                             Status = sp.Status,

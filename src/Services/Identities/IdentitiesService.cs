@@ -272,8 +272,7 @@ namespace Tayra.Services
                                                             {
                                                                 Type = x.Type
                                                             }).ToArray(),
-                                                          Segments = p.Role != ProfileRoles.Manager ? null : 
-                                                            p.Assignments.Select(x => new IdentityManageGridDTO.SegmentDataDTO
+                                                          Segments = p.Assignments.Select(x => new IdentityManageGridDTO.SegmentDataDTO
                                                             {
                                                                 SegmentId = x.Segment.Id,
                                                                 Name = x.Segment.Name,
@@ -282,8 +281,7 @@ namespace Tayra.Services
                                                                 Created = x.Segment.Created,
                                                                 ActionPointsCount = x.Segment.Id
                                                             }).ToArray(),
-                                                          Teams = p.Role != ProfileRoles.Member ? null : 
-                                                            p.Assignments.Select(x => new IdentityManageGridDTO.TeamDataDTO 
+                                                          Teams = p.Assignments.Select(x => new IdentityManageGridDTO.TeamDataDTO 
                                                             {  
                                                                 TeamId = x.Team.Id,
                                                                 TeamKey = x.Team.Key,

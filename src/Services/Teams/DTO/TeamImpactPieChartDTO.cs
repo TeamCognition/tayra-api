@@ -10,6 +10,8 @@ namespace Tayra.Services
         public class ProfilesDTO
         {
             public string Username { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
             public float ImpactPercentage { get; set; }
         }
     }

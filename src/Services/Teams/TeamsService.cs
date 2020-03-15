@@ -103,6 +103,8 @@ namespace Tayra.Services
                       select new
                       {
                           Username = prw.Profile.Username,
+                          FirstName = prw.Profile.FirstName,
+                          LastName = prw.Profile.LastName,
                           OImpact = prw.OImpactAverage
                       }).ToList();
 
@@ -118,6 +120,8 @@ namespace Tayra.Services
                 Profiles = pr.Select(x => new TeamImpactPieChartDTO.ProfilesDTO
                 {
                     Username = x.Username,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
                     ImpactPercentage = x.OImpact / impactSum * 100
                 }).ToArray()
             };
