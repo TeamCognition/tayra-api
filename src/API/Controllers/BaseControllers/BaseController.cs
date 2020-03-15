@@ -20,6 +20,7 @@ namespace Tayra.API.Controllers
         private ITasksService _tasksService;
         private ITeamsService _teamsService;
         private ITokensService _tokensService;
+        private IAdvisorService _advisorService;
         private ILookupsService _lookupsService;
         private IReportsService _reportsService;
         private IProfilesService _profilesService;
@@ -61,6 +62,7 @@ namespace Tayra.API.Controllers
         protected ITasksService TasksService => _tasksService ?? (_tasksService = Resolve<ITasksService>());
         protected ITeamsService TeamsService => _teamsService ?? (_teamsService = Resolve<ITeamsService>());
         protected ITokensService TokensService => _tokensService ?? (_tokensService = Resolve<ITokensService>());
+        protected IAdvisorService AdvisorService => _advisorService ?? (_advisorService = Resolve<IAdvisorService>());
         protected ILookupsService LookupsService => _lookupsService ?? (_lookupsService = Resolve<ILookupsService>());
         protected IReportsService ReportsService => _reportsService ?? (_reportsService = Resolve<IReportsService>());
         protected IProfilesService ProfilesService => _profilesService ?? (_profilesService = Resolve<IProfilesService>());
