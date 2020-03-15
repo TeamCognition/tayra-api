@@ -15,7 +15,7 @@ namespace Tayra.Models.Seeder
         {
             using (var catalogDbContext = new CatalogDbContext(ConnectionStringUtilities.GetCatalogDbConnStr(config)))
             {
-                var tenantKeys = catalogDbContext.Tenants.Select(x => x.Name).ToArray();
+                var tenantKeys = catalogDbContext.Tenants.Select(x => x.Key).ToArray();
                 Seed(shardMapProvider, tenantKeys);
             }
         }
@@ -52,7 +52,7 @@ namespace Tayra.Models.Seeder
                 //var t = tasks[0];
                 {
                     var props = t.Split('\t');
-                    for (int i = 0; i < props.Length-1; i++)
+                    for (int i = 0; i < props.Length - 1; i++)
                     {
                         if (props[i] == "NULL")
                             props[i] = null;
@@ -105,7 +105,7 @@ namespace Tayra.Models.Seeder
                         x.AssigneeProfileId = 34;
 
                     organizationDb.Add(x);
-                }                
+                }
                 organizationDb.SaveChanges();
             }
         }

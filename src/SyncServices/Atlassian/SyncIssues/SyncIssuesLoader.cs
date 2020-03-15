@@ -34,8 +34,8 @@ namespace Tayra.SyncServices
         {
             foreach (var tenant in tenants)
             {
-                LogService.SetOrganizationId(tenant.Name);
-                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name), _shardMapProvider))
+                LogService.SetOrganizationId(tenant.Key);
+                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
                     PullIssues(organizationDb, date, LogService, requestParams);
                 }
@@ -104,7 +104,6 @@ namespace Tayra.SyncServices
                 //if we came here assigneeProfile is not null
                 int? autoTimeSpent = null;
                 fields.Timespent = fields.Timespent > 0 ? fields.Timespent : null; //redundant, check above
-                if (fields.Timespent == null)
                 {
                     var statuses = jiraConnector.GetProjectStatuses(rewardStatusField.IntegrationId, jiraProjectId, fields.IssueType.Id);
                     var todoStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
@@ -158,10 +157,9 @@ namespace Tayra.SyncServices
                     var hours = (enteredRewardStatus.Value - enteredInProgress.Value).TotalHours;
 
                     autoTimeSpent = (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes;
-                    autoTimeSpent /= 3;
                 }
 
-                var timeSpentToUse = fields.Timespent ?? autoTimeSpent;
+                var timeSpentToUse = fields.Timespent ?? autoTimeSpent / 3;
                 var effortScore = TayraEffortCalculator.CalcEffortScore(timeSpentToUse ?? 0, TayraPersonalPerformance.MapSPToComplexity((int?)fields.StoryPointsCF ?? 0));
 
                 tasksService.AddOrUpdate(new TaskAddOrUpdateDTO

@@ -33,7 +33,7 @@ namespace Tayra.Models.Organizations
         public virtual ICollection<Integration> Integrations { get; set; }
         public virtual ICollection<ProfileAssignment> Members { get; set; }
         public virtual ICollection<ShopPurchase> ShopPurchases { get; set; }
-        public virtual ICollection<ActionPointSegment> ActionPoints { get; set; }
+        public virtual ICollection<ActionPoint> ActionPoints { get; set; }
         public virtual ICollection<SegmentReportDaily> ReportsDaily { get; set; }
         public virtual ICollection<SegmentReportWeekly> ReportsWeekly { get; set; }
 

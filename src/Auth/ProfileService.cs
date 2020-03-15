@@ -42,7 +42,7 @@ namespace Tayra.Auth
                                         .Select(x => x.Tenant)
                                         .FirstOrDefault();
 
-            using (var orgContext = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name), _shardMapProvider)) //TODO: check if passing httpAccessor will change anything
+            using (var orgContext = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider)) //TODO: check if passing httpAccessor will change anything
             {
                 var profile = orgContext.Profiles
                     .FirstOrDefault(x => x.IdentityId == int.Parse(subject));
@@ -71,7 +71,7 @@ namespace Tayra.Auth
 
                 var claimList = new List<Claim>
                 {
-                    new Claim(FirdawsClaimTypes.CurrentTenantKey, tenant.Name),
+                    new Claim(FirdawsClaimTypes.CurrentTenantKey, tenant.Key),
                     new Claim(FirdawsClaimTypes.ProfileId, profile.Id.ToString()), //For CreatedBy column
                     new Claim(FirdawsClaimTypes.IdentityId, profile.IdentityId.ToString()),
                     new Claim(TayraClaimTypes.Role, profile.Role.ToString()),

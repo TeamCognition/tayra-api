@@ -115,7 +115,6 @@ namespace Tayra.Services
             };
         }
           
-       
         public ReportDeliverySegmentMetricsDTO GetDeliverySegmentMetricsReport(ReportParams reportParams)
         {
             var teamIds = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId).Select(x => x.Id);

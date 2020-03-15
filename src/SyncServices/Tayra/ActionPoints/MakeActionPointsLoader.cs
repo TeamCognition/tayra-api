@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Firdaws.Core;
+using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -32,8 +34,8 @@ namespace Tayra.SyncServices.Tayra
         {
             foreach (var tenant in tenants)
             {
-                LogService.SetOrganizationId(tenant.Name);
-                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name), _shardMapProvider))
+                LogService.SetOrganizationId(tenant.Key);
+                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
                     MakeActionPoints(organizationDb, date, LogService);
                 }
@@ -56,12 +58,13 @@ namespace Tayra.SyncServices.Tayra
 
             var taskStats = (from t in organizationDb.Tasks
                              where t.Status == TaskStatuses.Done
-                             group t by t.AssigneeProfileId into total
+                             group t by new { t.SegmentId, t.AssigneeProfileId } into total
                              let last1 = total.Where(x => x.LastModifiedDateId > dateId1ago) //last 1 iteration
                              let last2 = total.Where(x => x.LastModifiedDateId > dateId2ago) //last 2 iteration
                              select new
                              {
-                                 ProfileId = total.Key,
+                                 SegmentId = total.Key.SegmentId,
+                                 ProfileId = total.Key.AssigneeProfileId,
                                  CompletedInLast1 = last1.Count(),
                                  CompletedInLast2 = last2.Count(),
                              }).ToList();
@@ -83,92 +86,121 @@ namespace Tayra.SyncServices.Tayra
                                 }).ToList();
 
 
-            var shopItemsAddedCount = (from si in organizationDb.ShopItems
-                                       where si.CreatedBy > 0
-                                       where si.Created > DateHelper2.ParseDate(dateId4ago)
-                                       select si).Count();
+            var shopItemsAddedInLast4 = (from si in organizationDb.ShopItems
+                                        where si.CreatedBy > 0
+                                        where si.Created > DateHelper2.ParseDate(dateId4ago)
+                                        select si).Count();
 
 
-            var challengesCreatedCount = (from c in organizationDb.Challenges
-                                          where c.CreatedBy > 0
-                                          where c.Created > DateHelper2.ParseDate(dateId4ago)
-                                          select c).Count();
+            var challengesCreatedInLast4 = (from c in organizationDb.ChallengeSegments
+                                            where c.Created > DateHelper2.ParseDate(dateId4ago)
+                                            group c by c.SegmentId into g
+                                            select new
+                                            {
+                                                SegmentId = g.Key,
+                                                Count = g.Count()
+                                            }).ToArray();
 
 
-            var profiles = organizationDb.Profiles.Select(x => new { x.Id, x.Created }).ToList();
-            foreach (var p in profiles)
-            {
-                if (p.Created <= DateHelper2.ParseDate(dateId1ago))
+            {//if Action Points where already generated today, delete since we are going to re-create them
+                var existing = organizationDb.ActionPoints.Count(x => x.DateId == dateId);
+                if (existing > 0)
                 {
-                    MakeProfileAP(organizationDb,
-                        ActionPointTypes.ProfilesNoCompletedTasksIn1Week,
-                        profileId: taskStats.Any(x => x.ProfileId == p.Id && x.CompletedInLast1 == 0 && x.CompletedInLast2 != 0)
-                                   || !taskStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                    logService.Log<MakeActionPointsLoader>($"deleting {existing} records from database");
+                    organizationDb.Database.ExecuteSqlCommand($"delete from {nameof(ActionPoint)}s where {nameof(ProfileReportWeekly.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.SaveChanges();
                 }
+            }
 
-                if (!CommonHelper.IsMonday(fromDay))
+            var aps = organizationDb.ActionPoints.Where(x => x.ConcludedOn == null).ToArray();
+            var profiles = organizationDb.Profiles.Select(x => new { x.Id, x.Created }).ToArray();
+            var segments = organizationDb.Segments.Select(x => new { x.Id, x.Created, x.Members }).ToArray();
+            foreach (var s in segments)
+            {
+                foreach (var p in profiles)
                 {
-                    if (p.Created <= DateHelper2.ParseDate(dateId2ago))
+                    if (!s.Members.Any(x => x.ProfileId == p.Id))
+                        continue;
+
+                    var joinDate = s.Members.OrderBy(x => x.Created).First(x => x.ProfileId == p.Id).Created;
+                    var taskStatsBySegment = taskStats.Where(x => x.SegmentId == s.Id);
+                    if (s.Created <= DateHelper2.ParseDate(dateId1ago) && joinDate <= DateHelper2.ParseDate(dateId1ago))
+                    {
+                        MakeProfileAP(organizationDb,
+                            ActionPointTypes.ProfilesNoCompletedTasksIn1Week,
+                            segmentId: s.Id,
+                            profileId: p.Id,
+                            isTrue: taskStatsBySegment.Any(x => x.ProfileId == p.Id && x.CompletedInLast1 == 0 && x.CompletedInLast2 != 0),//|| !taskStatsBySegment.Any(x => x.ProfileId == p.Id),
+                            aps);
+                    }
+
+                    if (p.Created <= DateHelper2.ParseDate(dateId2ago) && joinDate <= DateHelper2.ParseDate(dateId2ago))
                     {
                         MakeProfileAP(organizationDb,
                             ActionPointTypes.ProfilesNoCompletedTasksIn2Week,
-                            profileId: taskStats.Any(x => x.ProfileId == p.Id && x.CompletedInLast2 == 0)
-                                       || !taskStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                            segmentId: s.Id,
+                            profileId: p.Id,
+                            isTrue: taskStatsBySegment.Any(x => x.ProfileId == p.Id && x.CompletedInLast2 == 0),//|| !taskStatsBySegment.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                            aps);
+                        //lkpookpkopkopkopkopkopkoppokpihiuhiuhiuhoiu hoiu hoiu oh uo huiohu i hui hui huh uh ouh ouh uo oiuhoiuh oiuh oiuh oui
+                        if (!CommonHelper.IsMonday(fromDay))
+                        {
+                            MakeProfileAP(organizationDb,
+                                ActionPointTypes.ProfilesLowImpactFor2Weeks,
+                                segmentId: s.Id,
+                                profileId: p.Id,
+                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.ImpactFor1Weeks < 6 && x.ImpactFor2Weeks < 6),//|| !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                                aps);
 
-                        MakeProfileAP(organizationDb,
-                            ActionPointTypes.ProfilesLowImpactFor2Weeks,
-                            profileId: reportsStats.Any(x => x.ProfileId == p.Id && x.ImpactFor1Weeks < 9 && x.ImpactFor2Weeks < 9)
-                                       || !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                            MakeProfileAP(organizationDb,
+                                ActionPointTypes.ProfilesLowSpeedFor2Weeks,
+                                segmentId: s.Id,
+                                profileId: p.Id,
+                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.SpeedFor1Weeks < 3 && x.SpeedFor2Weeks < 3),//|| !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                                aps);
 
-                        MakeProfileAP(organizationDb,
-                            ActionPointTypes.ProfilesLowImpactFor2Weeks,
-                            profileId: reportsStats.Any(x => x.ProfileId == p.Id && x.SpeedFor1Weeks < 9 && x.SpeedFor2Weeks < 9)
-                                       || !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
-
-                        MakeProfileAP(organizationDb,
-                            ActionPointTypes.ProfilesLowImpactFor2Weeks,
-                            profileId: reportsStats.Any(x => x.ProfileId == p.Id && x.HeatFor1Weeks < 9 && x.HeatFor2Weeks < 9)
-                                       || !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                            MakeProfileAP(organizationDb,
+                                ActionPointTypes.ProfilesLowHeatFor2Weeks,
+                                segmentId: s.Id,
+                                profileId: p.Id,
+                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.HeatFor1Weeks < 15 && x.HeatFor2Weeks < 15),//|| !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                                aps);
+                        }
                     }
                 }
-            }
-
-            if (!CommonHelper.IsMonday(fromDay))
-            {
-                var segments = organizationDb.Segments.Select(x => new { x.Id, x.Created }).ToList();
-                foreach (var proj in segments)
+                //if (!CommonHelper.IsMonday(fromDay))
                 {
-                    if (proj.Created <= DateHelper2.ParseDate(dateId4ago))
+                    if (s.Created <= DateHelper2.ParseDate(dateId4ago))
                     {
-                        if (shopItemsAddedCount == 0)
-                        {
-                            MakeSegmentAP(organizationDb, ActionPointTypes.ShopNoItemsAddedIn4Weeks, proj.Id);
-                        }
-                        if (challengesCreatedCount == 0)
-                        {
-                            MakeSegmentAP(organizationDb, ActionPointTypes.ChallengeNotCreatedIn4Weeks, proj.Id);
-                        }
+                        MakeSegmentAP(organizationDb, ActionPointTypes.ShopNoItemsAddedIn4Weeks, s.Id,
+                            isTrue: shopItemsAddedInLast4 == 0,
+                            aps);
+                        
+                        MakeSegmentAP(organizationDb, ActionPointTypes.ChallengeNotCreatedIn4Weeks, s.Id,
+                            isTrue: (challengesCreatedInLast4.FirstOrDefault(x => x.SegmentId == s.Id)?.Count ?? 0) == 0,
+                            aps);   
                     }
                 }
             }
-
-
-            //var existing = organizationDb.ActionPoints.Count(x => x.DateId == dateId);
-            //if (existing > 0)
-            //{
-            //    logService.Log<MakeActionPointsLoader>($"deleting {existing} records from database");
-            //    organizationDb.Database.ExecuteSqlCommand($"delete from ProfileReportsWeekly where {nameof(ProfileReportWeekly.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
-            //    organizationDb.SaveChanges();
-            //}
 
             organizationDb.SaveChanges();
 
             logService.Log<MakeActionPointsLoader>($"{reportsToInsert.Count} new profile reports saved to database.");
         }
 
-        private static void MakeProfileAP(OrganizationDbContext dbContext, ActionPointTypes type, int profileId, int dateId = 0)
+        private static void MakeProfileAP(OrganizationDbContext dbContext, ActionPointTypes type, int? segmentId, int profileId, bool isTrue, ActionPoint[] aps, int dateId = 0)
         {
-            if (profileId <= 0)
+            var ap = aps.FirstOrDefault(x => x.Type == type && x.ProfileId == profileId); //if active ap exists
+            if (ap != null)
+            {
+                if (!isTrue)
+                {
+                    ap.ConcludedOn = DateTime.UtcNow;
+                }
+                return;
+            }
+
+            if (!isTrue)
                 return;
 
             if (dateId == 0)
@@ -178,17 +210,24 @@ namespace Tayra.SyncServices.Tayra
             {
                 Type = type,
                 DateId = dateId,
-                Profiles = new List<ActionPointProfile> {
-                    new ActionPointProfile
-                    {
-                        ProfileId = profileId
-                    }}
+                ProfileId = profileId,
+                SegmentId = segmentId
             });
         }
 
-        private static void MakeSegmentAP(OrganizationDbContext dbContext, ActionPointTypes type, int segmentId, int dateId = 0)
+        private static void MakeSegmentAP(OrganizationDbContext dbContext, ActionPointTypes type, int segmentId, bool isTrue, ActionPoint[] aps, int dateId = 0)
         {
-            if (segmentId <= 0)
+            var ap = aps.FirstOrDefault(x => x.Type == type && x.SegmentId == segmentId); //if active ap exists
+            if (ap != null)
+            {
+                if (!isTrue)
+                {
+                    ap.ConcludedOn = DateTime.UtcNow;
+                }
+                return;
+            }
+
+            if (!isTrue)
                 return;
 
             if (dateId == 0)
@@ -198,11 +237,7 @@ namespace Tayra.SyncServices.Tayra
             {
                 Type = type,
                 DateId = dateId,
-                Segments = new List<ActionPointSegment> {
-                    new ActionPointSegment
-                    {
-                        SegmentId = segmentId
-                    }}
+                SegmentId = segmentId
             });
         }
 
@@ -216,6 +251,13 @@ namespace Tayra.SyncServices.Tayra
                 Type = type,
                 DateId = dateId
             });
+        }
+
+            
+        private class APointDTO
+        {
+            public int ProfileId { get; set; }
+            public ActionPointTypes Type { get; set; }
         }
 
         #endregion

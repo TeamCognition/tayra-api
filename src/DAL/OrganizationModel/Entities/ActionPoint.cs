@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Firdaws.DAL;
 using Tayra.Common;
 
@@ -9,14 +8,18 @@ namespace Tayra.Models.Organizations
     {
         public int Id { get; set; }
 
-        public ActionPointTypes? Type { get; set; }
+        public int? SegmentId { get; set; }
+        public virtual Segment Segment { get; set; }
+
+        public int? ProfileId { get; set; }
+        public virtual Profile Profile { get; set; }
+        //public bool IsMemberOnly { get; set; }
+
+        public ActionPointTypes Type { get; set; }
         public string Data { get; set; }
         public int DateId { get; set; }
 
         public DateTime? ConcludedOn { get; set; }
-        
-        public virtual ICollection<ActionPointProfile> Profiles { get; set; }
-        public virtual ICollection<ActionPointSegment> Segments { get; set; }
 
         #region ITimeStampedEntity
 

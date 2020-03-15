@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
+using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
@@ -123,7 +128,7 @@ namespace Tayra.Services
             };
         }
 
-        public void UpdateJiraSettings(int segmentId, JiraSettingsUpdateDTO dto)
+        public void UpdateJiraSettings(int segmentId, string organizationKey, JiraSettingsUpdateDTO dto)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
@@ -136,6 +141,21 @@ namespace Tayra.Services
 
             var fields = integration.Fields
                 .Where(x => x.Key == ATConstants.ATJ_PROJECT_ID || x.Key.StartsWith(ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_, StringComparison.InvariantCulture));
+
+            if (dto.PullTasksForNewProjects)
+            {
+                var newProjects = dto.ActiveProjects.ExceptBy(fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new ActiveProject(x.Key, string.Empty)), e => e.ProjectId);
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://sync-func.azurewebsites.net/");
+                    client.DefaultRequestHeaders.Add("code", "a6FGEXuvOWmBZ4f2IjrceC0uEsv0j5PgPnOWWGmSQlqD9c9Utzo54w==");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    foreach (var p in newProjects)
+                    {
+                        client.PostAsync("api/SyncIssuesHttp", new StringContent(JsonConvert.SerializeObject(new { organizationKey = organizationKey, @params = new { jiraProjectId = p.ProjectId } }), Encoding.UTF8, "application/json")).Forget();
+                    }
+                }
+            }
 
             fields.ToList().ForEach(x => DbContext.Remove(x));
 
@@ -153,7 +173,5 @@ namespace Tayra.Services
         }
 
         #endregion
-
-
     }
 }

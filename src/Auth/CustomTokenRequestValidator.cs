@@ -36,7 +36,7 @@ namespace Tayra.Auth
                 var subject = context.Result.ValidatedRequest.Subject.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject).Value;
                 var currentTenantKey = _catalogContext.TenantIdentities
                             .Where(x => x.IdentityId == int.Parse(subject))
-                            .Select(x => x.Tenant.Name)
+                            .Select(x => x.Tenant.Key)
                             .FirstOrDefault();
 
 

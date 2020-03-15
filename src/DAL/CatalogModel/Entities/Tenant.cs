@@ -8,7 +8,7 @@ namespace Tayra.Models.Catalog
         public byte[] Id { get; set; }
 
         [Required, MaxLength(50)]
-        public string Name { get; set; }
+        public string Key { get; set; }
 
         [MaxLength(50)]
         public string Timezone { get; set; }
@@ -22,6 +22,5 @@ namespace Tayra.Models.Catalog
         public string ServicePlan { get; set; }
 
         //public string DatebaseType { get; set; }
-
     }
 }

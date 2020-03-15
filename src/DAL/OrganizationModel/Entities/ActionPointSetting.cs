@@ -6,7 +6,7 @@ namespace Tayra.Models.Organizations
 {
     public class ActionPointSetting : ITimeStampedEntity
     {
-        public ActionPointTypes? Type { get; set; }
+        public ActionPointTypes Type { get; set; }
 
         public int SegmentId { get; set; }
         public virtual Segment Segment { get; set; }

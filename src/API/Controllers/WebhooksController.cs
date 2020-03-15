@@ -126,10 +126,9 @@ namespace Tayra.API.Controllers
                 return Ok();
             }
 
-            //if we came here assigneeProfile is not null
+            //if we came here assigneeProfile is not null AND Status is set to RewardStatus 
             int? autoTimeSpent = null;
             fields.Timespent = fields.Timespent > 0 ? fields.Timespent : null; //redundant, check above
-            if (fields.Timespent == null)
             {
                 var statuses = jiraConnector.GetProjectStatuses(rewardStatusField.IntegrationId, jiraProjectId, fields.IssueType.Id);
                 var todoStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
@@ -180,10 +179,9 @@ namespace Tayra.API.Controllers
                 var hours = (enteredRewardStatus.Value - enteredInProgress.Value).TotalHours;
 
                 autoTimeSpent = (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes;
-                autoTimeSpent /= 3;
             }
 
-            var timeSpentToUse = fields.Timespent ?? autoTimeSpent;
+            var timeSpentToUse = fields.Timespent ?? autoTimeSpent / 3;
             var effortScore = TayraEffortCalculator.CalcEffortScore(timeSpentToUse ?? 0, TayraPersonalPerformance.MapSPToComplexity((int?)fields.StoryPointsCF ?? 0));
 
             TokensService.CreateTransaction(TokenType.CompanyToken, assigneProfile.Id, effortScore, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
@@ -228,6 +226,12 @@ namespace Tayra.API.Controllers
                 ProfileId = assigneProfile.Id,
                 CompetitionIds = activeCompetitions.Select(x => x.Id).Distinct()
             });
+
+            var aps = DbContext.ActionPoints.Where(x => x.ProfileId == assigneProfile.Id && x.ConcludedOn == null && (x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn1Week || x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn2Week)).ToArray();
+            foreach(var ap in aps)
+            {
+                ap.ConcludedOn = DateTime.UtcNow;
+            }
 
             DbContext.SaveChanges();
 

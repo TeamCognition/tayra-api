@@ -82,6 +82,12 @@ namespace Tayra.Connectors.Atlassian.Jira
                     segmentIntegration = CreateSegmentIntegration(segmentId, segmentFields, segmentIntegration);
                 }
 
+                var unlinkedTasks = OrganizationContext.Tasks.Where(x => x.AssigneeProfileId == null && x.AssigneeExternalId == loggedInUser.AccountId);
+                foreach (var ut in unlinkedTasks)
+                {
+                    ut.AssigneeProfileId = profileId;
+                }
+
                 OrganizationContext.SaveChanges();
                 return segmentIntegration;
             }

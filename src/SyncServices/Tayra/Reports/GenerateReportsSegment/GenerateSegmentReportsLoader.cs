@@ -29,8 +29,8 @@ namespace Tayra.SyncServices.Tayra
         {
             foreach (var tenant in tenants)
             {
-                LogService.SetOrganizationId(tenant.Name);
-                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Name), _shardMapProvider))
+                LogService.SetOrganizationId(tenant.Key);
+                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
                     GenerateSegmentReportsDaily(organizationDb, date, LogService);
                 }

@@ -10,7 +10,7 @@ namespace Tayra.Services
         List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(int[] segmentIds, int profileId);
         List<IntegrationSegmentViewDTO> GetSegmentIntegrations(string segmentKey);
         JiraSettingsViewDTO GetJiraSettingsViewDTO(int segmentId);
-        void UpdateJiraSettings(int segmentId, JiraSettingsUpdateDTO dto);
+        void UpdateJiraSettings(int segmentId, string organizationKey, JiraSettingsUpdateDTO dto);
 
 
     }

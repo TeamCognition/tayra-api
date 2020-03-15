@@ -49,8 +49,6 @@ namespace Tayra.Models.Organizations
 
         #region Db Sets
         public DbSet<ActionPoint> ActionPoints { get; set; }
-        public DbSet<ActionPointProfile> ActionPointProfiles { get; set; }
-        public DbSet<ActionPointSegment> ActionPointSegments { get; set; }
         public DbSet<ActionPointSetting> ActionPointSettings { get; set; }
         public DbSet<Blob> Blobs { get; set; }
         public DbSet<Challenge> Challenges { get; set; }
@@ -128,21 +126,11 @@ namespace Tayra.Models.Organizations
                     entityType.GetOrAddProperty(ArchivedAtProp, typeof(long?));
                 }
             }
-            modelBuilder.Entity<ActionPointProfile>(entity =>
-            {
-                entity.HasKey(x => new { x.ActionPointId, x.ProfileId });
-            });
-
-            modelBuilder.Entity<ActionPointSegment>(entity =>
-            {
-                entity.HasKey(x => new { x.ActionPointId, x.SegmentId });
-            });
 
             modelBuilder.Entity<ActionPointSetting>(entity =>
             {
                 entity.HasKey(x => new { x.Type });
             });
-
 
             modelBuilder.Entity<ChallengeCommit>().HasKey(x => new { x.ChallengeId, x.ProfileId });
             modelBuilder.Entity<ChallengeCompletion>().HasKey(x => new { x.ChallengeId, x.ProfileId });
@@ -309,7 +297,7 @@ namespace Tayra.Models.Organizations
                 var pk = entityType.FindPrimaryKey().Properties;
                 entityType.SetPrimaryKey(pk.Append(orgId).ToArray());
 
-                //remove altenativePrimaryKey
+                //remove alternatePrimaryKey
                 if(pk.Count() > 1 || pk[0].Name != "Id")
                 entityType.RemoveKey(pk);
 

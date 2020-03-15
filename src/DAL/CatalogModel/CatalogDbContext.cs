@@ -63,7 +63,7 @@ namespace Tayra.Models.Catalog
             {
                 entity.HasKey(e => e.Id);
 
-                entity.HasIndex(e => e.Name);
+                entity.HasIndex(e => e.Key);
 
                 entity.Property(e => e.Id).HasMaxLength(128);
 

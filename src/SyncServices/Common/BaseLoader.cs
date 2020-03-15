@@ -54,7 +54,7 @@ namespace Tayra.SyncServices.Common
 
         protected Tenant GetTenant(string tenantKey)
         {
-            var t = CatalogDbContext.Tenants.AsNoTracking().FirstOrDefault(x => x.Name == tenantKey);
+            var t = CatalogDbContext.Tenants.AsNoTracking().FirstOrDefault(x => x.Key == tenantKey);
 
             if (t == null)
                 throw new ApplicationException("Tenant not found with key: " + tenantKey);

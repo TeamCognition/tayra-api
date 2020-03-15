@@ -72,7 +72,7 @@ namespace Tayra.Services
             CatalogDb.Add(new Tenant
             {
                 Id = tenantId,
-                Name = dto.Key,
+                Key = dto.Key,
                 DisplayName = dto.Name,
                 Timezone = dto.Timezone
             });
