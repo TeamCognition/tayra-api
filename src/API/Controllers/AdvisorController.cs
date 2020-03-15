@@ -1,6 +1,6 @@
-﻿using Firdaws.Core;
+﻿using System;
+using Firdaws.Core;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -14,14 +14,13 @@ namespace Tayra.API.Controllers
             OrganizationContext = dbContext;
         }
 
+        #endregion
+
         #region Properties
-        protected OrganizationDbContext DbContext { get; set; }
-
-        #endregion
-
-        #endregion
 
         protected OrganizationDbContext OrganizationContext;
+
+        #endregion
 
         #region Action Methods
 
@@ -31,20 +30,20 @@ namespace Tayra.API.Controllers
             return Ok(AdvisorService.GetActionPointOverview());
         }
 
-        [HttpPost, Route("{segmentId}/segmentView")]
-        public ActionResult<AdvisorSegmentViewDTO> GetSegmentView([FromRoute] int segmentId)
+        [HttpPost("{segmentId:int}/segmentView")]
+        public ActionResult<AdvisorSingleSegmentDTO> GetSingleSegment([FromRoute] int segmentId)
         {
             return Ok(AdvisorService.GetSegmentView(segmentId));
         }
 
-        [HttpPost, Route("{segmentId}/segmentActionPoints")]
-        public ActionResult<GridData<AdvisorSegmentGridDTO>> GetSegmentActionPointGrid(GridParams gridParams,[FromRoute] int segmentId)
+        [HttpPost("{segmentId:int}/segmentActionPoints")]
+        public ActionResult<GridData<AdvisorSegmentGridDTO>> GetSegmentActionPointGrid(GridParams gridParams, [FromRoute] int segmentId)
         {
-            return Ok(AdvisorService.GetSegmentActionPointGrid(gridParams,segmentId));
+            return Ok(AdvisorService.GetSegmentActionPointGrid(gridParams, segmentId));
         }
 
         [HttpPut("conclude")]
-        public IActionResult UpdateTeam([FromBody]AdvisorConcludeActionPointDTO dto)
+        public IActionResult UpdateTeam([FromBody] AdvisorConcludeDTO dto)
         {
             AdvisorService.Conclude(dto);
             OrganizationContext.SaveChanges();

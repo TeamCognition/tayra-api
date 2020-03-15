@@ -5,8 +5,8 @@ namespace Tayra.Services
 {
     public class AdvisorSegmentGridDTO
     {      
-        public int ActionPoint { get; set; }
-        public DateTime Date { get; set; }
+        public ActionPointTypes Type { get; set; }
+        public DateTime Created { get; set; }
 
     }
 }

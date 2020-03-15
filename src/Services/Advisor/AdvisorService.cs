@@ -22,65 +22,52 @@ namespace Tayra.Services
 
         public AdvisorOverviewDTO GetActionPointOverview()
         {
-
-            var apd = (from asd in DbContext.ActionPointSegments
-                         where asd.ConcludedOn == null
-                         select new AdvisorOverviewDTO.ActionPointsDTO
-                         {
-                             SegmentId = asd.SegmentId,
-                             ActionPoints = DbContext.ActionPointSegments.Where(x => x.ConcludedOn == null && x.SegmentId == asd.SegmentId).Select(x => x.ActionPointId).ToArray()
-                         }).DistinctBy(x => x.SegmentId).ToArray();
-
             return new AdvisorOverviewDTO
             {
-                ActionPoints = apd
+                ActionPoints = (from asd in DbContext.ActionPoints
+                                where asd.ConcludedOn == null && asd.SegmentId.HasValue
+                                group asd by asd.SegmentId.Value into g
+                                select new AdvisorOverviewDTO.ActionPointDTO
+                                {
+                                    SegmentId = g.Key,
+                                    Types = g.Select(x => x.Type).ToArray()
+                                }).ToArray()
             };
-
         }
 
-        public AdvisorSegmentViewDTO GetSegmentView(int segmentId)
+        public AdvisorSingleSegmentDTO GetSegmentView(int segmentId)
         {
-
-            var apd = (from asd in DbContext.ActionPointSegments
-                         where asd.SegmentId == segmentId
-                         where asd.ConcludedOn == null
-                         select new AdvisorSegmentViewDTO.ActionPointsDTO
-                         {
-                             SegmentId = asd.SegmentId,
-                             ActionPoints = DbContext.ActionPointSegments.Where(x => x.ConcludedOn == null && x.SegmentId == asd.SegmentId).Select(x => x.ActionPointId).ToArray()
-                         }).DistinctBy(x => x.SegmentId).FirstOrDefault();
-
-            return new AdvisorSegmentViewDTO
+            return new AdvisorSingleSegmentDTO
             {
-                ActionPoints = apd
+                ActionPoints = DbContext.ActionPoints.Where(x => x.SegmentId == segmentId && x.ConcludedOn == null)
+                    .Select(x => new AdvisorSingleSegmentDTO.ActionPointDTO
+                    {
+                        Id = x.Id,
+                        Type = x.Type
+                    }).ToArray()
             };
-
         }
 
-        public GridData<AdvisorSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams,int segmentId)
+        public GridData<AdvisorSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams, int segmentId)
         {
-
-            var actionPoints = DbContext.ActionPointSegments.Where(x => x.SegmentId == segmentId).Select(x => x.ActionPointId).ToArray();
-
-            var query = (from asd in DbContext.ActionPointSegments
-                         where asd.SegmentId == segmentId
-                         where asd.ConcludedOn == null
-                         select new AdvisorSegmentGridDTO
-                         {
-                             ActionPoint = asd.ActionPointId,
-                             Date = asd.Created
-                         });
+            var query = from asd in DbContext.ActionPoints
+                        where asd.SegmentId == segmentId
+                        where asd.ConcludedOn == null
+                        select new AdvisorSegmentGridDTO
+                        {
+                            Type = asd.Type,
+                            Created = asd.Created
+                        };
 
 
             GridData<AdvisorSegmentGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
-
         }
 
-        public void Conclude(AdvisorConcludeActionPointDTO dto)
+        public void Conclude(AdvisorConcludeDTO dto)
         {
-            var actionPoint = DbContext.ActionPointSegments.FirstOrDefault(x => x.SegmentId == dto.SegmentId && x.ActionPointId == dto.ActionPointId);
+            var actionPoint = DbContext.ActionPoints.FirstOrDefault(x => x.Id == dto.ActionPointId);
 
             actionPoint.EnsureNotNull(dto.ActionPointId);
 

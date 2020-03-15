@@ -7,8 +7,8 @@ namespace Tayra.Services
     public interface IAdvisorService
     {
         AdvisorOverviewDTO GetActionPointOverview();
-        AdvisorSegmentViewDTO GetSegmentView(int segmentId);
+        AdvisorSingleSegmentDTO GetSegmentView(int segmentId);
         GridData<AdvisorSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams,int segmentId);
-        void Conclude(AdvisorConcludeActionPointDTO dto);
+        void Conclude(AdvisorConcludeDTO dto);
     }
 }
