@@ -20,38 +20,25 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public AdvisorOverviewDTO GetActionPointOverview(int segmentId)
+        public AdvisorOverviewDTO GetActionPointOverview(int? segmentId)
         {
-
             IQueryable<ActionPoint> scope = DbContext.ActionPoints.Where(x => x.ConcludedOn == null && x.SegmentId.HasValue);
 
-            if (segmentId == 0)
+            if(segmentId.HasValue)
             {
-                return new AdvisorOverviewDTO
-                {
-                    ActionPoints = (from s in scope
-                                    group s by s.SegmentId.Value into g
-                                    select new AdvisorOverviewDTO.ActionPointDTO
-                                    {
-                                        SegmentId = g.Key,
-                                        Types = g.Select(x => x.Type).ToArray()
-                                    }).ToArray()
-                };
+                scope = scope.Where(x => x.SegmentId == segmentId);
+            }
 
-            }
-            else
+            return new AdvisorOverviewDTO
             {
-                return new AdvisorOverviewDTO
-                {
-                    ActionPoints = new AdvisorOverviewDTO.ActionPointDTO[]
-                    {
-                        new AdvisorOverviewDTO.ActionPointDTO
-                        {
-                            Types = scope.Where(x => x.SegmentId == segmentId).Select(x => x.Type).ToArray()
-                        }
-                    }
-                };
-            }
+                ActionPoints = (from s in scope
+                                group s by s.SegmentId.Value into g
+                                select new AdvisorOverviewDTO.ActionPointDTO
+                                {
+                                    SegmentId = g.Key,
+                                    Types = g.Select(x => x.Type).ToArray()
+                                }).ToArray()
+            };
         }
 
         public GridData<AdvisorSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams, int segmentId)
