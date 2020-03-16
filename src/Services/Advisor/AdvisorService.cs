@@ -20,32 +20,38 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public AdvisorOverviewDTO GetActionPointOverview()
+        public AdvisorOverviewDTO GetActionPointOverview(int segmentId)
         {
-            return new AdvisorOverviewDTO
-            {
-                ActionPoints = (from asd in DbContext.ActionPoints
-                                where asd.ConcludedOn == null && asd.SegmentId.HasValue
-                                group asd by asd.SegmentId.Value into g
-                                select new AdvisorOverviewDTO.ActionPointDTO
-                                {
-                                    SegmentId = g.Key,
-                                    Types = g.Select(x => x.Type).ToArray()
-                                }).ToArray()
-            };
-        }
 
-        public AdvisorSingleSegmentDTO GetSegmentView(int segmentId)
-        {
-            return new AdvisorSingleSegmentDTO
+            IQueryable<ActionPoint> scope = DbContext.ActionPoints.Where(x => x.ConcludedOn == null && x.SegmentId.HasValue);
+
+            if (segmentId == 0)
             {
-                ActionPoints = DbContext.ActionPoints.Where(x => x.SegmentId == segmentId && x.ConcludedOn == null)
-                    .Select(x => new AdvisorSingleSegmentDTO.ActionPointDTO
+                return new AdvisorOverviewDTO
+                {
+                    ActionPoints = (from s in scope
+                                    group s by s.SegmentId.Value into g
+                                    select new AdvisorOverviewDTO.ActionPointDTO
+                                    {
+                                        SegmentId = g.Key,
+                                        Types = g.Select(x => x.Type).ToArray()
+                                    }).ToArray()
+                };
+
+            }
+            else
+            {
+                return new AdvisorOverviewDTO
+                {
+                    ActionPoints = new AdvisorOverviewDTO.ActionPointDTO[]
                     {
-                        Id = x.Id,
-                        Type = x.Type
-                    }).ToArray()
-            };
+                        new AdvisorOverviewDTO.ActionPointDTO
+                        {
+                            Types = scope.Where(x => x.SegmentId == segmentId).Select(x => x.Type).ToArray()
+                        }
+                    }
+                };
+            }
         }
 
         public GridData<AdvisorSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams, int segmentId)
@@ -55,6 +61,7 @@ namespace Tayra.Services
                         where asd.ConcludedOn == null
                         select new AdvisorSegmentGridDTO
                         {
+                            ActionPointId = asd.Id,
                             Type = asd.Type,
                             Created = asd.Created
                         };

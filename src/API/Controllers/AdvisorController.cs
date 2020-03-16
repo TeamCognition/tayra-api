@@ -25,15 +25,9 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpGet("overview")]
-        public ActionResult<AdvisorOverviewDTO> GetActionPointOverview()
+        public ActionResult<AdvisorOverviewDTO> GetActionPointOverview([FromQuery]int segmentId)
         {
-            return Ok(AdvisorService.GetActionPointOverview());
-        }
-
-        [HttpPost("{segmentId:int}/segmentView")]
-        public ActionResult<AdvisorSingleSegmentDTO> GetSingleSegment([FromRoute] int segmentId)
-        {
-            return Ok(AdvisorService.GetSegmentView(segmentId));
+            return Ok(AdvisorService.GetActionPointOverview(segmentId));
         }
 
         [HttpPost("{segmentId:int}/segmentActionPoints")]
