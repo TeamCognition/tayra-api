@@ -10,8 +10,8 @@ using Tayra.Models.Catalog;
 namespace Tayra.Models.Catalog.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20200315235927_BETA-31")]
-    partial class BETA31
+    [Migration("20200316232131_BETA")]
+    partial class BETA
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -81,7 +81,7 @@ namespace Tayra.Models.Catalog.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("EmailAddresss");
+                    b.Property<string>("EmailAddress");
 
                     b.Property<string>("Message");
 
@@ -91,7 +91,7 @@ namespace Tayra.Models.Catalog.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LandingPageContacts");
+                    b.ToTable("LandingPageContact");
                 });
 
             modelBuilder.Entity("Tayra.Models.Catalog.Tenant", b =>

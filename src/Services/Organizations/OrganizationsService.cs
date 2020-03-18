@@ -63,7 +63,7 @@ namespace Tayra.Services
             else
             {
                 //mapping.value
-                throw new Exception($"Tenant with {dto.Key} already exists in shard point mapping");
+                throw new Exception($"Tenant with {dto.Key} key already exists in shard point mapping");
             }
 
             //convert from int to byte[] as tenantId has been set as byte[] in Tenants entity

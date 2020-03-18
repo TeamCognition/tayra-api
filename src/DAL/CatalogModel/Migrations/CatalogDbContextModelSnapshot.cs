@@ -79,7 +79,7 @@ namespace Tayra.Models.Catalog.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("EmailAddresss");
+                    b.Property<string>("EmailAddress");
 
                     b.Property<string>("Message");
 
@@ -89,7 +89,7 @@ namespace Tayra.Models.Catalog.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LandingPageContacts");
+                    b.ToTable("LandingPageContact");
                 });
 
             modelBuilder.Entity("Tayra.Models.Catalog.Tenant", b =>

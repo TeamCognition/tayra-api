@@ -39,7 +39,7 @@ namespace Tayra.API.Controllers
             
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             return Redirect(connector.GetAuthUrl(
-                Cipher.Encrypt(string.Join('|', TenantProvider.GetTenant().Host, CurrentUser.ProfileId, CurrentUser.Role, CurrentSegment.Id, returnPath)).Base64UrlEncode()));
+                Cipher.Encrypt(string.Join('|', TenantProvider.GetTenant().Key, CurrentUser.ProfileId, CurrentUser.Role, CurrentSegment.Id, returnPath)).Base64UrlEncode()));
         }
 
         [HttpGet, Route("settings/atj")]

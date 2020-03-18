@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
-    public partial class BETA1 : Migration
+    public partial class BETA : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,6 +23,34 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Organizations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Blobs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    Type = table.Column<int>(nullable: false),
+                    Purpose = table.Column<int>(nullable: false),
+                    Filename = table.Column<string>(nullable: true),
+                    Extension = table.Column<string>(nullable: true),
+                    Filesize = table.Column<long>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    CreatedBy = table.Column<int>(nullable: false),
+                    LastModifiedBy = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Blobs", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_Blobs_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Blobs_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -53,32 +81,6 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Integrations",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    ProjectId = table.Column<int>(nullable: false),
-                    Type = table.Column<int>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Integrations", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_Integrations_Id", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Integrations_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Items",
                 columns: table => new
                 {
@@ -88,10 +90,11 @@ namespace Tayra.Models.Organizations.Migrations
                     Name = table.Column<string>(maxLength: 100, nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Image = table.Column<string>(nullable: true),
-                    WorthValue = table.Column<float>(nullable: false),
+                    Price = table.Column<float>(nullable: false),
                     IsActivable = table.Column<bool>(nullable: false),
                     IsDisenchantable = table.Column<bool>(nullable: false),
                     IsGiftable = table.Column<bool>(nullable: false),
+                    IsQuantityLimited = table.Column<bool>(nullable: false),
                     Rarity = table.Column<int>(nullable: false),
                     Type = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
@@ -105,6 +108,32 @@ namespace Tayra.Models.Organizations.Migrations
                     table.UniqueConstraint("AK_Items_Id", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Items_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LoginLogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: false),
+                    IdentityId = table.Column<int>(nullable: false),
+                    ClaimsJson = table.Column<string>(nullable: true),
+                    FailReason = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoginLogs", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_LoginLogs_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LoginLogs_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
@@ -142,16 +171,20 @@ namespace Tayra.Models.Organizations.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
-                    Nickname = table.Column<string>(nullable: true),
+                    FirstName = table.Column<string>(maxLength: 50, nullable: true),
+                    LastName = table.Column<string>(maxLength: 50, nullable: true),
+                    Username = table.Column<string>(maxLength: 20, nullable: true),
                     Avatar = table.Column<string>(maxLength: 2000, nullable: true),
                     Role = table.Column<int>(nullable: false),
+                    JobPosition = table.Column<string>(maxLength: 100, nullable: true),
+                    BornOn = table.Column<DateTime>(nullable: true),
+                    EmployedOn = table.Column<DateTime>(nullable: true),
                     IdentityId = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
+                    LastModifiedBy = table.Column<int>(nullable: true),
+                    ArchievedAt = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -166,7 +199,7 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectAreas",
+                name: "SegmentAreas",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -180,10 +213,10 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectAreas", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_ProjectAreas_Id", x => x.Id);
+                    table.PrimaryKey("PK_SegmentAreas", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_SegmentAreas_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectAreas_Organizations_OrganizationId",
+                        name: "FK_SegmentAreas_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
@@ -191,7 +224,7 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Projects",
+                name: "Segments",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -203,22 +236,22 @@ namespace Tayra.Models.Organizations.Migrations
                     Timezone = table.Column<string>(maxLength: 50, nullable: true),
                     DataStore = table.Column<string>(maxLength: 4000, nullable: true),
                     DataWarehouse = table.Column<string>(maxLength: 4000, nullable: true),
-                    ArchivedAt = table.Column<DateTime>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
+                    LastModifiedBy = table.Column<int>(nullable: true),
+                    ArchievedAt = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Projects", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_Projects_Id", x => x.Id);
+                    table.PrimaryKey("PK_Segments", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_Segments_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Projects_Organizations_OrganizationId",
+                        name: "FK_Segments_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -241,32 +274,6 @@ namespace Tayra.Models.Organizations.Migrations
                     table.UniqueConstraint("AK_Shops_Id", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Shops_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StatTypes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    IntegrationType = table.Column<int>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StatTypes", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_StatTypes_Id", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_StatTypes_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
@@ -350,32 +357,29 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "IntegrationFields",
+                name: "ItemReservations",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
-                    IntegrationId = table.Column<int>(nullable: false),
-                    Key = table.Column<string>(maxLength: 50, nullable: true),
-                    Value = table.Column<string>(nullable: true),
+                    ItemId = table.Column<int>(nullable: false),
+                    QuantityChange = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
+                    LastModified = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IntegrationFields", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_IntegrationFields_Id", x => x.Id);
+                    table.PrimaryKey("PK_ItemReservations", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_ItemReservations_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_IntegrationFields_Integrations_IntegrationId",
-                        column: x => x.IntegrationId,
-                        principalTable: "Integrations",
+                        name: "FK_ItemReservations_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_IntegrationFields_Organizations_OrganizationId",
+                        name: "FK_ItemReservations_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
@@ -390,18 +394,17 @@ namespace Tayra.Models.Organizations.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
-                    Quantity = table.Column<int>(nullable: true),
-                    Price = table.Column<float>(nullable: false),
+                    QuantityReservedRemaining = table.Column<int>(nullable: true),
                     DiscountPrice = table.Column<float>(nullable: true),
                     DiscountEndsAt = table.Column<DateTime>(nullable: true),
                     FeaturedUntil = table.Column<DateTime>(nullable: true),
                     DisabledAt = table.Column<DateTime>(nullable: true),
-                    ArchivedAt = table.Column<DateTime>(nullable: true),
                     IsGlobal = table.Column<bool>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
+                    LastModifiedBy = table.Column<int>(nullable: true),
+                    ArchievedAt = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -446,40 +449,6 @@ namespace Tayra.Models.Organizations.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ClaimBundles_Profiles_ProfileId",
-                        column: x => x.ProfileId,
-                        principalTable: "Profiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Invitations",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    Code = table.Column<Guid>(nullable: false),
-                    ProfileId = table.Column<int>(nullable: false),
-                    Status = table.Column<int>(nullable: false),
-                    EmailId = table.Column<string>(maxLength: 1000, nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Invitations", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_Invitations_Id", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Invitations_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Invitations_Profiles_ProfileId",
                         column: x => x.ProfileId,
                         principalTable: "Profiles",
                         principalColumn: "Id",
@@ -567,6 +536,37 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LogDevices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: true),
+                    Type = table.Column<int>(nullable: false),
+                    Address = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogDevices", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_LogDevices_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LogDevices_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LogDevices_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProfileInventoryItems",
                 columns: table => new
                 {
@@ -620,7 +620,6 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProfileLogs", x => new { x.ProfileId, x.LogId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ProfileLogs_ProfileId_LogId", x => new { x.ProfileId, x.LogId });
                     table.ForeignKey(
                         name: "FK_ProfileLogs_Logs_LogId",
                         column: x => x.LogId,
@@ -656,7 +655,6 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProfileOneUps", x => new { x.DateId, x.UppedProfileId, x.CreatedBy, x.OrganizationId });
-                    table.UniqueConstraint("AK_ProfileOneUps_DateId_UppedProfileId_CreatedBy", x => new { x.DateId, x.UppedProfileId, x.CreatedBy });
                     table.ForeignKey(
                         name: "FK_ProfileOneUps_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
@@ -672,6 +670,77 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ActionPoints",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: true),
+                    ProfileId = table.Column<int>(nullable: true),
+                    Type = table.Column<int>(nullable: false),
+                    Data = table.Column<string>(nullable: true),
+                    DateId = table.Column<int>(nullable: false),
+                    ConcludedOn = table.Column<DateTime>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActionPoints", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_ActionPoints_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ActionPoints_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActionPoints_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ActionPoints_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActionPointSettings",
+                columns: table => new
+                {
+                    Type = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
+                    NotifyByEmail = table.Column<bool>(nullable: false),
+                    NotifyByPush = table.Column<bool>(nullable: false),
+                    NotifyByNotification = table.Column<bool>(nullable: false),
+                    MuteUntil = table.Column<DateTime>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActionPointSettings", x => new { x.Type, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_ActionPointSettings_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActionPointSettings_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Challenges",
                 columns: table => new
                 {
@@ -682,19 +751,18 @@ namespace Tayra.Models.Organizations.Migrations
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Image = table.Column<string>(nullable: true),
-                    TokenRewardValue = table.Column<double>(nullable: false),
-                    CustomReward = table.Column<string>(nullable: true),
                     CompletionsLimit = table.Column<int>(nullable: true),
                     CompletionsRemaining = table.Column<int>(nullable: true),
                     IsEasterEgg = table.Column<bool>(nullable: false),
                     IsArchived = table.Column<bool>(nullable: false),
                     ActiveUntil = table.Column<DateTime>(nullable: true),
                     EndedAt = table.Column<DateTime>(nullable: true),
-                    ProjectId = table.Column<int>(nullable: false),
+                    RewardValue = table.Column<float>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
+                    LastModifiedBy = table.Column<int>(nullable: true),
+                    SegmentId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -707,20 +775,23 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Challenges_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_Challenges_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectMembers",
+                name: "Integrations",
                 columns: table => new
                 {
-                    ProjectId = table.Column<int>(nullable: false),
-                    ProfileId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: true),
+                    SegmentId = table.Column<int>(nullable: false),
+                    Type = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<int>(nullable: false),
@@ -728,24 +799,59 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectMembers", x => new { x.ProjectId, x.ProfileId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ProjectMembers_ProjectId_ProfileId", x => new { x.ProjectId, x.ProfileId });
+                    table.PrimaryKey("PK_Integrations", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_Integrations_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectMembers_Organizations_OrganizationId",
+                        name: "FK_Integrations_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectMembers_Profiles_ProfileId",
+                        name: "FK_Integrations_Profiles_ProfileId",
                         column: x => x.ProfileId,
                         principalTable: "Profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProjectMembers_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_Integrations_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProfileExternalIds",
+                columns: table => new
+                {
+                    IntegrationType = table.Column<int>(nullable: false),
+                    ExternalId = table.Column<string>(maxLength: 100, nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfileExternalIds", x => new { x.ExternalId, x.IntegrationType, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_ProfileExternalIds_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProfileExternalIds_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProfileExternalIds_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -759,7 +865,7 @@ namespace Tayra.Models.Organizations.Migrations
                     OrganizationId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),
-                    ProjectId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: true),
                     Status = table.Column<int>(nullable: false),
                     ItemType = table.Column<int>(nullable: false),
                     IsFeatured = table.Column<bool>(nullable: false),
@@ -793,9 +899,41 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ShopPurchases_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_ShopPurchases_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskSyncs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    ExternalProjectId = table.Column<string>(nullable: true),
+                    IntegrationType = table.Column<int>(nullable: false),
+                    DateId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskSyncs", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_TaskSyncs_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaskSyncs_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskSyncs_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -807,15 +945,15 @@ namespace Tayra.Models.Organizations.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
                     Key = table.Column<string>(maxLength: 50, nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    Avatar = table.Column<string>(maxLength: 2000, nullable: true),
-                    ProjectId = table.Column<int>(nullable: false),
-                    ArchivedAt = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
+                    AvatarColor = table.Column<string>(maxLength: 50, nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
+                    LastModifiedBy = table.Column<int>(nullable: true),
+                    ArchievedAt = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -828,9 +966,9 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Teams_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_Teams_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -847,7 +985,6 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ShopLogs", x => new { x.ShopId, x.LogId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ShopLogs_ShopId_LogId", x => new { x.ShopId, x.LogId });
                     table.ForeignKey(
                         name: "FK_ShopLogs_Logs_LogId",
                         column: x => x.LogId,
@@ -877,10 +1014,13 @@ namespace Tayra.Models.Organizations.Migrations
                     TaskCategoryId = table.Column<int>(nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
                     IterationCount = table.Column<int>(nullable: false),
+                    ProfileRole = table.Column<int>(nullable: false),
                     ComplexityChange = table.Column<int>(nullable: false),
                     ComplexityTotal = table.Column<int>(nullable: false),
-                    CompanyTokensChange = table.Column<float>(nullable: false),
-                    CompanyTokensTotal = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedTotal = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentTotal = table.Column<float>(nullable: false),
                     EffortScoreChange = table.Column<float>(nullable: false),
                     EffortScoreTotal = table.Column<float>(nullable: false),
                     OneUpsGivenChange = table.Column<int>(nullable: false),
@@ -901,13 +1041,25 @@ namespace Tayra.Models.Organizations.Migrations
                     SavesTotal = table.Column<int>(nullable: false),
                     TacklesChange = table.Column<int>(nullable: false),
                     TacklesTotal = table.Column<int>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeTotal = table.Column<int>(nullable: false),
+                    InventoryCountTotal = table.Column<int>(nullable: false),
+                    InventoryValueTotal = table.Column<float>(nullable: false),
+                    ItemsBoughtChange = table.Column<int>(nullable: false),
+                    ItemsBoughtTotal = table.Column<int>(nullable: false),
+                    ItemsGiftedChange = table.Column<int>(nullable: false),
+                    ItemsGiftedTotal = table.Column<int>(nullable: false),
+                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
+                    ItemsDisenchantedTotal = table.Column<int>(nullable: false),
+                    ItemsCreatedChange = table.Column<int>(nullable: false),
+                    ItemsCreatedTotal = table.Column<int>(nullable: false),
+                    ActivityChartJson = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProfileReportsDaily", x => new { x.DateId, x.ProfileId, x.TaskCategoryId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ProfileReportsDaily_DateId_ProfileId_TaskCategoryId", x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
                     table.ForeignKey(
                         name: "FK_ProfileReportsDaily_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
@@ -937,10 +1089,13 @@ namespace Tayra.Models.Organizations.Migrations
                     TaskCategoryId = table.Column<int>(nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
                     IterationCount = table.Column<int>(nullable: false),
+                    ProfileRole = table.Column<int>(nullable: false),
                     ComplexityChange = table.Column<int>(nullable: false),
                     ComplexityTotalAverage = table.Column<float>(nullable: false),
-                    CompanyTokensChange = table.Column<float>(nullable: false),
-                    CompanyTokensTotalAverage = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedTotalAverage = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentTotalAverage = table.Column<float>(nullable: false),
                     EffortScoreChange = table.Column<float>(nullable: false),
                     EffortScoreTotalAverage = table.Column<float>(nullable: false),
                     OneUpsGivenChange = table.Column<int>(nullable: false),
@@ -961,8 +1116,16 @@ namespace Tayra.Models.Organizations.Migrations
                     SavesTotalAverage = table.Column<float>(nullable: false),
                     TacklesChange = table.Column<int>(nullable: false),
                     TacklesTotalAverage = table.Column<float>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeAverage = table.Column<int>(nullable: false),
                     RangeChange = table.Column<int>(nullable: false),
                     RangeTotalAverage = table.Column<int>(nullable: false),
+                    InventoryCountTotal = table.Column<int>(nullable: false),
+                    InventoryValueTotal = table.Column<float>(nullable: false),
+                    ItemsBoughtChange = table.Column<int>(nullable: false),
+                    ItemsGiftedChange = table.Column<int>(nullable: false),
+                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
+                    ItemsCreatedChange = table.Column<int>(nullable: false),
                     OImpactAverage = table.Column<float>(nullable: false),
                     OImpactTotalAverage = table.Column<float>(nullable: false),
                     DImpactAverage = table.Column<float>(nullable: false),
@@ -979,7 +1142,6 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProfileReportsWeekly", x => new { x.DateId, x.ProfileId, x.TaskCategoryId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ProfileReportsWeekly_DateId_ProfileId_TaskCategoryId", x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
                     table.ForeignKey(
                         name: "FK_ProfileReportsWeekly_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
@@ -1001,18 +1163,20 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectReportsDaily",
+                name: "SegmentReportsDaily",
                 columns: table => new
                 {
                     DateId = table.Column<int>(nullable: false),
-                    ProjectId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
                     TaskCategoryId = table.Column<int>(nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
                     IterationCount = table.Column<int>(nullable: false),
                     ComplexityChange = table.Column<int>(nullable: false),
                     ComplexityTotal = table.Column<int>(nullable: false),
-                    CompanyTokensChange = table.Column<float>(nullable: false),
-                    CompanyTokensTotal = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedTotal = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentTotal = table.Column<float>(nullable: false),
                     EffortScoreChange = table.Column<float>(nullable: false),
                     EffortScoreTotal = table.Column<float>(nullable: false),
                     OneUpsGivenChange = table.Column<int>(nullable: false),
@@ -1033,28 +1197,35 @@ namespace Tayra.Models.Organizations.Migrations
                     SavesTotal = table.Column<int>(nullable: false),
                     TacklesChange = table.Column<int>(nullable: false),
                     TacklesTotal = table.Column<int>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeTotal = table.Column<int>(nullable: false),
+                    ItemsBoughtChange = table.Column<int>(nullable: false),
+                    ItemsBoughtTotal = table.Column<int>(nullable: false),
+                    ItemsGiftedChange = table.Column<int>(nullable: false),
+                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
+                    ItemsCreatedChange = table.Column<int>(nullable: false),
                     MembersCountTotal = table.Column<int>(nullable: false),
+                    NonMembersCountTotal = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectReportsDaily", x => new { x.DateId, x.ProjectId, x.TaskCategoryId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ProjectReportsDaily_DateId_ProjectId_TaskCategoryId", x => new { x.DateId, x.ProjectId, x.TaskCategoryId });
+                    table.PrimaryKey("PK_SegmentReportsDaily", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
                     table.ForeignKey(
-                        name: "FK_ProjectReportsDaily_Organizations_OrganizationId",
+                        name: "FK_SegmentReportsDaily_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectReportsDaily_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_SegmentReportsDaily_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProjectReportsDaily_TaskCategories_TaskCategoryId",
+                        name: "FK_SegmentReportsDaily_TaskCategories_TaskCategoryId",
                         column: x => x.TaskCategoryId,
                         principalTable: "TaskCategories",
                         principalColumn: "Id",
@@ -1062,18 +1233,20 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectReportsWeekly",
+                name: "SegmentReportsWeekly",
                 columns: table => new
                 {
                     DateId = table.Column<int>(nullable: false),
-                    ProjectId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
                     TaskCategoryId = table.Column<int>(nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
                     IterationCount = table.Column<int>(nullable: false),
                     ComplexityChange = table.Column<int>(nullable: false),
                     ComplexityAverage = table.Column<float>(nullable: false),
-                    CompanyTokensChange = table.Column<float>(nullable: false),
-                    CompanyTokensAverage = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedAverage = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentAverage = table.Column<float>(nullable: false),
                     EffortScoreChange = table.Column<float>(nullable: false),
                     EffortScoreAverage = table.Column<float>(nullable: false),
                     OneUpsGivenChange = table.Column<int>(nullable: false),
@@ -1094,8 +1267,14 @@ namespace Tayra.Models.Organizations.Migrations
                     SavesAverage = table.Column<float>(nullable: false),
                     TacklesChange = table.Column<int>(nullable: false),
                     TacklesAverage = table.Column<float>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeAverage = table.Column<int>(nullable: false),
                     RangeChange = table.Column<int>(nullable: false),
                     RangeAverage = table.Column<int>(nullable: false),
+                    ItemsBoughtChange = table.Column<int>(nullable: false),
+                    ItemsGiftedChange = table.Column<int>(nullable: false),
+                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
+                    ItemsCreatedChange = table.Column<int>(nullable: false),
                     OImpactAverage = table.Column<float>(nullable: false),
                     OImpactAverageTotal = table.Column<float>(nullable: false),
                     DImpactAverage = table.Column<float>(nullable: false),
@@ -1106,27 +1285,27 @@ namespace Tayra.Models.Organizations.Migrations
                     SpeedAverageTotal = table.Column<float>(nullable: false),
                     HeatAverageTotal = table.Column<float>(nullable: false),
                     MembersCountTotal = table.Column<int>(nullable: false),
+                    NonMembersCountTotal = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectReportsWeekly", x => new { x.DateId, x.ProjectId, x.TaskCategoryId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ProjectReportsWeekly_DateId_ProjectId_TaskCategoryId", x => new { x.DateId, x.ProjectId, x.TaskCategoryId });
+                    table.PrimaryKey("PK_SegmentReportsWeekly", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
                     table.ForeignKey(
-                        name: "FK_ProjectReportsWeekly_Organizations_OrganizationId",
+                        name: "FK_SegmentReportsWeekly_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectReportsWeekly_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_SegmentReportsWeekly_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProjectReportsWeekly_TaskCategories_TaskCategoryId",
+                        name: "FK_SegmentReportsWeekly_TaskCategories_TaskCategoryId",
                         column: x => x.TaskCategoryId,
                         principalTable: "TaskCategories",
                         principalColumn: "Id",
@@ -1153,7 +1332,7 @@ namespace Tayra.Models.Organizations.Migrations
                     RepeatCount = table.Column<int>(nullable: false),
                     PreviousCompetitionId = table.Column<int>(nullable: true),
                     TokenId = table.Column<int>(nullable: false),
-                    ProjectId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
                     WinnerId = table.Column<int>(nullable: true),
                     DeletedAt = table.Column<DateTime>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
@@ -1178,9 +1357,9 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Competitions_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_Competitions_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -1235,11 +1414,11 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ShopItemProjects",
+                name: "ShopItemSegments",
                 columns: table => new
                 {
                     ShopItemId = table.Column<int>(nullable: false),
-                    ProjectId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
                     DiscountPrice = table.Column<float>(nullable: true),
                     DiscountEndsAt = table.Column<DateTime>(nullable: true),
@@ -1249,24 +1428,58 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShopItemProjects", x => new { x.ShopItemId, x.ProjectId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ShopItemProjects_ShopItemId_ProjectId", x => new { x.ShopItemId, x.ProjectId });
+                    table.PrimaryKey("PK_ShopItemSegments", x => new { x.ShopItemId, x.SegmentId, x.OrganizationId });
                     table.ForeignKey(
-                        name: "FK_ShopItemProjects_Organizations_OrganizationId",
+                        name: "FK_ShopItemSegments_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ShopItemProjects_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_ShopItemSegments_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ShopItemProjects_ShopItems_ShopItemId",
+                        name: "FK_ShopItemSegments_ShopItems_ShopItemId",
                         column: x => x.ShopItemId,
                         principalTable: "ShopItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LogSettings",
+                columns: table => new
+                {
+                    LogDeviceId = table.Column<int>(nullable: false),
+                    LogEvent = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: false),
+                    IsEnabled = table.Column<bool>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogSettings", x => new { x.LogDeviceId, x.LogEvent, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_LogSettings_LogDevices_LogDeviceId",
+                        column: x => x.LogDeviceId,
+                        principalTable: "LogDevices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LogSettings_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LogSettings_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1282,7 +1495,6 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClaimBundleItems", x => new { x.ClaimBundleId, x.ProfileInventoryItemId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ClaimBundleItems_ClaimBundleId_ProfileInventoryItemId", x => new { x.ClaimBundleId, x.ProfileInventoryItemId });
                     table.ForeignKey(
                         name: "FK_ClaimBundleItems_ClaimBundles_ClaimBundleId",
                         column: x => x.ClaimBundleId,
@@ -1304,6 +1516,40 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChallengeCommits",
+                columns: table => new
+                {
+                    ProfileId = table.Column<int>(nullable: false),
+                    ChallengeId = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    CompletedAt = table.Column<DateTime>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChallengeCommits", x => new { x.ChallengeId, x.ProfileId, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_ChallengeCommits_Challenges_ChallengeId",
+                        column: x => x.ChallengeId,
+                        principalTable: "Challenges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChallengeCommits_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChallengeCommits_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChallengeCompletions",
                 columns: table => new
                 {
@@ -1316,7 +1562,6 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ChallengeCompletions", x => new { x.ChallengeId, x.ProfileId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ChallengeCompletions_ChallengeId_ProfileId", x => new { x.ChallengeId, x.ProfileId });
                     table.ForeignKey(
                         name: "FK_ChallengeCompletions_Challenges_ChallengeId",
                         column: x => x.ChallengeId,
@@ -1338,12 +1583,113 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectTeams",
+                name: "ChallengeGoals",
                 columns: table => new
                 {
-                    ProjectId = table.Column<int>(nullable: false),
-                    TeamId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
+                    Title = table.Column<string>(nullable: true),
+                    IsCommentRequired = table.Column<bool>(nullable: false),
+                    ChallengeId = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChallengeGoals", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_ChallengeGoals_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChallengeGoals_Challenges_ChallengeId",
+                        column: x => x.ChallengeId,
+                        principalTable: "Challenges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChallengeGoals_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChallengeRewards",
+                columns: table => new
+                {
+                    ChallengeId = table.Column<int>(nullable: false),
+                    ItemId = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    Quantity = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChallengeRewards", x => new { x.ChallengeId, x.ItemId, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_ChallengeRewards_Challenges_ChallengeId",
+                        column: x => x.ChallengeId,
+                        principalTable: "Challenges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChallengeRewards_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChallengeRewards_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChallengeSegments",
+                columns: table => new
+                {
+                    ChallengeId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChallengeSegments", x => new { x.ChallengeId, x.SegmentId, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_ChallengeSegments_Challenges_ChallengeId",
+                        column: x => x.ChallengeId,
+                        principalTable: "Challenges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChallengeSegments_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChallengeSegments_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IntegrationFields",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    IntegrationId = table.Column<int>(nullable: false),
+                    Key = table.Column<string>(maxLength: 50, nullable: true),
+                    Value = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<int>(nullable: false),
@@ -1351,22 +1697,105 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectTeams", x => new { x.ProjectId, x.TeamId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ProjectTeams_ProjectId_TeamId", x => new { x.ProjectId, x.TeamId });
+                    table.PrimaryKey("PK_IntegrationFields", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_IntegrationFields_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectTeams_Organizations_OrganizationId",
+                        name: "FK_IntegrationFields_Integrations_IntegrationId",
+                        column: x => x.IntegrationId,
+                        principalTable: "Integrations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_IntegrationFields_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Invitations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    Code = table.Column<Guid>(nullable: false),
+                    Status = table.Column<int>(nullable: false),
+                    Role = table.Column<int>(nullable: false),
+                    EmailAddress = table.Column<string>(maxLength: 1000, nullable: false),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    SegmentId = table.Column<int>(nullable: true),
+                    TeamId = table.Column<int>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    CreatedBy = table.Column<int>(nullable: false),
+                    LastModifiedBy = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Invitations", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_Invitations_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Invitations_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectTeams_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_Invitations_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProjectTeams_Teams_TeamId",
+                        name: "FK_Invitations_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProfileAssignments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
+                    TeamId = table.Column<int>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    CreatedBy = table.Column<int>(nullable: false),
+                    LastModifiedBy = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfileAssignments", x => new { x.Id, x.OrganizationId });
+                    table.UniqueConstraint("AK_ProfileAssignments_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProfileAssignments_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProfileAssignments_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProfileAssignments_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProfileAssignments_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
                         principalColumn: "Id",
@@ -1386,7 +1815,7 @@ namespace Tayra.Models.Organizations.Migrations
                     ReporterProfileId = table.Column<int>(nullable: false),
                     AssigneeProfileId = table.Column<int>(nullable: false),
                     TeamId = table.Column<int>(nullable: false),
-                    ProjectId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },
@@ -1407,9 +1836,9 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TaskLogs_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_TaskLogs_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -1428,10 +1857,12 @@ namespace Tayra.Models.Organizations.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ExternalId = table.Column<string>(nullable: true),
+                    ExternalProjectId = table.Column<string>(nullable: true),
                     IntegrationType = table.Column<int>(nullable: false),
                     Summary = table.Column<string>(nullable: true),
                     Status = table.Column<int>(nullable: false),
                     Type = table.Column<int>(nullable: false),
+                    AutoTimeSpentInMinutes = table.Column<int>(nullable: true),
                     TimeSpentInMinutes = table.Column<int>(nullable: true),
                     TimeOriginalEstimatInMinutes = table.Column<int>(nullable: true),
                     StoryPoints = table.Column<int>(nullable: true),
@@ -1445,10 +1876,11 @@ namespace Tayra.Models.Organizations.Migrations
                     Labels = table.Column<string>(nullable: true),
                     LastModifiedDateId = table.Column<int>(nullable: false),
                     ReporterProfileId = table.Column<int>(nullable: false),
-                    AssigneeProfileId = table.Column<int>(nullable: false),
+                    AssigneeExternalId = table.Column<string>(nullable: true),
+                    AssigneeProfileId = table.Column<int>(nullable: true),
                     TeamId = table.Column<int>(nullable: true),
-                    ProjectId = table.Column<int>(nullable: true),
-                    ProjectAreaId = table.Column<int>(nullable: true),
+                    SegmentId = table.Column<int>(nullable: true),
+                    SegmentAreaId = table.Column<int>(nullable: true),
                     TaskCategoryId = table.Column<int>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
@@ -1470,15 +1902,15 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tasks_ProjectAreas_ProjectAreaId",
-                        column: x => x.ProjectAreaId,
-                        principalTable: "ProjectAreas",
+                        name: "FK_Tasks_SegmentAreas_SegmentAreaId",
+                        column: x => x.SegmentAreaId,
+                        principalTable: "SegmentAreas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Tasks_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_Tasks_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -1496,42 +1928,6 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TeamMembers",
-                columns: table => new
-                {
-                    TeamId = table.Column<int>(nullable: false),
-                    ProfileId = table.Column<int>(nullable: false),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TeamMembers", x => new { x.TeamId, x.ProfileId, x.OrganizationId });
-                    table.UniqueConstraint("AK_TeamMembers_TeamId_ProfileId", x => new { x.TeamId, x.ProfileId });
-                    table.ForeignKey(
-                        name: "FK_TeamMembers_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TeamMembers_Profiles_ProfileId",
-                        column: x => x.ProfileId,
-                        principalTable: "Profiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_TeamMembers_Teams_TeamId",
-                        column: x => x.TeamId,
-                        principalTable: "Teams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TeamReportsDaily",
                 columns: table => new
                 {
@@ -1540,10 +1936,14 @@ namespace Tayra.Models.Organizations.Migrations
                     TaskCategoryId = table.Column<int>(nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
                     IterationCount = table.Column<int>(nullable: false),
+                    IsUnassigned = table.Column<bool>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
                     ComplexityChange = table.Column<int>(nullable: false),
                     ComplexityTotal = table.Column<int>(nullable: false),
-                    CompanyTokensChange = table.Column<float>(nullable: false),
-                    CompanyTokensTotal = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedTotal = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentTotal = table.Column<float>(nullable: false),
                     EffortScoreChange = table.Column<float>(nullable: false),
                     EffortScoreTotal = table.Column<float>(nullable: false),
                     OneUpsGivenChange = table.Column<int>(nullable: false),
@@ -1564,14 +1964,16 @@ namespace Tayra.Models.Organizations.Migrations
                     SavesTotal = table.Column<int>(nullable: false),
                     TacklesChange = table.Column<int>(nullable: false),
                     TacklesTotal = table.Column<int>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeTotal = table.Column<int>(nullable: false),
                     MembersCountTotal = table.Column<int>(nullable: false),
+                    NonMembersCountTotal = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TeamReportsDaily", x => new { x.DateId, x.TeamId, x.TaskCategoryId, x.OrganizationId });
-                    table.UniqueConstraint("AK_TeamReportsDaily_DateId_TeamId_TaskCategoryId", x => new { x.DateId, x.TeamId, x.TaskCategoryId });
                     table.ForeignKey(
                         name: "FK_TeamReportsDaily_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
@@ -1601,10 +2003,13 @@ namespace Tayra.Models.Organizations.Migrations
                     TaskCategoryId = table.Column<int>(nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
                     IterationCount = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
                     ComplexityChange = table.Column<int>(nullable: false),
                     ComplexityAverage = table.Column<float>(nullable: false),
-                    CompanyTokensChange = table.Column<float>(nullable: false),
-                    CompanyTokensAverage = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedAverage = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentAverage = table.Column<float>(nullable: false),
                     EffortScoreChange = table.Column<float>(nullable: false),
                     EffortScoreAverage = table.Column<float>(nullable: false),
                     OneUpsGivenChange = table.Column<int>(nullable: false),
@@ -1625,6 +2030,8 @@ namespace Tayra.Models.Organizations.Migrations
                     SavesAverage = table.Column<float>(nullable: false),
                     TacklesChange = table.Column<int>(nullable: false),
                     TacklesAverage = table.Column<float>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeAverage = table.Column<int>(nullable: false),
                     RangeChange = table.Column<int>(nullable: false),
                     RangeAverage = table.Column<int>(nullable: false),
                     OImpactAverage = table.Column<float>(nullable: false),
@@ -1637,13 +2044,13 @@ namespace Tayra.Models.Organizations.Migrations
                     SpeedAverageTotal = table.Column<float>(nullable: false),
                     HeatAverageTotal = table.Column<float>(nullable: false),
                     MembersCountTotal = table.Column<int>(nullable: false),
+                    NonMembersCountTotal = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TeamReportsWeekly", x => new { x.DateId, x.TeamId, x.TaskCategoryId, x.OrganizationId });
-                    table.UniqueConstraint("AK_TeamReportsWeekly_DateId_TeamId_TaskCategoryId", x => new { x.DateId, x.TeamId, x.TaskCategoryId });
                     table.ForeignKey(
                         name: "FK_TeamReportsWeekly_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
@@ -1676,7 +2083,6 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CompetitionLogs", x => new { x.CompetitionId, x.LogId, x.OrganizationId });
-                    table.UniqueConstraint("AK_CompetitionLogs_CompetitionId_LogId", x => new { x.CompetitionId, x.LogId });
                     table.ForeignKey(
                         name: "FK_CompetitionLogs_Competitions_CompetitionId",
                         column: x => x.CompetitionId,
@@ -1801,7 +2207,6 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClaimBundleTokenTxns", x => new { x.ClaimBundleId, x.TokenTransactionId, x.OrganizationId });
-                    table.UniqueConstraint("AK_ClaimBundleTokenTxns_ClaimBundleId_TokenTransactionId", x => new { x.ClaimBundleId, x.TokenTransactionId });
                     table.ForeignKey(
                         name: "FK_ClaimBundleTokenTxns_ClaimBundles_ClaimBundleId",
                         column: x => x.ClaimBundleId,
@@ -1818,6 +2223,40 @@ namespace Tayra.Models.Organizations.Migrations
                         name: "FK_ClaimBundleTokenTxns_TokenTransactions_TokenTransactionId",
                         column: x => x.TokenTransactionId,
                         principalTable: "TokenTransactions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChallengeGoalCompletions",
+                columns: table => new
+                {
+                    ProfileId = table.Column<int>(nullable: false),
+                    GoalId = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    Comment = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChallengeGoalCompletions", x => new { x.GoalId, x.ProfileId, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_ChallengeGoalCompletions_ChallengeGoals_GoalId",
+                        column: x => x.GoalId,
+                        principalTable: "ChallengeGoals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChallengeGoalCompletions_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChallengeGoalCompletions_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1874,14 +2313,84 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ActionPoints_OrganizationId",
+                table: "ActionPoints",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActionPoints_ProfileId_OrganizationId",
+                table: "ActionPoints",
+                columns: new[] { "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActionPoints_SegmentId_OrganizationId",
+                table: "ActionPoints",
+                columns: new[] { "SegmentId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActionPointSettings_OrganizationId",
+                table: "ActionPointSettings",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActionPointSettings_SegmentId_OrganizationId",
+                table: "ActionPointSettings",
+                columns: new[] { "SegmentId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Blobs_OrganizationId",
+                table: "Blobs",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeCommits_OrganizationId",
+                table: "ChallengeCommits",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeCommits_ProfileId_OrganizationId",
+                table: "ChallengeCommits",
+                columns: new[] { "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ChallengeCompletions_OrganizationId",
                 table: "ChallengeCompletions",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChallengeCompletions_ProfileId",
+                name: "IX_ChallengeCompletions_ProfileId_OrganizationId",
                 table: "ChallengeCompletions",
-                column: "ProfileId");
+                columns: new[] { "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeGoalCompletions_OrganizationId",
+                table: "ChallengeGoalCompletions",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeGoalCompletions_ProfileId_OrganizationId",
+                table: "ChallengeGoalCompletions",
+                columns: new[] { "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeGoals_OrganizationId",
+                table: "ChallengeGoals",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeGoals_ChallengeId_OrganizationId",
+                table: "ChallengeGoals",
+                columns: new[] { "ChallengeId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeRewards_OrganizationId",
+                table: "ChallengeRewards",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeRewards_ItemId_OrganizationId",
+                table: "ChallengeRewards",
+                columns: new[] { "ItemId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Challenges_OrganizationId",
@@ -1889,9 +2398,19 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Challenges_ProjectId",
+                name: "IX_Challenges_SegmentId_OrganizationId",
                 table: "Challenges",
-                column: "ProjectId");
+                columns: new[] { "SegmentId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeSegments_OrganizationId",
+                table: "ChallengeSegments",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChallengeSegments_SegmentId_OrganizationId",
+                table: "ChallengeSegments",
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClaimBundleItems_OrganizationId",
@@ -1899,9 +2418,9 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClaimBundleItems_ProfileInventoryItemId",
+                name: "IX_ClaimBundleItems_ProfileInventoryItemId_OrganizationId",
                 table: "ClaimBundleItems",
-                column: "ProfileInventoryItemId");
+                columns: new[] { "ProfileInventoryItemId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClaimBundles_OrganizationId",
@@ -1909,9 +2428,9 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClaimBundles_ProfileId",
+                name: "IX_ClaimBundles_ProfileId_OrganizationId",
                 table: "ClaimBundles",
-                column: "ProfileId");
+                columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClaimBundleTokenTxns_OrganizationId",
@@ -1919,14 +2438,9 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClaimBundleTokenTxns_TokenTransactionId",
+                name: "IX_ClaimBundleTokenTxns_TokenTransactionId_OrganizationId",
                 table: "ClaimBundleTokenTxns",
-                column: "TokenTransactionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CompetitionLogs_LogId",
-                table: "CompetitionLogs",
-                column: "LogId");
+                columns: new[] { "TokenTransactionId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompetitionLogs_OrganizationId",
@@ -1934,19 +2448,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompetitionLogs_CompetitionId_Event",
+                name: "IX_CompetitionLogs_LogId_OrganizationId",
                 table: "CompetitionLogs",
-                columns: new[] { "CompetitionId", "Event" });
+                columns: new[] { "LogId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompetitionRewards_CompetitionId",
-                table: "CompetitionRewards",
-                column: "CompetitionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CompetitionRewards_ItemId",
-                table: "CompetitionRewards",
-                column: "ItemId");
+                name: "IX_CompetitionLogs_CompetitionId_Event_OrganizationId",
+                table: "CompetitionLogs",
+                columns: new[] { "CompetitionId", "Event", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompetitionRewards_OrganizationId",
@@ -1954,9 +2463,19 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompetitionRewards_TokenId",
+                name: "IX_CompetitionRewards_CompetitionId_OrganizationId",
                 table: "CompetitionRewards",
-                column: "TokenId");
+                columns: new[] { "CompetitionId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompetitionRewards_ItemId_OrganizationId",
+                table: "CompetitionRewards",
+                columns: new[] { "ItemId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompetitionRewards_TokenId_OrganizationId",
+                table: "CompetitionRewards",
+                columns: new[] { "TokenId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Competitions_OrganizationId",
@@ -1964,19 +2483,19 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Competitions_PreviousCompetitionId",
+                name: "IX_Competitions_PreviousCompetitionId_OrganizationId",
                 table: "Competitions",
-                column: "PreviousCompetitionId");
+                columns: new[] { "PreviousCompetitionId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Competitions_ProjectId",
+                name: "IX_Competitions_SegmentId_OrganizationId",
                 table: "Competitions",
-                column: "ProjectId");
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Competitions_TokenId",
+                name: "IX_Competitions_TokenId_OrganizationId",
                 table: "Competitions",
-                column: "TokenId");
+                columns: new[] { "TokenId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Competitors_OrganizationId",
@@ -1984,40 +2503,29 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Competitors_ProfileId",
+                name: "IX_Competitors_ProfileId_OrganizationId",
                 table: "Competitors",
-                column: "ProfileId");
+                columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Competitors_TeamId",
+                name: "IX_Competitors_TeamId_OrganizationId",
                 table: "Competitors",
-                column: "TeamId");
+                columns: new[] { "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Competitors_CompetitionId_ProfileId",
+                name: "IX_Competitors_CompetitionId_ProfileId_OrganizationId",
                 table: "Competitors",
-                columns: new[] { "CompetitionId", "ProfileId" },
-                unique: true,
-                filter: "[ProfileId] IS NOT NULL");
+                columns: new[] { "CompetitionId", "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Competitors_CompetitionId_TeamId",
+                name: "IX_Competitors_CompetitionId_TeamId_OrganizationId",
                 table: "Competitors",
-                columns: new[] { "CompetitionId", "TeamId" },
-                unique: true,
-                filter: "[TeamId] IS NOT NULL");
+                columns: new[] { "CompetitionId", "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Competitors_CompetitionId_ProfileId_TeamId",
+                name: "IX_Competitors_CompetitionId_ProfileId_TeamId_OrganizationId",
                 table: "Competitors",
-                columns: new[] { "CompetitionId", "ProfileId", "TeamId" },
-                unique: true,
-                filter: "[ProfileId] IS NOT NULL AND [TeamId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CompetitorScores_CompetitionId",
-                table: "CompetitorScores",
-                column: "CompetitionId");
+                columns: new[] { "CompetitionId", "ProfileId", "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompetitorScores_OrganizationId",
@@ -2025,24 +2533,29 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompetitorScores_ProfileId",
+                name: "IX_CompetitorScores_CompetitionId_OrganizationId",
                 table: "CompetitorScores",
-                column: "ProfileId");
+                columns: new[] { "CompetitionId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompetitorScores_TeamId",
+                name: "IX_CompetitorScores_ProfileId_OrganizationId",
                 table: "CompetitorScores",
-                column: "TeamId");
+                columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompetitorScores_CompetitorId_ProfileId",
+                name: "IX_CompetitorScores_TeamId_OrganizationId",
                 table: "CompetitorScores",
-                columns: new[] { "CompetitorId", "ProfileId" });
+                columns: new[] { "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompetitorScores_CompetitorId_TeamId",
+                name: "IX_CompetitorScores_CompetitorId_ProfileId_OrganizationId",
                 table: "CompetitorScores",
-                columns: new[] { "CompetitorId", "TeamId" });
+                columns: new[] { "CompetitorId", "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompetitorScores_CompetitorId_TeamId_OrganizationId",
+                table: "CompetitorScores",
+                columns: new[] { "CompetitorId", "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_EntityChangeLogs_OrganizationId",
@@ -2050,14 +2563,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IntegrationFields_IntegrationId",
-                table: "IntegrationFields",
-                column: "IntegrationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_IntegrationFields_OrganizationId",
                 table: "IntegrationFields",
                 column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IntegrationFields_IntegrationId_OrganizationId",
+                table: "IntegrationFields",
+                columns: new[] { "IntegrationId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Integrations_OrganizationId",
@@ -2065,19 +2578,29 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Integrations_SegmentId_OrganizationId",
+                table: "Integrations",
+                columns: new[] { "SegmentId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Integrations_ProfileId_SegmentId_OrganizationId",
+                table: "Integrations",
+                columns: new[] { "ProfileId", "SegmentId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Invitations_OrganizationId",
                 table: "Invitations",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invitations_ProfileId",
+                name: "IX_Invitations_SegmentId_OrganizationId",
                 table: "Invitations",
-                column: "ProfileId");
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemDisenchants_ItemId",
-                table: "ItemDisenchants",
-                column: "ItemId");
+                name: "IX_Invitations_TeamId_OrganizationId",
+                table: "Invitations",
+                columns: new[] { "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemDisenchants_OrganizationId",
@@ -2085,14 +2608,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemDisenchants_ProfileId",
+                name: "IX_ItemDisenchants_ItemId_OrganizationId",
                 table: "ItemDisenchants",
-                column: "ProfileId");
+                columns: new[] { "ItemId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemGifts_ItemId",
-                table: "ItemGifts",
-                column: "ItemId");
+                name: "IX_ItemDisenchants_ProfileId_OrganizationId",
+                table: "ItemDisenchants",
+                columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemGifts_OrganizationId",
@@ -2100,18 +2623,48 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemGifts_ReceiverId",
+                name: "IX_ItemGifts_ItemId_OrganizationId",
                 table: "ItemGifts",
-                column: "ReceiverId");
+                columns: new[] { "ItemId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemGifts_SenderId",
+                name: "IX_ItemGifts_ReceiverId_OrganizationId",
                 table: "ItemGifts",
-                column: "SenderId");
+                columns: new[] { "ReceiverId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemGifts_SenderId_OrganizationId",
+                table: "ItemGifts",
+                columns: new[] { "SenderId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemReservations_OrganizationId",
+                table: "ItemReservations",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemReservations_ItemId_OrganizationId",
+                table: "ItemReservations",
+                columns: new[] { "ItemId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_OrganizationId",
                 table: "Items",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogDevices_OrganizationId",
+                table: "LogDevices",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogDevices_ProfileId_OrganizationId",
+                table: "LogDevices",
+                columns: new[] { "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LoginLogs_OrganizationId",
+                table: "LoginLogs",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
@@ -2120,24 +2673,69 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LogSettings_OrganizationId",
+                table: "LogSettings",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogSettings_ProfileId_OrganizationId",
+                table: "LogSettings",
+                columns: new[] { "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileAssignments_OrganizationId",
+                table: "ProfileAssignments",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileAssignments_ProfileId_OrganizationId",
+                table: "ProfileAssignments",
+                columns: new[] { "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileAssignments_SegmentId_ProfileId_OrganizationId",
+                table: "ProfileAssignments",
+                columns: new[] { "SegmentId", "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileAssignments_TeamId_ProfileId_OrganizationId",
+                table: "ProfileAssignments",
+                columns: new[] { "TeamId", "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileAssignments_SegmentId_TeamId_ProfileId_OrganizationId",
+                table: "ProfileAssignments",
+                columns: new[] { "SegmentId", "TeamId", "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileExternalIds_OrganizationId",
+                table: "ProfileExternalIds",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileExternalIds_ProfileId_OrganizationId",
+                table: "ProfileExternalIds",
+                columns: new[] { "ProfileId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileExternalIds_SegmentId_OrganizationId",
+                table: "ProfileExternalIds",
+                columns: new[] { "SegmentId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProfileInventoryItems_OrganizationId",
                 table: "ProfileInventoryItems",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileInventoryItems_ProfileId_IsActive",
+                name: "IX_ProfileInventoryItems_ProfileId_IsActive_OrganizationId",
                 table: "ProfileInventoryItems",
-                columns: new[] { "ProfileId", "IsActive" });
+                columns: new[] { "ProfileId", "IsActive", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileInventoryItems_ItemId_ProfileId_IsActive",
+                name: "IX_ProfileInventoryItems_ItemId_ProfileId_IsActive_OrganizationId",
                 table: "ProfileInventoryItems",
-                columns: new[] { "ItemId", "ProfileId", "IsActive" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProfileLogs_LogId",
-                table: "ProfileLogs",
-                column: "LogId");
+                columns: new[] { "ItemId", "ProfileId", "IsActive", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProfileLogs_OrganizationId",
@@ -2145,9 +2743,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileLogs_ProfileId_Event",
+                name: "IX_ProfileLogs_LogId_OrganizationId",
                 table: "ProfileLogs",
-                columns: new[] { "ProfileId", "Event" });
+                columns: new[] { "LogId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileLogs_ProfileId_Event_OrganizationId",
+                table: "ProfileLogs",
+                columns: new[] { "ProfileId", "Event", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProfileOneUps_OrganizationId",
@@ -2155,9 +2758,9 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileOneUps_UppedProfileId",
+                name: "IX_ProfileOneUps_UppedProfileId_OrganizationId",
                 table: "ProfileOneUps",
-                column: "UppedProfileId");
+                columns: new[] { "UppedProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProfileReportsDaily_OrganizationId",
@@ -2165,14 +2768,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsDaily_ProfileId",
+                name: "IX_ProfileReportsDaily_ProfileId_OrganizationId",
                 table: "ProfileReportsDaily",
-                column: "ProfileId");
+                columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsDaily_TaskCategoryId",
+                name: "IX_ProfileReportsDaily_TaskCategoryId_OrganizationId",
                 table: "ProfileReportsDaily",
-                column: "TaskCategoryId");
+                columns: new[] { "TaskCategoryId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProfileReportsWeekly_OrganizationId",
@@ -2180,21 +2783,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsWeekly_ProfileId",
+                name: "IX_ProfileReportsWeekly_ProfileId_OrganizationId",
                 table: "ProfileReportsWeekly",
-                column: "ProfileId");
+                columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsWeekly_TaskCategoryId",
+                name: "IX_ProfileReportsWeekly_TaskCategoryId_OrganizationId",
                 table: "ProfileReportsWeekly",
-                column: "TaskCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Profiles_Nickname",
-                table: "Profiles",
-                column: "Nickname",
-                unique: true,
-                filter: "[Nickname] IS NOT NULL");
+                columns: new[] { "TaskCategoryId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Profiles_OrganizationId",
@@ -2202,93 +2798,64 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectAreas_Name",
-                table: "ProjectAreas",
-                column: "Name",
-                unique: true,
-                filter: "[Name] IS NOT NULL");
+                name: "IX_Profiles_IdentityId_OrganizationId",
+                table: "Profiles",
+                columns: new[] { "IdentityId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectAreas_OrganizationId",
-                table: "ProjectAreas",
+                name: "IX_Profiles_Username_OrganizationId",
+                table: "Profiles",
+                columns: new[] { "Username", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SegmentAreas_OrganizationId",
+                table: "SegmentAreas",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectMembers_OrganizationId",
-                table: "ProjectMembers",
+                name: "IX_SegmentAreas_Name_OrganizationId",
+                table: "SegmentAreas",
+                columns: new[] { "Name", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SegmentReportsDaily_OrganizationId",
+                table: "SegmentReportsDaily",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectMembers_ProfileId",
-                table: "ProjectMembers",
-                column: "ProfileId");
+                name: "IX_SegmentReportsDaily_SegmentId_OrganizationId",
+                table: "SegmentReportsDaily",
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectReportsDaily_OrganizationId",
-                table: "ProjectReportsDaily",
+                name: "IX_SegmentReportsDaily_TaskCategoryId_OrganizationId",
+                table: "SegmentReportsDaily",
+                columns: new[] { "TaskCategoryId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SegmentReportsWeekly_OrganizationId",
+                table: "SegmentReportsWeekly",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectReportsDaily_ProjectId",
-                table: "ProjectReportsDaily",
-                column: "ProjectId");
+                name: "IX_SegmentReportsWeekly_SegmentId_OrganizationId",
+                table: "SegmentReportsWeekly",
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectReportsDaily_TaskCategoryId",
-                table: "ProjectReportsDaily",
-                column: "TaskCategoryId");
+                name: "IX_SegmentReportsWeekly_TaskCategoryId_OrganizationId",
+                table: "SegmentReportsWeekly",
+                columns: new[] { "TaskCategoryId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectReportsWeekly_OrganizationId",
-                table: "ProjectReportsWeekly",
+                name: "IX_Segments_OrganizationId",
+                table: "Segments",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectReportsWeekly_ProjectId",
-                table: "ProjectReportsWeekly",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectReportsWeekly_TaskCategoryId",
-                table: "ProjectReportsWeekly",
-                column: "TaskCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Projects_Key",
-                table: "Projects",
-                column: "Key",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Projects_OrganizationId",
-                table: "Projects",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectTeams_OrganizationId",
-                table: "ProjectTeams",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectTeams_TeamId",
-                table: "ProjectTeams",
-                column: "TeamId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ShopItemProjects_OrganizationId",
-                table: "ShopItemProjects",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ShopItemProjects_ProjectId",
-                table: "ShopItemProjects",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ShopItems_ItemId",
-                table: "ShopItems",
-                column: "ItemId",
-                unique: true);
+                name: "IX_Segments_Key_ArchievedAt_OrganizationId",
+                table: "Segments",
+                columns: new[] { "Key", "ArchievedAt", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShopItems_OrganizationId",
@@ -2296,9 +2863,19 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopLogs_LogId",
-                table: "ShopLogs",
-                column: "LogId");
+                name: "IX_ShopItems_ItemId_OrganizationId",
+                table: "ShopItems",
+                columns: new[] { "ItemId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShopItemSegments_OrganizationId",
+                table: "ShopItemSegments",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShopItemSegments_SegmentId_OrganizationId",
+                table: "ShopItemSegments",
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShopLogs_OrganizationId",
@@ -2306,9 +2883,9 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopPurchases_ItemId",
-                table: "ShopPurchases",
-                column: "ItemId");
+                name: "IX_ShopLogs_LogId_OrganizationId",
+                table: "ShopLogs",
+                columns: new[] { "LogId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShopPurchases_OrganizationId",
@@ -2316,14 +2893,19 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopPurchases_ProjectId",
+                name: "IX_ShopPurchases_ItemId_OrganizationId",
                 table: "ShopPurchases",
-                column: "ProjectId");
+                columns: new[] { "ItemId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopPurchases_ProfileId_Status",
+                name: "IX_ShopPurchases_SegmentId_OrganizationId",
                 table: "ShopPurchases",
-                columns: new[] { "ProfileId", "Status" });
+                columns: new[] { "SegmentId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShopPurchases_ProfileId_Status_OrganizationId",
+                table: "ShopPurchases",
+                columns: new[] { "ProfileId", "Status", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shops_OrganizationId",
@@ -2331,26 +2913,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StatTypes_OrganizationId",
-                table: "StatTypes",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TaskCategories_Name",
-                table: "TaskCategories",
-                column: "Name",
-                unique: true,
-                filter: "[Name] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TaskCategories_OrganizationId",
                 table: "TaskCategories",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskLogs_AssigneeProfileId",
-                table: "TaskLogs",
-                column: "AssigneeProfileId");
+                name: "IX_TaskCategories_Name_OrganizationId",
+                table: "TaskCategories",
+                columns: new[] { "Name", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskLogs_OrganizationId",
@@ -2358,19 +2928,19 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskLogs_ProjectId",
+                name: "IX_TaskLogs_AssigneeProfileId_OrganizationId",
                 table: "TaskLogs",
-                column: "ProjectId");
+                columns: new[] { "AssigneeProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskLogs_TeamId",
+                name: "IX_TaskLogs_SegmentId_OrganizationId",
                 table: "TaskLogs",
-                column: "TeamId");
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_AssigneeProfileId",
-                table: "Tasks",
-                column: "AssigneeProfileId");
+                name: "IX_TaskLogs_TeamId_OrganizationId",
+                table: "TaskLogs",
+                columns: new[] { "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_OrganizationId",
@@ -2378,41 +2948,49 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_ProjectAreaId",
+                name: "IX_Tasks_AssigneeProfileId_OrganizationId",
                 table: "Tasks",
-                column: "ProjectAreaId");
+                columns: new[] { "AssigneeProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_ProjectId",
+                name: "IX_Tasks_SegmentAreaId_OrganizationId",
                 table: "Tasks",
-                column: "ProjectId");
+                columns: new[] { "SegmentAreaId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TaskCategoryId",
+                name: "IX_Tasks_SegmentId_OrganizationId",
                 table: "Tasks",
-                column: "TaskCategoryId");
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TeamId",
+                name: "IX_Tasks_TaskCategoryId_OrganizationId",
                 table: "Tasks",
-                column: "TeamId");
+                columns: new[] { "TaskCategoryId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_ExternalId_IntegrationType",
+                name: "IX_Tasks_TeamId_OrganizationId",
                 table: "Tasks",
-                columns: new[] { "ExternalId", "IntegrationType" },
-                unique: true,
-                filter: "[ExternalId] IS NOT NULL");
+                columns: new[] { "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamMembers_OrganizationId",
-                table: "TeamMembers",
+                name: "IX_Tasks_ExternalId_IntegrationType_OrganizationId",
+                table: "Tasks",
+                columns: new[] { "ExternalId", "IntegrationType", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_ExternalId_IntegrationType_SegmentId_OrganizationId",
+                table: "Tasks",
+                columns: new[] { "ExternalId", "IntegrationType", "SegmentId", "OrganizationId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskSyncs_OrganizationId",
+                table: "TaskSyncs",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamMembers_ProfileId",
-                table: "TeamMembers",
-                column: "ProfileId");
+                name: "IX_TaskSyncs_SegmentId_OrganizationId",
+                table: "TaskSyncs",
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_TeamReportsDaily_OrganizationId",
@@ -2420,14 +2998,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsDaily_TaskCategoryId",
+                name: "IX_TeamReportsDaily_TaskCategoryId_OrganizationId",
                 table: "TeamReportsDaily",
-                column: "TaskCategoryId");
+                columns: new[] { "TaskCategoryId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsDaily_TeamId",
+                name: "IX_TeamReportsDaily_TeamId_OrganizationId",
                 table: "TeamReportsDaily",
-                column: "TeamId");
+                columns: new[] { "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_TeamReportsWeekly_OrganizationId",
@@ -2435,14 +3013,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsWeekly_TaskCategoryId",
+                name: "IX_TeamReportsWeekly_TaskCategoryId_OrganizationId",
                 table: "TeamReportsWeekly",
-                column: "TaskCategoryId");
+                columns: new[] { "TaskCategoryId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsWeekly_TeamId",
+                name: "IX_TeamReportsWeekly_TeamId_OrganizationId",
                 table: "TeamReportsWeekly",
-                column: "TeamId");
+                columns: new[] { "TeamId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Teams_OrganizationId",
@@ -2450,16 +3028,9 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Teams_ProjectId",
+                name: "IX_Teams_SegmentId_Key_ArchievedAt_OrganizationId",
                 table: "Teams",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Teams_Key_ArchivedAt",
-                table: "Teams",
-                columns: new[] { "Key", "ArchivedAt" },
-                unique: true,
-                filter: "[Key] IS NOT NULL AND [ArchivedAt] IS NOT NULL");
+                columns: new[] { "SegmentId", "Key", "ArchievedAt", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tokens_OrganizationId",
@@ -2472,14 +3043,14 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TokenTransactions_ProfileId",
+                name: "IX_TokenTransactions_ProfileId_OrganizationId",
                 table: "TokenTransactions",
-                column: "ProfileId");
+                columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TokenTransactions_TokenId",
+                name: "IX_TokenTransactions_TokenId_OrganizationId",
                 table: "TokenTransactions",
-                column: "TokenId");
+                columns: new[] { "TokenId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_WebhookEventLogs_OrganizationId",
@@ -2490,7 +3061,28 @@ namespace Tayra.Models.Organizations.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ActionPoints");
+
+            migrationBuilder.DropTable(
+                name: "ActionPointSettings");
+
+            migrationBuilder.DropTable(
+                name: "Blobs");
+
+            migrationBuilder.DropTable(
+                name: "ChallengeCommits");
+
+            migrationBuilder.DropTable(
                 name: "ChallengeCompletions");
+
+            migrationBuilder.DropTable(
+                name: "ChallengeGoalCompletions");
+
+            migrationBuilder.DropTable(
+                name: "ChallengeRewards");
+
+            migrationBuilder.DropTable(
+                name: "ChallengeSegments");
 
             migrationBuilder.DropTable(
                 name: "ClaimBundleItems");
@@ -2523,6 +3115,21 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ItemGifts");
 
             migrationBuilder.DropTable(
+                name: "ItemReservations");
+
+            migrationBuilder.DropTable(
+                name: "LoginLogs");
+
+            migrationBuilder.DropTable(
+                name: "LogSettings");
+
+            migrationBuilder.DropTable(
+                name: "ProfileAssignments");
+
+            migrationBuilder.DropTable(
+                name: "ProfileExternalIds");
+
+            migrationBuilder.DropTable(
                 name: "ProfileLogs");
 
             migrationBuilder.DropTable(
@@ -2535,19 +3142,13 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ProfileReportsWeekly");
 
             migrationBuilder.DropTable(
-                name: "ProjectMembers");
+                name: "SegmentReportsDaily");
 
             migrationBuilder.DropTable(
-                name: "ProjectReportsDaily");
+                name: "SegmentReportsWeekly");
 
             migrationBuilder.DropTable(
-                name: "ProjectReportsWeekly");
-
-            migrationBuilder.DropTable(
-                name: "ProjectTeams");
-
-            migrationBuilder.DropTable(
-                name: "ShopItemProjects");
+                name: "ShopItemSegments");
 
             migrationBuilder.DropTable(
                 name: "ShopLogs");
@@ -2556,16 +3157,13 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ShopPurchases");
 
             migrationBuilder.DropTable(
-                name: "StatTypes");
-
-            migrationBuilder.DropTable(
                 name: "TaskLogs");
 
             migrationBuilder.DropTable(
                 name: "Tasks");
 
             migrationBuilder.DropTable(
-                name: "TeamMembers");
+                name: "TaskSyncs");
 
             migrationBuilder.DropTable(
                 name: "TeamReportsDaily");
@@ -2577,7 +3175,7 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "WebhookEventLogs");
 
             migrationBuilder.DropTable(
-                name: "Challenges");
+                name: "ChallengeGoals");
 
             migrationBuilder.DropTable(
                 name: "ProfileInventoryItems");
@@ -2595,6 +3193,9 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Integrations");
 
             migrationBuilder.DropTable(
+                name: "LogDevices");
+
+            migrationBuilder.DropTable(
                 name: "ShopItems");
 
             migrationBuilder.DropTable(
@@ -2604,19 +3205,22 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Shops");
 
             migrationBuilder.DropTable(
-                name: "ProjectAreas");
+                name: "SegmentAreas");
 
             migrationBuilder.DropTable(
                 name: "TaskCategories");
 
             migrationBuilder.DropTable(
+                name: "Challenges");
+
+            migrationBuilder.DropTable(
                 name: "Competitions");
 
             migrationBuilder.DropTable(
-                name: "Profiles");
+                name: "Teams");
 
             migrationBuilder.DropTable(
-                name: "Teams");
+                name: "Profiles");
 
             migrationBuilder.DropTable(
                 name: "Items");
@@ -2625,7 +3229,7 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Tokens");
 
             migrationBuilder.DropTable(
-                name: "Projects");
+                name: "Segments");
 
             migrationBuilder.DropTable(
                 name: "Organizations");

@@ -36,13 +36,22 @@ namespace Tayra.API.Controllers
             //var o = Resolve<IOrganizationsService>();
             //o.Create(new OrganizationCreateDTO
             //{
-            //    Key = "localhost:cognition",
-            //    Name = "Cognition",
+            //    Key = "devtenant.tayra.local",
+            //    Name = "Dev Tenant",
             //    Timezone = "Europe Central",
             //    DatabaseServer = "sqlserver-tayra.database.windows.net",
-            //    DatabaseName = "sqldb-tayra-tenants_free-prod",
+            //    DatabaseName = "sqldb-tayra-tenant_cognition",
             //    TemplateConnectionString = "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
             //});
+
+            //IdentitiesService.CreateInvitation(0, "devtenant.tayra.local", new IdentityInviteDTO
+            //{
+            //    EmailAddress = "haris+00@tayra.io",
+            //    FirstName = "Haris",
+            //    LastName = "Botic",
+            //    Role = ProfileRoles.Admin
+            //});
+            //DbContext.SaveChanges();
 
             //IdentitiesService.InternalCreateWithProfile(dto);
             //DbContext.SaveChanges();
@@ -61,7 +70,7 @@ namespace Tayra.API.Controllers
         [HttpPost("invitation")]
         public IActionResult Sendinvitation([FromBody] IdentityInviteDTO dto)
         {
-            IdentitiesService.CreateInvitation(CurrentUser.ProfileId, TenantProvider.GetTenant().Host, dto);
+            IdentitiesService.CreateInvitation(CurrentUser.ProfileId, TenantProvider.GetTenant().Key, dto);
 
             DbContext.SaveChanges();
             return Ok();

@@ -35,6 +35,7 @@ namespace Tayra.Models.Catalog
         public DbSet<TenantIdentity> TenantIdentities { get; set; }
 
         public DbSet<LandingPageContact> LandingPageContacts { get; set; }
+        public DbSet<LandingPageContact> LandingPageTry { get; set; }
 
         #endregion
 

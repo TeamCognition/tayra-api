@@ -82,7 +82,7 @@ namespace Tayra.API.Controllers
                 _catalogContext.LandingPageContacts.Add(new LandingPageContact
                 {
                     Name = dto.Name,
-                    EmailAddresss = dto.Email,
+                    EmailAddress = dto.Email,
                     PhoneNumber = dto.PhoneNumber,
                     Message = dto.Message
                 });
@@ -122,7 +122,7 @@ namespace Tayra.API.Controllers
                 _catalogContext.LandingPageContacts.Add(new LandingPageContact
                 {
                     Name = dto.Name,
-                    EmailAddresss = dto.EmailAddress,
+                    EmailAddress = dto.EmailAddress,
                     PhoneNumber = dto.PhoneNumber,
                     Message = JsonConvert.SerializeObject(dto)
                 });

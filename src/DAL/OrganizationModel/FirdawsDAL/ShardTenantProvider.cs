@@ -9,20 +9,19 @@ namespace Tayra.Models.Organizations
 {
     public class ShardTenantProvider : ITenantProvider
     {
-        private string _host;
+        private string _key;
 
         [ActivatorUtilitiesConstructor]
         public ShardTenantProvider(IHttpContextAccessor accessor)
         {
             var principal = new TayraPrincipal(accessor.HttpContext.User);
-
             if (principal.Identity.IsAuthenticated)
             {
-                _host = principal.CurrentTenantKey;
+                _key = principal.CurrentTenantKey;
             }
             else if(accessor.HttpContext.Request.Query.TryGetValue("tenant", out StringValues tenantKey))
-            {
-                _host = tenantKey;
+            {                
+                _key = tenantKey;
             }
             else
             {
@@ -43,17 +42,17 @@ namespace Tayra.Models.Organizations
             //}
         }
 
-        public ShardTenantProvider(string host)
+        public ShardTenantProvider(string key)
         {
-            _host = host;
+            _key = key;
         }
 
         public TenantDTO GetTenant()
         {
             return new TenantDTO
             {
-                Host = _host,
-                ShardingKey = TenantUtilities.GenerateShardingKey(_host)
+                Key = _key,
+                ShardingKey = TenantUtilities.GenerateShardingKey(_key)
             };
         }
     }

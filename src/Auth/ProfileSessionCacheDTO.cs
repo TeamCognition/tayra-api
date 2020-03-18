@@ -20,6 +20,8 @@ namespace Tayra.Auth
         public ICollection<TeamDTO> Teams { get; set; }
         public ICollection<SegmentDTO> Segments { get; set; }
 
+        public string TenantHost { get; set; }
+
         public class SegmentDTO
         {
             public int Id { get; set; }

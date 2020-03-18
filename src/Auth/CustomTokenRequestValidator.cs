@@ -49,7 +49,7 @@ namespace Tayra.Auth
                 {
                     context.Result.CustomResponse = new Dictionary<string, object>
                     {
-                        { "sessionCache", JsonConvert.SerializeObject(GetSessionCache(orgContext, int.Parse(subject)), settings)}
+                        { "sessionCache", JsonConvert.SerializeObject(GetSessionCache(orgContext, int.Parse(subject), currentTenantKey), settings)}
                     };
                 }
 
@@ -58,9 +58,9 @@ namespace Tayra.Auth
             return Task.CompletedTask;
         }
 
-        private static ProfileSessionCacheDTO GetSessionCache(OrganizationDbContext dbContext, int identityId)
+        private static ProfileSessionCacheDTO GetSessionCache(OrganizationDbContext dbContext, int identityId, string tenantHost)
         {
-            var profile = (from p in dbContext.Profiles.Where(x => x.IdentityId == identityId)
+            var cache = (from p in dbContext.Profiles.Where(x => x.IdentityId == identityId)
                            select new ProfileSessionCacheDTO
                            {
                                ProfileId = p.Id,
@@ -71,9 +71,9 @@ namespace Tayra.Auth
                                Avatar = p.Avatar
                            }).FirstOrDefault();
 
-            (IQueryable<Segment> qs, IQueryable<Team> qt) = ProfileService.GetSegmentAndTeamQueries(dbContext, profile.ProfileId, profile.Role);
+            (IQueryable<Segment> qs, IQueryable<Team> qt) = ProfileService.GetSegmentAndTeamQueries(dbContext, cache.ProfileId, cache.Role);
 
-            profile.Segments = qs.Select(s => new ProfileSessionCacheDTO.SegmentDTO
+            cache.Segments = qs.Select(s => new ProfileSessionCacheDTO.SegmentDTO
             {
                 Id = s.Id,
                 Key = s.Key,
@@ -81,7 +81,7 @@ namespace Tayra.Auth
                 Avatar = s.Avatar
             }).ToArray();
 
-            profile.Teams = qt.Select(t => new ProfileSessionCacheDTO.TeamDTO
+            cache.Teams = qt.Select(t => new ProfileSessionCacheDTO.TeamDTO
             {
                 Id = t.Id,
                 Key = t.Key,
@@ -90,13 +90,14 @@ namespace Tayra.Auth
                 SegmentId = t.SegmentId
             }).ToArray().Where(x => x.Key != null).ToArray();
 
-            var activeItems = ProfilesService.GetProfileActiveItems(dbContext, profile.ProfileId);
+            var activeItems = ProfilesService.GetProfileActiveItems(dbContext, cache.ProfileId);
 
-            profile.Title = activeItems.Title;
-            profile.Badges = activeItems.Badges;
-            profile.Border = activeItems.Border;
+            cache.Title = activeItems.Title;
+            cache.Badges = activeItems.Badges;
+            cache.Border = activeItems.Border;
 
-            return profile;
+            cache.TenantHost = tenantHost;
+            return cache;
         }
     }
 }

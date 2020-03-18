@@ -15,8 +15,7 @@
     "ConnectionTimeOut": "100",
 
     "CatalogServer": "sqlserver-tayra.database.windows.net",
-    "CatalogDatabase": "sqldb-tayra-catalog-prod",
-
+    "CatalogDatabase": "sqldb-tayra-catalog",
 
     "ImagerServer": "https://tayra-imager.azurewebsites.net/",
     "BlobStorageConnectionStr": "DefaultEndpointsProtocol=https;AccountName=tayra;AccountKey=98ZragdvKWY2WgKDOsKTZfhXze0nAe8/wkZKzOanlcF7W9qrjqwX/HMg6upmZ9c3Sgu9FvvGyfh1N+zb1gtPVA==;EndpointSuffix=core.windows.net",

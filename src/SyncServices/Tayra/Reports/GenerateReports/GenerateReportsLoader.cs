@@ -24,7 +24,7 @@ namespace Tayra.SyncServices.Tayra
 
         public override void Execute(DateTime date, Dictionary<string, string> requestParams, params Tenant[] tenants)
         {
-            date = DateHelper2.ParseDate(20191118);
+            date = DateHelper2.ParseDate(20200101);
             do
             {
                 foreach (var tenant in tenants)
@@ -45,7 +45,7 @@ namespace Tayra.SyncServices.Tayra
                     }
                 }
                 date = date.AddDays(1);
-            } while (date <= DateHelper2.ParseDate(20200224));
+            } while (date <= DateHelper2.ParseDate(20200317));
         }
 
         #endregion

@@ -33,9 +33,8 @@ namespace Tayra.Connectors.Common
 
         public virtual string GetAuthDoneUrl(string returnPath, bool isSuccessful)
         {
-            string protocol = Tenant.Host.StartsWith("localhost:", StringComparison.InvariantCulture) ? "http" : "https";
-            var urlHost = Tenant.Host.StartsWith("tajra", StringComparison.InvariantCulture) ? "tayra-demo.azurewebsites.net" : Tenant.Host;
-            return $"{protocol}://{urlHost}/{returnPath}/?i={Type.ToString().ToLower()}&success={isSuccessful}";
+            string protocol = Tenant.Key.StartsWith("localhost:", StringComparison.InvariantCulture) || Tenant.Key.EndsWith("local") ? "http" : "https";
+            return $"{protocol}://{Tenant.Key}/{returnPath}/?i={Type.ToString().ToLower()}&success={isSuccessful}";
         }
 
         #endregion

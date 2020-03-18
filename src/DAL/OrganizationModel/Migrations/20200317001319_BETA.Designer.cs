@@ -10,8 +10,8 @@ using Tayra.Models.Organizations;
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    [Migration("20200212154424_BETA49")]
-    partial class BETA49
+    [Migration("20200317001319_BETA")]
+    partial class BETA
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -70,65 +70,23 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<DateTime?>("LastModified");
 
-                    b.Property<int?>("Type");
+                    b.Property<int?>("ProfileId");
+
+                    b.Property<int?>("SegmentId");
+
+                    b.Property<int>("Type");
 
                     b.HasKey("Id", "OrganizationId");
 
+                    b.HasAlternateKey("Id");
+
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ProfileId", "OrganizationId");
+
+                    b.HasIndex("SegmentId", "OrganizationId");
 
                     b.ToTable("ActionPoints");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointProfile", b =>
-                {
-                    b.Property<int>("ActionPointId");
-
-                    b.Property<int>("ProfileId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime?>("ConcludedOn");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsMemberOnly");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("ActionPointId", "ProfileId", "OrganizationId");
-
-                    b.HasAlternateKey("ActionPointId", "ProfileId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProfileId");
-
-                    b.ToTable("ActionPointProfiles");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointSegment", b =>
-                {
-                    b.Property<int>("ActionPointId");
-
-                    b.Property<int>("SegmentId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime?>("ConcludedOn");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("ActionPointId", "SegmentId", "OrganizationId");
-
-                    b.HasAlternateKey("ActionPointId", "SegmentId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("SegmentId");
-
-                    b.ToTable("ActionPointSegments");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ActionPointSetting", b =>
@@ -153,11 +111,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("Type", "OrganizationId");
 
-                    b.HasAlternateKey("Type");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
                     b.ToTable("ActionPointSettings");
                 });
@@ -240,7 +196,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
                     b.ToTable("Challenges");
                 });
@@ -253,17 +209,17 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("OrganizationId");
 
+                    b.Property<DateTime?>("CompletedAt");
+
                     b.Property<DateTime>("Created");
 
                     b.Property<DateTime?>("LastModified");
 
                     b.HasKey("ChallengeId", "ProfileId", "OrganizationId");
 
-                    b.HasAlternateKey("ChallengeId", "ProfileId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
                     b.ToTable("ChallengeCommits");
                 });
@@ -282,11 +238,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("ChallengeId", "ProfileId", "OrganizationId");
 
-                    b.HasAlternateKey("ChallengeId", "ProfileId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
                     b.ToTable("ChallengeCompletions");
                 });
@@ -311,9 +265,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("Id", "OrganizationId");
 
-                    b.HasIndex("ChallengeId");
-
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ChallengeId", "OrganizationId");
 
                     b.ToTable("ChallengeGoals");
                 });
@@ -334,11 +288,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("GoalId", "ProfileId", "OrganizationId");
 
-                    b.HasAlternateKey("GoalId", "ProfileId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
                     b.ToTable("ChallengeGoalCompletions");
                 });
@@ -359,11 +311,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("ChallengeId", "ItemId", "OrganizationId");
 
-                    b.HasAlternateKey("ChallengeId", "ItemId");
-
-                    b.HasIndex("ItemId");
-
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ItemId", "OrganizationId");
 
                     b.ToTable("ChallengeRewards");
                 });
@@ -382,11 +332,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("ChallengeId", "SegmentId", "OrganizationId");
 
-                    b.HasAlternateKey("ChallengeId", "SegmentId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
                     b.ToTable("ChallengeSegments");
                 });
@@ -413,7 +361,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
                     b.ToTable("ClaimBundles");
                 });
@@ -428,11 +376,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("ClaimBundleId", "ProfileInventoryItemId", "OrganizationId");
 
-                    b.HasAlternateKey("ClaimBundleId", "ProfileInventoryItemId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileInventoryItemId");
+                    b.HasIndex("ProfileInventoryItemId", "OrganizationId");
 
                     b.ToTable("ClaimBundleItems");
                 });
@@ -447,11 +393,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("ClaimBundleId", "TokenTransactionId", "OrganizationId");
 
-                    b.HasAlternateKey("ClaimBundleId", "TokenTransactionId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("TokenTransactionId");
+                    b.HasIndex("TokenTransactionId", "OrganizationId");
 
                     b.ToTable("ClaimBundleTokenTxns");
                 });
@@ -509,11 +453,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("PreviousCompetitionId");
+                    b.HasIndex("PreviousCompetitionId", "OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
-                    b.HasIndex("TokenId");
+                    b.HasIndex("TokenId", "OrganizationId");
 
                     b.ToTable("Competitions");
                 });
@@ -530,13 +474,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("CompetitionId", "LogId", "OrganizationId");
 
-                    b.HasAlternateKey("CompetitionId", "LogId");
-
-                    b.HasIndex("LogId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("CompetitionId", "Event");
+                    b.HasIndex("LogId", "OrganizationId");
+
+                    b.HasIndex("CompetitionId", "Event", "OrganizationId");
 
                     b.ToTable("CompetitionLogs");
                 });
@@ -569,13 +511,13 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("CompetitionId");
-
-                    b.HasIndex("ItemId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("TokenId");
+                    b.HasIndex("CompetitionId", "OrganizationId");
+
+                    b.HasIndex("ItemId", "OrganizationId");
+
+                    b.HasIndex("TokenId", "OrganizationId");
 
                     b.ToTable("CompetitionRewards");
                 });
@@ -610,21 +552,15 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
-                    b.HasIndex("TeamId");
+                    b.HasIndex("TeamId", "OrganizationId");
 
-                    b.HasIndex("CompetitionId", "ProfileId")
-                        .IsUnique()
-                        .HasFilter("[ProfileId] IS NOT NULL");
+                    b.HasIndex("CompetitionId", "ProfileId", "OrganizationId");
 
-                    b.HasIndex("CompetitionId", "TeamId")
-                        .IsUnique()
-                        .HasFilter("[TeamId] IS NOT NULL");
+                    b.HasIndex("CompetitionId", "TeamId", "OrganizationId");
 
-                    b.HasIndex("CompetitionId", "ProfileId", "TeamId")
-                        .IsUnique()
-                        .HasFilter("[ProfileId] IS NOT NULL AND [TeamId] IS NOT NULL");
+                    b.HasIndex("CompetitionId", "ProfileId", "TeamId", "OrganizationId");
 
                     b.ToTable("Competitors");
                 });
@@ -655,17 +591,17 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("CompetitionId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("CompetitionId", "OrganizationId");
 
-                    b.HasIndex("TeamId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
-                    b.HasIndex("CompetitorId", "ProfileId");
+                    b.HasIndex("TeamId", "OrganizationId");
 
-                    b.HasIndex("CompetitorId", "TeamId");
+                    b.HasIndex("CompetitorId", "ProfileId", "OrganizationId");
+
+                    b.HasIndex("CompetitorId", "TeamId", "OrganizationId");
 
                     b.ToTable("CompetitorScores");
                 });
@@ -696,9 +632,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
-                    b.HasIndex("ProfileId", "SegmentId");
+                    b.HasIndex("ProfileId", "SegmentId", "OrganizationId");
 
                     b.ToTable("Integrations");
                 });
@@ -730,9 +666,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("IntegrationId");
-
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("IntegrationId", "OrganizationId");
 
                     b.ToTable("IntegrationFields");
                 });
@@ -777,9 +713,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
-                    b.HasIndex("TeamId");
+                    b.HasIndex("TeamId", "OrganizationId");
 
                     b.ToTable("Invitations");
                 });
@@ -815,11 +751,11 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<string>("Name")
                         .HasMaxLength(100);
 
+                    b.Property<float>("Price");
+
                     b.Property<int>("Rarity");
 
                     b.Property<int>("Type");
-
-                    b.Property<float>("WorthValue");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -848,11 +784,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("ItemId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ItemId", "OrganizationId");
+
+                    b.HasIndex("ProfileId", "OrganizationId");
 
                     b.ToTable("ItemDisenchants");
                 });
@@ -882,13 +818,13 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("ItemId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ReceiverId");
+                    b.HasIndex("ItemId", "OrganizationId");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex("ReceiverId", "OrganizationId");
+
+                    b.HasIndex("SenderId", "OrganizationId");
 
                     b.ToTable("ItemGifts");
                 });
@@ -913,9 +849,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("ItemId");
-
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ItemId", "OrganizationId");
 
                     b.ToTable("ItemReservations");
                 });
@@ -941,6 +877,58 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Logs");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.LogDevice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<string>("Address");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.Property<int?>("ProfileId");
+
+                    b.Property<int>("Type");
+
+                    b.HasKey("Id", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ProfileId", "OrganizationId");
+
+                    b.ToTable("LogDevices");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.LogSetting", b =>
+                {
+                    b.Property<int>("LogDeviceId");
+
+                    b.Property<int>("LogEvent");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<bool>("IsEnabled");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.Property<int>("ProfileId");
+
+                    b.HasKey("LogDeviceId", "LogEvent", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ProfileId", "OrganizationId");
+
+                    b.ToTable("LogSettings");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.LoginLog", b =>
@@ -1036,13 +1024,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("Id", "OrganizationId");
 
-                    b.HasIndex("IdentityId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("Username")
-                        .IsUnique()
-                        .HasFilter("[Username] IS NOT NULL");
+                    b.HasIndex("IdentityId", "OrganizationId");
+
+                    b.HasIndex("Username", "OrganizationId");
 
                     b.ToTable("Profiles");
                 });
@@ -1075,24 +1061,21 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
-                    b.HasIndex("SegmentId", "ProfileId");
+                    b.HasIndex("SegmentId", "ProfileId", "OrganizationId");
 
-                    b.HasIndex("TeamId", "ProfileId");
+                    b.HasIndex("TeamId", "ProfileId", "OrganizationId");
 
-                    b.HasIndex("SegmentId", "TeamId", "ProfileId")
-                        .IsUnique()
-                        .HasFilter("[TeamId] IS NOT NULL");
+                    b.HasIndex("SegmentId", "TeamId", "ProfileId", "OrganizationId");
 
                     b.ToTable("ProfileAssignments");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileExternalId", b =>
                 {
-                    b.Property<int>("ProfileId");
-
-                    b.Property<int>("SegmentId");
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(100);
 
                     b.Property<int>("IntegrationType");
 
@@ -1100,18 +1083,19 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<DateTime>("Created");
 
-                    b.Property<string>("ExternalId")
-                        .HasMaxLength(100);
-
                     b.Property<DateTime?>("LastModified");
 
-                    b.HasKey("ProfileId", "SegmentId", "IntegrationType", "OrganizationId");
+                    b.Property<int>("ProfileId");
 
-                    b.HasAlternateKey("ProfileId", "SegmentId", "IntegrationType");
+                    b.Property<int>("SegmentId");
+
+                    b.HasKey("ExternalId", "IntegrationType", "OrganizationId");
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("ProfileId", "OrganizationId");
+
+                    b.HasIndex("SegmentId", "OrganizationId");
 
                     b.ToTable("ProfileExternalIds");
                 });
@@ -1148,9 +1132,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId", "IsActive");
+                    b.HasIndex("ProfileId", "IsActive", "OrganizationId");
 
-                    b.HasIndex("ItemId", "ProfileId", "IsActive");
+                    b.HasIndex("ItemId", "ProfileId", "IsActive", "OrganizationId");
 
                     b.ToTable("ProfileInventoryItems");
                 });
@@ -1167,13 +1151,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("ProfileId", "LogId", "OrganizationId");
 
-                    b.HasAlternateKey("ProfileId", "LogId");
-
-                    b.HasIndex("LogId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId", "Event");
+                    b.HasIndex("LogId", "OrganizationId");
+
+                    b.HasIndex("ProfileId", "Event", "OrganizationId");
 
                     b.ToTable("ProfileLogs");
                 });
@@ -1196,11 +1178,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("DateId", "UppedProfileId", "CreatedBy", "OrganizationId");
 
-                    b.HasAlternateKey("DateId", "UppedProfileId", "CreatedBy");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("UppedProfileId");
+                    b.HasIndex("UppedProfileId", "OrganizationId");
 
                     b.ToTable("ProfileOneUps");
                 });
@@ -1214,6 +1194,8 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<int>("TaskCategoryId");
 
                     b.Property<int>("OrganizationId");
+
+                    b.Property<string>("ActivityChartJson");
 
                     b.Property<int>("AssistsChange");
 
@@ -1301,13 +1283,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("DateId", "ProfileId", "TaskCategoryId", "OrganizationId");
 
-                    b.HasAlternateKey("DateId", "ProfileId", "TaskCategoryId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
-                    b.HasIndex("TaskCategoryId");
+                    b.HasIndex("TaskCategoryId", "OrganizationId");
 
                     b.ToTable("ProfileReportsDaily");
                 });
@@ -1424,13 +1404,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("DateId", "ProfileId", "TaskCategoryId", "OrganizationId");
 
-                    b.HasAlternateKey("DateId", "ProfileId", "TaskCategoryId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
-                    b.HasIndex("TaskCategoryId");
+                    b.HasIndex("TaskCategoryId", "OrganizationId");
 
                     b.ToTable("ProfileReportsWeekly");
                 });
@@ -1477,9 +1455,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("Key", "ArchievedAt")
-                        .IsUnique()
-                        .HasFilter("[ArchievedAt] IS NOT NULL");
+                    b.HasIndex("Key", "ArchievedAt", "OrganizationId");
 
                     b.ToTable("Segments");
                 });
@@ -1504,11 +1480,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("Id", "OrganizationId");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasFilter("[Name] IS NOT NULL");
-
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("Name", "OrganizationId");
 
                     b.ToTable("SegmentAreas");
                 });
@@ -1555,6 +1529,8 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("ItemsBoughtChange");
 
+                    b.Property<int>("ItemsBoughtTotal");
+
                     b.Property<int>("ItemsCreatedChange");
 
                     b.Property<int>("ItemsDisenchantedChange");
@@ -1599,13 +1575,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("DateId", "SegmentId", "TaskCategoryId", "OrganizationId");
 
-                    b.HasAlternateKey("DateId", "SegmentId", "TaskCategoryId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
-                    b.HasIndex("TaskCategoryId");
+                    b.HasIndex("TaskCategoryId", "OrganizationId");
 
                     b.ToTable("SegmentReportsDaily");
                 });
@@ -1718,13 +1692,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("DateId", "SegmentId", "TaskCategoryId", "OrganizationId");
 
-                    b.HasAlternateKey("DateId", "SegmentId", "TaskCategoryId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
-                    b.HasIndex("TaskCategoryId");
+                    b.HasIndex("TaskCategoryId", "OrganizationId");
 
                     b.ToTable("SegmentReportsWeekly");
                 });
@@ -1786,16 +1758,13 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int?>("LastModifiedBy");
 
-                    b.Property<float>("Price");
-
                     b.Property<int?>("QuantityReservedRemaining");
 
                     b.HasKey("Id", "OrganizationId");
 
-                    b.HasIndex("ItemId")
-                        .IsUnique();
-
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ItemId", "OrganizationId");
 
                     b.ToTable("ShopItems");
                 });
@@ -1820,11 +1789,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("ShopItemId", "SegmentId", "OrganizationId");
 
-                    b.HasAlternateKey("ShopItemId", "SegmentId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
                     b.ToTable("ShopItemSegments");
                 });
@@ -1841,11 +1808,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("ShopId", "LogId", "OrganizationId");
 
-                    b.HasAlternateKey("ShopId", "LogId");
-
-                    b.HasIndex("LogId");
-
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("LogId", "OrganizationId");
 
                     b.ToTable("ShopLogs");
                 });
@@ -1878,7 +1843,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("ProfileId");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<int?>("SegmentId");
 
                     b.Property<int>("Status");
 
@@ -1886,44 +1851,15 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("ItemId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("ItemId", "OrganizationId");
 
-                    b.HasIndex("ProfileId", "Status");
+                    b.HasIndex("SegmentId", "OrganizationId");
+
+                    b.HasIndex("ProfileId", "Status", "OrganizationId");
 
                     b.ToTable("ShopPurchases");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.StatType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("CreatedBy");
-
-                    b.Property<int>("IntegrationType");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int?>("LastModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasAlternateKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("StatTypes");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Task", b =>
@@ -1934,7 +1870,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("OrganizationId");
 
-                    b.Property<int>("AssigneeProfileId");
+                    b.Property<string>("AssigneeExternalId");
+
+                    b.Property<int?>("AssigneeProfileId");
 
                     b.Property<int?>("AutoTimeSpentInMinutes");
 
@@ -1949,6 +1887,8 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<float?>("EffortScore");
 
                     b.Property<string>("ExternalId");
+
+                    b.Property<string>("ExternalProjectId");
 
                     b.Property<int>("IntegrationType");
 
@@ -1990,21 +1930,21 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("AssigneeProfileId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentAreaId");
+                    b.HasIndex("AssigneeProfileId", "OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentAreaId", "OrganizationId");
 
-                    b.HasIndex("TaskCategoryId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
-                    b.HasIndex("TeamId");
+                    b.HasIndex("TaskCategoryId", "OrganizationId");
 
-                    b.HasIndex("ExternalId", "IntegrationType")
-                        .IsUnique()
-                        .HasFilter("[ExternalId] IS NOT NULL");
+                    b.HasIndex("TeamId", "OrganizationId");
+
+                    b.HasIndex("ExternalId", "IntegrationType", "OrganizationId");
+
+                    b.HasIndex("ExternalId", "IntegrationType", "SegmentId", "OrganizationId");
 
                     b.ToTable("Tasks");
                 });
@@ -2029,11 +1969,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("Id", "OrganizationId");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasFilter("[Name] IS NOT NULL");
-
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("Name", "OrganizationId");
 
                     b.ToTable("TaskCategories");
                 });
@@ -2068,15 +2006,46 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("AssigneeProfileId");
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("AssigneeProfileId", "OrganizationId");
+
+                    b.HasIndex("SegmentId", "OrganizationId");
+
+                    b.HasIndex("TeamId", "OrganizationId");
+
+                    b.ToTable("TaskLogs");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.TaskSync", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<int>("DateId");
+
+                    b.Property<string>("ExternalProjectId");
+
+                    b.Property<int>("IntegrationType");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.Property<int>("SegmentId");
+
+                    b.HasKey("Id", "OrganizationId");
+
+                    b.HasAlternateKey("Id");
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId");
+                    b.HasIndex("SegmentId", "OrganizationId");
 
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("TaskLogs");
+                    b.ToTable("TaskSyncs");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Team", b =>
@@ -2112,9 +2081,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("SegmentId", "Key", "ArchievedAt")
-                        .IsUnique()
-                        .HasFilter("[Key] IS NOT NULL AND [ArchievedAt] IS NOT NULL");
+                    b.HasIndex("SegmentId", "Key", "ArchievedAt", "OrganizationId");
 
                     b.ToTable("Teams");
                 });
@@ -2201,13 +2168,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("DateId", "TeamId", "TaskCategoryId", "OrganizationId");
 
-                    b.HasAlternateKey("DateId", "TeamId", "TaskCategoryId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("TaskCategoryId");
+                    b.HasIndex("TaskCategoryId", "OrganizationId");
 
-                    b.HasIndex("TeamId");
+                    b.HasIndex("TeamId", "OrganizationId");
 
                     b.ToTable("TeamReportsDaily");
                 });
@@ -2314,13 +2279,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasKey("DateId", "TeamId", "TaskCategoryId", "OrganizationId");
 
-                    b.HasAlternateKey("DateId", "TeamId", "TaskCategoryId");
-
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("TaskCategoryId");
+                    b.HasIndex("TaskCategoryId", "OrganizationId");
 
-                    b.HasIndex("TeamId");
+                    b.HasIndex("TeamId", "OrganizationId");
 
                     b.ToTable("TeamReportsWeekly");
                 });
@@ -2391,9 +2354,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileId", "OrganizationId");
 
-                    b.HasIndex("TokenId");
+                    b.HasIndex("TokenId", "OrganizationId");
 
                     b.ToTable("TokenTransactions");
                 });
@@ -2435,40 +2398,12 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointProfile", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.ActionPoint", "ActionPoint")
-                        .WithMany("Profiles")
-                        .HasForeignKey("ActionPointId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ActionPointSegment", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.ActionPoint", "ActionPoint")
-                        .WithMany("Segments")
-                        .HasForeignKey("ActionPointId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("ActionPoints")
@@ -2941,6 +2876,40 @@ namespace Tayra.Models.Organizations.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Tayra.Models.Organizations.LogDevice", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.LogSetting", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.LogDevice", "LogDevice")
+                        .WithMany("Settings")
+                        .HasForeignKey("LogDeviceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("Tayra.Models.Organizations.LoginLog", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Organization")
@@ -2965,7 +2934,7 @@ namespace Tayra.Models.Organizations.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
-                        .WithMany("Teams")
+                        .WithMany("Assignments")
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -3241,14 +3210,6 @@ namespace Tayra.Models.Organizations.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.StatType", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Tayra.Models.Organizations.Task", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Profile", "AssigneeProfile")
@@ -3317,6 +3278,20 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasOne("Tayra.Models.Organizations.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.TaskSync", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
+                        .WithMany()
+                        .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
                 });

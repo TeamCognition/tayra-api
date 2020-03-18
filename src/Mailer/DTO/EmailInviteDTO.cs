@@ -7,11 +7,10 @@
 
         public EmailInviteDTO(string host, string inviteCode)
         {
-            var protocol = host.StartsWith("localhost:", System.StringComparison.Ordinal) ? "http" : "https";
-            var link = host == "tajra" ? "tayra-demo.azurewebsites.net" : host; //TODO: this is temp, when tenant get identified by the real url host, this can be deleted
+            var protocol = host.StartsWith("localhost:", System.StringComparison.Ordinal) || host.EndsWith("local") ? "http" : "https";
             TemplateData = new
             {
-                InviteLink = $"{protocol}://{link}/join?invitationCode={inviteCode}&tenant={host}"
+                InviteLink = $"{protocol}://{host}/join?invitationCode={inviteCode}"
             };
         }
     }

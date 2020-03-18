@@ -7,6 +7,9 @@ namespace Tayra.Models.Catalog
         [Key]
         public byte[] Id { get; set; }
 
+        /// <summary>
+        /// Host, Domain
+        /// </summary>
         [Required, MaxLength(50)]
         public string Key { get; set; }
 

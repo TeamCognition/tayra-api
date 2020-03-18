@@ -18,8 +18,8 @@
 
 
   <PropertyGroup>
-    <Product>Knowlead WebAPI Server</Product>
-    <RepositoryUrl>https://github.com/harisbotic/Knowlead-WebAPI</RepositoryUrl>
+    <Product>Tayra API Server</Product>
+    <RepositoryUrl>https://github.com/harisbotic/tayra-api</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
   </PropertyGroup>
