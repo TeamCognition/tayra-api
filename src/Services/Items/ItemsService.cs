@@ -164,7 +164,7 @@ namespace Tayra.Services
             shopItem = shopItem ?? DbContext.Add(new ShopItem { ItemId = item.Id, IsGlobal = true}).Entity;
 
             if((!dto.ShopQuantity.HasValue && dto.Quantity.HasValue)
-            || dto.Quantity <= (dto.ShopQuantity ?? 0 - shopItem.QuantityReservedRemaining ?? 0)) //checks if there is enough quantity now
+            || dto.Quantity < (dto.ShopQuantity ?? 0 - shopItem.QuantityReservedRemaining ?? 0)) //checks if there is enough quantity now
             {
                 throw new ApplicationException("shop quantity exceeds item quantity"); 
             }

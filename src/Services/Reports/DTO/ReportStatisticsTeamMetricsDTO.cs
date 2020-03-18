@@ -11,6 +11,7 @@ namespace Tayra.Services
             public int ProfileId { get; set; }
             public string Avatar { get; set; }
             public string Name { get; set; }
+            public float[] HeatTred { get; set; }
             public MetricDTO[] Metrics { get; set; }
 
             public class MetricDTO
