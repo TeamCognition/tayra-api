@@ -30,7 +30,8 @@ namespace Tayra.Services
                       {
                           OImpactAverage = r.Average(x => x.OImpactAverage),
                           SpeedAverage = r.Average(x => x.SpeedAverage),
-                          PowerAverage = r.Average(x => x.PowerAverage)
+                          PowerAverage = r.Average(x => x.PowerAverage),
+                          HeatAverage = r.Average(x => x.HeatAverageTotal)
                       }).FirstOrDefault();
 
             return new ReportOverviewDTO
@@ -264,7 +265,8 @@ namespace Tayra.Services
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Complexity, Average = pr.Average(x => x.ComplexityChange) },
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Assist, Average = pr.Average(x => x.AssistsChange) },
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.TaskCompletion, Average = pr.Average(x => x.TasksCompletedChange) },
-                          }
+                          },
+                          HeatTred = pr.Select(x => x.Heat).ToArray()
                       }).ToArray();
 
             return new ReportStatisticsTeamMetricsDTO

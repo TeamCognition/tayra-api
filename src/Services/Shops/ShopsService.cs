@@ -34,7 +34,7 @@ namespace Tayra.Services
                                Name = s.Name,
                                IsClosed = s.ClosedAt.HasValue,
                                Created = s.Created,
-                               TotalRequests = DbContext.ShopPurchases.Where(x => x.Status == ShopPurchaseStatuses.PendingApproval).Count()
+                               TotalRequests = DbContext.ShopPurchases.Where(x => x.Status == ShopPurchaseStatuses.PendingApproval || x.Status == ShopPurchaseStatuses.PendingApproval).Count()
                            }).FirstOrDefault();
 
             shopDto.EnsureNotNull();
