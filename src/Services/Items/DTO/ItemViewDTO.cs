@@ -25,5 +25,6 @@ namespace Tayra.Services
 
         public int? ShopRemainingQuantity { get; set; }
         public bool PlaceInShop { get; set; }
+        public bool IsDisabled { get; set; }
     }
 }
