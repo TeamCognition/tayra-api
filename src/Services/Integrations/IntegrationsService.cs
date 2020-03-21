@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
@@ -144,15 +143,15 @@ namespace Tayra.Services
 
             if (dto.PullTasksForNewProjects)
             {
-                var newProjects = dto.ActiveProjects.ExceptBy(fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new ActiveProject(x.Key, string.Empty)), e => e.ProjectId);
+                var newProjects = dto.ActiveProjects.ExceptBy(fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new ActiveProject(x.Value, string.Empty)), e => e.ProjectId);
                 using (HttpClient client = new HttpClient())
                 {
                     client.BaseAddress = new Uri("https://sync-func.azurewebsites.net/");
-                    client.DefaultRequestHeaders.Add("code", "a6FGEXuvOWmBZ4f2IjrceC0uEsv0j5PgPnOWWGmSQlqD9c9Utzo54w==");
+                    client.DefaultRequestHeaders.Add("x-functions-key", "a6FGEXuvOWmBZ4f2IjrceC0uEsv0j5PgPnOWWGmSQlqD9c9Utzo54w==");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     foreach (var p in newProjects)
                     {
-                        client.PostAsync("api/SyncIssuesHttp", new StringContent(JsonConvert.SerializeObject(new { organizationKey = organizationKey, @params = new { jiraProjectId = p.ProjectId } }), Encoding.UTF8, "application/json")).Forget();
+                        client.PostAsync("api/SyncIssuesHttp", new StringContent(JsonConvert.SerializeObject(new { organizationKey = organizationKey, @params = new { jiraProjectId = p.ProjectId } }), Encoding.UTF8, "application/json"));
                     }
                 }
             }

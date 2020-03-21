@@ -72,7 +72,7 @@ namespace Tayra.API.Controllers
                 return Ok();
             }
 
-            var assigneProfile = fields?.Assignee == null ? null : ProfilesService.GetByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
+            var assigneProfile = fields?.Assignee == null ? null : ProfilesService.GetMemberByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
             var profileAssignment = assigneProfile == null ? null : DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
             var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (int?)null;
 
@@ -228,7 +228,7 @@ namespace Tayra.API.Controllers
             });
 
             var aps = DbContext.ActionPoints.Where(x => x.ProfileId == assigneProfile.Id && x.ConcludedOn == null && (x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn1Week || x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn2Week)).ToArray();
-            foreach(var ap in aps)
+            foreach (var ap in aps)
             {
                 ap.ConcludedOn = DateTime.UtcNow;
             }

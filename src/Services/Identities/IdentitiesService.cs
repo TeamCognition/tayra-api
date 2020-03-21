@@ -222,6 +222,7 @@ namespace Tayra.Services
                         .Select(x => new IdentityInvitationViewDTO
                         {
                             EmailAddress = x.EmailAddress,
+                            Role = x.Role,
                             FirstName = x.FirstName,
                             LastName = x.LastName,
                             Status = x.Status
@@ -248,7 +249,7 @@ namespace Tayra.Services
 
         public GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, ProfileRoles role, IdentityManageGridParams gridParams)
         {
-            IQueryable<Models.Organizations.Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
+            IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
 
             if (gridParams.SegmentId.HasValue)
             {

@@ -2,5 +2,5 @@
 dotnet ef database update --project="../DAL/CoreModel" --context="CatalogDbContext"
 
 
-dotnet ef migrations add BETA --project="../DAL/CatalogModel" --context="CatalogDbContext"
+dotnet ef migrations add AddLandingPageTryTable --project="../DAL/CatalogModel" --context="CatalogDbContext"
 dotnet ef database update --project="../DAL/CatalogModel" --context="CatalogDbContext"

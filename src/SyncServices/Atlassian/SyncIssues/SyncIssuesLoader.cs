@@ -69,7 +69,7 @@ namespace Tayra.SyncServices
             {
                 var fields = task.Fields;
 
-                var assigneProfile = fields?.Assignee == null ? null : profilesService.GetByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
+                var assigneProfile = fields?.Assignee == null ? null : profilesService.GetMemberByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
                 var profileAssignment = assigneProfile == null ? null : organizationDb.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
                 var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (int?)null;
 
