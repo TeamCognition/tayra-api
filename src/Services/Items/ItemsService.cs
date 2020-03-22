@@ -48,14 +48,15 @@ namespace Tayra.Services
 
             itemDto.EnsureNotNull(itemId);
 
-            var shopItem = DbContext.ShopItems.Where(x => x.ItemId == itemId).FirstOrDefault();
+            var shopItem = DbContext.ShopItems.Where(x => x.Id == itemId).FirstOrDefault();
             if(shopItem != null)
             {
                 itemDto.ShopRemainingQuantity = shopItem.QuantityReservedRemaining;
                 itemDto.PlaceInShop = true;
+                itemDto.IsDisabled = shopItem.DisabledAt.HasValue;
             }
 
-            return itemDto;
+            return itemDto; 
         }
 
         public GridData<ItemGridDTO> GetGridData(ProfileRoles role, ItemGridParams gridParams)

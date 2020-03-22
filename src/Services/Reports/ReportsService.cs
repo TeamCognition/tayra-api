@@ -90,7 +90,7 @@ namespace Tayra.Services
         {
             var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == reportParams.SegmentId).Select(x => x.ProfileId).ToArray();
 
-            var membersSummary = (from prw in DbContext.ProfileReportsWeekly
+            var ms = (from prw in DbContext.ProfileReportsWeekly
                                   where profileIds.Contains(prw.ProfileId)
                                   where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To
                                   orderby prw.DateId descending
@@ -110,9 +110,14 @@ namespace Tayra.Services
                                       Power = m.FirstOrDefault().PowerAverage
                                   }).ToArray();
 
+            if (!ms.Any())
+            {
+                return null;
+            }
+
             return new ReportMembersPerformanceDTO
             {
-                MembersPerformance = membersSummary
+                MembersPerformance = ms
             };
         }
           
@@ -191,6 +196,11 @@ namespace Tayra.Services
                              AssigneeName = trd.AssigneeProfile.FirstName + " " + trd.AssigneeProfile.LastName
                          }).ToArray();
 
+            if (!tasks.Any())
+            {
+                return null;
+            }
+
             return new ReportDeliveryTeamMetricsDTO
             {
                 StartDateId = ms.First().DateId,
@@ -227,6 +237,11 @@ namespace Tayra.Services
                           Assists = trw.AssistsAverage,
                           TasksCompleted = trw.TasksCompletedAverage
                       }).ToList();
+
+            if (!wr.Any())
+            {
+                return null;
+            }
 
             return new ReportStatisticsSegmentMetricsDTO
             {
@@ -266,8 +281,13 @@ namespace Tayra.Services
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Assist, Average = pr.Average(x => x.AssistsChange) },
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.TaskCompletion, Average = pr.Average(x => x.TasksCompletedChange) },
                           },
-                          HeatTred = pr.Select(x => x.Heat).ToArray()
+                          HeatTrend = pr.Select(x => x.Heat).ToArray()
                       }).ToArray();
+
+            if (!ms.Any())
+            {
+                return null;
+            }
 
             return new ReportStatisticsTeamMetricsDTO
             {
@@ -298,6 +318,11 @@ namespace Tayra.Services
                           Earning = trd.CompanyTokensEarnedChange
                       }).ToArray();
 
+
+            if (!ms.Any())
+            {
+                return null;
+            }
 
             return new ReportTokensSegmentMetricsDTO
             {
@@ -355,6 +380,11 @@ namespace Tayra.Services
                     DateId = g.Key * i + (i == 1 ? 0 : 1),
                     Value = g.Sum(x => x.CompanyTokensEarnedChange)
                 }).ToArray();
+            }
+
+            if (!teamsSummary.Any() && !teamsData.Any())
+            {
+                return null;
             }
 
             return new ReportTokensTeamMetricsDTO
