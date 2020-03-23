@@ -31,14 +31,6 @@ namespace Tayra.API.Controllers
 
         #region Public Methods
 
-        [HttpGet("sleepFor5")]
-        public IActionResult TestSleepFor5()
-        {
-            System.Threading.Thread.Sleep(5000);
-
-            return Ok("harris");
-        }
-
         [HttpGet, Route("callback/{type?}")]
         public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
         {
@@ -59,6 +51,39 @@ namespace Tayra.API.Controllers
             }
 
             return Redirect(connector.GetAuthDoneUrl(stateData[4], true));
+        }
+
+        public class TryForFreeFormDTO
+        {
+            public string Email { get; set; }
+        }
+
+        [HttpPost, Route("tryForFree")]
+        public IActionResult TryForFree([FromBody] TryForFreeFormDTO dto)
+        {
+            try
+            {
+                MailerService.SendEmail(dto.Email, new EmailTryForFreeDTO());
+
+                _catalogContext.LandingPageTry.Add(new LandingPageTry
+                {
+                    EmailAddress = dto.Email,
+                });
+
+                _catalogContext.SaveChanges();
+
+                MailerService.SendEmail("haris.botic96@gmail.com",
+                    "haris@tayra.io",
+                    "New Try Submitted (Landing Page Try for free)",
+                    JsonConvert.SerializeObject(dto));
+
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
 
         public class ContactFormDTO

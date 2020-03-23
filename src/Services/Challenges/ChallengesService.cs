@@ -159,7 +159,7 @@ namespace Tayra.Services
             {
                 if (!ItemRules.CanReserveQuantity(i.QuantityAvailable, i.QuantityToReserve))
                 {
-                    throw new ApplicationException($"Quantity too high for item {i.ItemId}");
+                    throw new ApplicationException($"There is not enough quantity for item {i.ItemId}");
                 }
 
                 if (!ChallengeRules.IsCompletionLimitValid(dto.CompletionsLimit))//, i.QuantityToReserve))

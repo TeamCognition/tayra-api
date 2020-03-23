@@ -54,9 +54,9 @@ namespace Tayra.Services
             return DbContext.Profiles.FirstOrDefault(x => x.IdentityId == ie.IdentityId);
         }
 
-        public Profile GetByExternalId(string externalId, IntegrationType integrationType)
+        public Profile GetMemberByExternalId(string externalId, IntegrationType integrationType)
         {
-            var pe = DbContext.ProfileExternalIds.Include(x => x.Profile).FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType);
+            var pe = DbContext.ProfileExternalIds.Include(x => x.Profile).FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType && x.Profile.Role == ProfileRoles.Member);
 
             //pe.EnsureNotNull(externalId, integrationType);
             if (pe == null)
@@ -124,7 +124,7 @@ namespace Tayra.Services
                 ProfileId = dto.ProfileId,
             });
 
-            LogsService.SendLog(dto.ProfileId, LogEvents.ProfileOneUpReceived, new EmailOneUpReceivedDTO(oneUpGiverUsername));
+            LogsService.SendLog(dto.ProfileId, LogEvents.ProfileOneUpReceived, new EmailPraiseReceivedDTO(oneUpGiverUsername));
 
             var totalUps = TokensService.CreateTransaction(TokenType.OneUp, dto.ProfileId, 1, TransactionReason.OneUpProfile, null);
             return Convert.ToInt32(totalUps);

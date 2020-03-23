@@ -98,6 +98,11 @@ namespace Tayra.Services
 
         public Item CreateItem(ItemCreateDTO dto)
         {
+            if (ItemRules.IsShopQuantityExceedingItems(dto.Quantity, dto.ShopQuantity))
+            {
+                throw new ApplicationException("shop quantity exceeds item quantity");
+            }
+
             var item = DbContext.Add(new Item
             {
                 Name = dto.Name,
@@ -114,7 +119,7 @@ namespace Tayra.Services
                 {
                     new ItemReservation
                     {
-                        QuantityChange = dto.Quantity.Value
+                        QuantityChange = dto.Quantity.Value - dto.ShopQuantity ?? 0
                     }
                 }
             }).Entity;
@@ -135,49 +140,24 @@ namespace Tayra.Services
         public Item UpdateItem(ItemUpdateDTO dto)
         {
             var item = DbContext.Items.Include(x => x.Reservations).FirstOrDefault(x => x.Id == dto.ItemId);
-            item.EnsureNotNull(dto.ItemId); 
 
-            //Is this even needed?
-            if(dto.Quantity.HasValue && item.Reservations.Sum(x => x.QuantityChange) != dto.Quantity)
+            item.EnsureNotNull(dto.ItemId);
+
+            if (!dto.AffectOwnedItems)
             {
-                DbContext.Add(new ItemReservation
-                {
-                    ItemId = item.Id,
-                    QuantityChange = dto.Quantity.Value - item.Reservations.Sum(x => x.QuantityChange)
-                });
-            }
-            else if (!dto.Quantity.HasValue)
-            {
-                DbContext.RemoveRange(item.Reservations);
+                DbContext.Remove(item);
+                item = new Item();
             }
 
-            var shopItem = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);
+            var currentAvailableQuantity = item?.Reservations.Sum(x => x.QuantityChange) ?? 0;
 
-            if(!dto.PlaceInShop)
-            {
-                if (shopItem != null)
-                {
-                    DbContext.Remove(shopItem);
-                }
-                return item;
-            }
-            
-            shopItem = shopItem ?? DbContext.Add(new ShopItem { ItemId = item.Id, IsGlobal = true}).Entity;
-
-            if((!dto.ShopQuantity.HasValue && dto.Quantity.HasValue)
-            || dto.Quantity < (dto.ShopQuantity ?? 0 - shopItem.QuantityReservedRemaining ?? 0)) //checks if there is enough quantity now
-            {
-                throw new ApplicationException("shop quantity exceeds item quantity"); 
-            }
-
-            //         new quantity - shopNewQuantity -        shopCurrentRemainingQuantity -             currentQuantity
-            var newQ = dto.Quantity - (dto.ShopQuantity ?? 0 - shopItem.QuantityReservedRemaining ?? 0) - item?.Reservations.Sum(x => x.QuantityChange);
-            if (dto.Quantity.HasValue && newQ != dto.Quantity)
+            var newQ = dto.Quantity - (dto.ShopQuantity ?? 0) - currentAvailableQuantity;
+            if (dto.Quantity.HasValue && newQ != currentAvailableQuantity)
             {
                 item.Reservations.Add(DbContext.Add(new ItemReservation
                 {
                     ItemId = item.Id,
-                    QuantityChange = dto.Quantity.Value - item.Reservations.Sum(x => x.QuantityChange)
+                    QuantityChange = newQ.Value
                 }).Entity);
             }
             if (!dto.Quantity.HasValue)
@@ -185,23 +165,36 @@ namespace Tayra.Services
                 DbContext.RemoveRange(item.Reservations);
             }
 
-            shopItem.QuantityReservedRemaining = dto.ShopQuantity;
-            if(!dto.AffectOwnedItems)
+            item.Price = dto.Price;
+            item.IsQuantityLimited = dto.Quantity.HasValue;
+            item.Name = dto.Name;
+            item.Description = dto.Description;
+            item.Image = dto.Image;
+            item.IsActivable = dto.IsActivable;
+            item.IsDisenchantable = dto.IsDisenchantable;
+            item.IsGiftable = dto.IsGiftable;
+            item.Type = dto.Type;
+            item.Rarity = dto.Rarity;
+
+            var shopItem = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);
+            
+            if (!dto.PlaceInShop)
             {
-                DbContext.Remove(shopItem.Item);
-                shopItem.Item = new Item();
+                if (shopItem != null)
+                {
+                    DbContext.Remove(shopItem);
+                }
+                return item;
             }
 
-            shopItem.Item.Price = dto.Price;
-            shopItem.Item.IsQuantityLimited = dto.Quantity.HasValue;
-            shopItem.Item.Name = dto.Name;
-            shopItem.Item.Description = dto.Description;
-            shopItem.Item.Image = dto.Image;
-            shopItem.Item.IsActivable = dto.IsActivable;
-            shopItem.Item.IsDisenchantable = dto.IsDisenchantable;
-            shopItem.Item.IsGiftable = dto.IsGiftable;
-            shopItem.Item.Type = dto.Type;
-            shopItem.Item.Rarity = dto.Rarity;
+            shopItem = shopItem ?? DbContext.Add(new ShopItem { Item = item, IsGlobal = true }).Entity;
+
+            if (ItemRules.IsShopQuantityExceedingItems(dto.Quantity, dto.ShopQuantity))
+            {
+                throw new ApplicationException("shop quantity exceeds item quantity");
+            }
+
+            shopItem.QuantityReservedRemaining = dto.ShopQuantity;
 
             return shopItem.Item;
         }

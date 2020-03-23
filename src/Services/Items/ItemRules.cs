@@ -13,5 +13,10 @@ namespace Tayra.Services
         {
             return !available.HasValue || available.Value >= toReserve;
         }
+
+        public static bool IsShopQuantityExceedingItems(int? itemQ, int? shopQ)
+        {
+            return (!shopQ.HasValue && itemQ.HasValue) || itemQ < shopQ;
+        }
     }
 }
