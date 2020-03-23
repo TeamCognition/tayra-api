@@ -77,6 +77,7 @@ namespace Tayra.Services
                                                        ProfileId = t.ProfileId,
                                                        Name = t.Profile.FirstName + " " + t.Profile.LastName,
                                                        Username = t.Profile.Username,
+                                                       Avatar = t.Profile.Avatar,
                                                        Speed = Math.Round(t.Profile.StatsWeekly.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
                                                        Power = Math.Round(t.Profile.StatsWeekly.Select(x => x.PowerAverage).FirstOrDefault(), 2),
                                                        Impact = Math.Round(t.Profile.StatsWeekly.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
