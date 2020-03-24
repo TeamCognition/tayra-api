@@ -60,8 +60,6 @@ namespace Tayra.Services
 
             segment.EnsureNotNull(segmentKey);
 
-            //var teamIds = segment.Teams.Select(x => x.TeamId).ToList(); //lazy load works?
-
             IQueryable<SegmentMemberGridDTO> query = from s in DbContext.ProfileAssignments.Where(x => x.SegmentId == segment.Id)
                                                    select new SegmentMemberGridDTO
                                                    {

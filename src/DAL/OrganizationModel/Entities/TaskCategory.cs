@@ -3,6 +3,7 @@ using Firdaws.DAL;
 
 namespace Tayra.Models.Organizations
 {
+    [TenantSharedEntity]
     public class TaskCategory : IAuditedEntity
     {
         public int Id { get; set; }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Firdaws.Core;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
@@ -22,30 +21,26 @@ namespace Tayra.SyncServices.Tayra
 
         #region Public Methods
 
+        //DateId should be local date and not utc?
         public override void Execute(DateTime date, Dictionary<string, string> requestParams, params Tenant[] tenants)
         {
-            date = DateHelper2.ParseDate(20200101);
-            do
+            foreach (var tenant in tenants)
             {
-                foreach (var tenant in tenants)
+                LogService.SetOrganizationId(tenant.Key);
+                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
-                    LogService.SetOrganizationId(tenant.Key);
-                    using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
-                    {
-                        var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService);
-                        var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService);
+                    var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService);
+                    var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService);
 
-                        GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, date, LogService, profileDailyReports);
-                        GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
+                    GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, date, LogService, profileDailyReports);
+                    GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
 
-                        GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports);
-                        GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
+                    GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports);
+                    GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
 
-                        //MakeActionPointsLoader.MakeActionPoints(organizationDb, date, LogService);
-                    }
+                    MakeActionPointsLoader.MakeActionPoints(organizationDb, date, LogService);
                 }
-                date = date.AddDays(1);
-            } while (date <= DateHelper2.ParseDate(20200317));
+            }
         }
 
         #endregion
