@@ -30,22 +30,23 @@ namespace Tayra.API.Controllers
             return Ok(AdvisorService.GetActionPointOverview(segmentId));
         }
 
-        [HttpPost("{profileId:int}/memberActionPoints")]
-        public ActionResult<GridData<AdvisorMemberGridDTO>> GetMemberActionPointGrid(GridParams gridParams, [FromRoute] int profileId)
+        //planned for future feature
+        [HttpPost("searchMemberActionPoints/{profileId:int}")]
+        public ActionResult<GridData<AdvisorMemberGridDTO>> GetMemberActionPointGrid([FromRoute] int profileId, GridParams gridParams)
         {
-            return Ok(AdvisorService.GetMemberActionPointGrid(gridParams, profileId));
+            return AdvisorService.GetMemberActionPointGrid(gridParams, profileId);
         }
 
-        [HttpPost("{segmentId:int}/segmentActionPoints")]
-        public ActionResult<GridData<AdvisorSegmentGridDTO>> GetSegmentActionPointGrid(GridParams gridParams, [FromRoute] int segmentId)
+        [HttpPost("searchSegmentActionPoints/{segmentId:int}")]
+        public ActionResult<GridData<AdvisorSegmentGridDTO>> GetSegmentActionPointGrid([FromRoute] int segmentId, GridParams gridParams)
         {
-            return Ok(AdvisorService.GetSegmentActionPointGrid(gridParams, segmentId));
+            return AdvisorService.GetSegmentActionPointGrid(gridParams, segmentId);
         }
 
-        [HttpPut("concludeSegmentActionPoints")]
-        public IActionResult ConcludeSegmentActionPoints([FromBody] AdvisorSegmentConcludeDTO dto)
+        [HttpPut("concludeActionPoints")]
+        public IActionResult ConcludeSegmentActionPoints([FromBody] AdvisorConcludeDTO dto)
         {
-            AdvisorService.ConcludeSegmentActionPoints(dto);
+            AdvisorService.ConcludeActionPoints(dto);
             OrganizationContext.SaveChanges();
 
             return Ok();

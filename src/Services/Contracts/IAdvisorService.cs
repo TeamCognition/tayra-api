@@ -7,6 +7,6 @@ namespace Tayra.Services
         AdvisorOverviewDTO GetActionPointOverview(int? segmentId);
         GridData<AdvisorMemberGridDTO> GetMemberActionPointGrid(GridParams gridParams, int profileId);
         GridData<AdvisorSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams,int segmentId);
-        void ConcludeSegmentActionPoints(AdvisorSegmentConcludeDTO dto);
+        void ConcludeActionPoints(AdvisorConcludeDTO dto);
     }
 }

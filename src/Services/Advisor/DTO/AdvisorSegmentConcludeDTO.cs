@@ -2,7 +2,7 @@
 
 namespace Tayra.Services
 {
-    public class AdvisorSegmentConcludeDTO
+    public class AdvisorConcludeDTO
     {
         public int SegmentId { get; set; }
         public ActionPointTypes Type { get; set; }
