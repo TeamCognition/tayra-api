@@ -30,16 +30,22 @@ namespace Tayra.API.Controllers
             return Ok(AdvisorService.GetActionPointOverview(segmentId));
         }
 
+        [HttpPost("{profileId:int}/memberActionPoints")]
+        public ActionResult<GridData<AdvisorMemberGridDTO>> GetMemberActionPointGrid(GridParams gridParams, [FromRoute] int profileId)
+        {
+            return Ok(AdvisorService.GetMemberActionPointGrid(gridParams, profileId));
+        }
+
         [HttpPost("{segmentId:int}/segmentActionPoints")]
         public ActionResult<GridData<AdvisorSegmentGridDTO>> GetSegmentActionPointGrid(GridParams gridParams, [FromRoute] int segmentId)
         {
             return Ok(AdvisorService.GetSegmentActionPointGrid(gridParams, segmentId));
         }
 
-        [HttpPut("conclude")]
-        public IActionResult UpdateTeam([FromBody] AdvisorConcludeDTO dto)
+        [HttpPut("concludeSegmentActionPoints")]
+        public IActionResult ConcludeSegmentActionPoints([FromBody] AdvisorSegmentConcludeDTO dto)
         {
-            AdvisorService.Conclude(dto);
+            AdvisorService.ConcludeSegmentActionPoints(dto);
             OrganizationContext.SaveChanges();
 
             return Ok();
