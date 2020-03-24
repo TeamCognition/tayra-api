@@ -36,36 +36,63 @@ namespace Tayra.Services
                                 select new AdvisorOverviewDTO.ActionPointDTO
                                 {
                                     SegmentId = g.Key,
+                                    TotalActionPoints = g.Select(x => x.Type).Distinct().Count(),
                                     Types = g.Select(x => x.Type).ToArray()
                                 }).ToArray()
             };
         }
 
-        public GridData<AdvisorSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams, int segmentId)
+        public GridData<AdvisorMemberGridDTO> GetMemberActionPointGrid(GridParams gridParams, int profileId)
         {
-            var query = from asd in DbContext.ActionPoints
-                        where asd.SegmentId == segmentId
-                        where asd.ConcludedOn == null
-                        select new AdvisorSegmentGridDTO
-                        {
-                            ActionPointId = asd.Id,
-                            Type = asd.Type,
-                            Created = asd.Created
-                        };
+            var q = from ap in DbContext.ActionPoints
+                    where ap.ProfileId == profileId
+                    where ap.ConcludedOn == null
+                    group ap by ap.Type into g
+                    select new AdvisorMemberGridDTO
+                    {
+                        ActionPointId = g.Select(x => x.Id).FirstOrDefault(),
+                        Type = g.Select(x => x.Type).FirstOrDefault(),
+                        Created = g.Select(x => x.Created).FirstOrDefault()
+                    };
 
-
-            GridData<AdvisorSegmentGridDTO> gridData = query.GetGridData(gridParams);
+            GridData<AdvisorMemberGridDTO> gridData = q.GetGridData(gridParams);
 
             return gridData;
         }
 
-        public void Conclude(AdvisorConcludeDTO dto)
+        public GridData<AdvisorSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams, int segmentId)
         {
-            var actionPoint = DbContext.ActionPoints.FirstOrDefault(x => x.Id == dto.ActionPointId);
+            var q =  from ap in DbContext.ActionPoints
+                     where ap.SegmentId == segmentId
+                     where ap.ConcludedOn == null
+                     group ap by ap.Type into g
+                     select new AdvisorSegmentGridDTO
+                     {
+                        Type = g.Select(x => x.Type).FirstOrDefault(),
+                        Created = g.Select(x => x.Created).FirstOrDefault(),
+                        ImpactedMembers = g.Select(x => new AdvisorSegmentGridDTO.ProfileDataDTO
+                        {  
+                            ProfileId = x.ProfileId,
+                            Name = x.Profile.FirstName + ' ' + x.Profile.LastName,
+                            Username = x.Profile.Username
+                        }).ToArray()                     
+                     };
+                    
+            GridData<AdvisorSegmentGridDTO> gridData = q.GetGridData(gridParams);
 
-            actionPoint.EnsureNotNull(dto.ActionPointId);
+            return gridData;
+        }
 
-            actionPoint.ConcludedOn = DateTime.UtcNow;
+        public void ConcludeSegmentActionPoints(AdvisorSegmentConcludeDTO dto)
+        {
+            IQueryable<ActionPoint> scope = DbContext.ActionPoints.Where(x=> x.SegmentId == dto.SegmentId && x.Type == dto.Type);
+
+            foreach(var memberAp in scope)
+            {
+                if (dto.Members.Contains(memberAp.ProfileId))
+                    memberAp.ConcludedOn = DateTime.UtcNow;
+            }
+           
         }
 
         #endregion
