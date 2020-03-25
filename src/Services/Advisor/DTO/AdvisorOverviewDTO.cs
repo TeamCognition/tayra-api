@@ -8,7 +8,7 @@ namespace Tayra.Services
         public class ActionPointDTO
         {
             public int SegmentId { get; set; }
-            public int TotalActionPoints { get; set; }
+            public int Count { get; set; }
             public ActionPointTypes[] Types { get; set; }
         }
     }

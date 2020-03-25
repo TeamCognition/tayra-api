@@ -48,7 +48,7 @@ namespace Tayra.Services
 
             itemDto.EnsureNotNull(itemId);
 
-            var shopItem = DbContext.ShopItems.Where(x => x.Id == itemId).FirstOrDefault();
+            var shopItem = DbContext.ShopItems.Where(x => x.ItemId == itemId).FirstOrDefault();
             if(shopItem != null)
             {
                 itemDto.ShopRemainingQuantity = shopItem.QuantityReservedRemaining;

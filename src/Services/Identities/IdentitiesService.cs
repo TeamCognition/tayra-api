@@ -114,7 +114,7 @@ namespace Tayra.Services
 
             var salt = PasswordHelper.GenerateSalt();
 
-            var identity = CatalogDb.Add(new Models.Catalog.Identity
+            var identity = CatalogDb.Add(new Identity
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -126,7 +126,8 @@ namespace Tayra.Services
             {
                 Email = invitation.EmailAddress,
                 IsPrimary = true,
-                Identity = identity
+                Identity = identity,
+                Created = DateTime.UtcNow
             });
 
             CatalogDb.Add(new TenantIdentity
@@ -139,7 +140,7 @@ namespace Tayra.Services
             //get identity Id
             CatalogDb.SaveChanges();
 
-            var profile = DbContext.Add(new Models.Organizations.Profile
+            var profile = DbContext.Add(new Profile
             {
                 Avatar = dto.Avatar,
                 FirstName = dto.FirstName,
@@ -157,14 +158,17 @@ namespace Tayra.Services
                 Address = invitation.EmailAddress
             });
 
-            if (invitation.SegmentId.HasValue)
+            if (profile.Role != ProfileRoles.Admin)
             {
-                DbContext.Add(new ProfileAssignment
+                if (invitation.SegmentId.HasValue)
                 {
-                    Profile = profile,
-                    SegmentId = invitation.SegmentId.Value,
-                    TeamId = invitation.TeamId,
-                });
+                    DbContext.Add(new ProfileAssignment
+                    {
+                        Profile = profile,
+                        SegmentId = invitation.SegmentId.Value,
+                        TeamId = invitation.TeamId,
+                    });
+                }
             }
 
             DbContext.SaveChanges();

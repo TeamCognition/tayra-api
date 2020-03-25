@@ -36,7 +36,7 @@ namespace Tayra.Services
                                 select new AdvisorOverviewDTO.ActionPointDTO
                                 {
                                     SegmentId = g.Key,
-                                    TotalActionPoints = g.Select(x => x.Type).Distinct().Count(),
+                                    Count = g.Select(x => x.Type).Distinct().Count(),
                                     Types = g.Select(x => x.Type).ToArray()
                                 }).ToArray()
             };
@@ -47,12 +47,11 @@ namespace Tayra.Services
             var q = from ap in DbContext.ActionPoints
                     where ap.ProfileId == profileId
                     where ap.ConcludedOn == null
-                    group ap by ap.Type into g
                     select new AdvisorMemberGridDTO
                     {
-                        ActionPointId = g.Select(x => x.Id).FirstOrDefault(),
-                        Type = g.Select(x => x.Type).FirstOrDefault(),
-                        Created = g.Select(x => x.Created).FirstOrDefault()
+                        ActionPointId = ap.Id,
+                        Type = ap.Type,
+                        Created = ap.Created
                     };
 
             GridData<AdvisorMemberGridDTO> gridData = q.GetGridData(gridParams);
@@ -68,13 +67,13 @@ namespace Tayra.Services
                      group ap by ap.Type into g
                      select new AdvisorSegmentGridDTO
                      {
-                        Type = g.Select(x => x.Type).FirstOrDefault(),
-                        Created = g.Select(x => x.Created).FirstOrDefault(),
-                        ImpactedMembers = g.Select(x => new AdvisorSegmentGridDTO.ProfileDataDTO
+                        Type = g.Key,
+                        ImpactedMembers = g.Select(x => new AdvisorSegmentGridDTO.ProfileDTO
                         {  
                             ProfileId = x.ProfileId,
                             Name = x.Profile.FirstName + ' ' + x.Profile.LastName,
-                            Username = x.Profile.Username
+                            Username = x.Profile.Username,
+                            Created = x.Created
                         }).ToArray()                     
                      };
                     
@@ -83,16 +82,17 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void ConcludeSegmentActionPoints(AdvisorSegmentConcludeDTO dto)
+        public void ConcludeActionPoints(AdvisorConcludeDTO dto)
         {
             IQueryable<ActionPoint> scope = DbContext.ActionPoints.Where(x=> x.SegmentId == dto.SegmentId && x.Type == dto.Type);
 
             foreach(var memberAp in scope)
             {
                 if (dto.Members.Contains(memberAp.ProfileId))
+                {
                     memberAp.ConcludedOn = DateTime.UtcNow;
-            }
-           
+                }
+            }  
         }
 
         #endregion

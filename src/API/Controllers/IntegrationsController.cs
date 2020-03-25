@@ -45,7 +45,7 @@ namespace Tayra.API.Controllers
         [HttpGet, Route("settings/atj")]
         public ActionResult<JiraSettingsViewDTO> GetJiraSettings()
         {
-            return IntegrationsService.GetJiraSettingsViewDTO(CurrentSegment.Id);
+            return IntegrationsService.GetJiraSettingsViewDTO(HttpContext.Request.Host.Value, CurrentUser.CurrentTenantKey, CurrentSegment.Id);
         }
 
         [HttpPost, Route("settings/atj")]

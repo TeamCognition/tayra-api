@@ -92,7 +92,7 @@ namespace Tayra.Services
                 .ToList();
         }
 
-        public JiraSettingsViewDTO GetJiraSettingsViewDTO(int segmentId)
+        public JiraSettingsViewDTO GetJiraSettingsViewDTO(string serverHostUrl, string tenantKey, int segmentId)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
@@ -118,10 +118,13 @@ namespace Tayra.Services
                 .Select(p => new ActiveProject(p.Value, rewardStatus.FirstOrDefault(x => x.Key.Contains(p.Value)).Value));
 
 
+            var atSiteName = integration.Fields.FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
             //TODO: check if data is valid with jira
             //TODO: crashes if not all projects have reward status
             return new JiraSettingsViewDTO
             {
+                JiraWebhookSettingsUrl = $"https://{atSiteName}.atlassian.net/plugins/servlet/webhooks",
+                WebhookUrl = $"https://{serverHostUrl}/webhooks/atjissueupdate?tenant={tenantKey}",
                 AllProjects = allProjects,
                 ActiveProjects = activeProjects.ToList()
             };

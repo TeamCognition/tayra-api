@@ -3,6 +3,7 @@ using System.Linq;
 using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -67,7 +68,7 @@ namespace Tayra.Services
             team.EnsureNotNull(gridParams.TeamKey);
 
             var scope = DbContext.ProfileAssignments
-                .Where(x => x.TeamId == team.Id);
+                .Where(x => x.TeamId == team.Id && x.Profile.Role == ProfileRoles.Member); //role check is maybe unnecessary
 
             IQueryable<TeamMembersGridDTO> query = from t in scope
                                                    from pdr in DbContext.ProfileReportsWeekly.Where(x => t.ProfileId == x.ProfileId)
