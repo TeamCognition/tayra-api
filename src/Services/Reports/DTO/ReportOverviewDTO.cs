@@ -8,6 +8,7 @@ namespace Tayra.Services
         public StatisticsDTO Statistics { get; set; }
         public MetricDTO[] Metrics { get;set; }
         public NodeDTO[] Nodes { get; set; }
+
         public class StatisticsDTO
         {
             public int ActiveTeams { get; set; }
@@ -16,6 +17,7 @@ namespace Tayra.Services
             public int ActiveIntegrations { get; set; }
             public int ShopItemsBought { get; set; }
         }
+
         public class MetricDTO
         {
             public MetricTypes Id { get; set; }

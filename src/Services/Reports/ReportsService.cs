@@ -46,12 +46,13 @@ namespace Tayra.Services
                               group srw by 1 into r
                               select new ReportOverviewDTO.StatisticsDTO
                               {
-                                  ActiveTeams = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom  && x.Created <= dateTo).Select(x => x.Id).Count(),
+                                  ActiveTeams = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom  && x.Created <= dateTo).Count(),
                                   ActiveMembers = r.Select(x => x.MembersCountTotal).FirstOrDefault(),
                                   ActiveChallenges = DbContext.ChallengeSegments.Where(x => x.SegmentId == reportParams.SegmentId && x.Challenge.Status == ChallengeStatuses.Active && x.Created >= dateFrom && x.Created <= dateTo).Count(),
                                   ActiveIntegrations = DbContext.Integrations.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom && x.Created <= dateTo).GroupBy(x => x.Type).Count(),
                                   ShopItemsBought = r.Sum(x => x.ItemsBoughtChange)
                               }).FirstOrDefault(),
+
                 Metrics = new ReportOverviewDTO.MetricDTO[]
                 {
                     new ReportOverviewDTO.MetricDTO
