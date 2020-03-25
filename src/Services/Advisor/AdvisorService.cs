@@ -32,12 +32,13 @@ namespace Tayra.Services
             return new AdvisorOverviewDTO
             {
                 ActionPoints = (from s in scope
-                                group s by s.SegmentId.Value into g
+                                where s.ConcludedOn == null
+                                group s by s.SegmentId into g
                                 select new AdvisorOverviewDTO.ActionPointDTO
                                 {
                                     SegmentId = g.Key,
                                     Count = g.Select(x => x.Type).Distinct().Count(),
-                                    Types = g.Select(x => x.Type).ToArray()
+                                    Types = g.Select(x => x.Type).Distinct().ToArray()
                                 }).ToArray()
             };
         }
