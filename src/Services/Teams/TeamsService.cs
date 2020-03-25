@@ -94,10 +94,10 @@ namespace Tayra.Services
         {
             var lastDateId = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).Select(x => x.DateId).FirstOrDefault();
 
-            var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
-
             if (lastDateId == 0)
                 return null;
+
+            var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
 
             var pr = (from prw in DbContext.ProfileReportsWeekly
                       where profileIds.Contains(prw.ProfileId)

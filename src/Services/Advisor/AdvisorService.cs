@@ -82,13 +82,13 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void ConcludeActionPoints(int segmentId, int? apId, ActionPointTypes? apType)
+        public void ConcludeActionPoints(int segmentId, int[] apIds, ActionPointTypes? apType)
         {
             IQueryable<ActionPoint> scope = DbContext.ActionPoints.Where(x => x.SegmentId == segmentId);
 
-            if(apId.HasValue)
+            if(apIds.Length > 0)
             {
-                scope = scope.Where(x => x.Id == apId);
+                scope = scope.Where(x => apIds.Contains(x.Id));
             }
             else if(apType.HasValue)
             {
@@ -96,7 +96,7 @@ namespace Tayra.Services
             }
             else
             {
-                throw new ApplicationException($"provide either {nameof(apId)} or {nameof(apType)}");
+                throw new ApplicationException($"provide either {nameof(apIds)} or {nameof(apType)}");
             }
 
             var now = DateTime.UtcNow;

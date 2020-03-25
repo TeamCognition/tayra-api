@@ -22,7 +22,6 @@ namespace Tayra.Auth
             Environment = env;
         }
 
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString()));
