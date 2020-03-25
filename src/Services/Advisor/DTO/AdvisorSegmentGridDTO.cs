@@ -7,13 +7,13 @@ namespace Tayra.Services
     {          
         public ActionPointTypes Type { get; set; }
         public ProfileDTO[] ImpactedMembers { get; set; }
-        public DateTime Created { get; set; }
 
         public class ProfileDTO
         {
-            public int? ProfileId { get; set; }
+            public int ActionPointId { get; set; }
             public string Username { get; set; }
-            public string Name { get; set; }
+            public string FullName { get; set; }
+            public DateTime Created { get; set; }
         }
     }
 }

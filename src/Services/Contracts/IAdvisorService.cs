@@ -1,4 +1,5 @@
 ﻿using Firdaws.Core;
+using Tayra.Common;
 
 namespace Tayra.Services
 {
@@ -7,6 +8,6 @@ namespace Tayra.Services
         AdvisorOverviewDTO GetActionPointOverview(int? segmentId);
         GridData<AdvisorMemberGridDTO> GetMemberActionPointGrid(GridParams gridParams, int profileId);
         GridData<AdvisorSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams,int segmentId);
-        void ConcludeActionPoints(AdvisorConcludeDTO dto);
+        void ConcludeActionPoints(int segmentId, int? apId, ActionPointTypes? apType);
     }
 }
