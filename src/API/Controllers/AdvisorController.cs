@@ -45,7 +45,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPut("concludeActionPoints/{segmentId:int}")]
-        public IActionResult ConcludeActionPoints([FromQuery]int segmentId, [FromQuery] int[] apIds, [FromQuery] ActionPointTypes? apType)
+        public IActionResult ConcludeActionPoints([FromRoute]int segmentId, [FromQuery] int[] apIds, [FromQuery] ActionPointTypes? apType)
         {
             AdvisorService.ConcludeActionPoints(segmentId, apIds, apType);
             OrganizationContext.SaveChanges();

@@ -92,7 +92,7 @@ namespace Tayra.Services
                 .ToList();
         }
 
-        public JiraSettingsViewDTO GetJiraSettingsViewDTO(string serverHostUrl, string tenantKey, int segmentId)
+        public JiraSettingsViewDTO GetJiraSettingsViewDTO(string webhookServerUrl, string tenantKey, int segmentId)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
@@ -124,7 +124,7 @@ namespace Tayra.Services
             return new JiraSettingsViewDTO
             {
                 JiraWebhookSettingsUrl = $"https://{atSiteName}.atlassian.net/plugins/servlet/webhooks",
-                WebhookUrl = $"https://{serverHostUrl}/webhooks/atjissueupdate?tenant={tenantKey}",
+                WebhookUrl = $"https://{webhookServerUrl}/api/atjissueupdate?tenant={tenantKey}",
                 AllProjects = allProjects,
                 ActiveProjects = activeProjects.ToList()
             };
@@ -149,7 +149,7 @@ namespace Tayra.Services
                 var newProjects = dto.ActiveProjects.ExceptBy(fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new ActiveProject(x.Value, string.Empty)), e => e.ProjectId);
                 using (HttpClient client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://sync-func.azurewebsites.net/");
+                    client.BaseAddress = new Uri("https://webhook.tayra.io/");
                     client.DefaultRequestHeaders.Add("x-functions-key", "a6FGEXuvOWmBZ4f2IjrceC0uEsv0j5PgPnOWWGmSQlqD9c9Utzo54w==");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     foreach (var p in newProjects)

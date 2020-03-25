@@ -45,7 +45,7 @@ namespace Tayra.API.Controllers
         [HttpGet, Route("settings/atj")]
         public ActionResult<JiraSettingsViewDTO> GetJiraSettings()
         {
-            return IntegrationsService.GetJiraSettingsViewDTO(HttpContext.Request.Host.Value, CurrentUser.CurrentTenantKey, CurrentSegment.Id);
+            return IntegrationsService.GetJiraSettingsViewDTO("sync-func.azurewebsites.net", CurrentUser.CurrentTenantKey, CurrentSegment.Id);
         }
 
         [HttpPost, Route("settings/atj")]

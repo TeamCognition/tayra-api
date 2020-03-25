@@ -5,6 +5,7 @@ using Firdaws.Core;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -32,7 +33,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Public Methods
 
-        public override void Execute(DateTime date, Dictionary<string, string> requestParams, params Tenant[] tenants)
+        public override void Execute(DateTime date, JObject requestBody, params Tenant[] tenants)
         {
             foreach (var tenant in tenants)
             {

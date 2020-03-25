@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tayra.DAL;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -25,10 +27,15 @@ namespace Tayra.SyncServices.Common
             var requestBody = new StreamReader(request.Body).ReadToEnd();
             var dto = string.IsNullOrEmpty(requestBody) ? new SyncRequest() : JsonConvert.DeserializeObject<SyncRequest>(requestBody);
 
-            if (!string.IsNullOrEmpty(dto.OrganizationKey))
+            if (request.Query.TryGetValue("tenant", out StringValues tenantKey))
+            {
+                dto.TenantKey = tenantKey;
+            }
+
+            if (!string.IsNullOrEmpty(dto.TenantKey))
             {
                 var date = dto.Date.HasValue ? dto.Date.Value.Date : DateTime.UtcNow.Date.Subtract(TimeSpan.FromDays(1));
-                loader.Execute(date, dto.OrganizationKey, dto.Params);
+                loader.Execute(date, dto.TenantKey, JObject.Parse(requestBody));
             }
             else
             {
@@ -36,7 +43,7 @@ namespace Tayra.SyncServices.Common
                     ? new List<TimeZoneDTO> { new TimeZoneDTO { Date = dto.Date.Value, Id = dto.TimezoneId } }
                     : GetCurrentTimezones();
 
-                loader.Execute(timezoneInfo.First().Date.Date, dto.Params, timezoneInfo.ToArray());
+                loader.Execute(timezoneInfo.First().Date.Date, JObject.Parse(requestBody), timezoneInfo.ToArray());
             }
         }
 
@@ -89,6 +96,9 @@ namespace Tayra.SyncServices.Common
 
                 case JobTypes.PullIssues:
                     return new SyncIssuesLoader(shardMapProvider, logService, coreDatabase);
+
+                case JobTypes.WebHookATJIssueUpdate:
+                    return new ATJIssueUpdateLoader(shardMapProvider, logService, coreDatabase);
             }
 
             throw new NotSupportedException($"{jobTypes} integration are not supported");

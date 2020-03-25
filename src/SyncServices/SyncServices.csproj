@@ -46,6 +46,8 @@
     <Folder Include="Tayra\ActionPoints\" />
     <Folder Include="Atlassian\" />
     <Folder Include="Atlassian\SyncIssues\" />
+    <Folder Include="Atlassian\WebHooks\" />
+    <Folder Include="Atlassian\WebHooks\ATJIssueUpdate\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
@@ -30,22 +31,24 @@ namespace Tayra.SyncServices
 
         #region Public Methods
 
-        public override void Execute(DateTime date, Dictionary<string, string> requestParams, params Tenant[] tenants)
+        public override void Execute(DateTime date, JObject requestBody, params Tenant[] tenants)
         {
             foreach (var tenant in tenants)
             {
                 LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
-                    PullIssues(organizationDb, date, LogService, requestParams);
+                    PullIssues(organizationDb, date, LogService, requestBody);
                 }
             }
         }
 
-        public static void PullIssues(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, Dictionary<string, string> requestParams)
+        public static void PullIssues(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, JObject requestBody)
         {
-            if (requestParams == null
-            || !requestParams.TryGetValue("jiraProjectId", out string jiraProjectId))
+            var syncReq = requestBody.ToObject<SyncRequest>();
+
+            if (syncReq?.Params == null
+            || !syncReq.Params.TryGetValue("jiraProjectId", out string jiraProjectId))
             {
                 throw new ApplicationException("param jiraProjectId not provided");
             }

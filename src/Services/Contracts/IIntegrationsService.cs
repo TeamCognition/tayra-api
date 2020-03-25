@@ -9,7 +9,7 @@ namespace Tayra.Services
         void DeleteSegmentIntegration(int profileId, int segmentId, IntegrationType integrationType);
         List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(int[] segmentIds, int profileId);
         List<IntegrationSegmentViewDTO> GetSegmentIntegrations(string segmentKey);
-        JiraSettingsViewDTO GetJiraSettingsViewDTO(string serverHostUrl, string tenantKey, int segmentId);
+        JiraSettingsViewDTO GetJiraSettingsViewDTO(string webhookServerUrl, string tenantKey, int segmentId);
         void UpdateJiraSettings(int segmentId, string organizationKey, JiraSettingsUpdateDTO dto);
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
@@ -22,7 +23,7 @@ namespace Tayra.SyncServices.Tayra
         #region Public Methods
 
         //DateId should be local date and not utc?
-        public override void Execute(DateTime date, Dictionary<string, string> requestParams, params Tenant[] tenants)
+        public override void Execute(DateTime date, JObject requestBody, params Tenant[] tenants)
         {
             foreach (var tenant in tenants)
             {
