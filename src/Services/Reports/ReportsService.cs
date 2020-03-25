@@ -21,11 +21,11 @@ namespace Tayra.Services
 
         public ReportOverviewDTO GetOverviewReport(ReportParams reportParams)
         {
-            var avg = (from trw in DbContext.SegmentReportsWeekly
-                      where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
-                      where trw.SegmentId == reportParams.SegmentId
+            var avg = (from srw in DbContext.SegmentReportsWeekly
+                      where srw.DateId >= reportParams.From && srw.DateId <= reportParams.To
+                      where srw.SegmentId == reportParams.SegmentId
                       //orderby trw.DateId ascending
-                      group trw by 1 into r
+                      group srw by 1 into r
                       select new 
                       {
                           OImpactAverage = r.Average(x => x.OImpactAverage),
@@ -34,8 +34,24 @@ namespace Tayra.Services
                           HeatAverage = r.Average(x => x.HeatAverageTotal)
                       }).FirstOrDefault();
 
+            var dateFrom = DateHelper2.ParseDate(reportParams.From);
+            var dateTo = DateHelper2.ParseDate(reportParams.To);
+
             return new ReportOverviewDTO
             {
+                Statistics = (from srw in DbContext.SegmentReportsDaily
+                              where srw.DateId >= reportParams.From && srw.DateId <= reportParams.To
+                              where srw.SegmentId == reportParams.SegmentId
+                              orderby srw.DateId descending
+                              group srw by 1 into r
+                              select new ReportOverviewDTO.StatisticsDTO
+                              {
+                                  ActiveTeams = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom  && x.Created <= dateTo).Select(x => x.Id).Count(),
+                                  ActiveMembers = r.Select(x => x.MembersCountTotal).FirstOrDefault(),
+                                  ActiveChallenges = DbContext.ChallengeSegments.Where(x => x.SegmentId == reportParams.SegmentId && x.Challenge.Status == ChallengeStatuses.Active && x.Created >= dateFrom && x.Created <= dateTo).Count(),
+                                  ActiveIntegrations = DbContext.Integrations.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom && x.Created <= dateTo).GroupBy(x => x.Type).Count(),
+                                  ShopItemsBought = r.Sum(x => x.ItemsBoughtChange)
+                              }).FirstOrDefault(),
                 Metrics = new ReportOverviewDTO.MetricDTO[]
                 {
                     new ReportOverviewDTO.MetricDTO
