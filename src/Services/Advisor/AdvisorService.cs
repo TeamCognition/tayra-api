@@ -37,7 +37,7 @@ namespace Tayra.Services
                                 {
                                     SegmentId = g.Key,
                                     Count = g.Select(x => x.Type).Distinct().Count(),
-                                    Types = g.Select(x => x.Type).ToArray()
+                                    Types = g.Select(x => x.Type).Distinct().ToArray()
                                 }).ToArray()
             };
         }
