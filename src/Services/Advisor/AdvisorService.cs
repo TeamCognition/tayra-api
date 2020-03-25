@@ -1,8 +1,8 @@
-﻿using Firdaws.Core;
-using Firdaws.DAL;
-using MoreLinq;
-using System;
+﻿using System;
 using System.Linq;
+using Firdaws.Core;
+using Firdaws.DAL;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -68,12 +68,12 @@ namespace Tayra.Services
                      select new AdvisorSegmentGridDTO
                      {
                         Type = g.Key,
-                        Created = g.Select(x => x.Created).FirstOrDefault(),
                         ImpactedMembers = g.Select(x => new AdvisorSegmentGridDTO.ProfileDTO
                         {  
-                            ProfileId = x.ProfileId,
-                            Name = x.Profile.FirstName + ' ' + x.Profile.LastName,
-                            Username = x.Profile.Username
+                            ActionPointId = x.Id,
+                            Username = x.Profile.Username,
+                            FullName = $"{x.Profile.FirstName} {x.Profile.LastName}",
+                            Created = x.Created
                         }).ToArray()                     
                      };
                     
@@ -82,16 +82,27 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void ConcludeActionPoints(AdvisorConcludeDTO dto)
+        public void ConcludeActionPoints(int segmentId, int? apId, ActionPointTypes? apType)
         {
-            IQueryable<ActionPoint> scope = DbContext.ActionPoints.Where(x=> x.SegmentId == dto.SegmentId && x.Type == dto.Type);
+            IQueryable<ActionPoint> scope = DbContext.ActionPoints.Where(x => x.SegmentId == segmentId);
 
-            foreach(var memberAp in scope)
+            if(apId.HasValue)
             {
-                if (dto.Members.Contains(memberAp.ProfileId))
-                {
-                    memberAp.ConcludedOn = DateTime.UtcNow;
-                }
+                scope = scope.Where(x => x.Id == apId);
+            }
+            else if(apType.HasValue)
+            {
+                scope = scope.Where(x => x.Type == apType);
+            }
+            else
+            {
+                throw new ApplicationException($"provide either {nameof(apId)} or {nameof(apType)}");
+            }
+
+            var now = DateTime.UtcNow;
+            foreach(var ap in scope)
+            {
+                ap.ConcludedOn = now;
             }  
         }
 
