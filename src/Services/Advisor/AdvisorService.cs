@@ -37,7 +37,6 @@ namespace Tayra.Services
                                 select new AdvisorOverviewDTO.ActionPointDTO
                                 {
                                     SegmentId = g.Key,
-                                    Count = g.Select(x => x.Type).Distinct().Count(),
                                     Types = g.Select(x => x.Type).Distinct().ToArray()
                                 }).ToArray()
             };
