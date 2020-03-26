@@ -184,8 +184,14 @@ namespace Tayra.API.Controllers
             var timeSpentToUse = fields.Timespent ?? autoTimeSpent / 3;
             var effortScore = TayraEffortCalculator.CalcEffortScore(timeSpentToUse ?? 0, TayraPersonalPerformance.MapSPToComplexity((int?)fields.StoryPointsCF ?? 0));
 
-            TokensService.CreateTransaction(TokenType.CompanyToken, assigneProfile.Id, effortScore, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
-            TokensService.CreateTransaction(TokenType.Experience, assigneProfile.Id, effortScore, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
+            var task = DbContext.Tasks.FirstOrDefault(x => x.ExternalId == we.JiraIssue.Key && x.IntegrationType == IntegrationType.ATJ);
+            var effortScoreDiff = fields.Timespent == null || task?.EffortScore == null ? effortScore : Math.Max(0, effortScore - task.EffortScore.Value);
+
+            if (effortScoreDiff > 0)
+            {
+                TokensService.CreateTransaction(TokenType.CompanyToken, assigneProfile.Id, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
+                TokensService.CreateTransaction(TokenType.Experience, assigneProfile.Id, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
+            }
 
             TasksService.AddOrUpdate(new TaskAddOrUpdateDTO
             {

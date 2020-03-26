@@ -139,7 +139,7 @@ namespace Tayra.SyncServices
                 return;
             }
 
-            //if we came here assigneeProfile is not null AND Status is set to RewardStatus 
+            //if we came here assigneeProfile is not null AND Status is set to RewardStatus
             int? autoTimeSpent = null;
             fields.Timespent = fields.Timespent > 0 ? fields.Timespent : null; //redundant, check above
             {
@@ -197,8 +197,14 @@ namespace Tayra.SyncServices
             var timeSpentToUse = fields.Timespent ?? autoTimeSpent / 3;
             var effortScore = TayraEffortCalculator.CalcEffortScore(timeSpentToUse ?? 0, TayraPersonalPerformance.MapSPToComplexity((int?)fields.StoryPointsCF ?? 0));
 
-            tokensService.CreateTransaction(TokenType.CompanyToken, assigneProfile.Id, effortScore, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
-            tokensService.CreateTransaction(TokenType.Experience, assigneProfile.Id, effortScore, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
+            var task = organizationDb.Tasks.FirstOrDefault(x => x.ExternalId == we.JiraIssue.Key && x.IntegrationType == IntegrationType.ATJ);
+            var effortScoreDiff = fields.Timespent == null || task?.EffortScore == null ? effortScore : Math.Max(0, effortScore - task.EffortScore.Value);
+
+            if (effortScoreDiff > 0)
+            {
+                tokensService.CreateTransaction(TokenType.CompanyToken, assigneProfile.Id, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
+                tokensService.CreateTransaction(TokenType.Experience, assigneProfile.Id, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
+            }
 
             tasksService.AddOrUpdate(new TaskAddOrUpdateDTO
             {
@@ -231,7 +237,7 @@ namespace Tayra.SyncServices
                     { "issueKey", we.JiraIssue.Key },
                     { "issueSummary", fields.Summary },
                     { "issueStatus", fields.Status.Name },
-                    { "effortScore", Math.Round(effortScore, 2).ToString() },
+                    { "effortScore", Math.Round(effortScoreDiff, 2).ToString() },
                     { "profileUsername", assigneProfile.Username },
                     { "competitorName", activeCompetitions.FirstOrDefault()?.CompetitorName},
                     { "timespent", timeSpentToUse.ToString()}

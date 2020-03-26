@@ -32,10 +32,11 @@ namespace Tayra.SyncServices.Common
                 dto.TenantKey = tenantKey;
             }
 
+            var jObject = string.IsNullOrEmpty(requestBody) ? new JObject() : JObject.Parse(requestBody);
             if (!string.IsNullOrEmpty(dto.TenantKey))
             {
                 var date = dto.Date.HasValue ? dto.Date.Value.Date : DateTime.UtcNow.Date.Subtract(TimeSpan.FromDays(1));
-                loader.Execute(date, dto.TenantKey, JObject.Parse(requestBody));
+                loader.Execute(date, dto.TenantKey, jObject);
             }
             else
             {
@@ -43,7 +44,7 @@ namespace Tayra.SyncServices.Common
                     ? new List<TimeZoneDTO> { new TimeZoneDTO { Date = dto.Date.Value, Id = dto.TimezoneId } }
                     : GetCurrentTimezones();
 
-                loader.Execute(timezoneInfo.First().Date.Date, JObject.Parse(requestBody), timezoneInfo.ToArray());
+                loader.Execute(timezoneInfo.First().Date.Date, jObject, timezoneInfo.ToArray());
             }
         }
 

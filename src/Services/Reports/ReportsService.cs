@@ -46,7 +46,7 @@ namespace Tayra.Services
                               group srw by 1 into r
                               select new ReportOverviewDTO.StatisticsDTO
                               {
-                                  ActiveTeams = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom  && x.Created <= dateTo).Count(),
+                                  ActiveTeams = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom && x.Created <= dateTo).Count(),
                                   ActiveMembers = r.Select(x => x.MembersCountTotal).FirstOrDefault(),
                                   ActiveChallenges = DbContext.ChallengeSegments.Where(x => x.SegmentId == reportParams.SegmentId && x.Challenge.Status == ChallengeStatuses.Active && x.Created >= dateFrom && x.Created <= dateTo).Count(),
                                   ActiveIntegrations = DbContext.Integrations.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom && x.Created <= dateTo).GroupBy(x => x.Type).Count(),
@@ -150,6 +150,8 @@ namespace Tayra.Services
                       {
                           trw.TeamId,
                           trw.DateId,
+                          TasksCompletionTimeChange = trw.TasksCompletionTimeChange,
+                          TasksCompletedChange = trw.TasksCompletedChange,
                           MinutesSpentAverage = trw.TasksCompletedChange != 0 ? trw.TasksCompletionTimeChange / trw.TasksCompletedChange : 0
                       }).ToArray();
 
@@ -165,6 +167,10 @@ namespace Tayra.Services
             {
                 StartDateId = startDateId,
                 EndDateId = endDateId,
+                MaxTime = 99,
+                MinTime = 11,
+                TotalTasksCompleted = wr.Sum(x => x.TasksCompletedChange),
+                AvgTime = Math.Round(wr.Sum(x => x.TasksCompletionTimeChange) / (float)wr.Sum(x => x.TasksCompletedChange), 2),
                 Teams = teamIds.Select(tId => new ReportDeliverySegmentMetricsDTO.TeamDTO
                 {
                     TeamId = tId,
