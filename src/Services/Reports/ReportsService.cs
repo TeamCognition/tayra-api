@@ -110,6 +110,7 @@ namespace Tayra.Services
             var ms = (from prw in DbContext.ProfileReportsWeekly
                                   where profileIds.Contains(prw.ProfileId)
                                   where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To
+                                  where prw.Profile.Role == ProfileRoles.Member 
                                   orderby prw.DateId descending
                                   group prw by prw.ProfileId into m
                                   select new ReportMembersPerformanceDTO.MembersPerformanceDTO
