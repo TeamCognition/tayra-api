@@ -339,7 +339,8 @@ namespace Tayra.Services
                       select new
                       {
                           DateId = trd.DateId,
-                          Earning = trd.CompanyTokensEarnedChange
+                          Earning = trd.CompanyTokensEarnedChange,
+                          Spendings = trd.CompanyTokensSpentChange
                       }).ToArray();
 
 
@@ -354,7 +355,8 @@ namespace Tayra.Services
                 EndDateId = ms.Last().DateId,
                 TokensEarnedAverage = tm.TokensEarnedAverage,
                 TokensSpentAverage = tm.TokensSpentAverage,
-                Earnings = ms.Select(x => x.Earning).ToArray()
+                Earnings = ms.Select(x => x.Earning).ToArray(),
+                Spendings = ms.Select(x => x.Spendings).ToArray()
             };
         }
 
