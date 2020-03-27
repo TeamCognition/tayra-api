@@ -7,6 +7,7 @@ namespace Tayra.Services
         public string ProfileUsername { get; set; }
         public int? ProfileId { get; set; }
         public int? CompetitionId { get; set; }
+        public int? TeamId { get; set; }
         public bool? ShopLogs { get; set; }
     }
 }
