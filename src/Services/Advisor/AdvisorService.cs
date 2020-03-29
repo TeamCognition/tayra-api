@@ -68,11 +68,12 @@ namespace Tayra.Services
                      select new AdvisorSegmentGridDTO
                      {
                         Type = g.Key,
-                        ImpactedMembers = g.Select(x => new AdvisorSegmentGridDTO.ProfileDTO
+                        ImpactedMembers = g.Select(x => new AdvisorSegmentGridDTO.ProfileDTO        
                         {  
                             ActionPointId = x.Id,
-                            Username = x.Profile.Username,
                             FullName = $"{x.Profile.FirstName} {x.Profile.LastName}",
+                            Username = x.Profile.Username,
+                            Avatar = x.Profile.Avatar,
                             Created = x.Created
                         }).ToArray()                     
                      };

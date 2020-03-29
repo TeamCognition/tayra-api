@@ -65,6 +65,7 @@ namespace Tayra.Services
                                                    {
                                                        Name = s.Profile.FirstName + " " + s.Profile.LastName,
                                                        Username = s.Profile.Username,
+                                                       Role = s.Profile.Role,
                                                        Avatar = s.Profile.Avatar,
                                                        MemberFrom = s.Created
                                                    };

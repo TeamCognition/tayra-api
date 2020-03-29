@@ -9,5 +9,6 @@
         public float TokensSpentAverage { get; set; }
 
         public float[] Earnings { get; set; }
+        public float[] Spendings { get; set; }
     }
 }

@@ -95,6 +95,19 @@ namespace Tayra.Services
                             Created = l.Log.Created
                         };
             }
+            else if (gridParams.TeamId.HasValue)
+            {
+                var tm = DbContext.ProfileAssignments.Where(x => x.TeamId == gridParams.TeamId).Select(x => x.ProfileId).ToArray();
+
+                query = from l in DbContext.ProfileLogs
+                        where tm.Contains(l.ProfileId)
+                        select new LogGridDTO
+                        {
+                            Data = JsonConvert.DeserializeObject(l.Log.Data),
+                            Event = l.Event,
+                            Created = l.Log.Created
+                        };
+            }
             else if(gridParams.CompetitionId.HasValue)
             {
                 query = from l in DbContext.CompetitionLogs
@@ -117,10 +130,16 @@ namespace Tayra.Services
                             Event = l.Event,
                             Created = l.Log.Created
                         };
-            }
+            } 
             else
             {
-                throw new ApplicationException("provide profileId or competitiondId");
+                query = from l in DbContext.Logs
+                        select new LogGridDTO
+                        {
+                            Data = JsonConvert.DeserializeObject(l.Data),
+                            Event = l.Event,
+                            Created = l.Created
+                        };
             }
 
             GridData<LogGridDTO> gridData = query.GetGridData(gridParams);
