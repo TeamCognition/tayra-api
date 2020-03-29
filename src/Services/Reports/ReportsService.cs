@@ -141,7 +141,7 @@ namespace Tayra.Services
           
         public ReportDeliverySegmentMetricsDTO GetDeliverySegmentMetricsReport(ReportParams reportParams)
         {
-            var teamIds = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId).Select(x => x.Id);
+            var teamIds = DbContext.TeamsScopeOfSegment(reportParams.SegmentId).Select(x => x.Id);
 
             var wr = (from trw in DbContext.TeamReportsWeekly
                       where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
@@ -161,6 +161,20 @@ namespace Tayra.Services
                 return null;
             }
 
+            var minTime = (from t in DbContext.Tasks
+                            where t.Status == TaskStatuses.Done
+                            where t.LastModifiedDateId >= reportParams.From && t.LastModifiedDateId <= reportParams.To
+                            orderby t.TimeSpentInMinutes, t.AutoTimeSpentInMinutes
+                            select t.TimeSpentInMinutes ?? t.AutoTimeSpentInMinutes)
+                            .FirstOrDefault();
+
+            var maxTime = (from t in DbContext.Tasks
+                           where t.Status == TaskStatuses.Done
+                           where t.LastModifiedDateId >= reportParams.From && t.LastModifiedDateId <= reportParams.To
+                           orderby t.TimeSpentInMinutes, t.AutoTimeSpentInMinutes descending
+                           select t.TimeSpentInMinutes ?? t.AutoTimeSpentInMinutes)
+                           .FirstOrDefault();
+
             var startDateId = wr.First().DateId;
             var endDateId = wr.Last().DateId;
             var weeks = wr.Count(); //((endDateId - startDateId) / 7) + 1;
@@ -168,8 +182,8 @@ namespace Tayra.Services
             {
                 StartDateId = startDateId,
                 EndDateId = endDateId,
-                MaxTime = 99,
-                MinTime = 11,
+                MinTime = minTime ?? 0,
+                MaxTime = maxTime ?? 0,
                 TotalTasksCompleted = wr.Sum(x => x.TasksCompletedChange),
                 AvgTime = Math.Round(wr.Sum(x => x.TasksCompletionTimeChange) / (float)wr.Sum(x => x.TasksCompletedChange), 2),
                 Teams = teamIds.Select(tId => new ReportDeliverySegmentMetricsDTO.TeamDTO

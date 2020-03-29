@@ -1,4 +1,6 @@
 ﻿using System;
+using Tayra.Common;
+
 namespace Tayra.Services
 {
     public class SegmentMemberGridDTO

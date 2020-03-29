@@ -3,16 +3,16 @@
     <Import Project="..\..\shared\shared.csproj.props" />
     
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Tayra.SyncServices</RootNamespace>
     <AssemblyName>Tayra.SyncServices</AssemblyName>
-    <AzureFunctionsVersion>v2</AzureFunctionsVersion>
+    <AzureFunctionsVersion>v3</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
-    <None Remove="obj\Release\netcoreapp2.2\PubTmp\Out\Tayra.SyncServices.deps.json" />
-    <None Remove="obj\Release\netcoreapp2.2\PubTmp\Out\bin\Tayra.SyncServices.pdb" />
-    <None Remove="obj\Release\netcoreapp2.2\PubTmp\Out\bin\Tayra.SyncServices.dll" />
+    <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\Tayra.SyncServices.deps.json" />
+    <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\bin\Tayra.SyncServices.pdb" />
+    <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\bin\Tayra.SyncServices.dll" />
     </ItemGroup>
     <ItemGroup>
     <Content Include="appsettings.json">
@@ -21,7 +21,7 @@
     </Content>
     </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.27" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2">
         <NoWarn>NU1608</NoWarn>
     </PackageReference>
@@ -34,20 +34,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\" />
-    <Folder Include="Tayra\" />
-    <Folder Include="Tayra\SyncCompetitions\" />
-    <Folder Include="Tayra\Reports\" />
-    <Folder Include="Tayra\Reports\GenerateReportsProfile\" />
-    <Folder Include="Tayra\Reports\GenerateReportsTeam\" />
-    <Folder Include="Tayra\Reports\GenerateReports\" />
-    <Folder Include="Tayra\ActionPoints\" />
-    <Folder Include="Atlassian\" />
-    <Folder Include="Atlassian\SyncIssues\" />
-    <Folder Include="Atlassian\WebHooks\" />
-    <Folder Include="Atlassian\WebHooks\ATJIssueUpdate\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
