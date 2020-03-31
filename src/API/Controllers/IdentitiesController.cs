@@ -33,22 +33,22 @@ namespace Tayra.API.Controllers
         [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {
-            //var o = Resolve<IOrganizationsService>();
-            //o.Create(new OrganizationCreateDTO
-            //{
-            //    Key = "devtenant.tayra.local",
-            //    Name = "Dev Tenant",
-            //    Timezone = "Europe Central",
-            //    DatabaseServer = "sqlserver-tayra.database.windows.net",
-            //    DatabaseName = "sqldb-tayra-tenant_cognition",
-            //    TemplateConnectionString = "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
-            //});
+            var o = Resolve<IOrganizationsService>();
+            o.Create(new OrganizationCreateDTO
+            {
+                Key = "devtenant.tayra.local",
+                Name = "Tayra Dev Tenant",
+                Timezone = "Central Europe Standard Time",
+                DatabaseServer = "sqlserver-tayra.database.windows.net",
+                DatabaseName = "sqldb-tayra-tenant_cognition",
+                TemplateConnectionString = "User ID = tyradmin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
+            });
 
-            //IdentitiesService.CreateInvitation(0, "devtenant.tayra.local", new IdentityInviteDTO
+            //IdentitiesService.CreateInvitation(0, "demo.tayra.io", new IdentityInviteDTO
             //{
-            //    EmailAddress = "haris+00@tayra.io",
-            //    FirstName = "Haris",
-            //    LastName = "Botic",
+            //    EmailAddress = "amer_zavlan@live.com",
+            //    FirstName = "Demo",
+            //    LastName = "Account",
             //    Role = ProfileRoles.Admin
             //});
             //DbContext.SaveChanges();

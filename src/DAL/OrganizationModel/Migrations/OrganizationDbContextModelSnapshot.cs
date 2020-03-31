@@ -1434,6 +1434,8 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<string>("DataWarehouse")
                         .HasMaxLength(4000);
 
+                    b.Property<bool>("IsReportingUnlocked");
+
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasMaxLength(50);
@@ -2962,7 +2964,7 @@ namespace Tayra.Models.Organizations.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
-                        .WithMany()
+                        .WithMany("MembersLinked")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);

@@ -21,6 +21,21 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
+        [HttpGet("statuses")]
+        public ActionResult<ReportStatusDTO[]> GetReportStatuses()
+        {
+            return ReportsService.GetReportStatus(CurrentUser.SegmentsIds);
+        }
+
+        [HttpPost("unlock/{segmentId:int}")]
+        public IActionResult UnlockReporting(int segmentId)
+        {
+            ReportsService.UnlockReporting(segmentId);
+            DbContext.SaveChanges();
+
+            return Ok();
+        }
+
         [HttpGet("overview")]
         public ActionResult<ReportOverviewDTO> GetOverviewReport([FromQuery] ReportParams reportParams)
         {

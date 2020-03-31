@@ -28,10 +28,13 @@ namespace Tayra.Models.Organizations
         [MaxLength(4000)]
         public string DataWarehouse { get; set; }
 
+        public bool IsReportingUnlocked { get; set; }
+
         public virtual ICollection<Team> Teams { get; set; }
         public virtual ICollection<Challenge> Challenges { get; set; }
         public virtual ICollection<Integration> Integrations { get; set; }
         public virtual ICollection<ProfileAssignment> Members { get; set; }
+        public virtual ICollection<ProfileExternalId> MembersLinked { get; set; }
         public virtual ICollection<ShopPurchase> ShopPurchases { get; set; }
         public virtual ICollection<ActionPoint> ActionPoints { get; set; }
         public virtual ICollection<SegmentReportDaily> ReportsDaily { get; set; }

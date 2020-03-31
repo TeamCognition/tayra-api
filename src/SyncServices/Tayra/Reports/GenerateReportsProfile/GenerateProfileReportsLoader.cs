@@ -91,9 +91,11 @@ namespace Tayra.SyncServices.Tayra
                                  Tackles = 0,
                                  TacklesTotal = 0,
 
-                                 MinutesSpent = change.Sum(x => x.TimeSpentInMinutes),
-                                 MinutesSpentTotal = total.Sum(x => x.TimeSpentInMinutes)
+                                 MinutesSpent = change.Sum(x => x.TimeSpentInMinutes ?? x.AutoTimeSpentInMinutes), //TODO: those should could not completed tasks as well
+                                 MinutesSpentTotal = total.Sum(x => x.TimeSpentInMinutes ?? x.AutoTimeSpentInMinutes) //TODO: those should could not completed tasks as well
                              }).ToList();
+
+
 
             var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
             if (companyTokenId == 0)

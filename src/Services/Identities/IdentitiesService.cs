@@ -37,7 +37,7 @@ namespace Tayra.Services
 
             var salt = PasswordHelper.GenerateSalt();
 
-            var identity = CatalogDb.Add(new Models.Catalog.Identity
+            var identity = CatalogDb.Add(new Identity
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,

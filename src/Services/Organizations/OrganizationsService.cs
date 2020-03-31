@@ -62,7 +62,9 @@ namespace Tayra.Services
             }
             else
             {
-                //mapping.value
+                //ShardMap.MarkMappingOffline(mapping);
+                ////ShardMap.DeleteMapping(mapping);
+
                 throw new Exception($"Tenant with {dto.Key} key already exists in shard point mapping");
             }
 

@@ -19,11 +19,11 @@ namespace Tayra.Models.Organizations
         /// <summary>
         /// Generates tenant sharding key using MD5 Hashing.
         /// </summary>
-        /// <param name="tenantName">Name of the tenant.</param>
+        /// <param name="tenantKey">Name of the tenant.</param>
         /// <returns></returns>
-        public static int GenerateShardingKey(string tenantName)
+        public static int GenerateShardingKey(string tenantKey)
         {
-            var normalizedTenantName = tenantName.Replace(" ", string.Empty).ToLower();
+            var normalizedTenantName = tenantKey.Replace(" ", string.Empty).ToLower();
 
             //Produce utf8 encoding of tenant name 
             var tenantNameBytes = Encoding.UTF8.GetBytes(normalizedTenantName);

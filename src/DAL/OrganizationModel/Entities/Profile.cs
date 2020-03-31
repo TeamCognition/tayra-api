@@ -14,6 +14,10 @@ namespace Tayra.Models.Organizations
         public string FirstName { get; set; }
         [MaxLength(50)]
         public string LastName { get; set; }
+
+        /// <summary>
+        /// unique
+        /// </summary>
         [MaxLength(20)]
         public string Username { get; set; }
 

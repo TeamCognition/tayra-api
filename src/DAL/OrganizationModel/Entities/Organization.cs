@@ -10,7 +10,7 @@ namespace Tayra.Models.Organizations
 
         public string Name { get; set; }
         public string Address { get; set; }
-        
+
         #region IAuditedEntity
 
         public DateTime Created { get; set; }

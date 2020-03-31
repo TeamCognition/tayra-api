@@ -4,6 +4,9 @@ namespace Tayra.Services
 {
     public interface IReportsService
     {
+        ReportStatusDTO[] GetReportStatus(int[] segmentIds);
+        void UnlockReporting(int segmentId);
+
         ReportOverviewDTO GetOverviewReport(ReportParams reportParams);
         ReportMembersPerformanceDTO GetMembersPerformanceReport(ReportParams reportParams);
 

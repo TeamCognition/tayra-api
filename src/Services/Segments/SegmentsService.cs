@@ -46,7 +46,7 @@ namespace Tayra.Services
                             ChallengesCompleted = s.Challenges.Count(x => x.Status == ChallengeStatuses.Ended),
                             ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
                             Integrations = s.Integrations.Where(x => x.ProfileId == null).Select(x => x.Type).ToArray(),
-                            ActionPointsCount = s.ActionPoints.Count(x => x.ConcludedOn == null)
+                            ActionPointsCount = s.ActionPoints.Where(x => x.ConcludedOn == null).Select(x => x.Type).Distinct().Count()
                         };
 
             GridData<SegmentGridDTO> gridData = query.GetGridData(gridParams);

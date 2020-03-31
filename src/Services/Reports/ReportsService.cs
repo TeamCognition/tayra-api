@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Firdaws.Core;
+using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Models.Organizations;
@@ -18,6 +19,30 @@ namespace Tayra.Services
         #endregion
 
         #region Public Methods
+
+        public ReportStatusDTO[] GetReportStatus(int[] segmentIds)
+        {
+            return (from s in DbContext.Segments
+                    where segmentIds.Contains(s.Id)
+                    select new ReportStatusDTO
+                    {
+                        SegmentId = s.Id,
+                        IsReportingUnlocked = s.IsReportingUnlocked,
+                        TotalMembers = s.Members.Where(x => x.Profile.Role == ProfileRoles.Member).Select(x => x.ProfileId).Distinct().Count(),
+                        LinkedMembers = s.MembersLinked.Count(x => x.IntegrationType == IntegrationType.ATJ)
+                    }).ToArray();
+        }
+
+        public void UnlockReporting(int segmentId)
+        {
+            var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
+
+            segment.EnsureNotNull(segmentId);
+
+            segment.IsReportingUnlocked = true;
+
+            //okini reporte
+        }
 
         public ReportOverviewDTO GetOverviewReport(ReportParams reportParams)
         {
@@ -161,22 +186,23 @@ namespace Tayra.Services
                 return null;
             }
 
-            var minTime = (from t in DbContext.Tasks
-                            where t.Status == TaskStatuses.Done
-                            where t.LastModifiedDateId >= reportParams.From && t.LastModifiedDateId <= reportParams.To
-                            orderby t.TimeSpentInMinutes, t.AutoTimeSpentInMinutes
-                            select t.TimeSpentInMinutes ?? t.AutoTimeSpentInMinutes)
-                            .FirstOrDefault();
+            var startDateId = wr.First().DateId;
+            var endDateId = wr.Last().DateId;
 
             var maxTime = (from t in DbContext.Tasks
                            where t.Status == TaskStatuses.Done
-                           where t.LastModifiedDateId >= reportParams.From && t.LastModifiedDateId <= reportParams.To
-                           orderby t.TimeSpentInMinutes, t.AutoTimeSpentInMinutes descending
+                           where t.LastModifiedDateId >= startDateId && t.LastModifiedDateId <= endDateId
+                           orderby t.TimeSpentInMinutes, t.AutoTimeSpentInMinutes
+                           select t.TimeSpentInMinutes ?? t.AutoTimeSpentInMinutes)
+                        .FirstOrDefault();
+
+            var minTime = (from t in DbContext.Tasks
+                           where t.Status == TaskStatuses.Done
+                           where t.LastModifiedDateId >= startDateId && t.LastModifiedDateId <= endDateId
+                           orderby t.TimeSpentInMinutes descending, t.AutoTimeSpentInMinutes descending
                            select t.TimeSpentInMinutes ?? t.AutoTimeSpentInMinutes)
                            .FirstOrDefault();
 
-            var startDateId = wr.First().DateId;
-            var endDateId = wr.Last().DateId;
             var weeks = wr.Count(); //((endDateId - startDateId) / 7) + 1;
             return new ReportDeliverySegmentMetricsDTO
             {
@@ -224,12 +250,11 @@ namespace Tayra.Services
             var tasks = (from trd in DbContext.Tasks
                          where trd.LastModifiedDateId >= reportParams.From && trd.LastModifiedDateId <= reportParams.To
                          where trd.TeamId == teamId
-                         where trd.Status == TaskStatuses.Done
                          select new
                          {
                              DateId = trd.LastModifiedDateId,
                              Name = trd.Summary,
-                             MinutesSpent = trd.TimeSpentInMinutes, //check for autoTimeSpentinminutes
+                             MinutesSpent = trd.TimeSpentInMinutes ?? trd.AutoTimeSpentInMinutes,
                              Complexity = trd.Complexity,
                              AssigneeName = trd.AssigneeProfile.FirstName + " " + trd.AssigneeProfile.LastName
                          }).ToArray();
@@ -335,14 +360,14 @@ namespace Tayra.Services
 
         public ReportTokensSegmentMetricsDTO GetTokensSegmentMetricsReport(ReportParams reportParams)
         {
-            var tm = (from trd in DbContext.SegmentReportsWeekly
+            var tm = (from trd in DbContext.SegmentReportsDaily
                       where trd.DateId >= reportParams.From && trd.DateId <= reportParams.To
                       where trd.SegmentId == reportParams.SegmentId
                       group trd by 1 into g
                       select new
                       {
-                          TokensEarnedAverage = g.Average(x => x.CompanyTokensEarnedChange),
-                          TokensSpentAverage = g.Average(x => x.CompanyTokensSpentChange)
+                          TokensEarnedTotal = g.Sum(x => x.CompanyTokensEarnedChange),
+                          TokensSpentTotal = g.Sum(x => x.CompanyTokensSpentChange)
                       }).FirstOrDefault();
 
 
@@ -354,7 +379,7 @@ namespace Tayra.Services
                       {
                           DateId = trd.DateId,
                           Earning = trd.CompanyTokensEarnedChange,
-                          Spendings = trd.CompanyTokensSpentChange
+                          Spending = trd.CompanyTokensSpentChange
                       }).ToArray();
 
 
@@ -367,10 +392,10 @@ namespace Tayra.Services
             {
                 StartDateId = ms.First().DateId,
                 EndDateId = ms.Last().DateId,
-                TokensEarnedAverage = tm.TokensEarnedAverage,
-                TokensSpentAverage = tm.TokensSpentAverage,
+                TokensEarnedTotal = tm.TokensEarnedTotal,
+                TokensSpentTotal = tm.TokensSpentTotal,
                 Earnings = ms.Select(x => x.Earning).ToArray(),
-                Spendings = ms.Select(x => x.Spendings).ToArray()
+                Spendings = ms.Select(x => x.Spending).ToArray()
             };
         }
 

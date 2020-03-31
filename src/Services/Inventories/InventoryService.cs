@@ -185,7 +185,7 @@ namespace Tayra.Services
                 ProfileId = dto.ReceiverId,
             });
 
-            LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername, invItem.Item.Type ));
+            LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername));
         }
 
         public void Disenchant(int profileId, InventoryItemDisenchantDTO dto)
