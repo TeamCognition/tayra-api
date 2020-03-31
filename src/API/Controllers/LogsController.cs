@@ -24,10 +24,9 @@ namespace Tayra.API.Controllers
         [HttpPost("search")]
         public ActionResult<GridData<LogGridDTO>> Search([FromBody] LogGridParams gridParams)
         {
-            if(!gridParams.ProfileId.HasValue && !string.IsNullOrEmpty(gridParams.ProfileUsername))
+            if(gridParams.ProfileIds.Length == 0 && !string.IsNullOrEmpty(gridParams.ProfileUsername))
             {
                 var x = ProfilesService.GetByUsername(gridParams.ProfileUsername);
-                gridParams.ProfileId = x.Id;
             }
 
             return LogsService.GetGridData(gridParams);

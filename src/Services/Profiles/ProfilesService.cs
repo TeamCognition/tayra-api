@@ -204,15 +204,18 @@ namespace Tayra.Services
                             ProfileId = p.Id,
                             Name = p.FirstName + " " + p.LastName,
                             Username = p.Username,
+                            Role = p.Role,
                             Avatar = p.Avatar,
                             Title = title.Item.Name,
+                            Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment { Name = x.Segment.Name, Key = x.Segment.Key }).ToArray(),
                             Teams = p.Assignments.Select(x => new ProfileSummaryGridDTO.Team { Name = x.Team.Name, Key = x.Team.Key }).ToArray(),
+                            Integrations = p.Integrations.Select(x => x.Type).Distinct().ToArray(),
                             OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value),
                             CompletedChallenges = p.CompletedChallenges.Count(),
                             Speed = (float)Math.Round(prw.SpeedAverage, 2),
                             Power = (float)Math.Round(prw.PowerAverage, 2),
                             Impact = (float)Math.Round(prw.OImpactAverage, 2),
-                            TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == expTokenId).Sum(x => x.Value), 2) //There might be a problem with this
+                            TokensTotal = (float)Math.Round(p.Tokens.OrderByDescending(x => x.Created).Select(x => x.FinalBalance).FirstOrDefault(), 2) //There might be a problem with this
                         };
 
             GridData<ProfileSummaryGridDTO> gridData = query.GetGridData(gridParams);

@@ -84,10 +84,10 @@ namespace Tayra.Services
         public GridData<LogGridDTO> GetGridData(LogGridParams gridParams)
         {
             IQueryable<LogGridDTO> query;
-            if (gridParams.ProfileId.HasValue)
+            if (gridParams.ProfileIds.Length > 0)
             {
                 query = from l in DbContext.ProfileLogs
-                        where l.ProfileId == gridParams.ProfileId
+                        where gridParams.ProfileIds.Contains(l.ProfileId)
                         select new LogGridDTO
                         {
                             Data = JsonConvert.DeserializeObject(l.Log.Data),
@@ -95,12 +95,25 @@ namespace Tayra.Services
                             Created = l.Log.Created
                         };
             }
-            else if (gridParams.TeamId.HasValue)
+            else if (gridParams.TeamIds.Length > 0)
             {
-                var tm = DbContext.ProfileAssignments.Where(x => x.TeamId == gridParams.TeamId).Select(x => x.ProfileId).ToArray();
+                var tm = DbContext.ProfileAssignments.Where(x => gridParams.TeamIds.Contains(x.TeamId)).Select(x => x.ProfileId).ToArray();
 
                 query = from l in DbContext.ProfileLogs
                         where tm.Contains(l.ProfileId)
+                        select new LogGridDTO
+                        {
+                            Data = JsonConvert.DeserializeObject(l.Log.Data),
+                            Event = l.Event,
+                            Created = l.Log.Created
+                        };
+            }
+            else if (gridParams.SegmentIds.Length > 0)
+            {
+                var sm = DbContext.ProfileAssignments.Where(x => gridParams.SegmentIds.Contains(x.SegmentId)).Select(x => x.ProfileId).ToArray();
+
+                query = from l in DbContext.ProfileLogs
+                        where sm.Contains(l.ProfileId)
                         select new LogGridDTO
                         {
                             Data = JsonConvert.DeserializeObject(l.Log.Data),
