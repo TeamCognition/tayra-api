@@ -196,6 +196,7 @@ namespace Tayra.API.Controllers
             TasksService.AddOrUpdate(new TaskAddOrUpdateDTO
             {
                 ExternalId = we.JiraIssue.Key,
+                ExternalProjectId = fields.Project.Id,
                 IntegrationType = IntegrationType.ATJ,
                 Summary = fields.Summary,
                 JiraStatusCategory = fields.Status.Category.Id,
@@ -224,7 +225,7 @@ namespace Tayra.API.Controllers
                     { "issueKey", we.JiraIssue.Key },
                     { "issueSummary", fields.Summary },
                     { "issueStatus", fields.Status.Name },
-                    { "effortScore", Math.Round(effortScore, 2).ToString() },
+                    { "effortScore", Math.Round(effortScoreDiff, 2).ToString() },
                     { "profileUsername", assigneProfile.Username },
                     { "competitorName", activeCompetitions.FirstOrDefault()?.CompetitorName},
                     { "timespent", timeSpentToUse.ToString()}

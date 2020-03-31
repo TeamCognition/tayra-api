@@ -209,6 +209,7 @@ namespace Tayra.SyncServices
             tasksService.AddOrUpdate(new TaskAddOrUpdateDTO
             {
                 ExternalId = we.JiraIssue.Key,
+                ExternalProjectId = fields.Project.Id,
                 IntegrationType = IntegrationType.ATJ,
                 Summary = fields.Summary,
                 JiraStatusCategory = fields.Status.Category.Id,
