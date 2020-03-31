@@ -97,7 +97,7 @@ namespace Tayra.Services
             }
             else if (gridParams.TeamIds.Length > 0)
             {
-                var tm = DbContext.ProfileAssignments.Where(x => gridParams.TeamIds.Contains(x.TeamId)).Select(x => x.ProfileId).ToArray();
+                var tm = DbContext.ProfileAssignments.Where(x => gridParams.TeamIds.Contains(x.TeamId.Value)).Select(x => x.ProfileId).ToArray();
 
                 query = from l in DbContext.ProfileLogs
                         where tm.Contains(l.ProfileId)
@@ -114,17 +114,6 @@ namespace Tayra.Services
 
                 query = from l in DbContext.ProfileLogs
                         where sm.Contains(l.ProfileId)
-                        select new LogGridDTO
-                        {
-                            Data = JsonConvert.DeserializeObject(l.Log.Data),
-                            Event = l.Event,
-                            Created = l.Log.Created
-                        };
-            }
-            else if(gridParams.CompetitionId.HasValue)
-            {
-                query = from l in DbContext.CompetitionLogs
-                        where l.CompetitionId == gridParams.CompetitionId
                         select new LogGridDTO
                         {
                             Data = JsonConvert.DeserializeObject(l.Log.Data),

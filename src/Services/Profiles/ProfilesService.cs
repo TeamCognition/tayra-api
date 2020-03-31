@@ -215,7 +215,7 @@ namespace Tayra.Services
                             Speed = (float)Math.Round(prw.SpeedAverage, 2),
                             Power = (float)Math.Round(prw.PowerAverage, 2),
                             Impact = (float)Math.Round(prw.OImpactAverage, 2),
-                            TokensTotal = (float)Math.Round(p.Tokens.OrderByDescending(x => x.Created).Select(x => x.FinalBalance).FirstOrDefault(), 2) //There might be a problem with this
+                            TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == expTokenId).OrderByDescending(x => x.Created).Select(x => x.FinalBalance).FirstOrDefault(), 2) //There might be a problem with this
                         };
 
             GridData<ProfileSummaryGridDTO> gridData = query.GetGridData(gridParams);

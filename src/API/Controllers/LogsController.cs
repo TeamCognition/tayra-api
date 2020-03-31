@@ -22,13 +22,8 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpPost("search")]
-        public ActionResult<GridData<LogGridDTO>> Search([FromBody] LogGridParams gridParams)
+        public GridData<LogGridDTO> Search([FromBody] LogGridParams gridParams)
         {
-            if(gridParams.ProfileIds.Length == 0 && !string.IsNullOrEmpty(gridParams.ProfileUsername))
-            {
-                var x = ProfilesService.GetByUsername(gridParams.ProfileUsername);
-            }
-
             return LogsService.GetGridData(gridParams);
         }
 
