@@ -83,68 +83,51 @@ namespace Tayra.Services
 
         public GridData<LogGridDTO> GetGridData(LogGridParams gridParams)
         {
-            IQueryable<LogGridDTO> query;
+            IQueryable<Log> query;
+
             if (gridParams.ProfileIds.Length > 0)
             {
-                query = from l in DbContext.ProfileLogs
-                        where gridParams.ProfileIds.Contains(l.ProfileId)
-                        select new LogGridDTO
-                        {
-                            Data = JsonConvert.DeserializeObject(l.Log.Data),
-                            Event = l.Event,
-                            Created = l.Log.Created
-                        };
+                query = from pl in DbContext.ProfileLogs
+                        where gridParams.ProfileIds.Contains(pl.ProfileId)
+                        select pl.Log;
+                        
             }
             else if (gridParams.TeamIds.Length > 0)
             {
                 var tm = DbContext.ProfileAssignments.Where(x => gridParams.TeamIds.Contains(x.TeamId.Value)).Select(x => x.ProfileId).ToArray();
 
-                query = from l in DbContext.ProfileLogs
-                        where tm.Contains(l.ProfileId)
-                        select new LogGridDTO
-                        {
-                            Data = JsonConvert.DeserializeObject(l.Log.Data),
-                            Event = l.Event,
-                            Created = l.Log.Created
-                        };
+                query = from pl in DbContext.ProfileLogs
+                        where tm.Contains(pl.ProfileId)
+                        select pl.Log;
             }
             else if (gridParams.SegmentIds.Length > 0)
             {
                 var sm = DbContext.ProfileAssignments.Where(x => gridParams.SegmentIds.Contains(x.SegmentId)).Select(x => x.ProfileId).ToArray();
 
-                query = from l in DbContext.ProfileLogs
-                        where sm.Contains(l.ProfileId)
-                        select new LogGridDTO
-                        {
-                            Data = JsonConvert.DeserializeObject(l.Log.Data),
-                            Event = l.Event,
-                            Created = l.Log.Created
-                        };
+                query = from pl in DbContext.ProfileLogs
+                        where sm.Contains(pl.ProfileId)
+                        select pl.Log;
             }
-            else if(gridParams.ShopLogs.HasValue && gridParams.ShopLogs.Value)
+            else if (gridParams.ShopLogs.HasValue && gridParams.ShopLogs.Value)
             {
                 var shopId = DbContext.Shops.Select(x => x.Id).FirstOrDefault();
-                query = from l in DbContext.ShopLogs
-                        where l.ShopId == shopId
-                        select new LogGridDTO
-                        {
-                            Data = JsonConvert.DeserializeObject(l.Log.Data),
-                            Event = l.Event,
-                            Created = l.Log.Created
-                        };
-            } 
+
+                query = from sl in DbContext.ShopLogs
+                        where sl.ShopId == shopId
+                        select sl.Log;
+            }
             else
             {
-                query = from l in DbContext.Logs
-                        select new LogGridDTO
-                        {
-                            Data = JsonConvert.DeserializeObject(l.Data),
-                            Event = l.Event,
-                            Created = l.Created
-                        };
+                query = DbContext.Logs;
             }
 
-            GridData<LogGridDTO> gridData = query.GetGridData(gridParams);
+            GridData<LogGridDTO> gridData = query.Select(l => new LogGridDTO
+            {
+                Data = JsonConvert.DeserializeObject(l.Data),
+                Event = l.Event,
+                Created = l.Created
+
+            }).GetGridData(gridParams);
 
             return gridData;
         }
