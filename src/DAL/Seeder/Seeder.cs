@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.DAL;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
-
 namespace Tayra.Models.Seeder
 {
     public static class Seeder
     {
+        public static string DemoKey = "demo.tayra.io";
         public static void SeedAll(IShardMapProvider shardMapProvider, IConfigurationRoot config)
         {
             using (var catalogDbContext = new CatalogDbContext(ConnectionStringUtilities.GetCatalogDbConnStr(config)))
@@ -26,12 +29,23 @@ namespace Tayra.Models.Seeder
             {
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tKey), shardMapProvider))
                 {
-                    EssentialSeeds.AddEssentialSeeds(organizationDb);
-                    ItemSeeds.AddShopItemSeeds(organizationDb);
-
-                    organizationDb.SaveChanges();
+                    if (tKey == DemoKey)
+                    {
+                        DemoSeeds.DemoSeeds.SeedDemo(organizationDb);
+                    }
+                    else
+                    {
+                        SeedNoSave(organizationDb);
+                        organizationDb.SaveChanges();
+                    }
                 }
             }
+        }
+
+        public static void SeedNoSave(OrganizationDbContext organizationDb)
+        {
+            EssentialSeeds.AddEssentialSeeds(organizationDb);
+            ItemSeeds.AddShopItemSeeds(organizationDb);
         }
 
         public static void SeedTasksFromTxt(IShardMapProvider shardMapProvider, string tenantKey)
@@ -114,5 +128,6 @@ namespace Tayra.Models.Seeder
             try { return (T)System.ComponentModel.TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(value.ToString()); }
             catch { return default(T); }
         }
+
     }
 }
