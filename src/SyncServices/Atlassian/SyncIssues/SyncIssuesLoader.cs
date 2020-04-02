@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Firdaws.Core;
 using Newtonsoft.Json.Linq;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
@@ -52,11 +53,11 @@ namespace Tayra.SyncServices
             {
                 throw new ApplicationException("param jiraProjectId not provided");
             }
-            
+
             var rewardStatusField = organizationDb
                                 .IntegrationFields
                                 .LastOrDefault(x => x.Key == ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + jiraProjectId);
-            
+
             if (rewardStatusField == null)
             {
                 throw new ApplicationException($"Jira project with Id: {jiraProjectId} is not connected to any tayra segments");
@@ -64,10 +65,12 @@ namespace Tayra.SyncServices
 
             var jiraConnector = new AtlassianJiraConnector(null, organizationDb);
 
-            var tasks = jiraConnector.GetBulkIssuesWithChangelog(rewardStatusField.IntegrationId, jiraProjectId);
+            var tasks = jiraConnector.GetBulkIssuesWithChangelog(rewardStatusField.IntegrationId, "status", jiraProjectId);
             var profilesService = new ProfilesService(null, null, null, organizationDb);
             var tasksService = new TasksService(organizationDb);
 
+
+            var jiraIssueTypes = jiraConnector.GetIssueTypesWithStatuses(rewardStatusField.IntegrationId, jiraProjectId);
             foreach (var task in tasks)
             {
                 var fields = task.Fields;
@@ -79,71 +82,74 @@ namespace Tayra.SyncServices
                 var jiraBaseUrl = task.Self.Substring(0, task.Self.IndexOf('/', 10)); //TODO: is 10 ok for all integration types?
                 if (assigneProfile == null || fields.Status.Id != rewardStatusField.Value)
                 {
-                        tasksService.AddOrUpdate(new TaskAddOrUpdateDTO
-                        {
-                            ExternalId = task.Key,
-                            ExternalProjectId = fields.Project.Id,
-                            IntegrationType = IntegrationType.ATJ,
-                            Summary = fields.Summary,
-                            JiraStatusCategory = fields.Status.Category.Id,
-                            TimeSpentInMinutes = fields.Timespent,
-                            TimeOriginalEstimatInMinutes = fields.TimeOriginalEstimate,
-                            StoryPoints = (int?)fields.StoryPointsCF,
-                            Priority = TaskHelpers.GetTaskPriority(fields.Priority.Id),
-                            Type = TaskHelpers.GetTaskType(fields.IssueType.Id),
-                            EffortScore = null,
-                            Labels = fields.Labels,
-                            AssigneeExternalId = fields?.Assignee?.AccountId,
-                            AssigneeProfileId = assigneProfile?.Id,
-                            ReporterProfileId = 0,
-                            TeamId = profileAssignment?.TeamId,
-                            SegmentId = currentSegmentId
-                        });
+                    tasksService.AddOrUpdate(new TaskAddOrUpdateDTO
+                    {
+                        ExternalId = task.Key,
+                        ExternalProjectId = fields.Project.Id,
+                        IntegrationType = IntegrationType.ATJ,
+                        Summary = fields.Summary,
+                        JiraStatusCategory = fields.Status.Category.Id,
+                        TimeSpentInMinutes = fields.Timespent,
+                        TimeOriginalEstimatInMinutes = fields.TimeOriginalEstimate,
+                        StoryPoints = (int?)fields.StoryPointsCF,
+                        Priority = TaskHelpers.GetTaskPriority(fields.Priority.Id),
+                        Type = TaskHelpers.GetTaskType(fields.IssueType.Id),
+                        EffortScore = null,
+                        Labels = fields.Labels,
+                        AssigneeExternalId = fields?.Assignee?.AccountId,
+                        AssigneeProfileId = assigneProfile?.Id,
+                        ReporterProfileId = 0,
+                        TeamId = profileAssignment?.TeamId,
+                        SegmentId = currentSegmentId,
+                        LastModifiedDateId = DateHelper2.ToDateId(fields.StatusCategoryChangeDate)
+                    });
 
-                        organizationDb.SaveChanges();
-                        continue;
+                    continue;
                 }
 
                 //if we came here assigneeProfile is not null
                 int? autoTimeSpent = null;
                 fields.Timespent = fields.Timespent > 0 ? fields.Timespent : null; //redundant, check above
                 {
-                    var statuses = jiraConnector.GetProjectStatuses(rewardStatusField.IntegrationId, jiraProjectId, fields.IssueType.Id);
-                    var todoStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
-                    var inProgressStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.InProgress).ToList();
-                    var doneStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.Done).ToList();
+                    var issueStatuses = jiraIssueTypes.Where(x => x.Id == fields.IssueType.Id).SelectMany(x => x.Statuses).ToArray();
+                    var todoStatuses = issueStatuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
+                    var inProgressStatuses = issueStatuses.Where(x => x.Category.Id == IssueStatusCategories.InProgress).ToList();
+                    var doneStatuses = issueStatuses.Where(x => x.Category.Id == IssueStatusCategories.Done).ToList();
                     var rewardStatus = rewardStatusField;
 
                     DateTime? enteredInProgress = null;
                     DateTime? enteredRewardStatus = null;
-                    foreach (var cl in task.Changelog.Histories.Where(x => x.Items.Any(y => y.Field == "status")))
+
+                    //GetIssueWithChangelogs is limited to 100 changelogs, if there are more, we need to make separate API call for that task
+                    var changelogs = task.TaskChangelogs.Count() < 100
+                        ? task.TaskChangelogs
+                        : jiraConnector.GetIssueChangelog(rewardStatusField.IntegrationId, task.Id, "status");
+
+                    foreach (var cl in changelogs)
                     {
-                        foreach (var i in cl.Items)
+                        //if from todo to inProgress
+                        if (todoStatuses.Select(x => x.Id).Contains(cl.From) &&
+                        inProgressStatuses.Select(x => x.Id).Contains(cl.To))
                         {
-                            //if from todo to inProgress
-                            if (todoStatuses.Select(x => x.Id).Contains(i.From) &&
-                            inProgressStatuses.Select(x => x.Id).Contains(i.To))
-                            {
-                                enteredInProgress = cl.Created;
-                            }
-                            else if (i.To == rewardStatus.Value)
-                            {
-                                enteredRewardStatus = cl.Created;
-                            }
-                            //back in progress from rewardId
-                            else if (i.From == rewardStatus.Value &&
-                            !doneStatuses.Select(x => x.Id).Contains(i.To))
-                            {
-                                enteredInProgress = cl.Created;
-                                enteredRewardStatus = null;
-                            }
-                            //back in progress from done
-                            else if (doneStatuses.Select(x => x.Id).Contains(i.From) &&
-                            i.To != rewardStatus.Value.ToString())
-                            {
-                                enteredInProgress = cl.Created;
-                                enteredRewardStatus = null;
-                            }
+                            enteredInProgress = cl.Created;
+                        }
+                        else if (cl.To == rewardStatus.Value)
+                        {
+                            enteredRewardStatus = cl.Created;
+                        }
+                        //back in progress from rewardId
+                        else if (cl.From == rewardStatus.Value &&
+                        !doneStatuses.Select(x => x.Id).Contains(cl.To))
+                        {
+                            enteredInProgress = cl.Created;
+                            enteredRewardStatus = null;
+                        }
+                        //back in progress from done
+                        else if (doneStatuses.Select(x => x.Id).Contains(cl.From) &&
+                        cl.To != rewardStatus.Value.ToString())
+                        {
+                            enteredInProgress = cl.Created;
+                            enteredRewardStatus = null;
                         }
                     }
 
@@ -184,12 +190,13 @@ namespace Tayra.SyncServices
                     AssigneeProfileId = assigneProfile.Id,
                     ReporterProfileId = 0,
                     TeamId = profileAssignment?.TeamId,
-                    SegmentId = currentSegmentId
+                    SegmentId = currentSegmentId,
+                    LastModifiedDateId = DateHelper2.ToDateId(fields.StatusCategoryChangeDate)
                 });
-
-                organizationDb.SaveChanges();
             }
-        }
+            
+            organizationDb.SaveChanges();
+         }
 
         #endregion
     }

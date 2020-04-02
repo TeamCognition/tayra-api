@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Firdaws.Core;
 using Newtonsoft.Json.Linq;
 using Tayra.Models.Catalog;
@@ -29,27 +31,38 @@ namespace Tayra.SyncServices.Tayra
             if(requestBody.TryGetValue("startDateId", StringComparison.InvariantCultureIgnoreCase, out JToken value))
             {
                 date = DateHelper2.ParseDate(value.Value<int>());
-                if(date > endDate)
+                if(date.Date > endDate.Date)
                 {
-                    throw new ApplicationException("startDateId has to be older date");
+                    date = endDate;
                 }
             }
-                
+
+            int[] segmentIds = new int[0];
+            if (requestBody.TryGetValue("segmentId", StringComparison.InvariantCultureIgnoreCase, out JToken id))
+            {
+                segmentIds = new int[] { id.Value<int>() };
+            }
+
             foreach (var tenant in tenants)
             {
                 LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
+                    if(segmentIds.Length == 0)
+                    {
+                        segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
+                    }
+
                     do
                     {
-                        var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService);
-                        var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService);
+                        var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService, segmentIds);
+                        var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService, segmentIds);
 
-                        GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, date, LogService, profileDailyReports);
-                        GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
+                        GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, date, LogService, profileDailyReports, segmentIds);
+                        GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports, segmentIds);
 
-                        GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports);
-                        GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports);
+                        GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports, segmentIds);
+                        GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports, segmentIds);
 
                         date = date.AddDays(1);
                     } while (date <= endDate);

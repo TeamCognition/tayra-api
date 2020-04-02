@@ -63,7 +63,7 @@ namespace Tayra.SyncServices.Tayra
             }
             else
             {
-                segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
+                segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
             }
 
             var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
@@ -374,7 +374,7 @@ namespace Tayra.SyncServices.Tayra
             }
             else
             {
-                segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
+                segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
             }
 
             foreach (var segmentId in segmentIds)
