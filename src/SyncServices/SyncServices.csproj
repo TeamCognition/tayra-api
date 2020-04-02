@@ -13,6 +13,8 @@
     <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\Tayra.SyncServices.deps.json" />
     <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\bin\Tayra.SyncServices.pdb" />
     <None Remove="obj\Release\netcoreapp3.1\PubTmp\Out\bin\Tayra.SyncServices.dll" />
+    <None Remove="obj\Release\netcoreapp3.1\PubTmp\SyncServices.SourceManifest.xml" />
+    <None Remove="obj\Release\netcoreapp3.1\PubTmp\SyncServices.SourceManifest.xml" />
     </ItemGroup>
     <ItemGroup>
     <Content Include="appsettings.json">

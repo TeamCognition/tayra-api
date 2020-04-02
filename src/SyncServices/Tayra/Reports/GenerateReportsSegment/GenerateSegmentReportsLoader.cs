@@ -51,7 +51,7 @@ namespace Tayra.SyncServices.Tayra
             }
             else
             {
-                segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
+                segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
             }
 
             if (profileReportsDaily == null)
@@ -165,7 +165,7 @@ namespace Tayra.SyncServices.Tayra
             }
             else
             {
-                segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
+                segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
             }
 
             if (profileReportsDaily == null)

@@ -65,9 +65,10 @@ namespace Tayra.API.Controllers
             }
 
             var jiraConnector = new AtlassianJiraConnector(null, DbContext);
-            var statusChangelogs = jiraConnector.GetIssueChangelog(rewardStatusField.IntegrationId, we.JiraIssue.Key, "status");
+            var issueChangelogs = jiraConnector.GetIssueChangelog(rewardStatusField.IntegrationId, we.JiraIssue.Key, "status");
 
-            if (statusChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(we.Timestamp))
+            //maybe not needed anymore
+            if (issueChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(we.Timestamp))
             {
                 return Ok();
             }
@@ -78,6 +79,7 @@ namespace Tayra.API.Controllers
 
             var activeCompetitions = assigneProfile == null ? null : CompetitionsService.GetActiveCompetitions(assigneProfile.Id);
             var jiraBaseUrl = we.JiraIssue.Self.Substring(0, we.JiraIssue.Self.IndexOf('/', 10)); //TODO: is 10 ok for all integration types?
+
             if (assigneProfile == null || fields.Status.Id != rewardStatusField.Value)
             {
                 TasksService.AddOrUpdate(new TaskAddOrUpdateDTO
@@ -98,7 +100,8 @@ namespace Tayra.API.Controllers
                     AssigneeProfileId = assigneProfile?.Id,
                     ReporterProfileId = 0,
                     TeamId = profileAssignment?.TeamId,
-                    SegmentId = currentSegmentId
+                    SegmentId = currentSegmentId,
+                    LastModifiedDateId = DateHelper2.ToDateId(fields.StatusCategoryChangeDate)
                 });
 
                 if (assigneProfile != null)
@@ -130,7 +133,7 @@ namespace Tayra.API.Controllers
             int? autoTimeSpent = null;
             fields.Timespent = fields.Timespent > 0 ? fields.Timespent : null; //redundant, check above
             {
-                var statuses = jiraConnector.GetProjectStatuses(rewardStatusField.IntegrationId, jiraProjectId, fields.IssueType.Id);
+                var statuses = jiraConnector.GetIssueStatuses(rewardStatusField.IntegrationId, jiraProjectId, fields.IssueType.Id);
                 var todoStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
                 var inProgressStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.InProgress).ToList();
                 var doneStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.Done).ToList();
@@ -138,7 +141,7 @@ namespace Tayra.API.Controllers
 
                 DateTime? enteredInProgress = null;
                 DateTime? enteredRewardStatus = null;
-                foreach (var cl in statusChangelogs)
+                foreach (var cl in issueChangelogs)
                 {
                     //if from todo to inProgress
                     if (todoStatuses.Select(x => x.Id).Contains(cl.From) &&
@@ -212,7 +215,8 @@ namespace Tayra.API.Controllers
                 AssigneeProfileId = assigneProfile.Id,
                 ReporterProfileId = 0,
                 TeamId = profileAssignment?.TeamId,
-                SegmentId = currentSegmentId
+                SegmentId = currentSegmentId,
+                LastModifiedDateId = DateHelper2.ToDateId(fields.StatusCategoryChangeDate)
             });
 
             LogsService.LogEvent(new LogCreateDTO

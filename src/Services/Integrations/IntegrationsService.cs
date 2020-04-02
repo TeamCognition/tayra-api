@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
@@ -108,7 +109,7 @@ namespace Tayra.Services
             var allProjects = jiraConnector.GetProjects(integration.Id);
             foreach (var x in allProjects)
             {
-                x.Statuses = jiraConnector.GetProjectStatuses(integration.Id, x.Id);
+                x.Statuses = jiraConnector.GetIssueStatuses(integration.Id, x.Id);
             }
 
             var jiraProjects = integration.Fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID);
@@ -130,7 +131,7 @@ namespace Tayra.Services
             };
         }
 
-        public void UpdateJiraSettings(int segmentId, string organizationKey, JiraSettingsUpdateDTO dto)
+        public async void UpdateJiraSettingsWithSaveChanges(int segmentId, string organizationKey, JiraSettingsUpdateDTO dto)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
@@ -144,20 +145,7 @@ namespace Tayra.Services
             var fields = integration.Fields
                 .Where(x => x.Key == ATConstants.ATJ_PROJECT_ID || x.Key.StartsWith(ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_, StringComparison.InvariantCulture));
 
-            if (dto.PullTasksForNewProjects)
-            {
-                var newProjects = dto.ActiveProjects.ExceptBy(fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new ActiveProject(x.Value, string.Empty)), e => e.ProjectId);
-                using (HttpClient client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");
-                    client.DefaultRequestHeaders.Add("x-functions-key", "xLVyFfJSbfPl5S9XEuP5heqms1XxO4XzxCzZ81NYXFLy9ZZWOliKxg==");
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    foreach (var p in newProjects)
-                    {
-                        client.PostAsync("api/SyncIssuesHttp", new StringContent(JsonConvert.SerializeObject(new { organizationKey = organizationKey, @params = new { jiraProjectId = p.ProjectId } }), Encoding.UTF8, "application/json"));
-                    }
-                }
-            }
+            var newProjects = dto.ActiveProjects.ExceptBy(fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new ActiveProject(x.Value, string.Empty)), e => e.ProjectId).ToArray();
 
             fields.ToList().ForEach(x => DbContext.Remove(x));
 
@@ -171,6 +159,23 @@ namespace Tayra.Services
                 }
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_PROJECT_ID, Value = projId });
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + projId, Value = rewardStatus });
+            }
+
+            DbContext.SaveChanges();
+
+            if(dto.PullTasksForNewProjects)
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");
+                    client.DefaultRequestHeaders.Add("x-functions-key", "xLVyFfJSbfPl5S9XEuP5heqms1XxO4XzxCzZ81NYXFLy9ZZWOliKxg==");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    foreach (var p in newProjects)
+                    {
+                        //TODO:make real class instead of anonymous object
+                        await client.PostAsync("api/SyncIssuesHttp", new StringContent(JsonConvert.SerializeObject(new { tenantKey = organizationKey, @params = new { jiraProjectId = p.ProjectId } }), Encoding.UTF8, "application/json"));
+                    }
+                }
             }
         }
 

@@ -51,7 +51,7 @@ namespace Tayra.API.Controllers
         [HttpPost, Route("settings/atj")]
         public ActionResult SetJiraSettings([FromBody]JiraSettingsUpdateDTO dto)
         {
-            IntegrationsService.UpdateJiraSettings(CurrentSegment.Id, CurrentUser.CurrentTenantKey, dto);
+            IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantKey, dto);
             DbContext.SaveChanges();
             return Ok();
         }

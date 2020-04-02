@@ -14,7 +14,7 @@ namespace Tayra.SyncServices
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest request,
             ExecutionContext context, ILogger logger)
         {
-            SyncHelper.RunFromHttp(JobTypes.PullIssues, request, context, logger);
+            SyncHelper.RunFromHttp(JobTypes.SyncIssues, request, context, logger);
             return new OkResult();
         }
 

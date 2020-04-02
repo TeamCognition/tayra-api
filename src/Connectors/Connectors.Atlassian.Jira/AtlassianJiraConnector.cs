@@ -159,7 +159,22 @@ namespace Tayra.Connectors.Atlassian.Jira
             return AtlassianJiraService.GetProjects(cloudId, accessTokenType, accessToken).Data.Values;
         }
 
-        public ICollection<JiraStatus> GetProjectStatuses(int integrationId, string jiraProjectId, string jiraIssueTypeId = "")
+        public ICollection<JiraIssueType> GetIssueTypesWithStatuses(int integrationId, string jiraProjectId)
+        {
+            var integration = RefreshToken(integrationId);
+            if (integration == null)
+            {
+                throw new ApplicationException("Integration does not exist");
+            }
+
+            var accessToken = ReadAccessToken(integrationId);
+            var accessTokenType = ReadAccessTokenType(integrationId);
+            var cloudId = ReadCloudId(integrationId);
+
+            return AtlassianJiraService.GetProjectStatuses(cloudId, accessTokenType, accessToken, jiraProjectId).Data;
+        }
+
+        public ICollection<JiraStatus> GetIssueStatuses(int integrationId, string jiraProjectId, string jiraIssueTypeId = "")
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -172,13 +187,14 @@ namespace Tayra.Connectors.Atlassian.Jira
             var cloudId = ReadCloudId(integrationId);
 
             var issues = AtlassianJiraService.GetProjectStatuses(cloudId, accessTokenType, accessToken, jiraProjectId).Data;
+
             if (string.IsNullOrEmpty(jiraIssueTypeId))
             {
-                return issues.SelectMany(x => x.Statuses).Distinct().ToList();
+                return issues.SelectMany(x => x.Statuses).Distinct().ToArray();
             }
             else
             {
-                return issues.Where(x => x.Id == jiraIssueTypeId).SelectMany(x => x.Statuses).ToList();
+                return issues.Where(x => x.Id == jiraIssueTypeId).SelectMany(x => x.Statuses).ToArray();
             }
         }
 
@@ -197,7 +213,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return AtlassianJiraService.GetIssue(cloudId, accessTokenType, accessToken, issueIdOrKey, expand).Data;
         }
 
-        public ICollection<IssueChangelog> GetIssueChangelog(int integrationId, string issueIdOrKey, string fieldFilter = "")
+        public List<TaskChangelog> GetIssueChangelog(int integrationId, string issueIdOrKey, string fieldFilter = "")
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -211,17 +227,17 @@ namespace Tayra.Connectors.Atlassian.Jira
 
             var jiraChangelogs = AtlassianJiraService.GetIssueChangelog(cloudId, accessTokenType, accessToken, issueIdOrKey).Data.Values;
 
-            var changelogs = new List<IssueChangelog>();
+            var changelogs = new List<TaskChangelog>();
             foreach(var cl in jiraChangelogs)
             {
                 cl.Items.Where(x => string.IsNullOrEmpty(fieldFilter) || x.Field == fieldFilter).ToList().ForEach(x => 
-                changelogs.Add(new IssueChangelog
+                changelogs.Add(new TaskChangelog
                 {
                     Created = cl.Created,
                     Field = x.Field,
                     From = x.From,
                     To = x.To,
-                    Author = new IssueChangelog.AuthorMeta
+                    Author = new TaskChangelog.AuthorMeta
                     {
                         AccountId = cl.Author.AccountId,
                         DisplayName = cl.Author.DisplayName,
@@ -269,7 +285,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return issueTypes;
         }
 
-        public List<JiraIssue> GetBulkIssuesWithChangelog(int integrationId, params string[] jiraProjects)
+        public List<JiraIssue> GetBulkIssuesWithChangelog(int integrationId, string fieldFilter = "status", params string[] jiraProjects)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -282,7 +298,30 @@ namespace Tayra.Connectors.Atlassian.Jira
             var cloudId = ReadCloudId(integrationId);
 
             var issueSearch = AtlassianJiraService.GetBulkIssuesWithChangelog(cloudId, accessTokenType, accessToken, 90, jiraProjects).Data;
+            foreach (var issue in issueSearch.Issues)
+            {
+                var changelogs = new List<TaskChangelog>();
 
+                foreach (var cl in issue.JiraSearchChangelog.Histories.OrderBy(x => x.Created))
+                {
+                    cl.Items.Where(x => string.IsNullOrEmpty(fieldFilter) || x.Field == fieldFilter).ToList().ForEach(x =>
+                    changelogs.Add(new TaskChangelog
+                    {
+                        Created = cl.Created,
+                        Field = x.Field,
+                        From = x.From,
+                        To = x.To,
+                        Author = new TaskChangelog.AuthorMeta
+                        {
+                            AccountId = cl.Author.AccountId,
+                            DisplayName = cl.Author.DisplayName,
+                            EmailAddress = cl.Author.EmailAddress
+                        }
+                    }));
+                }
+                issue.TaskChangelogs = changelogs;
+            }
+            
             return issueSearch.Issues;
         }
 

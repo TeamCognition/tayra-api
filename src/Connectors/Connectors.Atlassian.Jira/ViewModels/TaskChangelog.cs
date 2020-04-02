@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Tayra.Connectors.Atlassian.Jira
 {
-    public class IssueChangelog
+    public class TaskChangelog
     {
         public DateTime Created { get; set; }
         public string Field { get; set; }
