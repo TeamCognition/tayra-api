@@ -143,7 +143,7 @@ namespace Tayra.Services
         {
             var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == reportParams.SegmentId).Select(x => x.ProfileId).ToArray();
 
-            var ms = (from prw in DbContext.ProfileReportsWeekly
+            var ms = (from prw in DbContext.ProfileReportsDaily
                                   where profileIds.Contains(prw.ProfileId)
                                   where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To
                                   where prw.Profile.Role == ProfileRoles.Member 
@@ -159,9 +159,9 @@ namespace Tayra.Services
                                       Tokens = m.Sum(x => x.CompanyTokensEarnedChange),
                                       InventoryValue = m.FirstOrDefault().InventoryValueTotal,
                                       InventoryItems = m.FirstOrDefault().InventoryCountTotal,
-                                      Impact = m.FirstOrDefault().OImpactAverage,
-                                      Speed = m.FirstOrDefault().SpeedAverage,
-                                      Power = m.FirstOrDefault().PowerAverage
+                                      Impact = DbContext.ProfileReportsWeekly.Where(x => x.ProfileId == m.Key).Select(x => x.OImpactAverage).FirstOrDefault(),
+                                      Speed = DbContext.ProfileReportsWeekly.Where(x => x.ProfileId == m.Key).Select(x => x.SpeedAverage).FirstOrDefault(),
+                                      Power = DbContext.ProfileReportsWeekly.Where(x => x.ProfileId == m.Key).Select(x => x.PowerAverage).FirstOrDefault()
                                   }).ToArray();
 
             if (!ms.Any())

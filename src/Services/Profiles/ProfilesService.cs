@@ -212,9 +212,6 @@ namespace Tayra.Services
                             Integrations = p.Integrations.Select(x => x.Type).Distinct().ToArray(),
                             OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value),
                             CompletedChallenges = p.CompletedChallenges.Count(),
-                            Speed = (float)Math.Round(prw.SpeedAverage, 2),
-                            Power = (float)Math.Round(prw.PowerAverage, 2),
-                            Impact = (float)Math.Round(prw.OImpactAverage, 2),
                             TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == expTokenId).OrderByDescending(x => x.Created).Select(x => x.FinalBalance).FirstOrDefault(), 2) //There might be a problem with this
                         };
 

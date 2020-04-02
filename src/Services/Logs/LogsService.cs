@@ -92,7 +92,7 @@ namespace Tayra.Services
                         where gridParams.ProfileIds.Contains(pl.ProfileId)
                         select l;
             }
-            else if (gridParams.TeamIds.Length > 0)
+            if (gridParams.TeamIds.Length > 0)
             {
                 var tm = DbContext.ProfileAssignments.Where(x => gridParams.TeamIds.Contains(x.TeamId.Value)).Select(x => x.ProfileId).ToArray();
 
@@ -101,16 +101,16 @@ namespace Tayra.Services
                         where tm.Contains(pl.ProfileId)
                         select l;
             }
-            else if (gridParams.SegmentIds.Length > 0)
+            if (gridParams.SegmentIds.Length > 0)
             {
                 var sm = DbContext.ProfileAssignments.Where(x => gridParams.SegmentIds.Contains(x.SegmentId)).Select(x => x.ProfileId).ToArray();
-
+                
                 query = from l in query
                         join pl in DbContext.ProfileLogs on l.Id equals pl.LogId
                         where sm.Contains(pl.ProfileId)
                         select l;
             }
-            else if (gridParams.ShopLogs.HasValue && gridParams.ShopLogs.Value)
+            if (gridParams.ShopLogs.HasValue && gridParams.ShopLogs.Value)
             {
                 var shopId = DbContext.Shops.Select(x => x.Id).FirstOrDefault();
 
@@ -125,7 +125,6 @@ namespace Tayra.Services
                 Data = JsonConvert.DeserializeObject(l.Data),
                 Event = l.Event,
                 Created = l.Created
-
             }).GetGridData(gridParams);
 
             return gridData;

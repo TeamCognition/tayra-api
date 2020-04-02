@@ -13,9 +13,40 @@ namespace Tayra.Models.Seeder
             var config = LoadSettings();
             var shardMapProvider = new ShardMapProvider(config);
 
-            //Seeder.SeedAll(shardMapProvider, config);
-            //Seeder.Seed(shardMapProvider, "tayra.demo.io");
-            //Seeder.SeedTasksFromTxt(shardMapProvider, "tajra");
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Usage: SeederExe option [params]");
+                Console.WriteLine("  option can be:");
+                Console.WriteLine("  all - seed all tenants");
+                Console.WriteLine("  single tenant_name - seed single tenant");
+                Console.WriteLine("     if tenant_name == '" + Seeder.DemoKey + "', a special demo seed will be run");
+                Console.WriteLine("  tasks tenant_name - seed tasks from Input/tasks.txt");
+                Console.WriteLine("So ... what will it be ? Enter your command ");
+                args = new string[1] {Console.ReadLine()};
+            }
+            
+            if (args[0] == "all")
+            {
+                Seeder.SeedAll(shardMapProvider, config);
+            }
+            else if (args[0] == "single")
+            {
+                if (args.Length == 1)
+                {
+                    Console.WriteLine("Enter tenant name: ");
+                    args = new string[2] {args[0], Console.ReadLine()};
+                }
+                Seeder.Seed(shardMapProvider, args[1]);
+            }
+            else if (args[0] == "tasks")
+            {
+                if (args.Length == 1)
+                {
+                    Console.WriteLine("Enter tenant name: ");
+                    args = new string[2] {args[0], Console.ReadLine()};
+                }
+                Seeder.SeedTasksFromTxt(shardMapProvider, args[1]);
+            }
             Console.WriteLine("Seed finished!");
         }
 
