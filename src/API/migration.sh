@@ -1,1 +1,1 @@
-dotnet ef migrations add SegmentReportLocking --project="../DAL/OrganizationModel" --context="OrganizationDbContext"
+dotnet ef migrations add MakeProfileReportsBySegment --project="../DAL/OrganizationModel" --context="OrganizationDbContext"

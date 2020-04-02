@@ -30,7 +30,7 @@ namespace Tayra.API.Controllers
         [HttpPost("unlock/{segmentId:int}")]
         public IActionResult UnlockReporting(int segmentId)
         {
-            ReportsService.UnlockReporting(segmentId);
+            ReportsService.UnlockReporting(CurrentUser.CurrentTenantKey, segmentId);
             DbContext.SaveChanges();
 
             return Ok();

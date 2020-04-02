@@ -223,12 +223,12 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileReportDaily>(entity =>
             {
-                entity.HasKey(x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.DateId, x.ProfileId, /*x.SegmentId,*/ x.TaskCategoryId });
             });
 
             modelBuilder.Entity<ProfileReportWeekly>(entity =>
             {
-                entity.HasKey(x => new { x.DateId, x.ProfileId, x.TaskCategoryId });
+                entity.HasKey(x => new { x.DateId, x.ProfileId, /*x.SegmentId,*/ x.TaskCategoryId });
             });
 
             modelBuilder.Entity<Segment>().HasIndex(nameof(Segment.Key), ArchivedAtProp).IsUnique();
