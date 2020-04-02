@@ -52,7 +52,7 @@ namespace Tayra.Services
                 client.DefaultRequestHeaders.Add("x-functions-key", "bjae2tiYmu2Z5dT62aCikVMsc6YTMXkc9PylfWQUjFA9e0HuicFr4w==");
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                await client.PostAsync("api/GenerateReportsHttp", new StringContent(JsonConvert.SerializeObject(new { tenantKey = tenantKey, startDateId = startDateId, segmentId = segmentId}, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"));
+                await client.PostAsync("api/GenerateReportsHttp", new StringContent(JsonConvert.SerializeObject(new { tenantKey = tenantKey, startDateId = startDateId, segmentId = segmentId }, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"));
             }
         }
 

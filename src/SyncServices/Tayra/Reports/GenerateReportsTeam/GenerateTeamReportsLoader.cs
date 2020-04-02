@@ -48,7 +48,7 @@ namespace Tayra.SyncServices.Tayra
 
             if (segmentIds.Length > 0)
             {
-                if (!organizationDb.Segments.All(x => segmentIds.Contains(x.Id)))
+                if (!organizationDb.Segments.Any(x => segmentIds.Contains(x.Id)))
                 {
                     throw new ApplicationException("there is an ID in segmentIds that doesn't exists");
                 }
@@ -160,7 +160,7 @@ namespace Tayra.SyncServices.Tayra
 
             if (segmentIds.Length > 0)
             {
-                if (!organizationDb.Segments.All(x => segmentIds.Contains(x.Id)))
+                if (!organizationDb.Segments.Any(x => segmentIds.Contains(x.Id)))
                 {
                     throw new ApplicationException("there is an ID in segmentIds that doesn't exists");
                 }
