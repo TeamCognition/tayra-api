@@ -224,20 +224,24 @@ namespace Tayra.Services
 
         public void Give(int profileId, InventoryGiveDTO dto)
         {
-            var shopItem = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);
+            var item = DbContext.Items.FirstOrDefault(x => x.Id == dto.ItemId);
+            var receiverId = DbContext.Profiles.Where(x => x.Username == dto.ReceiverUsername).Select(x => x.Id).FirstOrDefault();
+            var profileUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
 
-            shopItem.EnsureNotNull(profileId, dto.ItemId);
+            item.EnsureNotNull(dto.ItemId);
 
             var givenItem = DbContext.Add(new ProfileInventoryItem
             {
-                ItemId = shopItem.ItemId,
-                ProfileId = dto.ReceiverId,
-                ItemType = shopItem.Item.Type,
+                ItemId = item.Id,
+                ProfileId = receiverId,
+                ItemType = item.Type,
                 AcquireMethod = InventoryAcquireMethods.ManagerGift,
                 ClaimRequired = true
             }).Entity;
 
-            DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.GiftFromAdmin).AddItems(givenItem);
+            DbContext.GetTrackedClaimBundle(receiverId, ClaimBundleTypes.GiftFromAdmin).AddItems(givenItem);
+ 
+            LogsService.SendLog(receiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(profileUsername));
         }
         #endregion
     }
