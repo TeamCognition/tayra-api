@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 
@@ -33,15 +37,22 @@ namespace Tayra.Services
                     }).ToArray();
         }
 
-        public void UnlockReporting(int segmentId)
+        public void UnlockReporting(string tenantKey, int segmentId)
         {
             var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
 
             segment.EnsureNotNull(segmentId);
 
-            segment.IsReportingUnlocked = true;
+            int? startDateId = DbContext.Tasks.OrderBy(x => x.LastModifiedDateId).Select(x => (int?)x.LastModifiedDateId).FirstOrDefault().NullIfZero();
+            
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");
+                client.DefaultRequestHeaders.Add("x-functions-key", "bjae2tiYmu2Z5dT62aCikVMsc6YTMXkc9PylfWQUjFA9e0HuicFr4w==");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            //okini reporte
+                client.PostAsync("api/GenerateReportsHttp", new StringContent(JsonConvert.SerializeObject(new { organizationKey = tenantKey, startDateId = startDateId }, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"));
+            }
         }
 
         public ReportOverviewDTO GetOverviewReport(ReportParams reportParams)

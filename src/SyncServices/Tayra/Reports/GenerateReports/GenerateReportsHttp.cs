@@ -11,7 +11,7 @@ namespace Tayra.SyncServices.Tayra
     {
         [FunctionName(nameof(GenerateReportsHttp))]
         public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest request,
             ExecutionContext context, ILogger logger)
         {
             SyncHelper.RunFromHttp(JobTypes.GenerateReports, request, context, logger);

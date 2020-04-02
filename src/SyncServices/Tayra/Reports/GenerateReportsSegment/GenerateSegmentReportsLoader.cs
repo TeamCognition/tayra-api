@@ -38,19 +38,32 @@ namespace Tayra.SyncServices.Tayra
             }
         }
 
-        public static void GenerateSegmentReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null)
+        public static void GenerateSegmentReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, params int[] segmentIds)
         {
             var dateId = DateHelper2.ToDateId(fromDay);
 
+            if (segmentIds.Length > 0)
+            {
+                if (!organizationDb.Segments.All(x => segmentIds.Contains(x.Id)))
+                {
+                    throw new ApplicationException("there is an ID in segmentIds that doesn't exists");
+                }
+            }
+            else
+            {
+                segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
+            }
+
             if (profileReportsDaily == null)
             {
-                profileReportsDaily = organizationDb.ProfileReportsDaily.Where(x => x.DateId == dateId).ToList();
+                profileReportsDaily = organizationDb.ProfileReportsDaily.Where(x => x.DateId == dateId && segmentIds.Contains(x.SegmentId)).ToList();
             }
 
 
             var reportsToInsert = new List<SegmentReportDaily>();
 
             var segments = (from s in organizationDb.Segments
+                            where segmentIds.Contains(s.Id)
                             select new
                             {
                                 SegmentId = s.Id,
@@ -60,8 +73,8 @@ namespace Tayra.SyncServices.Tayra
 
             foreach (var s in segments)
             {
-                var mr = profileReportsDaily.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
-                var nmr = profileReportsDaily.Where(x => s.NonMemberIds.Contains(x.ProfileId)).ToList();
+                var mr = profileReportsDaily.Where(x => s.MemberIds.Contains(x.ProfileId) && x.SegmentId == s.SegmentId).ToList();
+                var nmr = profileReportsDaily.Where(x => s.NonMemberIds.Contains(x.ProfileId) && x.SegmentId == s.SegmentId).ToList();
 
                 reportsToInsert.Add(new SegmentReportDaily
                 {
@@ -121,44 +134,55 @@ namespace Tayra.SyncServices.Tayra
                     ItemsDisenchantedChange = mr.Sum(x => x.ItemsDisenchantedChange),
                     ItemsGiftedChange = mr.Sum(x => x.ItemsGiftedChange)
                 });
+            
+                var existing = organizationDb.SegmentReportsDaily.Where(x => x.SegmentId == s.SegmentId).Count(x => x.DateId == dateId);
+                if (existing > 0)
+                {
+                    logService.Log<SegmentReportDaily>($"deleting {existing} records from database");
+                    organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsDaily where {nameof(SegmentReportDaily.DateId)} = {dateId} AND  {nameof(SegmentReportDaily.SegmentId)} = {s.SegmentId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.SaveChanges();
+                }
             }
-
-
-            var existing = organizationDb.SegmentReportsDaily.Count(x => x.DateId == dateId);
-            if (existing > 0)
-            {
-                logService.Log<SegmentReportDaily>($"deleting {existing} records from database");
-                organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsDaily where {nameof(SegmentReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
-                organizationDb.SaveChanges();
-            }
-
             organizationDb.SegmentReportsDaily.AddRange(reportsToInsert);
             organizationDb.SaveChanges();
 
             logService.Log<GenerateSegmentReportsLoader>($"{reportsToInsert.Count} new reports saved to database.");
         }
 
-        public static void GenerateSegmentReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, List<ProfileReportWeekly> profileReportsWeekly = null)
+        public static void GenerateSegmentReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, List<ProfileReportWeekly> profileReportsWeekly = null, params int[] segmentIds)
         {
             if (!CommonHelper.IsMonday(fromDay) || profileReportsWeekly == null)
                 return;
 
             var dateId = DateHelper2.ToDateId(fromDay);
 
+            if (segmentIds.Length > 0)
+            {
+                if (!organizationDb.Segments.All(x => segmentIds.Contains(x.Id)))
+                {
+                    throw new ApplicationException("there is an ID in segmentIds that doesn't exists");
+                }
+            }
+            else
+            {
+                segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
+            }
+
             if (profileReportsDaily == null)
             {
-                profileReportsDaily = organizationDb.ProfileReportsDaily.Where(x => x.DateId == dateId).ToList();
+                profileReportsDaily = organizationDb.ProfileReportsDaily.Where(x => x.DateId == dateId && segmentIds.Contains(x.SegmentId)).ToList();
             }
 
             if (profileReportsWeekly == null)
             {
-                profileReportsWeekly = organizationDb.ProfileReportsWeekly.Where(x => x.DateId == dateId).ToList();
+                profileReportsWeekly = organizationDb.ProfileReportsWeekly.Where(x => x.DateId == dateId && segmentIds.Contains(x.SegmentId)).ToList();
             }
 
 
             var reportsToInsert = new List<SegmentReportWeekly>();
 
             var segments = (from s in organizationDb.Segments
+                            where segmentIds.Contains(s.Id)
                             let teamIds = s.Teams.Select(x => x.Id).ToList()
                             select new
                             {
@@ -169,11 +193,11 @@ namespace Tayra.SyncServices.Tayra
 
             foreach (var s in segments)
             {
-                var dmr = profileReportsDaily.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
-                var dnmr = profileReportsDaily.Where(x => s.NonMemberIds.Contains(x.ProfileId)).ToList();
+                var dmr = profileReportsDaily.Where(x => s.MemberIds.Contains(x.ProfileId) && x.SegmentId == s.SegmentId).ToList();
+                var dnmr = profileReportsDaily.Where(x => s.NonMemberIds.Contains(x.ProfileId) && x.SegmentId == s.SegmentId).ToList();
 
-                var wmr = profileReportsWeekly.Where(x => s.MemberIds.Contains(x.ProfileId)).ToList();
-                var wnmr = profileReportsWeekly.Where(x => s.NonMemberIds.Contains(x.ProfileId)).ToList();
+                var wmr = profileReportsWeekly.Where(x => s.MemberIds.Contains(x.ProfileId) && x.SegmentId == s.SegmentId).ToList();
+                var wnmr = profileReportsWeekly.Where(x => s.NonMemberIds.Contains(x.ProfileId) && x.SegmentId == s.SegmentId).ToList();
 
                 if (dmr.Count() == 0)
                     continue;
@@ -248,15 +272,14 @@ namespace Tayra.SyncServices.Tayra
 
                     HeatAverageTotal = wmr.Average(x => x.Heat)
                 });
-            }
 
-
-            var existing = organizationDb.SegmentReportsWeekly.Count(x => x.DateId == dateId);
-            if (existing > 0)
-            {
-                logService.Log<SegmentReportWeekly>($"deleting {existing} records from database");
-                organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsWeekly where {nameof(SegmentReportWeekly.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
-                organizationDb.SaveChanges();
+                var existing = organizationDb.SegmentReportsWeekly.Where(x => x.SegmentId == s.SegmentId).Count(x => x.DateId == dateId);
+                if (existing > 0)
+                {
+                    logService.Log<SegmentReportWeekly>($"deleting {existing} records from database");
+                    organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsWeekly where {nameof(SegmentReportWeekly.DateId)} = {dateId} AND {nameof(SegmentReportWeekly.SegmentId)} = {s.SegmentId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.SaveChanges();
+                }
             }
 
             organizationDb.SegmentReportsWeekly.AddRange(reportsToInsert);

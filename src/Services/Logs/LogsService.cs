@@ -83,42 +83,41 @@ namespace Tayra.Services
 
         public GridData<LogGridDTO> GetGridData(LogGridParams gridParams)
         {
-            IQueryable<Log> query;
+            IQueryable<Log> query = DbContext.Logs;
 
             if (gridParams.ProfileIds.Length > 0)
             {
-                query = from pl in DbContext.ProfileLogs
+                query = from l in query
+                        join pl in DbContext.ProfileLogs on l.Id equals pl.LogId
                         where gridParams.ProfileIds.Contains(pl.ProfileId)
-                        select pl.Log;
-                        
+                        select l;
             }
             else if (gridParams.TeamIds.Length > 0)
             {
                 var tm = DbContext.ProfileAssignments.Where(x => gridParams.TeamIds.Contains(x.TeamId.Value)).Select(x => x.ProfileId).ToArray();
 
-                query = from pl in DbContext.ProfileLogs
+                query = from l in query
+                        join pl in DbContext.ProfileLogs on l.Id equals pl.LogId
                         where tm.Contains(pl.ProfileId)
-                        select pl.Log;
+                        select l;
             }
             else if (gridParams.SegmentIds.Length > 0)
             {
                 var sm = DbContext.ProfileAssignments.Where(x => gridParams.SegmentIds.Contains(x.SegmentId)).Select(x => x.ProfileId).ToArray();
 
-                query = from pl in DbContext.ProfileLogs
+                query = from l in query
+                        join pl in DbContext.ProfileLogs on l.Id equals pl.LogId
                         where sm.Contains(pl.ProfileId)
-                        select pl.Log;
+                        select l;
             }
             else if (gridParams.ShopLogs.HasValue && gridParams.ShopLogs.Value)
             {
                 var shopId = DbContext.Shops.Select(x => x.Id).FirstOrDefault();
 
-                query = from sl in DbContext.ShopLogs
+                query = from l in query
+                        join sl in DbContext.ShopLogs on l.Id equals sl.LogId
                         where sl.ShopId == shopId
                         select sl.Log;
-            }
-            else
-            {
-                query = DbContext.Logs;
             }
 
             GridData<LogGridDTO> gridData = query.Select(l => new LogGridDTO
