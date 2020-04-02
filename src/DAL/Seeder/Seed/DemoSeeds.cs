@@ -145,7 +145,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
             Console.WriteLine("Unlocking reporting");
             foreach (Segment SingleSegment in organizationDb.Segments.ToList())
             {
-                new ReportsService(organizationDb).UnlockReporting(SingleSegment.Id);
+                new ReportsService(organizationDb).UnlockReporting(Seeder.DemoKey, SingleSegment.Id);
             }
             organizationDb.SaveChanges();
         }
