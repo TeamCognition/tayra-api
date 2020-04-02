@@ -143,26 +143,27 @@ namespace Tayra.Services
         {
             var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == reportParams.SegmentId).Select(x => x.ProfileId).ToArray();
 
-            var ms = (from prw in DbContext.ProfileReportsDaily
-                                  where profileIds.Contains(prw.ProfileId)
-                                  where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To
-                                  where prw.Profile.Role == ProfileRoles.Member 
-                                  orderby prw.DateId descending
-                                  group prw by prw.ProfileId into m
-                                  select new ReportMembersPerformanceDTO.MembersPerformanceDTO
-                                  {
-                                      Name = $"{m.First().Profile.FirstName} {m.First().Profile.LastName}",
-                                      TasksCompleted = m.Sum(x => x.TasksCompletedChange),
-                                      Complexity = m.Sum(x => x.ComplexityChange),
-                                      Assists = m.Sum(x => x.ComplexityChange),
-                                      AvarageCompletionTime = m.Sum(x => x.TasksCompletionTimeChange),
-                                      Tokens = m.Sum(x => x.CompanyTokensEarnedChange),
-                                      InventoryValue = m.FirstOrDefault().InventoryValueTotal,
-                                      InventoryItems = m.FirstOrDefault().InventoryCountTotal,
-                                      Impact = DbContext.ProfileReportsWeekly.Where(x => x.ProfileId == m.Key).Select(x => x.OImpactAverage).FirstOrDefault(),
-                                      Speed = DbContext.ProfileReportsWeekly.Where(x => x.ProfileId == m.Key).Select(x => x.SpeedAverage).FirstOrDefault(),
-                                      Power = DbContext.ProfileReportsWeekly.Where(x => x.ProfileId == m.Key).Select(x => x.PowerAverage).FirstOrDefault()
-                                  }).ToArray();
+            var ms = (from prd in DbContext.ProfileReportsDaily
+                      where profileIds.Contains(prd.ProfileId)
+                      where prd.DateId >= reportParams.From && prd.DateId <= reportParams.To
+                      where prd.Profile.Role == ProfileRoles.Member
+                      orderby prd.DateId descending
+                      group prd by prd.ProfileId into m
+                      let w = DbContext.ProfileReportsWeekly.Where(x => x.ProfileId == m.Key)
+                      select new ReportMembersPerformanceDTO.MembersPerformanceDTO
+                      {
+                          Name = $"{m.First().Profile.FirstName} {m.First().Profile.LastName}",
+                          TasksCompleted = m.Sum(x => x.TasksCompletedChange),
+                          Complexity = m.Sum(x => x.ComplexityChange),
+                          Assists = m.Sum(x => x.ComplexityChange),
+                          AvarageCompletionTime = m.Sum(x => x.TasksCompletionTimeChange),
+                          Tokens = m.Sum(x => x.CompanyTokensEarnedChange),
+                          InventoryValue = m.FirstOrDefault().InventoryValueTotal,
+                          InventoryItems = m.FirstOrDefault().InventoryCountTotal,
+                          Impact = w.Select(x => x.OImpactAverage).FirstOrDefault(),
+                          Speed = w.Select(x => x.SpeedAverage).FirstOrDefault(),
+                          Power = w.Select(x => x.PowerAverage).FirstOrDefault()
+                      }).ToArray();
 
             if (!ms.Any())
             {
