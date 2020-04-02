@@ -29,7 +29,7 @@ namespace Tayra.API.Controllers
         #endregion
 
         #region Action Methods
-
+        
         [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {

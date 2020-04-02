@@ -10,7 +10,7 @@ using Tayra.Models.Organizations;
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    [Migration("20200402125331_MakeProfileReportsBySegment")]
+    [Migration("20200402130059_MakeProfileReportsBySegment")]
     partial class MakeProfileReportsBySegment
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1191,6 +1191,8 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("ProfileId");
 
+                    b.Property<int>("SegmentId");
+
                     b.Property<int>("TaskCategoryId");
 
                     b.Property<int>("OrganizationId");
@@ -1265,8 +1267,6 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("SavesTotal");
 
-                    b.Property<int>("SegmentId");
-
                     b.Property<int>("TacklesChange");
 
                     b.Property<int>("TacklesTotal");
@@ -1283,7 +1283,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("TurnoverTotal");
 
-                    b.HasKey("DateId", "ProfileId", "TaskCategoryId", "OrganizationId");
+                    b.HasKey("DateId", "ProfileId", "SegmentId", "TaskCategoryId", "OrganizationId");
 
                     b.HasIndex("OrganizationId");
 
@@ -1301,6 +1301,8 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<int>("DateId");
 
                     b.Property<int>("ProfileId");
+
+                    b.Property<int>("SegmentId");
 
                     b.Property<int>("TaskCategoryId");
 
@@ -1386,8 +1388,6 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<float>("SavesTotalAverage");
 
-                    b.Property<int>("SegmentId");
-
                     b.Property<float>("SpeedAverage");
 
                     b.Property<float>("SpeedTotalAverage");
@@ -1408,7 +1408,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<float>("TurnoverTotalAverage");
 
-                    b.HasKey("DateId", "ProfileId", "TaskCategoryId", "OrganizationId");
+                    b.HasKey("DateId", "ProfileId", "SegmentId", "TaskCategoryId", "OrganizationId");
 
                     b.HasIndex("OrganizationId");
 

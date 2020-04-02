@@ -6,6 +6,14 @@ namespace Tayra.Models.Organizations.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_ProfileReportsWeekly",
+                table: "ProfileReportsWeekly");
+
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_ProfileReportsDaily",
+                table: "ProfileReportsDaily");
+
             migrationBuilder.AddColumn<int>(
                 name: "SegmentId",
                 table: "ProfileReportsWeekly",
@@ -17,6 +25,16 @@ namespace Tayra.Models.Organizations.Migrations
                 table: "ProfileReportsDaily",
                 nullable: false,
                 defaultValue: 0);
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_ProfileReportsWeekly",
+                table: "ProfileReportsWeekly",
+                columns: new[] { "DateId", "ProfileId", "SegmentId", "TaskCategoryId", "OrganizationId" });
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_ProfileReportsDaily",
+                table: "ProfileReportsDaily",
+                columns: new[] { "DateId", "ProfileId", "SegmentId", "TaskCategoryId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProfileReportsWeekly_SegmentId_OrganizationId",
@@ -55,9 +73,17 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "FK_ProfileReportsWeekly_Segments_SegmentId",
                 table: "ProfileReportsWeekly");
 
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_ProfileReportsWeekly",
+                table: "ProfileReportsWeekly");
+
             migrationBuilder.DropIndex(
                 name: "IX_ProfileReportsWeekly_SegmentId_OrganizationId",
                 table: "ProfileReportsWeekly");
+
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_ProfileReportsDaily",
+                table: "ProfileReportsDaily");
 
             migrationBuilder.DropIndex(
                 name: "IX_ProfileReportsDaily_SegmentId_OrganizationId",
@@ -70,6 +96,16 @@ namespace Tayra.Models.Organizations.Migrations
             migrationBuilder.DropColumn(
                 name: "SegmentId",
                 table: "ProfileReportsDaily");
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_ProfileReportsWeekly",
+                table: "ProfileReportsWeekly",
+                columns: new[] { "DateId", "ProfileId", "TaskCategoryId", "OrganizationId" });
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_ProfileReportsDaily",
+                table: "ProfileReportsDaily",
+                columns: new[] { "DateId", "ProfileId", "TaskCategoryId", "OrganizationId" });
         }
     }
 }
