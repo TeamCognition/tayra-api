@@ -56,14 +56,14 @@ namespace Tayra.SyncServices.Tayra
 
             if(segmentIds.Length > 0)
             {
-                if(!organizationDb.Segments.All(x => segmentIds.Contains(x.Id)))
+                if(!organizationDb.Segments.Any(x => segmentIds.Contains(x.Id)))
                 {
                     throw new ApplicationException("there is an ID in segmentIds that doesn't exists");
                 }
             }
             else
             {
-                segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
+                segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
             }
 
             var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
@@ -73,7 +73,7 @@ namespace Tayra.SyncServices.Tayra
             var dateId = DateHelper2.ToDateId(fromDay);
             foreach (var segmentId in segmentIds)
             {
-                var profiles = organizationDb.ProfileAssignments.Where(x => x.SegmentId == segmentId).Select(x => new { Id = x.ProfileId, x.Profile.Role }).ToArray();
+                var profiles = organizationDb.ProfileAssignments.Where(x => x.SegmentId == segmentId).Select(x => new { Id = x.ProfileId, x.Profile.Role }).DistinctBy(x => x.Id).ToArray();
                 var profileIds = profiles.Select(x => x.Id);
 
                 var taskStats = (from t in organizationDb.Tasks
@@ -367,14 +367,14 @@ namespace Tayra.SyncServices.Tayra
 
             if (segmentIds.Length > 0)
             {
-                if (!organizationDb.Segments.All(x => segmentIds.Contains(x.Id)))
+                if (!organizationDb.Segments.Any(x => segmentIds.Contains(x.Id)))
                 {
                     throw new ApplicationException("there is an ID in segmentIds that doesn't exists");
                 }
             }
             else
             {
-                segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
+                segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
             }
 
             foreach (var segmentId in segmentIds)

@@ -17,7 +17,7 @@ namespace Tayra.Models.Organizations
         public virtual Segment Segment { get; set; }
 
         public int TaskCategoryId { get; set; }
-        public virtual TaskCategory TaskCategory { get; set; }
+        //public virtual TaskCategory TaskCategory { get; set; }
 
         public int ComplexityChange { get; set; }
         public float ComplexityTotalAverage { get; set; }

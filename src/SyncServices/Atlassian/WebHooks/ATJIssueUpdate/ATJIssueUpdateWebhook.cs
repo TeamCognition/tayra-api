@@ -7,7 +7,7 @@ using Tayra.SyncServices.Common;
 
 namespace Tayra.SyncServices
 {
-    public class ATJIssueUpdateHttp
+    public class ATJIssueUpdateWebhook
     {
         [FunctionName("ATJIssueUpdate")]
         public static IActionResult Run(

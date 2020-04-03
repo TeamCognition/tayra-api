@@ -95,7 +95,7 @@ namespace Tayra.SyncServices.Common
                 case JobTypes.MakeActionPoints:
                     return new MakeActionPointsLoader(shardMapProvider, logService, coreDatabase);
 
-                case JobTypes.PullIssues:
+                case JobTypes.SyncIssues:
                     return new SyncIssuesLoader(shardMapProvider, logService, coreDatabase);
 
                 case JobTypes.WebHookATJIssueUpdate:

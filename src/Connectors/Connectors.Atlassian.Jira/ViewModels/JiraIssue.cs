@@ -22,10 +22,15 @@ namespace Tayra.Connectors.Atlassian.Jira
         public IssueFields Fields { get; set; }
 
         /// <summary>
+        /// Needs to me populated manually from JiraSearchChangelog
+        /// </summary>
+        public List<TaskChangelog> TaskChangelogs { get; set; }
+
+        /// <summary>
         /// this is for /search api only
         /// </summary>
         [JsonProperty("changelog")]
-        public ChangeLogDTO Changelog { get; set; }
+        public ChangeLogDTO JiraSearchChangelog { get; set; }
 
         public class ChangeLogDTO
         {

@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using Firdaws.Core;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Tayra.Common;
@@ -26,42 +27,42 @@ namespace Tayra.Models.Seeder.DemoSeeds
     {
         public static void UnseedDemo(OrganizationDbContext context)
         {
-            List<string> Tables = new List<string>();
+            List<string> tables = new List<string>();
             using (var command = context.Database.GetDbConnection().CreateCommand())
             {
                 command.CommandText = "SELECT name, schema_id FROM sys.tables ORDER BY name";
                 context.Database.OpenConnection();
-                using (var Result = command.ExecuteReader())
+                using (var result = command.ExecuteReader())
                 {
-                    foreach (IDataRecord Row in Result)
+                    foreach (IDataRecord row in result)
                     {
-                        string TableName = Row.GetString(0);
-                        if (!TableName.StartsWith("_") && Row.GetInt32(1) == 1)
+                        string TableName = row.GetString(0);
+                        if (!TableName.StartsWith("_") && row.GetInt32(1) == 1)
                         {
-                            Tables.Add(TableName);
+                            tables.Add(TableName);
                         }
                     }
                 }
             }
-            bool WasError = true;
-            List<String> FinishedTables = new List<String>();
-            while (WasError)
+            bool wasError = true;
+            var finishedTables = new List<String>();
+            while (wasError)
             {
-                WasError = false;
-                foreach (string TableName in Tables)
+                wasError = false;
+                foreach (string tableName in tables)
                 {
-                    if (FinishedTables.Contains(TableName))
+                    if (finishedTables.Contains(tableName))
                     {
                         continue;
                     }
-                    Console.WriteLine("Deleting " + TableName);
+                    Console.WriteLine("Deleting " + tableName);
                     try
                     {
-                        context.Database.ExecuteSqlCommand("DELETE FROM " + TableName);
-                        FinishedTables.Add(TableName);
+                        context.Database.ExecuteSqlCommand("DELETE FROM " + tableName);
+                        finishedTables.Add(tableName);
                     } catch(SqlException)
                     {
-                        WasError = true;
+                        wasError = true;
                     }
                 }
             }
@@ -69,73 +70,80 @@ namespace Tayra.Models.Seeder.DemoSeeds
         public static void AddDemoAccount(OrganizationDbContext organizationDb)
         {
             Console.WriteLine("Seeding demo account");
-            var AddedOrganization = organizationDb.Organizations.Add(new Organization() {
+            organizationDb.Add(new Organization()
+            {
                 Name = "Demo organization",
                 Address = "Some street 123",
                 Id = TenantUtilities.GenerateShardingKey(Seeder.DemoKey)
             });
             organizationDb.SaveChanges();
-            organizationDb.Profiles.Add(new Profile() {
+            organizationDb.Profiles.Add(new Profile()
+            {
                 FirstName = "Demo",
                 LastName = "Account",
                 Username = "demoaccount",
-                Role = ProfileRoles.Manager,
-                IdentityId = 1
+                Role = ProfileRoles.Admin,
+                IdentityId = 20
             });
         }
         public static void SeedDemo(OrganizationDbContext organizationDb)
         {
+            var demoData = JsonConvert.DeserializeObject<DemoSeedData>(File.ReadAllText("input/demo.json"));
+
             UnseedDemo(organizationDb);
+
             Seeder.SeedNoSave(organizationDb);
             AddDemoAccount(organizationDb);
             organizationDb.SaveChanges();
-            DemoSeedData DemoData = JsonConvert.DeserializeObject<DemoSeedData>(File.ReadAllText("input/demo.json"));
+
+
             Console.WriteLine("Seeding Profiles ...");
-            
-            foreach (Profile SingleProfile in DemoData.Profiles)
-            {
-                organizationDb.Profiles.Add(SingleProfile);
-            }
+            organizationDb.Profiles.AddRange(demoData.Profiles);
+
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
             organizationDb.SaveChanges();
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
 
             Console.WriteLine("Seeding Segments ...");
-            foreach (Segment SingleSegment in DemoData.Segments)
+            foreach (var segment in demoData.Segments)
             {
-                organizationDb.Segments.Add(SingleSegment);
+                segment.IsReportingUnlocked = true;
             }
+            organizationDb.Segments.AddRange(demoData.Segments);
+
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
             organizationDb.SaveChanges();
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
 
             Console.WriteLine("Seeding Teams ...");
-            foreach (Team SingleTeam in DemoData.Teams)
-            {
-                organizationDb.Teams.Add(SingleTeam);
-            }
+            organizationDb.Teams.AddRange(demoData.Teams);
+
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
             organizationDb.SaveChanges();
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
 
             Console.WriteLine("Seeding ProfileAssignments ...");
-            foreach (ProfileAssignment SingleProfileAssignment in DemoData.ProfileAssignments)
-            {
-                organizationDb.ProfileAssignments.Add(SingleProfileAssignment);
-            }
+            organizationDb.ProfileAssignments.AddRange(demoData.ProfileAssignments);
+
             Console.WriteLine("Seeding Tasks ...");
-            foreach (Task SingleTask in DemoData.Tasks)
+            Random rnd = new Random();
+            foreach (var t in demoData.Tasks)
             {
-                organizationDb.Tasks.Add(SingleTask);
+                t.LastModifiedDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(rnd.Next(-30, -2)));
+                t.Priority = TaskPriorities.Medium;
+                t.Status = TaskStatuses.Done;
+                t.Type = TaskTypes.Task;
             }
+            organizationDb.Tasks.AddRange(demoData.Tasks);
+
             Console.WriteLine("Seeding TokenTransactions ...");
             TokensService Service = new TokensService(organizationDb);
-            foreach (TokenTransaction SingleTokenTransaction in DemoData.Transactions)
+            foreach (var singleTokenTransaction in demoData.Transactions)
             {
                 Service.CreateTransaction(
                     TokenType.OneUp,
-                    SingleTokenTransaction.ProfileId,
-                    SingleTokenTransaction.Value,
+                    singleTokenTransaction.ProfileId,
+                    singleTokenTransaction.Value,
                     TransactionReason.OneUpProfile,
                     null
                 );
@@ -143,9 +151,9 @@ namespace Tayra.Models.Seeder.DemoSeeds
             organizationDb.SaveChanges();
 
             Console.WriteLine("Unlocking reporting");
-            foreach (Segment SingleSegment in organizationDb.Segments.ToList())
+            foreach (var segment in organizationDb.Segments.ToArray())
             {
-                new ReportsService(organizationDb).UnlockReporting(SingleSegment.Id);
+                new ReportsService(organizationDb).UnlockReporting(Seeder.DemoKey, segment.Id);
             }
             organizationDb.SaveChanges();
         }

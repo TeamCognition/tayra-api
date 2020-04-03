@@ -37,5 +37,7 @@ namespace Tayra.Services
         public int? TeamId { get; set; }
 
         public int? SegmentId { get; set; }
+
+        public int? LastModifiedDateId { get; set; }
     }
 }

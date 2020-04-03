@@ -143,7 +143,7 @@ namespace Tayra.SyncServices
             int? autoTimeSpent = null;
             fields.Timespent = fields.Timespent > 0 ? fields.Timespent : null; //redundant, check above
             {
-                var statuses = jiraConnector.GetProjectStatuses(rewardStatusField.IntegrationId, jiraProjectId, fields.IssueType.Id);
+                var statuses = jiraConnector.GetIssueStatuses(rewardStatusField.IntegrationId, jiraProjectId, fields.IssueType.Id);
                 var todoStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
                 var inProgressStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.InProgress).ToList();
                 var doneStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.Done).ToList();
