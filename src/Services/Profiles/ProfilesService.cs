@@ -205,12 +205,35 @@ namespace Tayra.Services
                             Name = p.FirstName + " " + p.LastName,
                             Username = p.Username,
                             Avatar = p.Avatar,
-                            PersonalInfo = new ProfileSummaryGridDTO.PersonalData { JobPosition = p.JobPosition, EmployedOn = p.EmployedOn, JoinDate = p.Created},
-                            PlatformInfo = new ProfileSummaryGridDTO.PlatformData { Title = title.Item.Name, OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value), CompletedChallenges = p.CompletedChallenges.Count() },
-                            Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment { Name = x.Segment.Name, Key = x.Segment.Key, JoinDate = x.Created }).ToArray(),
-                            Teams = p.Assignments.Where(x => x.TeamId != null).Select(x => new ProfileSummaryGridDTO.Team { Name = x.Team.Name, Key = x.Team.Key, JoinDate = x.Created }).ToArray(),
-                            Integrations = p.Integrations.Select(x => new ProfileSummaryGridDTO.Integration { Type = x.Type, IntegrationDate = x.Created}).Distinct().ToArray(),
-                            TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == expTokenId).OrderByDescending(x => x.Created).Select(x => x.FinalBalance).FirstOrDefault(), 2) //There might be a problem with this
+                            PersonalInfo = new ProfileSummaryGridDTO.PersonalData 
+                            { 
+                                BornOn = p.BornOn,
+                                JobPosition = p.JobPosition, 
+                                EmployedOn = p.EmployedOn, 
+                                JoinDate = p.Created
+                            },
+                            PlatformInfo = new ProfileSummaryGridDTO.PlatformData
+                            {
+                                TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == expTokenId).OrderByDescending(x => x.Created).Select(x => x.FinalBalance).FirstOrDefault(), 2), 
+                                Title = title.Item.Name, 
+                                OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value), 
+                                CompletedChallenges = p.CompletedChallenges.Count() 
+                            },
+                            Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment 
+                            { 
+                                Key = x.Segment.Key, 
+                                Name = x.Segment.Name, 
+                                JoinDate = x.Created 
+                            }).ToArray(),
+                            Teams = p.Assignments.Where(x => x.TeamId != null).Select(x => new ProfileSummaryGridDTO.Team { 
+                                Name = x.Team.Name, 
+                                Key = x.Team.Key, 
+                                JoinDate = x.Created 
+                            }).ToArray(),
+                            Integrations = p.Integrations.Select(x => new ProfileSummaryGridDTO.Integration { 
+                                Type = x.Type, 
+                                IntegratedOn = x.Created
+                            }).Distinct().ToArray(),
                         };
 
             GridData<ProfileSummaryGridDTO> gridData = query.GetGridData(gridParams);

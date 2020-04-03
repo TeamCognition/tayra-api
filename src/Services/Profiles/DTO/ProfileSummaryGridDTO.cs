@@ -14,10 +14,10 @@ namespace Tayra.Services
         public Segment[] Segments { get; set; }
         public Team[] Teams { get; set; }
         public Integration[] Integrations { get; set; }
-        public float? TokensTotal { get; set; } = 0;
 
         public class PersonalData
         {
+            public DateTime? BornOn { get; set; }
             public string JobPosition { get; set; }
             public DateTime? EmployedOn { get; set; }
             public DateTime JoinDate { get; set; }
@@ -25,6 +25,7 @@ namespace Tayra.Services
 
         public class PlatformData
         {
+            public float? TokensTotal { get; set; } = 0;
             public string Title { get; set; }
             public int? OneUps { get; set; }
             public int CompletedChallenges { get; set; }
@@ -48,7 +49,7 @@ namespace Tayra.Services
         public class Integration
         {
             public IntegrationType Type { get; set; }
-            public DateTime IntegrationDate { get; set; }
+            public DateTime IntegratedOn { get; set; }
 
         }
     }
