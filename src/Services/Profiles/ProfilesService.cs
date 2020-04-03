@@ -204,14 +204,12 @@ namespace Tayra.Services
                             ProfileId = p.Id,
                             Name = p.FirstName + " " + p.LastName,
                             Username = p.Username,
-                            Role = p.Role,
                             Avatar = p.Avatar,
-                            Title = title.Item.Name,
-                            Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment { Name = x.Segment.Name, Key = x.Segment.Key }).ToArray(),
-                            Teams = p.Assignments.Select(x => new ProfileSummaryGridDTO.Team { Name = x.Team.Name, Key = x.Team.Key }).ToArray(),
-                            Integrations = p.Integrations.Select(x => x.Type).Distinct().ToArray(),
-                            OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value),
-                            CompletedChallenges = p.CompletedChallenges.Count(),
+                            PersonalInfo = new ProfileSummaryGridDTO.PersonalData { JobPosition = p.JobPosition, EmployedOn = p.EmployedOn, JoinDate = p.Created},
+                            PlatformInfo = new ProfileSummaryGridDTO.PlatformData { Title = title.Item.Name, OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value), CompletedChallenges = p.CompletedChallenges.Count() },
+                            Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment { Name = x.Segment.Name, Key = x.Segment.Key, JoinDate = x.Created }).ToArray(),
+                            Teams = p.Assignments.Where(x => x.TeamId != null).Select(x => new ProfileSummaryGridDTO.Team { Name = x.Team.Name, Key = x.Team.Key, JoinDate = x.Created }).ToArray(),
+                            Integrations = p.Integrations.Select(x => new ProfileSummaryGridDTO.Integration { Type = x.Type, IntegrationDate = x.Created}).Distinct().ToArray(),
                             TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == expTokenId).OrderByDescending(x => x.Created).Select(x => x.FinalBalance).FirstOrDefault(), 2) //There might be a problem with this
                         };
 
