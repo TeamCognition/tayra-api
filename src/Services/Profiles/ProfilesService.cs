@@ -192,7 +192,7 @@ namespace Tayra.Services
                     scope = scope.Where(byName);
             }
 
-            var expTokenId = DbContext.Tokens.Where(x => x.Type == TokenType.Experience).Select(x => x.Id).First();
+            var cTokenId = DbContext.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).First();
             var upsTokenId = DbContext.Tokens.Where(x => x.Type == TokenType.OneUp).Select(x => x.Id).First();
             var query = from p in scope
                         from prw in DbContext.ProfileReportsWeekly.Where(x => p.Id == x.ProfileId)
@@ -208,13 +208,13 @@ namespace Tayra.Services
                             PersonalInfo = new ProfileSummaryGridDTO.PersonalData 
                             { 
                                 BornOn = p.BornOn,
-                                JobPosition = p.JobPosition, 
+                                JobPosition = p.JobPosition,
                                 EmployedOn = p.EmployedOn, 
                                 JoinDate = p.Created
                             },
                             PlatformInfo = new ProfileSummaryGridDTO.PlatformData
                             {
-                                TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == expTokenId).OrderByDescending(x => x.Created).Select(x => x.FinalBalance).FirstOrDefault(), 2), 
+                                TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == cTokenId).Select(x => x.FinalBalance).FirstOrDefault(), 2), 
                                 Title = title.Item.Name, 
                                 OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value), 
                                 CompletedChallenges = p.CompletedChallenges.Count() 
