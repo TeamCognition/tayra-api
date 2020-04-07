@@ -204,7 +204,7 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileExternalId>(entity =>
             {
-                entity.HasKey(x => new { x.ExternalId, x.IntegrationType });
+                entity.HasKey(x => new { x.ExternalId, x.IntegrationType, x.SegmentId });
             });
 
             modelBuilder.Entity<ProfileInventoryItem>(entity =>
