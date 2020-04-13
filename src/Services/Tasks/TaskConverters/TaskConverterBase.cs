@@ -50,7 +50,11 @@ namespace Tayra.Services.TaskConverters
             };
         }
 
-        internal abstract int? GetTimeSpentInMinutes();
+        public virtual bool ShouldBeProcessed()
+        {
+            return true;
+        }
+        protected abstract int? GetTimeSpentInMinutes();
 
         public void EnsureBasicDataIsFilled()
         {
@@ -73,20 +77,22 @@ namespace Tayra.Services.TaskConverters
             }
         }
 
-        public void ConcludeActionPointsIfPossible()
+        public void ConcludeActionPointsIfPossible(IAdvisorService advisorService)
         {
-            EnsureBasicDataIsFilled();
-            if (IsEligableForExtraData())
+            if (advisorService != null)
             {
-                var aps = DbContext.ActionPoints.Where(x =>
-                    x.ProfileId == Data.AssigneeProfileId.Value &&
-                    x.ConcludedOn == null &&
-                        (x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn1Week ||
-                        x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn2Week)
-                    ).ToArray();
-                foreach (var ap in aps)
+                EnsureBasicDataIsFilled();
+                if (IsEligableForExtraData())
                 {
-                    ap.ConcludedOn = DateTime.UtcNow;
+                    var aps = DbContext.ActionPoints.Where(x =>
+                            x.ProfileId == Data.AssigneeProfileId.Value &&
+                            x.ConcludedOn == null &&
+                            (x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn1Week ||
+                            x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn2Week)
+                        )
+                        .Select(ap => ap.Id)
+                        .ToArray();
+                    advisorService.ConcludeActionPoints(GetCurrentSegmentId().Value, aps, null);
                 }
             }
         }
@@ -126,7 +132,7 @@ namespace Tayra.Services.TaskConverters
             }
         }
 
-        internal abstract int? GetAutoTimeSpentInMinutes();
+        protected abstract int? GetAutoTimeSpentInMinutes();
         protected abstract bool IsCompleted();
         protected abstract int? GetLastModifiedDateId();
 
@@ -161,20 +167,20 @@ namespace Tayra.Services.TaskConverters
         protected abstract string[] GetLabels();
         protected abstract TaskTypes GetTaskType();
         protected abstract TaskPriorities GetPriority();
-        public abstract string GetExternalId();
-        public abstract string GetExternalProjectId();
-        public abstract IntegrationType GetIntegrationType();
-        public abstract string GetSummary();
-        virtual public IssueStatusCategories GetJiraStatusCategory()
+        protected abstract string GetExternalId();
+        protected abstract string GetExternalProjectId();
+        protected abstract IntegrationType GetIntegrationType();
+        protected abstract string GetSummary();
+        virtual protected IssueStatusCategories GetJiraStatusCategory()
         {
             return IssueStatusCategories.NoCategory;
         }
-        public abstract int? GetTimeOriginalEstimateInMinutes();
-        public abstract int? GetStoryPoints();
+        protected abstract int? GetTimeOriginalEstimateInMinutes();
+        protected abstract int? GetStoryPoints();
 
         public virtual void LogIfPossible(ILogsService logsService)
         {
-            if (AssigneeProfile != null)
+            if (AssigneeProfile != null && logsService != null)
             {
                 LogEvents eventType = IsCompleted() ? LogEvents.StatusChangeToCompleted : LogEvents.IssueStatusChange;
                 var logData = new LogCreateDTO
@@ -200,7 +206,7 @@ namespace Tayra.Services.TaskConverters
             }
         }
 
-        internal abstract string GetIssueStatusName();
-        internal abstract string GetIssueUrl();
+        protected abstract string GetIssueStatusName();
+        protected abstract string GetIssueUrl();
     }
 }

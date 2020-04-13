@@ -49,19 +49,15 @@ namespace Tayra.API.Controllers
         {
             SaveWebhookEventLog(jObject);
             WebhookEvent we = jObject.ToObject<WebhookEvent>();
-            //maybe not needed anymore
-            if (issueChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(we.Timestamp))
-            {
-                return Ok();
-            }
 
             TaskConverterJira taskConverter = new TaskConverterJira(
                 DbContext,
                 ProfilesService,
                 we);
-            TaskHelpers.DoStandardStuff(taskConverter, TokensService, LogsService);
-            TasksService.AddOrUpdate(taskConverter.Data);
-            DbContext.SaveChanges();
+            if (TaskHelpers.DoStandardStuff(taskConverter, TasksService, TokensService, LogsService, AdvisorService))
+            {
+                DbContext.SaveChanges();
+            }
 
             return Ok();
         }

@@ -9,6 +9,7 @@ using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
+using Tayra.Services.TaskConverters;
 using Tayra.SyncServices.Common;
 
 namespace Tayra.SyncServices
@@ -18,14 +19,23 @@ namespace Tayra.SyncServices
         #region Private Variables
 
         private readonly IShardMapProvider _shardMapProvider;
+        private IProfilesService profilesService;
+        private ITasksService tasksService;
 
         #endregion
 
         #region Constructor
 
-        public SyncIssuesLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public SyncIssuesLoader(
+            IShardMapProvider shardMapProvider,
+            LogService logService,
+            CatalogDbContext catalogDb,
+            IProfilesService profilesService,
+            ITasksService tasksService) : base(logService, catalogDb)
         {
             _shardMapProvider = shardMapProvider;
+            this.profilesService = profilesService;
+            this.tasksService = tasksService;
         }
 
         #endregion
@@ -36,12 +46,41 @@ namespace Tayra.SyncServices
         {
             foreach (var tenant in tenants)
             {
-                LogService.SetOrganizationId(tenant.Key);
+                // LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
-                    PullIssues(organizationDb, date, LogService, requestBody);
+                    PullIssuesNew(organizationDb, date, tasksService, profilesService, requestBody);
                 }
             }
+        }
+
+        public static void PullIssuesNew(OrganizationDbContext organizationDb,
+                                         DateTime fromDay,
+                                         ITasksService tasksService,
+                                         IProfilesService profilesService,
+                                         JObject requestBody)
+        {
+            var syncReq = requestBody.ToObject<SyncRequest>();
+
+            if (syncReq?.Params == null
+            || !syncReq.Params.TryGetValue("jiraProjectId", out string jiraProjectId))
+            {
+                throw new ApplicationException("param jiraProjectId not provided");
+            }
+            
+            var jiraConnector = new AtlassianJiraConnector(null, organizationDb);
+
+            int? integrationId = IntegrationHelpers.GetIntegrationId(organizationDb, jiraProjectId, IntegrationType.ATJ);
+            if (!integrationId.HasValue)
+            {
+                throw new ApplicationException($"Jira project with Id: {jiraProjectId} is not connected to any tayra segments");
+            }
+            var tasks = jiraConnector.GetBulkIssuesWithChangelog(integrationId.Value, "status", jiraProjectId);
+            foreach (var task in tasks)
+            {
+                TaskHelpers.DoStandardStuff(new TaskConverterJira(organizationDb, profilesService, task, false), tasksService, null, null, null);
+            }
+            organizationDb.SaveChanges();
         }
 
         public static void PullIssues(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, JObject requestBody)
@@ -169,7 +208,7 @@ namespace Tayra.SyncServices
                 }
 
                 var timeSpentToUse = fields.Timespent ?? autoTimeSpent / 3;
-                var effortScore = TayraEffortCalculator.CalcEffortScore(timeSpentToUse ?? 0, TayraPersonalPerformance.MapSPToComplexity((int?)fields.StoryPointsCF ?? 0));
+                var effortScore = TayraEffortCalculator.CalcEffortScore(fields.Timespent, autoTimeSpent, TayraPersonalPerformance.MapSPToComplexity((int?)fields.StoryPointsCF ?? 0));
 
                 tasksService.AddOrUpdate(new TaskAddOrUpdateDTO
                 {

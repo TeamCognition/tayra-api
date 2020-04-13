@@ -153,6 +153,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
             LogsService Logs = new LogsService(organizationDb);
             ProfilesService Profiles = new ProfilesService(Tokens, Logs, null, organizationDb);
             TasksService Tasks = new TasksService(organizationDb);
+            AdvisorService Advisor = new AdvisorService(organizationDb);
             foreach (var t in demoData.Tasks)
             {
                 t.LastModifiedDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(rnd.Next(-30, -2)));
@@ -197,8 +198,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     },
                     false
                 );
-                TaskHelpers.DoStandardStuff(taskConverter, Tokens, Logs);
-                Tasks.AddOrUpdate(taskConverter.Data);
+                TaskHelpers.DoStandardStuff(taskConverter, Tasks, Tokens, Logs, Advisor);
             }
             // organizationDb.Tasks.AddRange(demoData.Tasks);
             organizationDb.SaveChanges();

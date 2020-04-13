@@ -39,12 +39,23 @@ namespace Tayra.Services
             }
         }
 
-        public static void DoStandardStuff(TaskConverterBase taskConverter, ITokensService tokensService, ILogsService logsService)
+        public static bool DoStandardStuff(TaskConverterBase taskConverter,
+                                           ITasksService tasksService,
+                                           ITokensService tokensService,
+                                           ILogsService logsService,
+                                           IAdvisorService advisorService)
         {
-            taskConverter.FillExtraDataIfCompleted();
-            taskConverter.AddNecessaryTokensIfPossible(tokensService);
-            taskConverter.ConcludeActionPointsIfPossible();
-            taskConverter.LogIfPossible(logsService);
+            taskConverter.UpdateBasicTaskData();
+            if (taskConverter.ShouldBeProcessed())
+            {
+                taskConverter.FillExtraDataIfCompleted();
+                taskConverter.AddNecessaryTokensIfPossible(tokensService);
+                taskConverter.ConcludeActionPointsIfPossible(advisorService);
+                taskConverter.LogIfPossible(logsService);
+                tasksService.AddOrUpdate(taskConverter.Data);
+                return true;
+            }
+            return false;
         }
     }
 }

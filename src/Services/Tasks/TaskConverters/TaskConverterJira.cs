@@ -20,41 +20,70 @@ namespace Tayra.Services.TaskConverters
                                  bool useConnector = true)
                                  : base(dbContext, profilesService)
         {
+            Init(we, useConnector);
+        }
+
+        public TaskConverterJira(OrganizationDbContext dbContext,
+                                 IProfilesService profilesService,
+                                 JiraIssue jiraIssue,
+                                 bool useConnector = true)
+                                 : base(dbContext, profilesService)
+        {
+            Init(new WebhookEvent {JiraIssue = jiraIssue}, useConnector);
+        }
+
+        private void Init(WebhookEvent we, bool useConnector)
+        {
             We = we;
             UseConnector = useConnector;
         }
 
-        public override string GetExternalId()
+        public override bool ShouldBeProcessed()
+        {
+            if (UseConnector)
+            {
+                var jiraConnector = new AtlassianJiraConnector(null, DbContext);
+                var issueChangelogs = jiraConnector.GetIssueChangelog(GetRewardStatus().IntegrationId, GetExternalId(), "status");
+                //maybe not needed anymore
+                if (issueChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(We.Timestamp))
+                {
+                    return false;
+                }
+            }
+            return base.ShouldBeProcessed();
+        }
+
+        protected override string GetExternalId()
         {
             return We.JiraIssue.Key;
         }
 
-        public override IntegrationType GetIntegrationType()
+        protected override IntegrationType GetIntegrationType()
         {
             return IntegrationType.ATJ;
         }
 
-        public override IssueStatusCategories GetJiraStatusCategory()
+        protected override IssueStatusCategories GetJiraStatusCategory()
         {
             return We.JiraIssue.Fields.Status.Category.Id;
         }
 
-        public override string GetExternalProjectId()
+        protected override string GetExternalProjectId()
         {
             return We.JiraIssue.Fields.Project.Id;
         }
 
-        public override int? GetStoryPoints()
+        protected override int? GetStoryPoints()
         {
             return (int?)We.JiraIssue.Fields.StoryPointsCF;
         }
 
-        public override string GetSummary()
+        protected override string GetSummary()
         {
             return We.JiraIssue.Fields.Summary;
         }
 
-        public override int? GetTimeOriginalEstimateInMinutes()
+        protected override int? GetTimeOriginalEstimateInMinutes()
         {
             return We.JiraIssue.Fields.TimeOriginalEstimate / 60;
         }
@@ -109,14 +138,20 @@ namespace Tayra.Services.TaskConverters
             return We.JiraIssue.Fields.Status.Id != GetRewardStatus().Value;
         }
 
-        internal override int? GetAutoTimeSpentInMinutes()
+        protected override int? GetAutoTimeSpentInMinutes()
         {
             if (UseConnector)
             {
                 var jiraConnector = new AtlassianJiraConnector(null, DbContext);
-                var issueChangelogs = jiraConnector.GetIssueChangelog(GetRewardStatus().IntegrationId, GetExternalId(), "status");
+                int? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
+                if (!integrationId.HasValue)
+                {
+                    throw new ApplicationException($"Jira project with Id: {GetExternalProjectId()} is not connected to any tayra segments");
+                }
 
-                var statuses = jiraConnector.GetIssueStatuses(GetRewardStatus().IntegrationId, GetExternalProjectId(), We.JiraIssue.Fields.IssueType.Id);
+                var issueChangelogs = jiraConnector.GetIssueChangelog(integrationId.Value, GetExternalId(), "status");
+
+                var statuses = jiraConnector.GetIssueStatuses(integrationId.Value, GetExternalProjectId(), We.JiraIssue.Fields.IssueType.Id);
                 var todoStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
                 var inProgressStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.InProgress).ToList();
                 var doneStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.Done).ToList();
@@ -169,18 +204,18 @@ namespace Tayra.Services.TaskConverters
             return null;
         }
 
-        internal override string GetIssueStatusName()
+        protected override string GetIssueStatusName()
         {
             return We.JiraIssue.Fields.Status.Name;
         }
 
-        internal override string GetIssueUrl()
+        protected override string GetIssueUrl()
         {
             var jiraBaseUrl = We.JiraIssue.Self.Substring(0, We.JiraIssue.Self.IndexOf('/', 10)); //TODO: is 10 ok for all integration types?
             return jiraBaseUrl + "/browse/" + GetExternalId();
         }
 
-        internal override int? GetTimeSpentInMinutes()
+        protected override int? GetTimeSpentInMinutes()
         {
             return We.JiraIssue.Fields.Timespent / 60;
         }
