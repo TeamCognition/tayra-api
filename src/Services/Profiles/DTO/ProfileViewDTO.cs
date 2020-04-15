@@ -15,9 +15,9 @@ namespace Tayra.Services
         public TeamDTO[] Teams { get; set; }
         public string Avatar { get; set; }
 
-        public float? Power { get; set; }
-        public float? Speed { get; set; }
-        public float? OImpact { get; set; }
+        public double? Power { get; set; }
+        public double? Speed { get; set; }
+        public double? OImpact { get; set; }
         public HeatDTO Heat { get; set; }
 
         public double CompanyTokens { get; set; }
@@ -43,7 +43,7 @@ namespace Tayra.Services
         public class HeatDTO
         {
             public int LastDateId { get; set; }
-            public float[] Values { get; set; }
+            public double[] Values { get; set; }
         }
 
         public class TeamDTO
