@@ -1,4 +1,5 @@
 ﻿using Tayra.Common;
+using Tayra.Services.TaskConverters;
 
 namespace Tayra.Services
 {
@@ -36,6 +37,25 @@ namespace Tayra.Services
 
                 default: return TaskTypes.Task;
             }
+        }
+
+        public static bool DoStandardStuff(TaskConverterBase taskConverter,
+                                           ITasksService tasksService,
+                                           ITokensService tokensService,
+                                           ILogsService logsService,
+                                           IAssistantService assistantService)
+        {
+            taskConverter.UpdateBasicTaskData();
+            if (taskConverter.ShouldBeProcessed())
+            {
+                taskConverter.FillExtraDataIfCompleted();
+                taskConverter.AddNecessaryTokensIfPossible(tokensService);
+                taskConverter.ConcludeActionPointsIfPossible(assistantService);
+                taskConverter.LogIfPossible(logsService);
+                tasksService.AddOrUpdate(taskConverter.Data);
+                return true;
+            }
+            return false;
         }
     }
 }

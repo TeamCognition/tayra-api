@@ -194,8 +194,7 @@ namespace Tayra.SyncServices
                 autoTimeSpent = (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes;
             }
 
-            var timeSpentToUse = fields.Timespent ?? autoTimeSpent / 3;
-            var effortScore = TayraEffortCalculator.CalcEffortScore(timeSpentToUse ?? 0, TayraPersonalPerformance.MapSPToComplexity((int?)fields.StoryPointsCF ?? 0));
+            var effortScore = TayraEffortCalculator.CalcEffortScore(fields.Timespent, autoTimeSpent, TayraPersonalPerformance.MapSPToComplexity((int?)fields.StoryPointsCF ?? 0));
 
             var task = organizationDb.Tasks.FirstOrDefault(x => x.ExternalId == we.JiraIssue.Key && x.IntegrationType == IntegrationType.ATJ);
             var effortScoreDiff = fields.Timespent == null || task?.EffortScore == null ? effortScore : Math.Max(0, effortScore - task.EffortScore.Value);
@@ -241,7 +240,7 @@ namespace Tayra.SyncServices
                     { "effortScore", Math.Round(effortScoreDiff, 2).ToString() },
                     { "profileUsername", assigneProfile.Username },
                     { "competitorName", activeCompetitions.FirstOrDefault()?.CompetitorName},
-                    { "timespent", timeSpentToUse.ToString()}
+                    { "timespent", TayraEffortCalculator.GetEffectiveTimeSpent(fields.Timespent, autoTimeSpent).ToString()}
                 },
                 ProfileId = assigneProfile.Id,
                 CompetitionIds = activeCompetitions.Select(x => x.Id).Distinct()

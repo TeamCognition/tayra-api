@@ -8,8 +8,11 @@ using Firdaws.Core;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Tayra.Common;
+using Tayra.Connectors.Atlassian;
+using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Models.Organizations;
 using Tayra.Services;
+using Tayra.Services.TaskConverters;
 
 namespace Tayra.Models.Seeder.DemoSeeds
 {
@@ -99,17 +102,36 @@ namespace Tayra.Models.Seeder.DemoSeeds
 
             Console.WriteLine("Seeding Profiles ...");
             organizationDb.Profiles.AddRange(demoData.Profiles);
-
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
             organizationDb.SaveChanges();
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
 
             Console.WriteLine("Seeding Segments ...");
-            foreach (var segment in demoData.Segments)
-            {
-                segment.IsReportingUnlocked = true;
-            }
             organizationDb.Segments.AddRange(demoData.Segments);
+            foreach (var profile in demoData.Profiles)
+            {
+                foreach (var segment in demoData.Segments)
+                {
+                    segment.IsReportingUnlocked = true;
+                    organizationDb.Integrations.Add(new Integration {
+                        SegmentId = segment.Id,
+                        ProfileId = profile.Id,
+                        Type = IntegrationType.ATJ,
+                        Fields = new List<IntegrationField>() {
+                            new IntegrationField {
+                                Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + "DemoProject-" + segment.Id,
+                                Value = "DONE"
+                            }
+                        }
+                    });
+                    organizationDb.ProfileExternalIds.Add(new ProfileExternalId {
+                        ExternalId = "External-" + profile.Id,
+                        IntegrationType = IntegrationType.ATJ,
+                        ProfileId = profile.Id,
+                        SegmentId = segment.Id
+                    });
+                }
+            }
 
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
             organizationDb.SaveChanges();
@@ -127,20 +149,64 @@ namespace Tayra.Models.Seeder.DemoSeeds
 
             Console.WriteLine("Seeding Tasks ...");
             Random rnd = new Random();
+            TokensService Tokens = new TokensService(organizationDb);
+            LogsService Logs = new LogsService(organizationDb);
+            ProfilesService Profiles = new ProfilesService(Tokens, Logs, null, organizationDb);
+            TasksService Tasks = new TasksService(organizationDb);
+            AssistantService Assistant = new AssistantService(organizationDb);
             foreach (var t in demoData.Tasks)
             {
                 t.LastModifiedDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(rnd.Next(-30, -2)));
                 t.Priority = TaskPriorities.Medium;
                 t.Status = TaskStatuses.Done;
                 t.Type = TaskTypes.Task;
+
+                TaskConverterJira taskConverter = new TaskConverterJira(
+                    organizationDb,
+                    Profiles,
+                    new WebhookEvent {
+                        JiraIssue = new JiraIssue {
+                            Id = "DemoIssue-" + t.Id,
+                            Fields = new JiraIssue.IssueFields {
+                                Status = new JiraStatus {
+                                    Category = new JiraStatusCategory {
+                                        Id = Connectors.Atlassian.IssueStatusCategories.Done,
+                                        Name = "Done"
+                                    },
+                                    Id = "DONE"
+                                },
+                                Project = new JiraProject {
+                                    Id = "DemoProject-" + t.SegmentId
+                                },
+                                StoryPointsCF = t.StoryPoints,
+                                Summary = t.Summary,
+                                TimeOriginalEstimate = t.TimeOriginalEstimatInMinutes * 60,
+                                Assignee = new JiraUser {
+                                    AccountId = "External-" + t.AssigneeProfileId
+                                },
+                                Labels = new string[] {"label-1", "label-2"},
+                                StatusCategoryChangeDate = DateHelper2.ParseDate(t.LastModifiedDateId),
+                                Priority = new JiraPriority {
+                                    Id = "3"
+                                },
+                                IssueType = new JiraIssueType {
+                                    Id = "123"
+                                }
+                            },
+                            Self = "https://demo.jira.com/this-and-that"
+                        }
+                    },
+                    TaskConverterJiraMode.TEST
+                );
+                TaskHelpers.DoStandardStuff(taskConverter, Tasks, Tokens, Logs, Assistant);
             }
-            organizationDb.Tasks.AddRange(demoData.Tasks);
+            // organizationDb.Tasks.AddRange(demoData.Tasks);
+            organizationDb.SaveChanges();
 
             Console.WriteLine("Seeding TokenTransactions ...");
-            TokensService Service = new TokensService(organizationDb);
             foreach (var singleTokenTransaction in demoData.Transactions)
             {
-                Service.CreateTransaction(
+                Tokens.CreateTransaction(
                     TokenType.OneUp,
                     singleTokenTransaction.ProfileId,
                     singleTokenTransaction.Value,

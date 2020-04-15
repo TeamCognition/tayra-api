@@ -116,7 +116,6 @@ namespace Tayra.API.Controllers
         [HttpPost("modifyTokens")]
         public IActionResult ModifyTokens([FromBody] ProfileModifyTokensDTO dto)
         {
-            Console.WriteLine(dto.ProfileId);
             ProfilesService.ModifyTokens(CurrentUser.Role, dto);
             DbContext.SaveChanges();
 

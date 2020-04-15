@@ -135,7 +135,7 @@ namespace Tayra.SyncServices.Tayra
                     ItemsGiftedChange = mr.Sum(x => x.ItemsGiftedChange)
                 });
             
-                var existing = organizationDb.SegmentReportsDaily.Where(x => x.SegmentId == s.SegmentId).Count(x => x.DateId == dateId);
+                var existing = organizationDb.SegmentReportsDaily.Count(x => x.DateId == dateId && x.SegmentId == s.SegmentId);
                 if (existing > 0)
                 {
                     logService.Log<SegmentReportDaily>($"deleting {existing} records from database");
@@ -202,6 +202,7 @@ namespace Tayra.SyncServices.Tayra
                 if (dmr.Count() == 0)
                     continue;
 
+                //active teams, active integrations, active challenges are missing. reports/overview
                 reportsToInsert.Add(new SegmentReportWeekly
                 {
                     SegmentId = s.SegmentId,

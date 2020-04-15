@@ -24,7 +24,7 @@ namespace Tayra.Services
 
         public class PlatformData
         { 
-            public float TokensTotal { get; set; }
+            public float TotalTokens { get; set; }
             public int? Praises { get; set; }
             public int? CompletedChallenges { get; set; } = 0;
         }

@@ -71,17 +71,16 @@ namespace Tayra.Services
                 .Where(x => x.TeamId == team.Id && x.Profile.Role == ProfileRoles.Member); //role check is maybe unnecessary
 
             IQueryable<TeamMembersGridDTO> query = from t in scope
-                                                   from pdr in DbContext.ProfileReportsWeekly.Where(x => t.ProfileId == x.ProfileId)
-                                                   .OrderByDescending(x => x.DateId).Take(1).DefaultIfEmpty()
+                                                   let ws = t.Profile.StatsWeekly.OrderByDescending(x => x.DateId).Where(x => x.SegmentId == team.SegmentId)
                                                    select new TeamMembersGridDTO
                                                    {
                                                        ProfileId = t.ProfileId,
                                                        Name = t.Profile.FirstName + " " + t.Profile.LastName,
                                                        Username = t.Profile.Username,
                                                        Avatar = t.Profile.Avatar,
-                                                       Speed = Math.Round(t.Profile.StatsWeekly.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
-                                                       Power = Math.Round(t.Profile.StatsWeekly.Select(x => x.PowerAverage).FirstOrDefault(), 2),
-                                                       Impact = Math.Round(t.Profile.StatsWeekly.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
+                                                       Speed = Math.Round(ws.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
+                                                       Power = Math.Round(ws.Select(x => x.PowerAverage).FirstOrDefault(), 2),
+                                                       Impact = Math.Round(ws.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
                                                        MemberFrom = t.Created
                                                    };
 
@@ -102,12 +101,13 @@ namespace Tayra.Services
             var pr = (from prw in DbContext.ProfileReportsWeekly
                       where profileIds.Contains(prw.ProfileId)
                       && prw.DateId == lastDateId
+                      group prw by prw.ProfileId into g
                       select new
                       {
-                          Username = prw.Profile.Username,
-                          FirstName = prw.Profile.FirstName,
-                          LastName = prw.Profile.LastName,
-                          OImpact = prw.OImpactAverage
+                          Username = g.First().Profile.Username,
+                          FirstName = g.First().Profile.FirstName,
+                          LastName = g.First().Profile.LastName,
+                          OImpact = g.Sum(x => x.OImpactAverage)
                       }).ToList();
 
             if (pr == null || !pr.Any())

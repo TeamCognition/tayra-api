@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Tayra.Services
 {
@@ -29,9 +28,30 @@ namespace Tayra.Services
         }
  
         //time values are in minutes
-        public static double CalcEffortScore(double time, int story)
+        private static double CalcEffortScore(double time, int story)
         {
             return (TimeFunction(time, story) / (8.2972 + 1.65));
+        }
+
+        public static double CalcEffortScore(double? timeInMinutes, double? autoTimeInMinutes, int story)
+        {
+            double timeSpentToUse = GetEffectiveTimeSpent(timeInMinutes, autoTimeInMinutes);
+            return CalcEffortScore(timeSpentToUse, story);
+        }
+
+        public static double GetEffectiveTimeSpent(double? timeInMinutes, double? autoTimeInMinutes)
+        {
+            double timeSpentToUse;
+            if (!timeInMinutes.HasValue && !autoTimeInMinutes.HasValue)
+            {
+                timeSpentToUse = 0.0;
+            }
+            else
+            {
+                timeSpentToUse = timeInMinutes ?? autoTimeInMinutes.Value / 3;
+            }
+
+            return timeSpentToUse;
         }
     }
 }
