@@ -79,8 +79,8 @@ namespace Tayra.Services
                 Statistics = (from srw in DbContext.SegmentReportsDaily
                               where srw.DateId >= reportParams.From && srw.DateId <= reportParams.To
                               where srw.SegmentId == reportParams.SegmentId
-                              orderby srw.DateId descending
                               group srw by 1 into r
+                              orderby r.Key descending
                               select new ReportOverviewDTO.StatisticsDTO
                               {
                                   ActiveTeams = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom && x.Created <= dateTo).Count(),
@@ -146,11 +146,11 @@ namespace Tayra.Services
 
             var ms = (from prd in DbContext.ProfileReportsDaily
                       where profileIds.Contains(prd.ProfileId)
-                      where prd.DateId >= reportParams.From && prd.DateId <= reportParams.To
+                      where prd.DateId >= reportParams.From && prd.DateId <= reportParams.To && prd.SegmentId == reportParams.SegmentId
                       where prd.Profile.Role == ProfileRoles.Member
-                      orderby prd.DateId descending
+                      orderby prd.DateId descending //for inventory
                       group prd by prd.ProfileId into m
-                      let w = DbContext.ProfileReportsWeekly.Where(x => x.ProfileId == m.Key)
+                      let w = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).Where(x => x.ProfileId == m.Key && x.SegmentId == reportParams.SegmentId)
                       select new ReportMembersPerformanceDTO.MembersPerformanceDTO
                       {
                           Name = $"{m.First().Profile.FirstName} {m.First().Profile.LastName}",
@@ -202,16 +202,19 @@ namespace Tayra.Services
             var startDateId = wr.First().DateId;
             var endDateId = wr.Last().DateId;
 
-            var maxTime = (from t in DbContext.Tasks
+            var minTime = (from t in DbContext.Tasks
                            where t.Status == TaskStatuses.Done
                            where t.LastModifiedDateId >= startDateId && t.LastModifiedDateId <= endDateId
+                           where t.SegmentId == reportParams.SegmentId
+                           where t.TimeSpentInMinutes > 0
                            orderby t.TimeSpentInMinutes, t.AutoTimeSpentInMinutes
                            select t.TimeSpentInMinutes ?? t.AutoTimeSpentInMinutes)
                         .FirstOrDefault();
 
-            var minTime = (from t in DbContext.Tasks
+            var maxTime = (from t in DbContext.Tasks
                            where t.Status == TaskStatuses.Done
                            where t.LastModifiedDateId >= startDateId && t.LastModifiedDateId <= endDateId
+                           where t.SegmentId == reportParams.SegmentId
                            orderby t.TimeSpentInMinutes descending, t.AutoTimeSpentInMinutes descending
                            select t.TimeSpentInMinutes ?? t.AutoTimeSpentInMinutes)
                            .FirstOrDefault();
@@ -339,7 +342,7 @@ namespace Tayra.Services
             var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
 
             var ms = (from prw in DbContext.ProfileReportsWeekly
-                      where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To
+                      where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To && prw.SegmentId == reportParams.SegmentId
                       where prw.ProfileRole == ProfileRoles.Member && profileIds.Contains(prw.ProfileId)
                       orderby prw.DateId ascending
                       group prw by prw.ProfileId into pr
@@ -357,7 +360,7 @@ namespace Tayra.Services
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Assist, Average = pr.Average(x => x.AssistsChange) },
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.TaskCompletion, Average = pr.Average(x => x.TasksCompletedChange) },
                           },
-                          HeatTrend = pr.Select(x => x.Heat).ToArray()
+                          HeatTrend = pr.Select(x => x.Heat).Take(8).ToArray()
                       }).ToArray();
 
             if (!ms.Any())
@@ -523,9 +526,9 @@ namespace Tayra.Services
             var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
 
             var ms = (from prw in DbContext.ProfileReportsWeekly
-                      where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To
+                      where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To && prw.SegmentId == reportParams.SegmentId
                       where prw.ProfileRole == ProfileRoles.Member && profileIds.Contains(prw.ProfileId)
-                      orderby prw.DateId ascending
+                      orderby prw.DateId ascending //order works?
                       group prw by prw.ProfileId into pr
                       select new ReportItemsTeamMetricsDTO.MemberDTO
                       {

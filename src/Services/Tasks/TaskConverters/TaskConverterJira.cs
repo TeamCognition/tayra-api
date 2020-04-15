@@ -141,7 +141,7 @@ namespace Tayra.Services.TaskConverters
             {
                 throw new ApplicationException($"Jira project with Id: {GetExternalProjectId()} is not connected to any tayra segments");
             }
-            return We.JiraIssue.Fields.Status.Id != GetRewardStatus().Value;
+            return We.JiraIssue.Fields.Status.Id == GetRewardStatus().Value;
         }
 
         protected override int? GetAutoTimeSpentInMinutes()

@@ -195,8 +195,6 @@ namespace Tayra.Services
             var cTokenId = DbContext.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).First();
             var upsTokenId = DbContext.Tokens.Where(x => x.Type == TokenType.OneUp).Select(x => x.Id).First();
             var query = from p in scope
-                        from prw in DbContext.ProfileReportsWeekly.Where(x => p.Id == x.ProfileId)
-                            .OrderByDescending(x => x.DateId).Take(1).DefaultIfEmpty()
                         from title in DbContext.ProfileInventoryItems.Where(x => p.Id == x.ProfileId
                              && x.IsActive == true && x.ItemType == ItemTypes.TayraTitle).DefaultIfEmpty()
                         select new ProfileSummaryGridDTO
@@ -308,49 +306,47 @@ namespace Tayra.Services
 
         public ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId)
         {
-            var prw = DbContext.ProfileReportsWeekly
-                                    .OrderByDescending(x => x.DateId)
-                                    .Where(x => x.ProfileId == profileId)
-                                    .Take(4).ToList();
-
-            var profileWeeklyDateId = prw?.FirstOrDefault()?.DateId ?? int.MaxValue;
-            var prd = DbContext.ProfileReportsDaily
-                                .OrderByDescending(x => x.DateId)
-                                .Where(x => x.DateId <= profileWeeklyDateId)
-                                .FirstOrDefault(x => x.ProfileId == profileId);
+            var prd = (from r in DbContext.ProfileReportsDaily
+                        where r.ProfileId == profileId
+                        group r by 1 into g
+                        select new
+                        {
+                            AssistsAverage = g.Average(x => x.AssistsChange),
+                            TasksCompletedAverage = g.Average(x => x.TasksCompletedChange),
+                            ComplexityAverage = g.Average(x => x.ComplexityChange)
+                        }).FirstOrDefault();
 
             var tm = DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == profileId && x.TeamId.HasValue);
 
-            var trw = new List<TeamReportWeekly>();
+            var trw = new { AssistsAverage = 0d, TasksCompletedAverage = 0d, ComplexityAverage = 0d };
             if (tm != null)
             {
-                trw = DbContext.TeamReportsWeekly
-                            .OrderByDescending(x => x.DateId)
-                            .Where(x => x.DateId <= profileWeeklyDateId && x.TeamId == tm.TeamId)
-                            .Take(4).ToList();
+                trw = (from r in DbContext.TeamReportsWeekly
+                       where r.TeamId == tm.TeamId
+                       group r by 1 into g
+                       select new
+                       {
+                           AssistsAverage = g.Average(x => x.AssistsChange),
+                           TasksCompletedAverage = g.Average(x => x.TasksCompletedChange),
+                           ComplexityAverage = g.Average(x => x.ComplexityChange)
+                       }).FirstOrDefault();
 
-            }
-
-            if (!prw.Any()) //Average throws exception if count is 0
-                prw = null;
-
-            if (!trw.Any()) //Average throws exception if count is 0
-                trw = null;
+            };
 
             return new ProfileRadarChartDTO
             {
-                AssistsAverage = Math.Round(prw?.Average(x => x.AssistsTotalAverage) ?? 0, 2),
-                AssistsTotal = prd?.AssistsTotal,
+                AssistsAverage = Math.Round(prd?.AssistsAverage ?? 0f, 2),
+                AssistsTotal = 0,
 
-                TasksCompletedAverage = Math.Round(prw?.Average(x => x.TasksCompletedChange) ?? 0, 2),
-                TasksCompletedTotal = prd?.TasksCompletedTotal,
+                TasksCompletedAverage = Math.Round(prd?.TasksCompletedAverage ?? 0f, 2),
+                TasksCompletedTotal = 0,
 
-                ComplexityAverage = Math.Round((prw?.Sum(x => x.ComplexityChange) ?? 0) / ((float)Math.Max(prw?.Sum(x => x.TasksCompletedChange) ?? 0, 1)) , 2),
-                ComplexityTotal = prd?.ComplexityTotal,
+                ComplexityAverage = Math.Round(prd?.ComplexityAverage ?? 0f, 2),
+                ComplexityTotal = 0,
 
-                TeamAssistsAverage = Math.Round(trw?.Average(x => x.AssistsAverage) ?? 0, 2),
-                TeamComplexityAverage = Math.Round((trw?.Sum(x => x.ComplexityChange) ?? 0) / ((float)Math.Max(trw?.Sum(x => x.TasksCompletedChange) ?? 0, 1)), 2),
-                TeamTasksCompletedAverage = Math.Round(trw?.Average(x => x.TasksCompletedAverage) ?? 0, 2)
+                TeamAssistsAverage = Math.Round(trw?.AssistsAverage ?? 0f, 2),
+                TeamComplexityAverage = Math.Round(trw?.ComplexityAverage ?? 0f, 2),
+                TeamTasksCompletedAverage = Math.Round(trw?.TasksCompletedAverage ?? 0f, 2),
             };
         }
 
@@ -391,15 +387,28 @@ namespace Tayra.Services
             profileDto.Title = activeItems.Title;
             profileDto.Border = activeItems.Border;
 
-            var weeklyStats = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).Where(x => x.ProfileId == profileDto.ProfileId).Take(4).ToArray();
-            var lastWeeklyStats = weeklyStats.FirstOrDefault();
-            profileDto.Power = lastWeeklyStats?.PowerAverage;
-            profileDto.Speed = lastWeeklyStats?.SpeedAverage;
-            profileDto.OImpact = lastWeeklyStats?.OImpactAverage;
+            var lastWeeklyStats = (from r in DbContext.ProfileReportsWeekly
+                                   where r.ProfileId == profileDto.ProfileId
+                                   group r by r.DateId into g
+                                   orderby g.Key descending
+                                   select new
+                                   {
+                                       DateId = g.Select(x => x.DateId).First(),
+                                       PowerAverage = g.Average(x => x.PowerAverage),
+                                       SpeedAverage = g.Average(x => x.SpeedAverage),
+                                       OImpactAverage = g.Average(x => x.OImpactAverage),
+                                       HeatTrend = g.Select(x => Math.Round(x.Heat, 2)).Take(4).ToArray()
+                                   }).FirstOrDefault();
+
+            profileDto.Power = Math.Round(lastWeeklyStats?.PowerAverage ?? 0d, 2);
+            profileDto.Speed = Math.Round(lastWeeklyStats?.SpeedAverage ?? 0d, 2);
+            profileDto.OImpact = Math.Round(lastWeeklyStats?.OImpactAverage ?? 0d, 2);
+
+            //var heatStats = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).Where(x => x.ProfileId == profileDto.ProfileId).GroupBy(x => x.ProfileId)
             profileDto.Heat = lastWeeklyStats == null ? null : new ProfileViewDTO.HeatDTO
             {
                 LastDateId = lastWeeklyStats.DateId,
-                Values = weeklyStats.Select(x => x.Heat).ToArray()
+                Values = lastWeeklyStats.HeatTrend
             };
 
             return profileDto;
@@ -411,6 +420,7 @@ namespace Tayra.Services
             {
                 throw new FirdawsSecurityException("You are not allowed to perform this action!");
             }
+
             TokensService.CreateTransaction(TokenType.CompanyToken, dto.ProfileId, dto.TokenValue, TransactionReason.Manual, null);
         }
 
@@ -454,9 +464,39 @@ namespace Tayra.Services
 
         public ProfileActivityChartDTO[] GetProfileActivityChart(int profileId)
         {
-            return DbContext.ProfileReportsDaily.Where(x => x.ProfileId == profileId && x.ActivityChartJson != null).OrderBy(x => x.DateId).Select(x => x.ActivityChartJson).Take(30).ToArray().Select(JsonConvert.DeserializeObject<ProfileActivityChartDTO>).ToArray();
+            var oldestDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-31));
+            return (from r in DbContext.ProfileReportsDaily
+                    where r.ProfileId == profileId && r.ActivityChartJson != null
+                    where r.DateId >= oldestDateId
+                    orderby r.DateId
+                    select new
+                    {
+                        DateId = r.DateId,
+                        ActivityChart = JsonConvert.DeserializeObject<ProfileActivityChartDTO>(r.ActivityChartJson)
+                    }).ToArray()
+                    .GroupBy(x => x.DateId)
+                    .Select(g => new ProfileActivityChartDTO
+                    {
+                        DateId = g.Key,
+                        AssistsData = new ProfileActivityChartDTO.AssistsDTO
+                        {
+                            Endorsed = g.SelectMany(x => x.ActivityChart.AssistsData?.Endorsed ?? new string[0]).ToArray(),
+                            EndorsedBy = g.SelectMany(x => x.ActivityChart.AssistsData.EndorsedBy).ToArray()
+                        },
+                        DeliveryData = new ProfileActivityChartDTO.DeliveryDTO
+                        {
+                            TaskName = g.SelectMany(x => x.ActivityChart.DeliveryData.TaskName).ToArray(),
+                            TokensGained = g.Sum(x => x.ActivityChart.DeliveryData.TokensGained),
+                        },
+                        ItemActivityData = new ProfileActivityChartDTO.ItemActivityDTO
+                        {
+                            Bought = g.SelectMany(x => x.ActivityChart.ItemActivityData?.Bought ?? new string[0]).ToArray(),
+                            Disenchanted = g.SelectMany(x => x.ActivityChart.ItemActivityData?.Disenchanted ?? new string[0]).ToArray(),
+                            GiftsReceived = g.SelectMany(x => x.ActivityChart.ItemActivityData?.GiftsReceived ?? new string[0]).ToArray(),
+                            GiftsSent = g.SelectMany(x => x.ActivityChart.ItemActivityData?.GiftsSent ?? new string[0]).ToArray(),
+                        }
+                    }).ToArray();
         }
-
 
         #endregion
 

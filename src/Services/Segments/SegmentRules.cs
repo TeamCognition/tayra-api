@@ -1,5 +1,4 @@
-﻿using System;
-using Tayra.Common;
+﻿using Tayra.Common;
 
 namespace Tayra.Services
 {

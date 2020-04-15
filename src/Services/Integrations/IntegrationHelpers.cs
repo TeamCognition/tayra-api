@@ -1,4 +1,3 @@
-
 using System;
 using System.Linq;
 using Tayra.Common;
@@ -15,7 +14,8 @@ namespace Tayra.Services
             {
                 var rewardStatusField = organizationDb
                                     .IntegrationFields
-                                    .LastOrDefault(x => x.Key == ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + projectId);
+                                    .OrderByDescending(x => x.Created)
+                                    .FirstOrDefault(x => x.Key == ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + projectId);
                 return rewardStatusField?.IntegrationId;
             }
             throw new ArgumentException("Integration type not supported");
