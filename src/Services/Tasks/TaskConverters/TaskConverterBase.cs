@@ -92,7 +92,11 @@ namespace Tayra.Services.TaskConverters
                         )
                         .Select(ap => ap.Id)
                         .ToArray();
-                    advisorService.ConcludeActionPoints(GetCurrentSegmentId().Value, aps, null);
+
+                    if (aps.Length > 0)
+                    {
+                        advisorService.ConcludeActionPoints(GetCurrentSegmentId().Value, aps, null);
+                    }
                 }
             }
         }
@@ -198,7 +202,7 @@ namespace Tayra.Services.TaskConverters
                     },
                     ProfileId = AssigneeProfile.Id
                 };
-                if (EffortScoreDiff.HasValue)
+                if (IsCompleted() && EffortScoreDiff.HasValue)
                 {
                     logData.Data.Add("effortScore", Math.Round(EffortScoreDiff.Value, 2).ToString());
                 }
