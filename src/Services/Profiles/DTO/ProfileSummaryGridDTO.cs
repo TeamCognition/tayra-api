@@ -17,18 +17,16 @@ namespace Tayra.Services
 
         public class PersonalData
         {
-            public DateTime? BornOn { get; set; }
             public string JobPosition { get; set; }
             public DateTime? EmployedOn { get; set; }
             public DateTime JoinDate { get; set; }
         }
 
         public class PlatformData
-        {
-            public float? TokensTotal { get; set; } = 0;
-            public string Title { get; set; }
-            public int? OneUps { get; set; }
-            public int CompletedChallenges { get; set; }
+        { 
+            public float TokensTotal { get; set; }
+            public int? Praises { get; set; }
+            public int? CompletedChallenges { get; set; } = 0;
         }
 
         public class Team

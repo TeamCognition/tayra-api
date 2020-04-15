@@ -207,16 +207,14 @@ namespace Tayra.Services
                             Avatar = p.Avatar,
                             PersonalInfo = new ProfileSummaryGridDTO.PersonalData 
                             { 
-                                BornOn = p.BornOn,
                                 JobPosition = p.JobPosition,
                                 EmployedOn = p.EmployedOn, 
                                 JoinDate = p.Created
                             },
                             PlatformInfo = new ProfileSummaryGridDTO.PlatformData
                             {
-                                TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == cTokenId).Select(x => x.FinalBalance).FirstOrDefault(), 2), 
-                                Title = title.Item.Name, 
-                                OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value), 
+                                TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == cTokenId).OrderByDescending(x => x.Created).Select(x => x.FinalBalance).FirstOrDefault(), 2),
+                                Praises = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value),
                                 CompletedChallenges = p.CompletedChallenges.Count() 
                             },
                             Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment 
@@ -407,10 +405,11 @@ namespace Tayra.Services
 
         public void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto)
         {
+            Console.WriteLine(dto.ProfileId);
             if (profileRole != ProfileRoles.Admin)
             {
                 throw new FirdawsSecurityException("You are not allowed to perform this action!");
-            }
+            }   
             TokensService.CreateTransaction(TokenType.CompanyToken, dto.ProfileId, dto.TokenValue, TransactionReason.Manual, null);
         }
 
