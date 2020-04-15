@@ -196,7 +196,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                             Self = "https://demo.jira.com/this-and-that"
                         }
                     },
-                    false
+                    TaskConverterJiraMode.TEST
                 );
                 TaskHelpers.DoStandardStuff(taskConverter, Tasks, Tokens, Logs, Advisor);
             }

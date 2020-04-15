@@ -78,7 +78,7 @@ namespace Tayra.SyncServices
             var tasks = jiraConnector.GetBulkIssuesWithChangelog(integrationId.Value, "status", jiraProjectId);
             foreach (var task in tasks)
             {
-                TaskHelpers.DoStandardStuff(new TaskConverterJira(organizationDb, profilesService, task, false), tasksService, null, null, null);
+                TaskHelpers.DoStandardStuff(new TaskConverterJira(organizationDb, profilesService, task, TaskConverterJiraMode.BULK), tasksService, null, null, null);
             }
             organizationDb.SaveChanges();
         }
