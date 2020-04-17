@@ -130,7 +130,8 @@ namespace Tayra.Services.TaskConverters
             {
                 RewardStatusCache = DbContext
                     .IntegrationFields
-                    .LastOrDefault(x => x.Key == ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + GetExternalProjectId());
+                    .OrderByDescending(x => x.Created)
+                    .FirstOrDefault(x => x.Key == ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + GetExternalProjectId());
             }
             return RewardStatusCache;
         }
@@ -146,71 +147,69 @@ namespace Tayra.Services.TaskConverters
 
         protected override int? GetAutoTimeSpentInMinutes()
         {
-            if (Mode != TaskConverterJiraMode.TEST)
+            if (Mode == TaskConverterJiraMode.TEST)
+                return null;
+            
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext);
+            int? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
+            if (!integrationId.HasValue)
             {
-                var jiraConnector = new AtlassianJiraConnector(null, DbContext);
-                int? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
-                if (!integrationId.HasValue)
-                {
-                    throw new ApplicationException($"Jira project with Id: {GetExternalProjectId()} is not connected to any tayra segments");
-                }
-                var statuses = jiraConnector.GetIssueStatuses(integrationId.Value, GetExternalProjectId(), We.JiraIssue.Fields.IssueType.Id);
-                var todoStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
-                var inProgressStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.InProgress).ToList();
-                var doneStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.Done).ToList();
-                var rewardStatus = GetRewardStatus();
-
-                var issueChangelogs = We.JiraIssue.TaskChangelogs;
-                if (issueChangelogs == null || issueChangelogs.Count >= 100)
-                {
-                    issueChangelogs = jiraConnector.GetIssueChangelog(integrationId.Value, GetExternalId(), "status");
-                }
-
-                DateTime? enteredInProgress = null;
-                DateTime? enteredRewardStatus = null;
-                foreach (var cl in issueChangelogs)
-                {
-                    //if from todo to inProgress
-                    if (todoStatuses.Select(x => x.Id).Contains(cl.From) &&
-                        inProgressStatuses.Select(x => x.Id).Contains(cl.To))
-                    {
-                        enteredInProgress = cl.Created;
-                    }
-                    else if (cl.To == rewardStatus.Value)
-                    {
-                        enteredRewardStatus = cl.Created;
-                    }
-                    //back in progress from rewardId
-                    else if (cl.From == rewardStatus.Value &&
-                            !doneStatuses.Select(x => x.Id).Contains(cl.To))
-                    {
-                        enteredInProgress = cl.Created;
-                        enteredRewardStatus = null;
-                    }
-                    //back in progress from done
-                    else if (doneStatuses.Select(x => x.Id).Contains(cl.From) &&
-                            cl.To != rewardStatus.Value.ToString())
-                    {
-                        enteredInProgress = cl.Created;
-                        enteredRewardStatus = null;
-                    }
-                }
-                
-                if (!enteredInProgress.HasValue)
-                {
-                    if (!enteredRewardStatus.HasValue)
-                    {
-                        throw new ApplicationException("timespent fallback calculations crashed");
-                    }
-                    enteredInProgress = enteredRewardStatus;
-                }
-
-                var days = (enteredRewardStatus.Value - enteredInProgress.Value).Days;
-                var hours = (enteredRewardStatus.Value - enteredInProgress.Value).TotalHours;
-
-                return (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes;
+                throw new ApplicationException($"Jira project with Id: {GetExternalProjectId()} is not connected to any tayra segments");
             }
-            return null;
+            var statuses = jiraConnector.GetIssueStatuses(integrationId.Value, GetExternalProjectId(), We.JiraIssue.Fields.IssueType.Id);
+            var todoStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.ToDo).ToList();
+            var inProgressStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.InProgress).ToList();
+            var doneStatuses = statuses.Where(x => x.Category.Id == IssueStatusCategories.Done).ToList();
+            var rewardStatus = GetRewardStatus();
+
+            //GetIssueWithChangelogs is limited to 100 changelogs, if there are more, we need to make additional API call for that task
+            var changelogs = We.JiraIssue.TaskChangelogs != null && We.JiraIssue.TaskChangelogs.Count() < 100
+                ? We.JiraIssue.TaskChangelogs
+                : jiraConnector.GetIssueChangelog(integrationId.Value, GetExternalId(), "status");
+
+            DateTime? enteredInProgress = null;
+            DateTime? enteredRewardStatus = null;
+            foreach (var cl in changelogs)
+            {
+                //if from todo to inProgress
+                if (todoStatuses.Select(x => x.Id).Contains(cl.From) &&
+                    inProgressStatuses.Select(x => x.Id).Contains(cl.To))
+                {
+                    enteredInProgress = cl.Created;
+                }
+                else if (cl.To == rewardStatus.Value)
+                {
+                    enteredRewardStatus = cl.Created;
+                }
+                //back in progress from rewardId
+                else if (cl.From == rewardStatus.Value &&
+                        !doneStatuses.Select(x => x.Id).Contains(cl.To))
+                {
+                    enteredInProgress = cl.Created;
+                    enteredRewardStatus = null;
+                }
+                //back in progress from done
+                else if (doneStatuses.Select(x => x.Id).Contains(cl.From) &&
+                        cl.To != rewardStatus.Value.ToString())
+                {
+                    enteredInProgress = cl.Created;
+                    enteredRewardStatus = null;
+                }
+            }
+                
+            if (!enteredInProgress.HasValue)
+            {
+                if (!enteredRewardStatus.HasValue)
+                {
+                    throw new ApplicationException("timespent fallback calculations crashed");
+                }
+                enteredInProgress = enteredRewardStatus;
+            }
+
+            var days = (enteredRewardStatus.Value - enteredInProgress.Value).Days;
+            var hours = (enteredRewardStatus.Value - enteredInProgress.Value).TotalHours;
+
+            return (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes;
         }
 
         protected override string GetIssueStatusName()

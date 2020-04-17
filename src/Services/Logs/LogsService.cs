@@ -63,7 +63,6 @@ namespace Tayra.Services
                     ShopId = dto.ShopId.Value,
                 });
             }
-
         }
 
         public void SendLog(int profileId, LogEvents logEvent, ITemplateEmailDTO dto)
@@ -83,7 +82,7 @@ namespace Tayra.Services
 
         public GridData<LogGridDTO> GetGridData(LogGridParams gridParams)
         {
-            IQueryable<Log> query = DbContext.Logs;
+            IQueryable<Log> query = DbContext.Logs.OrderByDescending(x => x.Created);
 
             if (gridParams.ProfileIds.Length > 0)
             {

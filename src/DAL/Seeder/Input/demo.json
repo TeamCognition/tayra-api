@@ -3,283 +3,283 @@
   "Profiles": [
     {
       "Id": 2,
-      "FirstName": "Tonia",
-      "LastName": "Clark",
-      "Username": "tonia.clark",
-      "Role": "Manager"
+      "FirstName": "Lucia",
+      "LastName": "Baker",
+      "Username": "lucia.baker",
+      "Role": "Member"
     },
     {
       "Id": 3,
-      "FirstName": "Fitzgerald",
-      "LastName": "Randolph",
-      "Username": "fitzgerald.randolph",
+      "FirstName": "Kimberley",
+      "LastName": "Kirby",
+      "Username": "kimberley.kirby",
       "Role": "Member"
     },
     {
       "Id": 4,
-      "FirstName": "Earnestine",
-      "LastName": "Doyle",
-      "Username": "earnestine.doyle",
+      "FirstName": "Beard",
+      "LastName": "Ware",
+      "Username": "beard.ware",
       "Role": "Member"
     },
     {
       "Id": 5,
-      "FirstName": "Annette",
-      "LastName": "Houston",
-      "Username": "annette.houston",
+      "FirstName": "Theresa",
+      "LastName": "Ashley",
+      "Username": "theresa.ashley",
       "Role": "Member"
     },
     {
       "Id": 6,
-      "FirstName": "Clements",
-      "LastName": "Avila",
-      "Username": "clements.avila",
+      "FirstName": "Alexis",
+      "LastName": "Murray",
+      "Username": "alexis.murray",
       "Role": "Manager"
     },
     {
       "Id": 7,
-      "FirstName": "Crawford",
-      "LastName": "Hammond",
-      "Username": "crawford.hammond",
+      "FirstName": "Kelley",
+      "LastName": "Harris",
+      "Username": "kelley.harris",
       "Role": "Member"
     },
     {
       "Id": 8,
-      "FirstName": "Vanessa",
-      "LastName": "Pearson",
-      "Username": "vanessa.pearson",
+      "FirstName": "Geraldine",
+      "LastName": "Horton",
+      "Username": "geraldine.horton",
       "Role": "Member"
     },
     {
       "Id": 9,
-      "FirstName": "Latisha",
-      "LastName": "Benjamin",
-      "Username": "latisha.benjamin",
+      "FirstName": "Pace",
+      "LastName": "Lang",
+      "Username": "pace.lang",
       "Role": "Member"
     },
     {
       "Id": 10,
-      "FirstName": "Claire",
-      "LastName": "Pierce",
-      "Username": "claire.pierce",
+      "FirstName": "Cruz",
+      "LastName": "Vinson",
+      "Username": "cruz.vinson",
       "Role": "Member"
     },
     {
       "Id": 11,
-      "FirstName": "Cross",
-      "LastName": "Munoz",
-      "Username": "cross.munoz",
+      "FirstName": "Wilma",
+      "LastName": "Kelley",
+      "Username": "wilma.kelley",
       "Role": "Member"
     },
     {
       "Id": 12,
-      "FirstName": "Dickson",
-      "LastName": "Witt",
-      "Username": "dickson.witt",
+      "FirstName": "Felecia",
+      "LastName": "Parks",
+      "Username": "felecia.parks",
       "Role": "Member"
     },
     {
       "Id": 13,
-      "FirstName": "Stevens",
-      "LastName": "Young",
-      "Username": "stevens.young",
-      "Role": "Manager"
+      "FirstName": "Vargas",
+      "LastName": "Hahn",
+      "Username": "vargas.hahn",
+      "Role": "Member"
     },
     {
       "Id": 14,
-      "FirstName": "Peterson",
-      "LastName": "House",
-      "Username": "peterson.house",
-      "Role": "Manager"
+      "FirstName": "Maldonado",
+      "LastName": "Freeman",
+      "Username": "maldonado.freeman",
+      "Role": "Member"
     },
     {
       "Id": 15,
-      "FirstName": "Sonya",
-      "LastName": "Nguyen",
-      "Username": "sonya.nguyen",
+      "FirstName": "Cecile",
+      "LastName": "Blanchard",
+      "Username": "cecile.blanchard",
       "Role": "Member"
     },
     {
       "Id": 16,
-      "FirstName": "Karin",
-      "LastName": "Morris",
-      "Username": "karin.morris",
+      "FirstName": "Beverley",
+      "LastName": "Mckee",
+      "Username": "beverley.mckee",
       "Role": "Member"
     },
     {
       "Id": 17,
-      "FirstName": "Sherman",
-      "LastName": "Duke",
-      "Username": "sherman.duke",
-      "Role": "Manager"
+      "FirstName": "Deann",
+      "LastName": "Frank",
+      "Username": "deann.frank",
+      "Role": "Member"
     },
     {
       "Id": 18,
-      "FirstName": "Misty",
-      "LastName": "Pace",
-      "Username": "misty.pace",
+      "FirstName": "Padilla",
+      "LastName": "Burks",
+      "Username": "padilla.burks",
       "Role": "Member"
     },
     {
       "Id": 19,
-      "FirstName": "Rhodes",
-      "LastName": "Rosa",
-      "Username": "rhodes.rosa",
+      "FirstName": "Moreno",
+      "LastName": "Mann",
+      "Username": "moreno.mann",
       "Role": "Member"
     },
     {
       "Id": 20,
-      "FirstName": "Alford",
-      "LastName": "Garrett",
-      "Username": "alford.garrett",
+      "FirstName": "Jacobson",
+      "LastName": "Carter",
+      "Username": "jacobson.carter",
       "Role": "Member"
     },
     {
       "Id": 21,
-      "FirstName": "Mclean",
-      "LastName": "Little",
-      "Username": "mclean.little",
+      "FirstName": "Velma",
+      "LastName": "Solomon",
+      "Username": "velma.solomon",
       "Role": "Manager"
     },
     {
       "Id": 22,
-      "FirstName": "Yolanda",
-      "LastName": "Morales",
-      "Username": "yolanda.morales",
-      "Role": "Manager"
+      "FirstName": "Claudine",
+      "LastName": "Robbins",
+      "Username": "claudine.robbins",
+      "Role": "Member"
     },
     {
       "Id": 23,
-      "FirstName": "Montgomery",
-      "LastName": "Rogers",
-      "Username": "montgomery.rogers",
-      "Role": "Manager"
+      "FirstName": "Jimmie",
+      "LastName": "Pena",
+      "Username": "jimmie.pena",
+      "Role": "Member"
     },
     {
       "Id": 24,
-      "FirstName": "Noel",
-      "LastName": "Lamb",
-      "Username": "noel.lamb",
+      "FirstName": "Sandoval",
+      "LastName": "Sosa",
+      "Username": "sandoval.sosa",
       "Role": "Member"
     },
     {
       "Id": 25,
-      "FirstName": "Burris",
-      "LastName": "Higgins",
-      "Username": "burris.higgins",
+      "FirstName": "Phillips",
+      "LastName": "Koch",
+      "Username": "phillips.koch",
       "Role": "Member"
     },
     {
       "Id": 26,
-      "FirstName": "Meagan",
-      "LastName": "Griffith",
-      "Username": "meagan.griffith",
+      "FirstName": "Josie",
+      "LastName": "Bolton",
+      "Username": "josie.bolton",
       "Role": "Member"
     },
     {
       "Id": 27,
-      "FirstName": "Lolita",
-      "LastName": "Pratt",
-      "Username": "lolita.pratt",
+      "FirstName": "Evans",
+      "LastName": "Hardy",
+      "Username": "evans.hardy",
       "Role": "Member"
     },
     {
       "Id": 28,
-      "FirstName": "Ada",
-      "LastName": "Hines",
-      "Username": "ada.hines",
+      "FirstName": "Latisha",
+      "LastName": "Rhodes",
+      "Username": "latisha.rhodes",
       "Role": "Member"
     },
     {
       "Id": 29,
-      "FirstName": "Esmeralda",
-      "LastName": "Woodward",
-      "Username": "esmeralda.woodward",
-      "Role": "Member"
+      "FirstName": "Hope",
+      "LastName": "Slater",
+      "Username": "hope.slater",
+      "Role": "Manager"
     },
     {
       "Id": 30,
-      "FirstName": "Sophia",
-      "LastName": "Reynolds",
-      "Username": "sophia.reynolds",
+      "FirstName": "Lilia",
+      "LastName": "Gilbert",
+      "Username": "lilia.gilbert",
       "Role": "Member"
     },
     {
       "Id": 31,
-      "FirstName": "Gates",
-      "LastName": "Dickerson",
-      "Username": "gates.dickerson",
+      "FirstName": "Jacklyn",
+      "LastName": "Townsend",
+      "Username": "jacklyn.townsend",
       "Role": "Member"
     },
     {
       "Id": 32,
-      "FirstName": "Bruce",
-      "LastName": "Branch",
-      "Username": "bruce.branch",
-      "Role": "Manager"
+      "FirstName": "Brooke",
+      "LastName": "Porter",
+      "Username": "brooke.porter",
+      "Role": "Member"
     },
     {
       "Id": 33,
-      "FirstName": "Claudia",
-      "LastName": "Talley",
-      "Username": "claudia.talley",
+      "FirstName": "Campbell",
+      "LastName": "Cash",
+      "Username": "campbell.cash",
       "Role": "Member"
     },
     {
       "Id": 34,
-      "FirstName": "Samantha",
-      "LastName": "Perry",
-      "Username": "samantha.perry",
+      "FirstName": "Carolyn",
+      "LastName": "Kinney",
+      "Username": "carolyn.kinney",
       "Role": "Member"
     },
     {
       "Id": 35,
-      "FirstName": "Grace",
-      "LastName": "Randall",
-      "Username": "grace.randall",
+      "FirstName": "Claudette",
+      "LastName": "Norman",
+      "Username": "claudette.norman",
       "Role": "Member"
     },
     {
       "Id": 36,
-      "FirstName": "Anastasia",
-      "LastName": "Wheeler",
-      "Username": "anastasia.wheeler",
+      "FirstName": "Chavez",
+      "LastName": "Hutchinson",
+      "Username": "chavez.hutchinson",
       "Role": "Member"
     },
     {
       "Id": 37,
-      "FirstName": "Hodges",
-      "LastName": "Atkinson",
-      "Username": "hodges.atkinson",
+      "FirstName": "Dawn",
+      "LastName": "Steele",
+      "Username": "dawn.steele",
       "Role": "Member"
     },
     {
       "Id": 38,
-      "FirstName": "Mara",
-      "LastName": "Daugherty",
-      "Username": "mara.daugherty",
+      "FirstName": "Josefa",
+      "LastName": "Hendricks",
+      "Username": "josefa.hendricks",
       "Role": "Member"
     },
     {
       "Id": 39,
-      "FirstName": "Summer",
-      "LastName": "Douglas",
-      "Username": "summer.douglas",
-      "Role": "Manager"
+      "FirstName": "Kaitlin",
+      "LastName": "Myers",
+      "Username": "kaitlin.myers",
+      "Role": "Member"
     },
     {
       "Id": 40,
-      "FirstName": "Frank",
-      "LastName": "Marsh",
-      "Username": "frank.marsh",
+      "FirstName": "Juanita",
+      "LastName": "Kane",
+      "Username": "juanita.kane",
       "Role": "Member"
     },
     {
       "Id": 41,
-      "FirstName": "Iva",
-      "LastName": "Mclaughlin",
-      "Username": "iva.mclaughlin",
-      "Role": "Manager"
+      "FirstName": "Tasha",
+      "LastName": "Tyler",
+      "Username": "tasha.tyler",
+      "Role": "Member"
     }
   ],
   "Segments": [
@@ -304,13 +304,13 @@
       "Id": 1,
       "Name": "Team 1",
       "Key": "TEAM 1",
-      "SegmentId": 3
+      "SegmentId": 2
     },
     {
       "Id": 2,
       "Name": "Team 2",
       "Key": "TEAM 2",
-      "SegmentId": 3
+      "SegmentId": 1
     },
     {
       "Id": 3,
@@ -322,13 +322,13 @@
       "Id": 4,
       "Name": "Team 4",
       "Key": "TEAM 4",
-      "SegmentId": 2
+      "SegmentId": 3
     },
     {
       "Id": 5,
       "Name": "Team 5",
       "Key": "TEAM 5",
-      "SegmentId": 1
+      "SegmentId": 2
     },
     {
       "Id": 6,
@@ -340,7 +340,7 @@
       "Id": 7,
       "Name": "Team 7",
       "Key": "TEAM 7",
-      "SegmentId": 3
+      "SegmentId": 1
     },
     {
       "Id": 8,
@@ -358,68 +358,293 @@
       "Id": 10,
       "Name": "Team 10",
       "Key": "TEAM 10",
-      "SegmentId": 1
+      "SegmentId": 3
     }
   ],
   "ProfileAssignments": [
     {
-      "ProfileId": 17,
-      "TeamId": 1,
+      "ProfileId": 24,
+      "TeamId": 8,
       "SegmentId": 3
     },
     {
-      "ProfileId": 36,
+      "ProfileId": 4,
+      "TeamId": 7,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 8,
+      "TeamId": 1,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 28,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 9,
+      "TeamId": 6,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 9,
+      "TeamId": 10,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 19,
+      "TeamId": 10,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 31,
+      "TeamId": 3,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 35,
+      "TeamId": 6,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 3,
       "TeamId": 9,
       "SegmentId": 3
     },
     {
-      "ProfileId": 40,
+      "ProfileId": 29,
       "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 6,
-      "TeamId": 4,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 13,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 39,
-      "TeamId": 7,
       "SegmentId": 3
     },
     {
-      "ProfileId": 32,
+      "ProfileId": 37,
       "TeamId": 4,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 13,
-      "TeamId": 5,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 40,
-      "TeamId": 7,
       "SegmentId": 3
     },
     {
-      "ProfileId": 35,
-      "TeamId": 5,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 6,
-      "TeamId": 6,
+      "ProfileId": 5,
+      "TeamId": 8,
       "SegmentId": 3
     },
     {
       "ProfileId": 4,
       "TeamId": 5,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 20,
+      "TeamId": 2,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 38,
+      "TeamId": 1,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 8,
+      "TeamId": 3,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 3,
+      "TeamId": 4,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 32,
+      "TeamId": 7,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 30,
+      "TeamId": 2,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 15,
+      "TeamId": 9,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 11,
+      "TeamId": 4,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 38,
+      "TeamId": 1,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 8,
+      "TeamId": 3,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 32,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 14,
+      "TeamId": 1,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 39,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 5,
+      "TeamId": 9,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 40,
+      "TeamId": 6,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 41,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 38,
+      "TeamId": 3,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 37,
+      "TeamId": 2,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 31,
+      "TeamId": 2,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 38,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 25,
+      "TeamId": 10,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 16,
+      "TeamId": 2,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 20,
+      "TeamId": 9,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 14,
+      "TeamId": 2,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 21,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 13,
+      "TeamId": 2,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 14,
+      "TeamId": 4,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 37,
+      "TeamId": 3,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 33,
+      "TeamId": 3,
+      "SegmentId": 1
+    },
+    {
+      "ProfileId": 33,
+      "TeamId": 1,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 3,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 17,
+      "TeamId": 5,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 16,
+      "TeamId": 9,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 13,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 32,
+      "TeamId": 5,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 20,
+      "TeamId": 6,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 30,
+      "TeamId": 5,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 2,
+      "TeamId": 4,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 32,
+      "TeamId": 6,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 11,
+      "TeamId": 5,
+      "SegmentId": 2
+    },
+    {
+      "ProfileId": 11,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 15,
+      "TeamId": 8,
+      "SegmentId": 3
+    },
+    {
+      "ProfileId": 6,
+      "TeamId": 3,
       "SegmentId": 1
     },
     {
@@ -428,1743 +653,1870 @@
       "SegmentId": 3
     },
     {
-      "ProfileId": 8,
-      "TeamId": 7,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 38,
-      "TeamId": 9,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 14,
-      "TeamId": 9,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 38,
-      "TeamId": 1,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 32,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 23,
-      "TeamId": 9,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 34,
-      "TeamId": 9,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 8,
-      "TeamId": 5,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 3,
-      "TeamId": 4,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 22,
-      "TeamId": 7,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 25,
-      "TeamId": 4,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 33,
-      "TeamId": 6,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 21,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
       "ProfileId": 15,
-      "TeamId": 3,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 35,
       "TeamId": 9,
       "SegmentId": 3
     },
     {
       "ProfileId": 16,
-      "TeamId": 4,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 15,
-      "TeamId": 2,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 17,
-      "TeamId": 1,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 28,
-      "TeamId": 5,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 6,
-      "TeamId": 3,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 22,
       "TeamId": 9,
       "SegmentId": 3
-    },
-    {
-      "ProfileId": 12,
-      "TeamId": 3,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 11,
-      "TeamId": 9,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 40,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 31,
-      "TeamId": 3,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 22,
-      "TeamId": 5,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 2,
-      "TeamId": 1,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 22,
-      "TeamId": 7,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 2,
-      "TeamId": 2,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 31,
-      "TeamId": 5,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 8,
-      "TeamId": 2,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 15,
-      "TeamId": 7,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 2,
-      "TeamId": 3,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 40,
-      "TeamId": 5,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 32,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 38,
-      "TeamId": 6,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 31,
-      "TeamId": 6,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 13,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 2,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 15,
-      "TeamId": 7,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 14,
-      "TeamId": 7,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 30,
-      "TeamId": 9,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 8,
-      "TeamId": 5,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 13,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 18,
-      "TeamId": 3,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 25,
-      "TeamId": 1,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 40,
-      "TeamId": 5,
-      "SegmentId": 1
     }
   ],
   "Tasks": [
     {
-      "Summary": "pariatur excepteur laborum do minim",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 21,
-      "TeamId": 3,
-      "SegmentId": 1,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 32
-    },
-    {
-      "Summary": "proident elit labore dolore ex",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 8,
-      "TeamId": 1,
-      "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 163
-    },
-    {
-      "Summary": "cillum voluptate non qui consectetur",
-      "Status": "Done",
-      "Type": "Task",
-      "AssigneeProfileId": 25,
-      "TeamId": 1,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 212
-    },
-    {
-      "Summary": "ea adipisicing laboris magna aute",
+      "Summary": "dolor elit elit ipsum labore",
       "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 19,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 473
-    },
-    {
-      "Summary": "ad id qui cillum cillum",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 33,
-      "TeamId": 3,
-      "SegmentId": 1,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 668
-    },
-    {
-      "Summary": "aliquip ea pariatur et consequat",
-      "Status": "Done",
-      "Type": "Bug",
-      "AssigneeProfileId": 34,
-      "TeamId": 9,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 387
-    },
-    {
-      "Summary": "cillum in culpa deserunt reprehenderit",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 40,
-      "TeamId": 10,
-      "SegmentId": 1,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 268
-    },
-    {
-      "Summary": "labore consectetur et esse officia",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 27,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 176
-    },
-    {
-      "Summary": "fugiat fugiat esse veniam eu",
-      "Status": "Open",
-      "Type": "Bug",
-      "AssigneeProfileId": 11,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 102
-    },
-    {
-      "Summary": "consequat officia ipsum ipsum ipsum",
-      "Status": "Done",
       "Type": "Task",
       "AssigneeProfileId": 32,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 59
-    },
-    {
-      "Summary": "eiusmod sint est adipisicing ea",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 27,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 614
-    },
-    {
-      "Summary": "nisi adipisicing minim eiusmod officia",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 39,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 714
-    },
-    {
-      "Summary": "aliqua qui do aliquip veniam",
-      "Status": "InProgress",
-      "Type": "Task",
-      "AssigneeProfileId": 31,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 402
-    },
-    {
-      "Summary": "occaecat aute sit ullamco eu",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 19,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 735
-    },
-    {
-      "Summary": "aute pariatur quis ex veniam",
-      "Status": "Open",
-      "Type": "Bug",
-      "AssigneeProfileId": 31,
-      "TeamId": 10,
-      "SegmentId": 1,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 258
-    },
-    {
-      "Summary": "incididunt consequat consequat dolor excepteur",
-      "Status": "InProgress",
-      "Type": "Task",
-      "AssigneeProfileId": 13,
-      "TeamId": 10,
-      "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 464
-    },
-    {
-      "Summary": "tempor dolor nisi excepteur eu",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 28,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 714
-    },
-    {
-      "Summary": "occaecat ut commodo est ut",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 2,
       "TeamId": 6,
       "SegmentId": 3,
       "Complexity": 2,
-      "TimeSpentInMinutes": 157
+      "TimeSpentInMinutes": 565
     },
     {
-      "Summary": "Lorem et deserunt velit ad",
-      "Status": "InProgress",
-      "Type": "Task",
-      "AssigneeProfileId": 28,
-      "TeamId": 10,
-      "SegmentId": 1,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 770
-    },
-    {
-      "Summary": "ex proident enim labore do",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 26,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 505
-    },
-    {
-      "Summary": "magna occaecat esse cillum tempor",
-      "Status": "Done",
-      "Type": "Bug",
-      "AssigneeProfileId": 24,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 940
-    },
-    {
-      "Summary": "minim qui mollit ea anim",
+      "Summary": "enim reprehenderit consequat officia velit",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 17,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 720
-    },
-    {
-      "Summary": "eu aliquip dolor ex qui",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 13,
-      "TeamId": 10,
-      "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 63
-    },
-    {
-      "Summary": "consequat veniam proident consequat do",
-      "Status": "Done",
-      "Type": "Task",
-      "AssigneeProfileId": 4,
-      "TeamId": 3,
-      "SegmentId": 1,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 204
-    },
-    {
-      "Summary": "reprehenderit minim mollit elit est",
-      "Status": "Open",
-      "Type": "Bug",
-      "AssigneeProfileId": 5,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 282
-    },
-    {
-      "Summary": "ex ipsum voluptate ipsum ullamco",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 36,
-      "TeamId": 9,
-      "SegmentId": 3,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 895
-    },
-    {
-      "Summary": "pariatur pariatur ea deserunt exercitation",
-      "Status": "Done",
-      "Type": "Task",
-      "AssigneeProfileId": 22,
-      "TeamId": 3,
-      "SegmentId": 1,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 114
-    },
-    {
-      "Summary": "consectetur veniam nisi qui nostrud",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 38,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 452
-    },
-    {
-      "Summary": "officia aliqua excepteur duis consectetur",
-      "Status": "Open",
-      "Type": "Bug",
-      "AssigneeProfileId": 13,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 290
-    },
-    {
-      "Summary": "nisi qui aliqua dolore sit",
-      "Status": "Open",
-      "Type": "Bug",
-      "AssigneeProfileId": 3,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 555
-    },
-    {
-      "Summary": "nulla eu nulla laborum anim",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 26,
-      "TeamId": 2,
-      "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 509
-    },
-    {
-      "Summary": "exercitation excepteur velit labore fugiat",
-      "Status": "Done",
-      "Type": "Task",
-      "AssigneeProfileId": 38,
-      "TeamId": 10,
-      "SegmentId": 1,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 707
-    },
-    {
-      "Summary": "id eu ad duis pariatur",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 18,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 464
-    },
-    {
-      "Summary": "anim id anim culpa ipsum",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 12,
-      "TeamId": 3,
-      "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 602
-    },
-    {
-      "Summary": "minim cupidatat culpa adipisicing aliquip",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 16,
-      "TeamId": 9,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 368
-    },
-    {
-      "Summary": "non veniam aliquip eu qui",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 31,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 147
-    },
-    {
-      "Summary": "ipsum velit velit nulla tempor",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 5,
-      "TeamId": 7,
-      "SegmentId": 3,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 207
-    },
-    {
-      "Summary": "sint cupidatat sint anim ea",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 30,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 640
-    },
-    {
-      "Summary": "consequat reprehenderit veniam aliquip eiusmod",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 25,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 696
-    },
-    {
-      "Summary": "consequat Lorem incididunt ut dolore",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 30,
-      "TeamId": 2,
-      "SegmentId": 3,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 683
-    },
-    {
-      "Summary": "non elit esse ut quis",
-      "Status": "Done",
-      "Type": "Task",
-      "AssigneeProfileId": 30,
-      "TeamId": 7,
-      "SegmentId": 3,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 823
-    },
-    {
-      "Summary": "irure dolor cillum consectetur tempor",
-      "Status": "InProgress",
-      "Type": "Task",
-      "AssigneeProfileId": 29,
-      "TeamId": 9,
-      "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 943
-    },
-    {
-      "Summary": "ex velit dolore ad ad",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 38,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 673
-    },
-    {
-      "Summary": "dolor laborum ut irure velit",
-      "Status": "Open",
-      "Type": "Bug",
-      "AssigneeProfileId": 40,
-      "TeamId": 3,
-      "SegmentId": 1,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 50
-    },
-    {
-      "Summary": "anim commodo dolore occaecat sint",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 30,
-      "TeamId": 7,
-      "SegmentId": 3,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 920
-    },
-    {
-      "Summary": "in dolor dolore nulla veniam",
-      "Status": "Open",
-      "Type": "Bug",
-      "AssigneeProfileId": 41,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 945
-    },
-    {
-      "Summary": "sint sunt irure cupidatat ipsum",
-      "Status": "Done",
-      "Type": "Task",
-      "AssigneeProfileId": 20,
-      "TeamId": 9,
-      "SegmentId": 3,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 934
-    },
-    {
-      "Summary": "labore ullamco magna ut velit",
-      "Status": "InProgress",
-      "Type": "Task",
-      "AssigneeProfileId": 19,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 311
-    },
-    {
-      "Summary": "eiusmod esse fugiat enim reprehenderit",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 15,
-      "TeamId": 10,
-      "SegmentId": 1,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 293
-    },
-    {
-      "Summary": "laboris cupidatat reprehenderit consectetur id",
-      "Status": "InProgress",
-      "Type": "Task",
-      "AssigneeProfileId": 37,
-      "TeamId": 10,
-      "SegmentId": 1,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 200
-    },
-    {
-      "Summary": "ex veniam minim esse non",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 35,
-      "TeamId": 3,
-      "SegmentId": 1,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 746
-    },
-    {
-      "Summary": "eu est labore minim excepteur",
-      "Status": "Done",
-      "Type": "Bug",
-      "AssigneeProfileId": 13,
-      "TeamId": 7,
-      "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 851
-    },
-    {
-      "Summary": "sunt in sunt sint do",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 26,
-      "TeamId": 6,
-      "SegmentId": 3,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 954
-    },
-    {
-      "Summary": "Lorem excepteur incididunt ad anim",
-      "Status": "Done",
-      "Type": "Bug",
-      "AssigneeProfileId": 35,
-      "TeamId": 7,
-      "SegmentId": 3,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 816
-    },
-    {
-      "Summary": "et incididunt adipisicing non tempor",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 28,
-      "TeamId": 9,
-      "SegmentId": 3,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 347
-    },
-    {
-      "Summary": "ea est enim aute eiusmod",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 19,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 174
-    },
-    {
-      "Summary": "deserunt fugiat sit culpa officia",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 12,
-      "TeamId": 6,
-      "SegmentId": 3,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 218
-    },
-    {
-      "Summary": "qui deserunt id exercitation consectetur",
-      "Status": "InProgress",
-      "Type": "Bug",
       "AssigneeProfileId": 7,
-      "TeamId": 1,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 316
+    },
+    {
+      "Summary": "amet proident cillum excepteur aliquip",
+      "Status": "InProgress",
+      "Type": "Bug",
+      "AssigneeProfileId": 35,
+      "TeamId": 2,
+      "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 256
+    },
+    {
+      "Summary": "dolore dolor et do quis",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 33,
+      "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 3,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 582
+    },
+    {
+      "Summary": "cillum sint mollit fugiat irure",
+      "Status": "Done",
+      "Type": "Task",
+      "AssigneeProfileId": 11,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 5,
       "TimeSpentInMinutes": 23
     },
     {
-      "Summary": "commodo veniam qui culpa ullamco",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 23,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 833
-    },
-    {
-      "Summary": "aliqua exercitation sunt cillum quis",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 39,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 942
-    },
-    {
-      "Summary": "velit do ad veniam incididunt",
+      "Summary": "mollit Lorem laboris eiusmod ea",
       "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 38,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 702
-    },
-    {
-      "Summary": "cupidatat labore aliquip incididunt consectetur",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 25,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 450
-    },
-    {
-      "Summary": "fugiat laboris id cillum in",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 41,
-      "TeamId": 1,
-      "SegmentId": 3,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 457
-    },
-    {
-      "Summary": "cupidatat nulla qui id sint",
-      "Status": "Done",
-      "Type": "Bug",
-      "AssigneeProfileId": 33,
-      "TeamId": 3,
-      "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 163
-    },
-    {
-      "Summary": "magna occaecat irure velit consectetur",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 19,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 523
-    },
-    {
-      "Summary": "id sit esse labore adipisicing",
-      "Status": "Done",
-      "Type": "Bug",
-      "AssigneeProfileId": 3,
-      "TeamId": 3,
-      "SegmentId": 1,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 597
-    },
-    {
-      "Summary": "ullamco nostrud aute magna anim",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 7,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 163
-    },
-    {
-      "Summary": "nisi Lorem consequat in esse",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 29,
-      "TeamId": 2,
-      "SegmentId": 3,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 176
-    },
-    {
-      "Summary": "nisi reprehenderit aliqua ea ea",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 27,
-      "TeamId": 1,
-      "SegmentId": 3,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 564
-    },
-    {
-      "Summary": "aliqua ad nulla laborum consectetur",
-      "Status": "NoCategory",
       "Type": "Task",
       "AssigneeProfileId": 19,
-      "TeamId": 5,
-      "SegmentId": 1,
+      "TeamId": 1,
+      "SegmentId": 2,
       "Complexity": 4,
-      "TimeSpentInMinutes": 193
+      "TimeSpentInMinutes": 140
     },
     {
-      "Summary": "deserunt amet magna nostrud proident",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 13,
-      "TeamId": 6,
+      "Summary": "cillum irure laborum enim cillum",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 21,
+      "TeamId": 10,
       "SegmentId": 3,
       "Complexity": 3,
-      "TimeSpentInMinutes": 916
+      "TimeSpentInMinutes": 994
     },
     {
-      "Summary": "cupidatat officia laborum ea aute",
+      "Summary": "reprehenderit sit elit aliqua incididunt",
       "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 27,
-      "TeamId": 6,
-      "SegmentId": 3,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 410
-    },
-    {
-      "Summary": "magna quis aliquip ut dolor",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 33,
-      "TeamId": 4,
+      "Type": "Bug",
+      "AssigneeProfileId": 2,
+      "TeamId": 1,
       "SegmentId": 2,
       "Complexity": 2,
-      "TimeSpentInMinutes": 305
+      "TimeSpentInMinutes": 396
     },
     {
-      "Summary": "sint pariatur sit aute nostrud",
+      "Summary": "minim velit exercitation qui commodo",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 36,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 662
+    },
+    {
+      "Summary": "commodo ullamco eu officia ex",
       "Status": "Open",
       "Type": "Bug",
       "AssigneeProfileId": 8,
-      "TeamId": 2,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 41
-    },
-    {
-      "Summary": "laborum eu culpa laborum incididunt",
-      "Status": "Open",
-      "Type": "Bug",
-      "AssigneeProfileId": 17,
-      "TeamId": 5,
+      "TeamId": 7,
       "SegmentId": 1,
       "Complexity": 1,
-      "TimeSpentInMinutes": 822
+      "TimeSpentInMinutes": 499
     },
     {
-      "Summary": "incididunt culpa laborum incididunt mollit",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 40,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 347
-    },
-    {
-      "Summary": "irure eiusmod ea id eiusmod",
+      "Summary": "commodo sit Lorem laborum aute",
       "Status": "Done",
-      "Type": "Task",
-      "AssigneeProfileId": 15,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 306
-    },
-    {
-      "Summary": "officia ex elit nisi deserunt",
-      "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 37,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 87
-    },
-    {
-      "Summary": "ullamco adipisicing Lorem amet officia",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 27,
+      "AssigneeProfileId": 40,
       "TeamId": 9,
       "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 13
+      "Complexity": 3,
+      "TimeSpentInMinutes": 945
     },
     {
-      "Summary": "enim labore commodo enim in",
-      "Status": "Open",
-      "Type": "Bug",
+      "Summary": "tempor sit deserunt labore anim",
+      "Status": "InProgress",
+      "Type": "Task",
       "AssigneeProfileId": 15,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 506
-    },
-    {
-      "Summary": "cillum ipsum Lorem sint qui",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 33,
       "TeamId": 1,
-      "SegmentId": 3,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 962
+      "SegmentId": 2,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 678
     },
     {
-      "Summary": "ut deserunt qui elit incididunt",
+      "Summary": "laboris veniam incididunt Lorem nostrud",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 26,
+      "AssigneeProfileId": 20,
+      "TeamId": 2,
+      "SegmentId": 1,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 462
+    },
+    {
+      "Summary": "ipsum et incididunt non est",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 27,
+      "TeamId": 5,
+      "SegmentId": 2,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 310
+    },
+    {
+      "Summary": "velit est veniam consequat dolore",
+      "Status": "Done",
+      "Type": "Task",
+      "AssigneeProfileId": 23,
       "TeamId": 6,
       "SegmentId": 3,
       "Complexity": 4,
-      "TimeSpentInMinutes": 136
+      "TimeSpentInMinutes": 672
     },
     {
-      "Summary": "pariatur eu voluptate nisi laborum",
-      "Status": "Done",
-      "Type": "Bug",
-      "AssigneeProfileId": 2,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 329
-    },
-    {
-      "Summary": "eiusmod anim eu reprehenderit anim",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 40,
-      "TeamId": 4,
-      "SegmentId": 2,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 584
-    },
-    {
-      "Summary": "commodo consectetur mollit non culpa",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 34,
-      "TeamId": 7,
-      "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 846
-    },
-    {
-      "Summary": "qui voluptate quis dolore exercitation",
-      "Status": "InProgress",
-      "Type": "Task",
-      "AssigneeProfileId": 19,
-      "TeamId": 2,
-      "SegmentId": 3,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 824
-    },
-    {
-      "Summary": "do duis do quis officia",
-      "Status": "InProgress",
-      "Type": "Bug",
-      "AssigneeProfileId": 12,
-      "TeamId": 1,
-      "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 608
-    },
-    {
-      "Summary": "nisi fugiat excepteur quis excepteur",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 29,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 22
-    },
-    {
-      "Summary": "reprehenderit cupidatat pariatur minim sunt",
-      "Status": "InProgress",
-      "Type": "Task",
-      "AssigneeProfileId": 4,
-      "TeamId": 8,
-      "SegmentId": 3,
-      "Complexity": 3,
-      "TimeSpentInMinutes": 34
-    },
-    {
-      "Summary": "laborum laboris qui sit mollit",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 9,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 535
-    },
-    {
-      "Summary": "sunt minim labore cillum esse",
-      "Status": "Open",
-      "Type": "Task",
-      "AssigneeProfileId": 39,
-      "TeamId": 5,
-      "SegmentId": 1,
-      "Complexity": 5,
-      "TimeSpentInMinutes": 314
-    },
-    {
-      "Summary": "exercitation velit pariatur occaecat adipisicing",
+      "Summary": "exercitation eiusmod in sit excepteur",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 40,
+      "AssigneeProfileId": 5,
       "TeamId": 10,
-      "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 60
-    },
-    {
-      "Summary": "nisi amet nisi id nulla",
-      "Status": "NoCategory",
-      "Type": "Task",
-      "AssigneeProfileId": 39,
-      "TeamId": 8,
       "SegmentId": 3,
-      "Complexity": 1,
-      "TimeSpentInMinutes": 663
+      "Complexity": 4,
+      "TimeSpentInMinutes": 389
     },
     {
-      "Summary": "ex qui culpa quis occaecat",
-      "Status": "NoCategory",
+      "Summary": "sunt ut est officia id",
+      "Status": "InProgress",
       "Type": "Bug",
       "AssigneeProfileId": 22,
+      "TeamId": 8,
+      "SegmentId": 3,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 870
+    },
+    {
+      "Summary": "exercitation qui sunt adipisicing nulla",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 36,
       "TeamId": 3,
       "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 261
-    },
-    {
-      "Summary": "est reprehenderit nisi deserunt Lorem",
-      "Status": "NoCategory",
-      "Type": "Bug",
-      "AssigneeProfileId": 26,
-      "TeamId": 5,
-      "SegmentId": 1,
       "Complexity": 4,
-      "TimeSpentInMinutes": 299
+      "TimeSpentInMinutes": 448
     },
     {
-      "Summary": "consequat anim cupidatat nulla aliqua",
+      "Summary": "duis commodo reprehenderit esse fugiat",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 27,
+      "TeamId": 3,
+      "SegmentId": 1,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 988
+    },
+    {
+      "Summary": "fugiat minim pariatur eu velit",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 8,
+      "TeamId": 1,
+      "SegmentId": 2,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 194
+    },
+    {
+      "Summary": "enim non ea sit quis",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 28,
-      "TeamId": 10,
+      "AssigneeProfileId": 2,
+      "TeamId": 5,
+      "SegmentId": 2,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 777
+    },
+    {
+      "Summary": "laboris consequat sunt officia pariatur",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 14,
+      "TeamId": 3,
       "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 413
+    },
+    {
+      "Summary": "aliqua veniam commodo cillum commodo",
+      "Status": "NoCategory",
+      "Type": "Bug",
+      "AssigneeProfileId": 34,
+      "TeamId": 10,
+      "SegmentId": 3,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 517
+    },
+    {
+      "Summary": "quis Lorem nulla pariatur ea",
+      "Status": "NoCategory",
+      "Type": "Bug",
+      "AssigneeProfileId": 3,
+      "TeamId": 9,
+      "SegmentId": 3,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 246
+    },
+    {
+      "Summary": "et ex nostrud quis tempor",
+      "Status": "InProgress",
+      "Type": "Bug",
+      "AssigneeProfileId": 30,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 892
+    },
+    {
+      "Summary": "aute cillum nulla et excepteur",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 35,
+      "TeamId": 8,
+      "SegmentId": 3,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 773
+    },
+    {
+      "Summary": "sunt quis reprehenderit veniam officia",
+      "Status": "Done",
+      "Type": "Task",
+      "AssigneeProfileId": 30,
+      "TeamId": 1,
+      "SegmentId": 2,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 845
+    },
+    {
+      "Summary": "do dolore do amet mollit",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 39,
+      "TeamId": 10,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 734
+    },
+    {
+      "Summary": "sint velit et consectetur reprehenderit",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 11,
+      "TeamId": 5,
+      "SegmentId": 2,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 80
+    },
+    {
+      "Summary": "nostrud nisi enim veniam nisi",
+      "Status": "Done",
+      "Type": "Task",
+      "AssigneeProfileId": 2,
+      "TeamId": 3,
+      "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 330
+    },
+    {
+      "Summary": "quis consequat proident reprehenderit laboris",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 35,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 167
+    },
+    {
+      "Summary": "aliquip qui officia laborum est",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 3,
+      "TeamId": 10,
+      "SegmentId": 3,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 558
+    },
+    {
+      "Summary": "mollit minim exercitation proident labore",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 15,
+      "TeamId": 3,
+      "SegmentId": 1,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 567
+    },
+    {
+      "Summary": "occaecat amet aute dolor Lorem",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 41,
+      "TeamId": 10,
+      "SegmentId": 3,
       "Complexity": 2,
       "TimeSpentInMinutes": 828
     },
     {
-      "Summary": "do aute veniam sint enim",
-      "Status": "Open",
-      "Type": "Bug",
-      "AssigneeProfileId": 38,
-      "TeamId": 9,
-      "SegmentId": 3,
+      "Summary": "dolore est aliqua aliqua fugiat",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 15,
+      "TeamId": 1,
+      "SegmentId": 2,
       "Complexity": 2,
-      "TimeSpentInMinutes": 216
+      "TimeSpentInMinutes": 886
     },
     {
-      "Summary": "esse commodo aute aute adipisicing",
-      "Status": "Done",
+      "Summary": "officia occaecat laboris aliquip officia",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 40,
+      "TeamId": 3,
+      "SegmentId": 1,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 132
+    },
+    {
+      "Summary": "duis fugiat cupidatat aliquip esse",
+      "Status": "InProgress",
       "Type": "Bug",
+      "AssigneeProfileId": 27,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 372
+    },
+    {
+      "Summary": "laborum pariatur exercitation deserunt quis",
+      "Status": "Open",
+      "Type": "Task",
       "AssigneeProfileId": 7,
       "TeamId": 6,
       "SegmentId": 3,
-      "Complexity": 4,
-      "TimeSpentInMinutes": 541
+      "Complexity": 1,
+      "TimeSpentInMinutes": 97
     },
     {
-      "Summary": "ex anim ipsum exercitation tempor",
+      "Summary": "esse eu esse ullamco et",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 29,
+      "TeamId": 6,
+      "SegmentId": 3,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 585
+    },
+    {
+      "Summary": "cillum excepteur sint aliqua incididunt",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 35,
+      "TeamId": 3,
+      "SegmentId": 1,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 28
+    },
+    {
+      "Summary": "ex id aute non est",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 7,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 14
+    },
+    {
+      "Summary": "magna do excepteur exercitation nulla",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 13,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 37
+    },
+    {
+      "Summary": "officia irure commodo id consectetur",
+      "Status": "InProgress",
+      "Type": "Bug",
+      "AssigneeProfileId": 40,
+      "TeamId": 1,
+      "SegmentId": 2,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 972
+    },
+    {
+      "Summary": "excepteur officia aliquip aliquip irure",
+      "Status": "NoCategory",
+      "Type": "Bug",
+      "AssigneeProfileId": 33,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 84
+    },
+    {
+      "Summary": "irure sit incididunt quis culpa",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 37,
+      "TeamId": 2,
+      "SegmentId": 1,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 738
+    },
+    {
+      "Summary": "duis sint ut id quis",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 15,
+      "TeamId": 10,
+      "SegmentId": 3,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 558
+    },
+    {
+      "Summary": "ea qui labore laboris exercitation",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 37,
+      "TeamId": 3,
+      "SegmentId": 1,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 835
+    },
+    {
+      "Summary": "velit amet ad velit minim",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 36,
+      "TeamId": 9,
+      "SegmentId": 3,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 947
+    },
+    {
+      "Summary": "magna do minim ullamco eu",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 16,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 290
+    },
+    {
+      "Summary": "qui ex culpa est et",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 28,
+      "TeamId": 5,
+      "SegmentId": 2,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 858
+    },
+    {
+      "Summary": "ad nulla et minim amet",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 20,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 820
+    },
+    {
+      "Summary": "ullamco enim fugiat tempor deserunt",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 5,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 684
+    },
+    {
+      "Summary": "dolore officia dolor laboris irure",
+      "Status": "InProgress",
+      "Type": "Bug",
+      "AssigneeProfileId": 16,
+      "TeamId": 8,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 303
+    },
+    {
+      "Summary": "fugiat sint cillum amet deserunt",
+      "Status": "NoCategory",
+      "Type": "Bug",
+      "AssigneeProfileId": 6,
+      "TeamId": 5,
+      "SegmentId": 2,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 931
+    },
+    {
+      "Summary": "occaecat aliqua officia ut mollit",
+      "Status": "NoCategory",
+      "Type": "Bug",
+      "AssigneeProfileId": 23,
+      "TeamId": 6,
+      "SegmentId": 3,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 304
+    },
+    {
+      "Summary": "voluptate eu proident minim est",
+      "Status": "NoCategory",
+      "Type": "Bug",
+      "AssigneeProfileId": 19,
+      "TeamId": 2,
+      "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 264
+    },
+    {
+      "Summary": "reprehenderit Lorem exercitation esse non",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 19,
+      "TeamId": 6,
+      "SegmentId": 3,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 125
+    },
+    {
+      "Summary": "ex voluptate dolore et velit",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 20,
+      "TeamId": 8,
+      "SegmentId": 3,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 827
+    },
+    {
+      "Summary": "quis culpa consectetur velit sit",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 25,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 869
+    },
+    {
+      "Summary": "nulla commodo pariatur reprehenderit sint",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 2,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 440
+    },
+    {
+      "Summary": "Lorem ut amet anim voluptate",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 25,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 367
+    },
+    {
+      "Summary": "duis anim mollit cupidatat cupidatat",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 19,
+      "TeamId": 1,
+      "SegmentId": 2,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 806
+    },
+    {
+      "Summary": "culpa culpa elit minim aliquip",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 9,
+      "TeamId": 8,
+      "SegmentId": 3,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 184
+    },
+    {
+      "Summary": "qui deserunt reprehenderit enim id",
       "Status": "NoCategory",
       "Type": "Bug",
       "AssigneeProfileId": 28,
-      "TeamId": 10,
+      "TeamId": 3,
       "SegmentId": 1,
-      "Complexity": 2,
-      "TimeSpentInMinutes": 40
+      "Complexity": 3,
+      "TimeSpentInMinutes": 925
     },
     {
-      "Summary": "cupidatat do id ea id",
+      "Summary": "id fugiat deserunt cillum deserunt",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 6,
+      "TeamId": 9,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 112
+    },
+    {
+      "Summary": "nostrud reprehenderit et exercitation laboris",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 17,
+      "TeamId": 8,
+      "SegmentId": 3,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 247
+    },
+    {
+      "Summary": "et laboris duis pariatur do",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 32,
+      "TeamId": 8,
+      "SegmentId": 3,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 392
+    },
+    {
+      "Summary": "ad laborum esse voluptate aliqua",
+      "Status": "Done",
+      "Type": "Task",
+      "AssigneeProfileId": 9,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 685
+    },
+    {
+      "Summary": "minim reprehenderit eiusmod nulla occaecat",
+      "Status": "NoCategory",
+      "Type": "Bug",
+      "AssigneeProfileId": 25,
+      "TeamId": 1,
+      "SegmentId": 2,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 806
+    },
+    {
+      "Summary": "eu duis ut sint elit",
       "Status": "NoCategory",
       "Type": "Task",
+      "AssigneeProfileId": 39,
+      "TeamId": 9,
+      "SegmentId": 3,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 72
+    },
+    {
+      "Summary": "duis commodo consectetur esse qui",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 2,
+      "TeamId": 8,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 947
+    },
+    {
+      "Summary": "irure eiusmod nisi nisi anim",
+      "Status": "Done",
+      "Type": "Task",
+      "AssigneeProfileId": 39,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 751
+    },
+    {
+      "Summary": "reprehenderit dolore ea exercitation nulla",
+      "Status": "Done",
+      "Type": "Task",
+      "AssigneeProfileId": 17,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 305
+    },
+    {
+      "Summary": "laborum ea dolore deserunt est",
+      "Status": "Done",
+      "Type": "Task",
       "AssigneeProfileId": 29,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 843
+    },
+    {
+      "Summary": "qui voluptate incididunt nulla ea",
+      "Status": "NoCategory",
+      "Type": "Bug",
+      "AssigneeProfileId": 10,
+      "TeamId": 2,
+      "SegmentId": 1,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 20
+    },
+    {
+      "Summary": "nulla aliquip mollit irure labore",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 25,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 658
+    },
+    {
+      "Summary": "in voluptate irure aliqua eu",
+      "Status": "InProgress",
+      "Type": "Bug",
+      "AssigneeProfileId": 32,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 461
+    },
+    {
+      "Summary": "proident quis nisi minim aliqua",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 37,
+      "TeamId": 6,
+      "SegmentId": 3,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 36
+    },
+    {
+      "Summary": "eiusmod cillum anim id tempor",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 22,
+      "TeamId": 2,
+      "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 89
+    },
+    {
+      "Summary": "officia officia id labore dolor",
+      "Status": "InProgress",
+      "Type": "Bug",
+      "AssigneeProfileId": 25,
+      "TeamId": 3,
+      "SegmentId": 1,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 243
+    },
+    {
+      "Summary": "commodo commodo dolore eu irure",
+      "Status": "InProgress",
+      "Type": "Bug",
+      "AssigneeProfileId": 9,
+      "TeamId": 8,
+      "SegmentId": 3,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 664
+    },
+    {
+      "Summary": "ea est est exercitation tempor",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 34,
+      "TeamId": 6,
+      "SegmentId": 3,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 341
+    },
+    {
+      "Summary": "occaecat culpa quis fugiat reprehenderit",
+      "Status": "NoCategory",
+      "Type": "Bug",
+      "AssigneeProfileId": 32,
+      "TeamId": 10,
+      "SegmentId": 3,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 460
+    },
+    {
+      "Summary": "ad ad incididunt adipisicing occaecat",
+      "Status": "Done",
+      "Type": "Task",
+      "AssigneeProfileId": 11,
+      "TeamId": 6,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 669
+    },
+    {
+      "Summary": "occaecat consectetur dolore culpa consectetur",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 5,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 721
+    },
+    {
+      "Summary": "Lorem labore fugiat eiusmod minim",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 23,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 942
+    },
+    {
+      "Summary": "ea amet cillum magna non",
+      "Status": "InProgress",
+      "Type": "Task",
+      "AssigneeProfileId": 11,
+      "TeamId": 1,
+      "SegmentId": 2,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 174
+    },
+    {
+      "Summary": "aute cupidatat dolore aute voluptate",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 32,
+      "TeamId": 9,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 186
+    },
+    {
+      "Summary": "et amet proident aliqua ut",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 31,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 76
+    },
+    {
+      "Summary": "duis aliquip voluptate aute incididunt",
+      "Status": "NoCategory",
+      "Type": "Task",
+      "AssigneeProfileId": 28,
       "TeamId": 5,
+      "SegmentId": 2,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 351
+    },
+    {
+      "Summary": "magna ad dolore enim esse",
+      "Status": "InProgress",
+      "Type": "Bug",
+      "AssigneeProfileId": 29,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 278
+    },
+    {
+      "Summary": "nostrud sunt anim aliqua ad",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 5,
+      "TeamId": 3,
+      "SegmentId": 1,
+      "Complexity": 3,
+      "TimeSpentInMinutes": 605
+    },
+    {
+      "Summary": "culpa esse id eiusmod voluptate",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 6,
+      "TeamId": 2,
       "SegmentId": 1,
       "Complexity": 5,
-      "TimeSpentInMinutes": 373
+      "TimeSpentInMinutes": 350
+    },
+    {
+      "Summary": "sunt in incididunt laboris exercitation",
+      "Status": "InProgress",
+      "Type": "Bug",
+      "AssigneeProfileId": 10,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 157
+    },
+    {
+      "Summary": "ex ea sunt eu nisi",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 25,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 2,
+      "TimeSpentInMinutes": 219
+    },
+    {
+      "Summary": "commodo consequat ad amet aute",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 19,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 313
+    },
+    {
+      "Summary": "cupidatat laborum enim quis qui",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 13,
+      "TeamId": 6,
+      "SegmentId": 3,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 445
+    },
+    {
+      "Summary": "aliqua amet tempor ullamco voluptate",
+      "Status": "Open",
+      "Type": "Bug",
+      "AssigneeProfileId": 25,
+      "TeamId": 6,
+      "SegmentId": 3,
+      "Complexity": 5,
+      "TimeSpentInMinutes": 325
+    },
+    {
+      "Summary": "qui anim quis laborum reprehenderit",
+      "Status": "Open",
+      "Type": "Task",
+      "AssigneeProfileId": 14,
+      "TeamId": 7,
+      "SegmentId": 1,
+      "Complexity": 4,
+      "TimeSpentInMinutes": 79
+    },
+    {
+      "Summary": "laboris sint elit ipsum adipisicing",
+      "Status": "Done",
+      "Type": "Bug",
+      "AssigneeProfileId": 27,
+      "TeamId": 4,
+      "SegmentId": 3,
+      "Complexity": 1,
+      "TimeSpentInMinutes": 271
     }
   ],
   "Transactions": [
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 22
+      "Value": 16,
+      "Reason": "Manual",
+      "ProfileId": 5
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
+      "Value": 91,
+      "Reason": "Manual",
+      "ProfileId": 7
+    },
+    {
+      "Value": 148,
+      "Reason": "Manual",
       "ProfileId": 3
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 37
+      "Value": 61,
+      "Reason": "Manual",
+      "ProfileId": 3
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 31
+      "Value": 18,
+      "Reason": "Manual",
+      "ProfileId": 20
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 19
+      "Value": 42,
+      "Reason": "Manual",
+      "ProfileId": 20
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 18
+      "Value": 149,
+      "Reason": "Manual",
+      "ProfileId": 38
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
+      "Value": 36,
+      "Reason": "Manual",
       "ProfileId": 10
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 38
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 34
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 6
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 31
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 7
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 33
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 22
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 15
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 25
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 18
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 40
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 39
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 7
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 14
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 11
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 7
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 18
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 13
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 20
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 32
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 6
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 25
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 22
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 20
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 19
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 37
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 31
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 16
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 36
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 38
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 39
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 3
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 34
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 41
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 19
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 2
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 15
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
+      "Value": 66,
+      "Reason": "Manual",
       "ProfileId": 23
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 16
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 33
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 15
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 10
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 20
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
+      "Value": 99,
+      "Reason": "Manual",
       "ProfileId": 18
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 37
+      "Value": 54,
+      "Reason": "Manual",
+      "ProfileId": 25
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 6
+      "Value": 125,
+      "Reason": "Manual",
+      "ProfileId": 39
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 20
+      "Value": 17,
+      "Reason": "Manual",
+      "ProfileId": 9
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 11
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 16
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
+      "Value": 123,
+      "Reason": "Manual",
       "ProfileId": 12
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 35
+      "Value": 82,
+      "Reason": "Manual",
+      "ProfileId": 12
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 19
+      "Value": 118,
+      "Reason": "Manual",
+      "ProfileId": 10
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 35
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 7
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 18
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 30
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
+      "Value": 16,
+      "Reason": "Manual",
       "ProfileId": 2
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 4
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 17
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 3
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 26
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 28
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 38
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 5
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 26
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 32
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 40
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 24
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 29
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 9
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 25
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 5
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 7
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 30
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 10
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
+      "Value": 94,
+      "Reason": "Manual",
       "ProfileId": 22
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 35
+      "Value": 55,
+      "Reason": "Manual",
+      "ProfileId": 29
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 9
+      "Value": 19,
+      "Reason": "Manual",
+      "ProfileId": 39
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
+      "Value": 61,
+      "Reason": "Manual",
       "ProfileId": 24
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 34
+      "Value": 79,
+      "Reason": "Manual",
+      "ProfileId": 35
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 17
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 13
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 25
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 31
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 32
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 40
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 34
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 31
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 37
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 12
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 26
-    },
-    {
-      "Value": 1,
-      "Reason": "OneUpProfile",
+      "Value": 106,
+      "Reason": "Manual",
       "ProfileId": 18
     },
     {
-      "Value": 1,
-      "Reason": "OneUpProfile",
-      "ProfileId": 29
+      "Value": 56,
+      "Reason": "Manual",
+      "ProfileId": 27
+    },
+    {
+      "Value": 119,
+      "Reason": "Manual",
+      "ProfileId": 21
+    },
+    {
+      "Value": 84,
+      "Reason": "Manual",
+      "ProfileId": 39
+    },
+    {
+      "Value": 64,
+      "Reason": "Manual",
+      "ProfileId": 37
+    },
+    {
+      "Value": 131,
+      "Reason": "Manual",
+      "ProfileId": 35
+    },
+    {
+      "Value": 89,
+      "Reason": "Manual",
+      "ProfileId": 25
+    },
+    {
+      "Value": 51,
+      "Reason": "Manual",
+      "ProfileId": 21
+    },
+    {
+      "Value": 69,
+      "Reason": "Manual",
+      "ProfileId": 37
+    },
+    {
+      "Value": 110,
+      "Reason": "Manual",
+      "ProfileId": 31
+    },
+    {
+      "Value": 73,
+      "Reason": "Manual",
+      "ProfileId": 18
+    },
+    {
+      "Value": 59,
+      "Reason": "Manual",
+      "ProfileId": 23
+    },
+    {
+      "Value": 141,
+      "Reason": "Manual",
+      "ProfileId": 21
+    },
+    {
+      "Value": 80,
+      "Reason": "Manual",
+      "ProfileId": 10
+    },
+    {
+      "Value": 106,
+      "Reason": "Manual",
+      "ProfileId": 17
+    },
+    {
+      "Value": 18,
+      "Reason": "Manual",
+      "ProfileId": 14
+    },
+    {
+      "Value": 137,
+      "Reason": "Manual",
+      "ProfileId": 10
+    },
+    {
+      "Value": 140,
+      "Reason": "Manual",
+      "ProfileId": 38
+    },
+    {
+      "Value": 138,
+      "Reason": "Manual",
+      "ProfileId": 10
+    },
+    {
+      "Value": 43,
+      "Reason": "Manual",
+      "ProfileId": 26
+    },
+    {
+      "Value": 123,
+      "Reason": "Manual",
+      "ProfileId": 11
+    },
+    {
+      "Value": 73,
+      "Reason": "Manual",
+      "ProfileId": 39
+    },
+    {
+      "Value": 135,
+      "Reason": "Manual",
+      "ProfileId": 34
+    },
+    {
+      "Value": 18,
+      "Reason": "Manual",
+      "ProfileId": 28
+    },
+    {
+      "Value": 139,
+      "Reason": "Manual",
+      "ProfileId": 36
+    },
+    {
+      "Value": 130,
+      "Reason": "Manual",
+      "ProfileId": 25
+    },
+    {
+      "Value": 120,
+      "Reason": "Manual",
+      "ProfileId": 33
+    },
+    {
+      "Value": 49,
+      "Reason": "Manual",
+      "ProfileId": 27
+    },
+    {
+      "Value": 94,
+      "Reason": "Manual",
+      "ProfileId": 21
+    },
+    {
+      "Value": 85,
+      "Reason": "Manual",
+      "ProfileId": 18
+    },
+    {
+      "Value": 59,
+      "Reason": "Manual",
+      "ProfileId": 21
+    },
+    {
+      "Value": 123,
+      "Reason": "Manual",
+      "ProfileId": 7
+    },
+    {
+      "Value": 145,
+      "Reason": "Manual",
+      "ProfileId": 3
+    },
+    {
+      "Value": 100,
+      "Reason": "Manual",
+      "ProfileId": 10
+    },
+    {
+      "Value": 86,
+      "Reason": "Manual",
+      "ProfileId": 20
+    },
+    {
+      "Value": 58,
+      "Reason": "Manual",
+      "ProfileId": 12
+    },
+    {
+      "Value": 140,
+      "Reason": "Manual",
+      "ProfileId": 35
+    },
+    {
+      "Value": 143,
+      "Reason": "Manual",
+      "ProfileId": 35
+    },
+    {
+      "Value": 28,
+      "Reason": "Manual",
+      "ProfileId": 18
+    },
+    {
+      "Value": 69,
+      "Reason": "Manual",
+      "ProfileId": 20
+    },
+    {
+      "Value": 15,
+      "Reason": "Manual",
+      "ProfileId": 17
+    },
+    {
+      "Value": 140,
+      "Reason": "Manual",
+      "ProfileId": 22
+    },
+    {
+      "Value": 134,
+      "Reason": "Manual",
+      "ProfileId": 13
+    },
+    {
+      "Value": 149,
+      "Reason": "Manual",
+      "ProfileId": 15
+    },
+    {
+      "Value": 92,
+      "Reason": "Manual",
+      "ProfileId": 3
+    },
+    {
+      "Value": 73,
+      "Reason": "Manual",
+      "ProfileId": 18
+    },
+    {
+      "Value": 72,
+      "Reason": "Manual",
+      "ProfileId": 12
+    },
+    {
+      "Value": 19,
+      "Reason": "Manual",
+      "ProfileId": 26
+    }
+  ],
+  "Praises": [
+    {
+      "Reason": "Praise",
+      "CreatedBy": 4,
+      "UppedProfileId": 21
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 37,
+      "UppedProfileId": 25
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 11,
+      "UppedProfileId": 15
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 7,
+      "UppedProfileId": 9
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 7,
+      "UppedProfileId": 39
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 2,
+      "UppedProfileId": 12
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 40,
+      "UppedProfileId": 31
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 4,
+      "UppedProfileId": 39
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 22,
+      "UppedProfileId": 38
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 6,
+      "UppedProfileId": 12
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 19,
+      "UppedProfileId": 13
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 14,
+      "UppedProfileId": 29
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 9,
+      "UppedProfileId": 37
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 13,
+      "UppedProfileId": 22
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 12,
+      "UppedProfileId": 14
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 11,
+      "UppedProfileId": 41
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 39,
+      "UppedProfileId": 28
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 38,
+      "UppedProfileId": 12
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 41,
+      "UppedProfileId": 17
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 38,
+      "UppedProfileId": 4
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 28,
+      "UppedProfileId": 13
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 39,
+      "UppedProfileId": 19
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 32,
+      "UppedProfileId": 9
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 33,
+      "UppedProfileId": 25
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 34,
+      "UppedProfileId": 23
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 6,
+      "UppedProfileId": 8
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 36,
+      "UppedProfileId": 22
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 13,
+      "UppedProfileId": 33
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 7,
+      "UppedProfileId": 20
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 41,
+      "UppedProfileId": 25
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 12,
+      "UppedProfileId": 29
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 14,
+      "UppedProfileId": 22
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 31,
+      "UppedProfileId": 19
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 10,
+      "UppedProfileId": 7
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 8,
+      "UppedProfileId": 2
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 37,
+      "UppedProfileId": 24
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 10,
+      "UppedProfileId": 9
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 4,
+      "UppedProfileId": 23
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 10,
+      "UppedProfileId": 27
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 5,
+      "UppedProfileId": 25
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 30,
+      "UppedProfileId": 27
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 32,
+      "UppedProfileId": 9
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 27,
+      "UppedProfileId": 10
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 31,
+      "UppedProfileId": 22
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 7,
+      "UppedProfileId": 9
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 3,
+      "UppedProfileId": 39
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 35,
+      "UppedProfileId": 37
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 7,
+      "UppedProfileId": 27
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 3,
+      "UppedProfileId": 34
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 28,
+      "UppedProfileId": 23
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 16,
+      "UppedProfileId": 10
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 17,
+      "UppedProfileId": 27
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 26,
+      "UppedProfileId": 21
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 7,
+      "UppedProfileId": 2
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 40,
+      "UppedProfileId": 30
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 35,
+      "UppedProfileId": 35
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 41,
+      "UppedProfileId": 6
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 3,
+      "UppedProfileId": 28
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 32,
+      "UppedProfileId": 9
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 35,
+      "UppedProfileId": 28
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 37,
+      "UppedProfileId": 25
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 6,
+      "UppedProfileId": 12
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 38,
+      "UppedProfileId": 14
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 10,
+      "UppedProfileId": 38
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 38,
+      "UppedProfileId": 33
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 35,
+      "UppedProfileId": 16
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 32,
+      "UppedProfileId": 18
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 24,
+      "UppedProfileId": 3
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 12,
+      "UppedProfileId": 16
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 7,
+      "UppedProfileId": 19
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 2,
+      "UppedProfileId": 25
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 25,
+      "UppedProfileId": 30
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 5,
+      "UppedProfileId": 14
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 39,
+      "UppedProfileId": 8
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 20,
+      "UppedProfileId": 13
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 16,
+      "UppedProfileId": 33
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 16,
+      "UppedProfileId": 13
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 41,
+      "UppedProfileId": 21
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 37,
+      "UppedProfileId": 18
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 33,
+      "UppedProfileId": 12
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 27,
+      "UppedProfileId": 33
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 26,
+      "UppedProfileId": 21
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 24,
+      "UppedProfileId": 34
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 3,
+      "UppedProfileId": 27
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 6,
+      "UppedProfileId": 21
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 5,
+      "UppedProfileId": 3
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 8,
+      "UppedProfileId": 3
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 21,
+      "UppedProfileId": 21
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 2,
+      "UppedProfileId": 10
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 7,
+      "UppedProfileId": 15
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 11,
+      "UppedProfileId": 12
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 19,
+      "UppedProfileId": 16
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 2,
+      "UppedProfileId": 12
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 22,
+      "UppedProfileId": 27
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 41,
+      "UppedProfileId": 5
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 33,
+      "UppedProfileId": 23
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 27,
+      "UppedProfileId": 19
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 40,
+      "UppedProfileId": 25
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 17,
+      "UppedProfileId": 13
+    },
+    {
+      "Reason": "Praise",
+      "CreatedBy": 14,
+      "UppedProfileId": 31
     }
   ]
 }

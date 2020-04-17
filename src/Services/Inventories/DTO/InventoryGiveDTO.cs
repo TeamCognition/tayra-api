@@ -4,5 +4,7 @@ namespace Tayra.Services
     {
         public int ItemId { get; set; }
         public string ReceiverUsername { get; set; }
+        //For demo
+        public bool ClaimRequired { get; set; } = true;
     }
 }

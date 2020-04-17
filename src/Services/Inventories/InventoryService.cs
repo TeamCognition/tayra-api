@@ -142,7 +142,7 @@ namespace Tayra.Services
 
             if (!InventoryRules.CanGiftInventoryItem(profileId, dto.ReceiverId, invItem.ProfileId, invItem.Item.IsGiftable, invItem.IsActive))
             {
-                throw new ApplicationException("We are unable to perform this action :)");
+                throw new ApplicationException("We are unable to perform this action :) " + profileId + " " + dto.ReceiverId + " " + invItem.ProfileId + " " + invItem.Item.IsGiftable);
             }
 
             DbContext.ProfileInventoryItems.Remove(invItem);
@@ -226,7 +226,7 @@ namespace Tayra.Services
         {
             var item = DbContext.Items.FirstOrDefault(x => x.Id == dto.ItemId);
             var receiverId = DbContext.Profiles.Where(x => x.Username == dto.ReceiverUsername).Select(x => x.Id).FirstOrDefault();
-            var profileUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
+            var gifterUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
 
             item.EnsureNotNull(dto.ItemId);
 
@@ -236,12 +236,14 @@ namespace Tayra.Services
                 ProfileId = receiverId,
                 ItemType = item.Type,
                 AcquireMethod = InventoryAcquireMethods.ManagerGift,
-                ClaimRequired = true
+                ClaimRequired = dto.ClaimRequired
             }).Entity;
 
-            DbContext.GetTrackedClaimBundle(receiverId, ClaimBundleTypes.GiftFromAdmin).AddItems(givenItem);
- 
-            LogsService.SendLog(receiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(profileUsername));
+            if (dto.ClaimRequired)
+            {
+                DbContext.GetTrackedClaimBundle(receiverId, ClaimBundleTypes.GiftFromAdmin).AddItems(givenItem);
+            }
+            LogsService.SendLog(receiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername));
         }
         #endregion
     }

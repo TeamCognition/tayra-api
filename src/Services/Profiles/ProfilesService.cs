@@ -95,7 +95,8 @@ namespace Tayra.Services
             DbContext.Add(new ProfileOneUp
             {
                 UppedProfileId = dto.ProfileId,
-                DateId = DateHelper2.ToDateId(DateTime.UtcNow)
+                DateId = DateHelper2.ToDateId(dto.DemoDate ?? DateTime.UtcNow),
+                CreatedBy = profileId //when user is not logged in, ex. demo
             });
 
             var oneUpGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
