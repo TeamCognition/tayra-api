@@ -155,8 +155,9 @@ namespace Tayra.Models.Seeder.DemoSeeds
             ILogsService LogsService = new DemoLogsService(organizationDb);
             IProfilesService ProfilesService = new ProfilesService(TokensService, LogsService, null, organizationDb);
             ITasksService TasksService = new TasksService(organizationDb);
-            IAdvisorService AdvisorService = new AdvisorService(organizationDb);
+            IAssistantService AdvisorService = new AssistantService(organizationDb);
             IInventoriesService InventoryService = new InventoryService(LogsService, TokensService, organizationDb);
+
 
             foreach (var t in demoData.Tasks)
             {

@@ -77,9 +77,9 @@ namespace Tayra.Services.TaskConverters
             }
         }
 
-        public void ConcludeActionPointsIfPossible(IAdvisorService advisorService)
+        public void ConcludeActionPointsIfPossible(IAssistantService assistantService)
         {
-            if (advisorService != null)
+            if (assistantService != null)
             {
                 EnsureBasicDataIsFilled();
                 if (IsEligableForExtraData())
@@ -95,7 +95,7 @@ namespace Tayra.Services.TaskConverters
 
                     if (aps.Length > 0)
                     {
-                        advisorService.ConcludeActionPoints(GetCurrentSegmentId().Value, aps, null);
+                        assistantService.ConcludeActionPoints(GetCurrentSegmentId().Value, aps, null);
                     }
                 }
             }

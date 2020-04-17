@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -95,8 +95,7 @@ namespace Tayra.Services
             DbContext.Add(new ProfileOneUp
             {
                 UppedProfileId = dto.ProfileId,
-                DateId = DateHelper2.ToDateId(dto.DemoDate ?? DateTime.UtcNow),
-                CreatedBy = profileId //when user is not logged in, ex. demo
+                DateId = DateHelper2.ToDateId(DateTime.UtcNow)
             });
 
             var oneUpGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
@@ -192,48 +191,51 @@ namespace Tayra.Services
                 if (!string.IsNullOrEmpty(gridParams.NameQuery))
                     scope = scope.Where(byName);
             }
-
-            var cTokenId = DbContext.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).First();
+   
             var upsTokenId = DbContext.Tokens.Where(x => x.Type == TokenType.OneUp).Select(x => x.Id).First();
             var query = from p in scope
                         from title in DbContext.ProfileInventoryItems.Where(x => p.Id == x.ProfileId
                              && x.IsActive == true && x.ItemType == ItemTypes.TayraTitle).DefaultIfEmpty()
+                        let tt = p.Tokens.Where(x => !x.ClaimRequired || x.ClaimedAt.HasValue).GroupBy( //TokenScope
+                         x => x.Token,
+                         x => x,
+                         (t, tnxs) => new ProfileViewDTO.TokenDTO { Name = t.Name, Type = t.Type, Value = tnxs.Sum(x => x.Value) })
                         select new ProfileSummaryGridDTO
                         {
                             ProfileId = p.Id,
                             Name = p.FirstName + " " + p.LastName,
                             Username = p.Username,
                             Avatar = p.Avatar,
-                            PersonalInfo = new ProfileSummaryGridDTO.PersonalData 
-                            { 
-                                BornOn = p.BornOn,
+                            PersonalInfo = new ProfileSummaryGridDTO.PersonalData
+                            {
                                 JobPosition = p.JobPosition,
-                                EmployedOn = p.EmployedOn, 
+                                EmployedOn = p.EmployedOn,
                                 JoinDate = p.Created
                             },
                             PlatformInfo = new ProfileSummaryGridDTO.PlatformData
                             {
-                                TokensTotal = (float)Math.Round(p.Tokens.Where(x => x.TokenId == cTokenId).Select(x => x.FinalBalance).FirstOrDefault(), 2), 
-                                Title = title.Item.Name, 
-                                OneUps = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value), 
-                                CompletedChallenges = p.CompletedChallenges.Count() 
+                                CompanyTokens = (float)Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),
+                                Praises = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value),
+                                CompletedChallenges = p.CompletedChallenges.Count()
                             },
-                            Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment 
-                            { 
-                                Key = x.Segment.Key, 
-                                Name = x.Segment.Name, 
-                                JoinDate = x.Created 
+                            Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment
+                            {
+                                Key = x.Segment.Key,
+                                Name = x.Segment.Name,
+                                JoinDate = x.Created
                             }).ToArray(),
-                            Teams = p.Assignments.Where(x => x.TeamId != null).Select(x => new ProfileSummaryGridDTO.Team { 
-                                Name = x.Team.Name, 
-                                Key = x.Team.Key, 
-                                JoinDate = x.Created 
+                            Teams = p.Assignments.Where(x => x.TeamId != null).Select(x => new ProfileSummaryGridDTO.Team
+                            {
+                                Name = x.Team.Name,
+                                Key = x.Team.Key,
+                                JoinDate = x.Created
                             }).ToArray(),
-                            Integrations = p.Integrations.Select(x => new ProfileSummaryGridDTO.Integration { 
-                                Type = x.Type, 
+                            Integrations = p.Integrations.Select(x => new ProfileSummaryGridDTO.Integration
+                            {
+                                Type = x.Type,
                                 IntegratedOn = x.Created
                             }).Distinct().ToArray(),
-                        };
+                        }; 
 
             GridData<ProfileSummaryGridDTO> gridData = query.GetGridData(gridParams);
 
@@ -308,14 +310,14 @@ namespace Tayra.Services
         public ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId)
         {
             var prd = (from r in DbContext.ProfileReportsDaily
-                        where r.ProfileId == profileId
-                        group r by 1 into g
-                        select new
-                        {
-                            AssistsAverage = g.Average(x => x.AssistsChange),
-                            TasksCompletedAverage = g.Average(x => x.TasksCompletedChange),
-                            ComplexityAverage = g.Average(x => x.ComplexityChange)
-                        }).FirstOrDefault();
+                       where r.ProfileId == profileId
+                       group r by 1 into g
+                       select new
+                       {
+                           AssistsAverage = g.Average(x => x.AssistsChange),
+                           TasksCompletedAverage = g.Average(x => x.TasksCompletedChange),
+                           ComplexityAverage = g.Average(x => x.ComplexityChange)
+                       }).FirstOrDefault();
 
             var tm = DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == profileId && x.TeamId.HasValue);
 
@@ -443,12 +445,12 @@ namespace Tayra.Services
         {
             var devices = DbContext.LogDevices.Where(x => x.ProfileId == profileId && x.Type == LogDeviceTypes.Email).Include(x => x.Settings).ToList();
 
-            foreach(var d in devices)
+            foreach (var d in devices)
             {
-                foreach(var sdto in dto.Settings)
-                { 
+                foreach (var sdto in dto.Settings)
+                {
                     var s = d.Settings.Where(x => x.LogEvent == sdto.LogEvent).FirstOrDefault();
-                    if(s == null)
+                    if (s == null)
                     {
                         s = new LogSetting
                         {

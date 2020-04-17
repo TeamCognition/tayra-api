@@ -54,7 +54,7 @@ namespace Tayra.API.Controllers
                 DbContext,
                 ProfilesService,
                 we);
-            if (TaskHelpers.DoStandardStuff(taskConverter, TasksService, TokensService, LogsService, AdvisorService))
+            if (TaskHelpers.DoStandardStuff(taskConverter, TasksService, TokensService, LogsService, AssistantService))
             {
                 DbContext.SaveChanges();
             }

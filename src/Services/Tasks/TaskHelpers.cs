@@ -43,14 +43,14 @@ namespace Tayra.Services
                                            ITasksService tasksService,
                                            ITokensService tokensService,
                                            ILogsService logsService,
-                                           IAdvisorService advisorService)
+                                           IAssistantService assistantService)
         {
             taskConverter.UpdateBasicTaskData();
             if (taskConverter.ShouldBeProcessed())
             {
                 taskConverter.FillExtraDataIfCompleted();
                 taskConverter.AddNecessaryTokensIfPossible(tokensService);
-                taskConverter.ConcludeActionPointsIfPossible(advisorService);
+                taskConverter.ConcludeActionPointsIfPossible(assistantService);
                 taskConverter.LogIfPossible(logsService);
                 tasksService.AddOrUpdate(taskConverter.Data);
                 return true;
