@@ -19,8 +19,6 @@ namespace Tayra.SyncServices
         #region Private Variables
 
         private readonly IShardMapProvider _shardMapProvider;
-        private IProfilesService profilesService;
-        private ITasksService tasksService;
 
         #endregion
 
@@ -29,13 +27,9 @@ namespace Tayra.SyncServices
         public SyncIssuesLoader(
             IShardMapProvider shardMapProvider,
             LogService logService,
-            CatalogDbContext catalogDb,
-            IProfilesService profilesService,
-            ITasksService tasksService) : base(logService, catalogDb)
+            CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
             _shardMapProvider = shardMapProvider;
-            this.profilesService = profilesService;
-            this.tasksService = tasksService;
         }
 
         #endregion
@@ -49,7 +43,7 @@ namespace Tayra.SyncServices
                 // LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
-                    PullIssuesNew(organizationDb, date, tasksService, profilesService, requestBody);
+                    PullIssuesNew(organizationDb, date, new TasksService(organizationDb), new ProfilesService(null,null,null,organizationDb), requestBody);
                 }
             }
         }
@@ -78,7 +72,7 @@ namespace Tayra.SyncServices
             var tasks = jiraConnector.GetBulkIssuesWithChangelog(integrationId.Value, "status", jiraProjectId);
             foreach (var task in tasks)
             {
-                TaskHelpers.DoStandardStuff(new TaskConverterJira(organizationDb, profilesService, task, TaskConverterJiraMode.BULK), tasksService, null, null, null);
+                TaskHelpers.DoStandardStuff(new TaskConverterJira(organizationDb, profilesService, task, TaskConverterMode.BULK), tasksService, null, null, null);
             }
             organizationDb.SaveChanges();
         }

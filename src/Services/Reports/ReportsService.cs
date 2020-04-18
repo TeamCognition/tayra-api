@@ -40,20 +40,19 @@ namespace Tayra.Services
         public async void UnlockReporting(string tenantKey, int segmentId)
         {
             var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
+            segment.EnsureNotNull(segmentId);
+
+            int? startDateId = DbContext.Tasks.OrderBy(x => x.LastModifiedDateId).Select(x => (int?)x.LastModifiedDateId).FirstOrDefault().NullIfZero();
+            using (HttpClient client = new HttpClient())
+            {
+                //client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");
+                client.BaseAddress = new Uri("http://localhost:7071/");
+                client.DefaultRequestHeaders.Add("x-functions-key", "bjae2tiYmu2Z5dT62aCikVMsc6YTMXkc9PylfWQUjFA9e0HuicFr4w==");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                await client.PostAsync("api/GenerateReportsHttp", new StringContent(JsonConvert.SerializeObject(new { tenantKey = tenantKey, startDateId = startDateId, segmentId = segmentId }, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"));
+            }
             segment.IsReportingUnlocked = true;
-            //segment.EnsureNotNull(segmentId);
-
-            //int? startDateId = DbContext.Tasks.OrderBy(x => x.LastModifiedDateId).Select(x => (int?)x.LastModifiedDateId).FirstOrDefault().NullIfZero();
-            
-            //using (HttpClient client = new HttpClient())
-            //{
-            //    //client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");
-            //    client.BaseAddress = new Uri("http://localhost:7071/");
-            //    client.DefaultRequestHeaders.Add("x-functions-key", "bjae2tiYmu2Z5dT62aCikVMsc6YTMXkc9PylfWQUjFA9e0HuicFr4w==");
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            //    await client.PostAsync("api/GenerateReportsHttp", new StringContent(JsonConvert.SerializeObject(new { tenantKey = tenantKey, startDateId = startDateId, segmentId = segmentId }, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"));
-            //}
         }
 
         public ReportOverviewDTO GetOverviewReport(ReportParams reportParams)

@@ -9,21 +9,14 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.Services.TaskConverters
 {
-    public enum TaskConverterJiraMode
-    {
-        TEST,
-        NORMAL,
-        BULK
-    }
     public class TaskConverterJira : TaskConverterBase
     {
         protected WebhookEvent We;
         protected IntegrationField RewardStatusCache;
-        protected TaskConverterJiraMode Mode;
         public TaskConverterJira(OrganizationDbContext dbContext,
                                  IProfilesService profilesService,
                                  WebhookEvent we,
-                                 TaskConverterJiraMode mode = TaskConverterJiraMode.NORMAL)
+                                 TaskConverterMode mode = TaskConverterMode.NORMAL)
                                  : base(dbContext, profilesService)
         {
             Init(we, mode);
@@ -32,13 +25,13 @@ namespace Tayra.Services.TaskConverters
         public TaskConverterJira(OrganizationDbContext dbContext,
                                  IProfilesService profilesService,
                                  JiraIssue jiraIssue,
-                                 TaskConverterJiraMode mode = TaskConverterJiraMode.NORMAL)
+                                 TaskConverterMode mode = TaskConverterMode.NORMAL)
                                  : base(dbContext, profilesService)
         {
             Init(new WebhookEvent {JiraIssue = jiraIssue}, mode);
         }
 
-        private void Init(WebhookEvent we, TaskConverterJiraMode mode)
+        private void Init(WebhookEvent we, TaskConverterMode mode)
         {
             We = we;
             Mode = mode;
@@ -46,7 +39,7 @@ namespace Tayra.Services.TaskConverters
 
         public override bool ShouldBeProcessed()
         {
-            if (Mode == TaskConverterJiraMode.NORMAL)
+            if (Mode == TaskConverterMode.NORMAL)
             {
                 var jiraConnector = new AtlassianJiraConnector(null, DbContext);
                 var issueChangelogs = jiraConnector.GetIssueChangelog(GetRewardStatus().IntegrationId, GetExternalId(), "status");
@@ -147,7 +140,7 @@ namespace Tayra.Services.TaskConverters
 
         protected override int? GetAutoTimeSpentInMinutes()
         {
-            if (Mode == TaskConverterJiraMode.TEST)
+            if (Mode == TaskConverterMode.TEST)
                 return null;
             
             var jiraConnector = new AtlassianJiraConnector(null, DbContext);

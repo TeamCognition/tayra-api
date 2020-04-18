@@ -95,7 +95,9 @@ namespace Tayra.Services
             DbContext.Add(new ProfileOneUp
             {
                 UppedProfileId = dto.ProfileId,
-                DateId = DateHelper2.ToDateId(DateTime.UtcNow)
+                DateId = DateHelper2.ToDateId(dto.DemoDate ?? DateTime.UtcNow),
+                CreatedBy = profileId, //when user is not logged in, ex. demo,
+                Created = dto.DemoDate ?? DateTime.UtcNow
             });
 
             var oneUpGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
@@ -105,7 +107,7 @@ namespace Tayra.Services
                 Event = LogEvents.ProfileOneUpGave,
                 Data = new Dictionary<string, string>
                 {
-                    { "timestamp", DateTime.UtcNow.ToString() },
+                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
                     { "profileUsername", oneUpGiverUsername },
                     { "receiverUsername", oneUpReceiverUsername }
                 },
@@ -117,7 +119,7 @@ namespace Tayra.Services
                 Event = LogEvents.ProfileOneUpReceived,
                 Data = new Dictionary<string, string>
                 {
-                    { "timestamp", DateTime.UtcNow.ToString() },
+                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
                     { "profileUsername", oneUpReceiverUsername },
                     { "giverUsername", oneUpGiverUsername }
                 },
@@ -309,15 +311,17 @@ namespace Tayra.Services
 
         public ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId)
         {
-            var prd = (from r in DbContext.ProfileReportsDaily
+            var prd = (from r in DbContext.ProfileReportsWeekly
                        where r.ProfileId == profileId
-                       group r by 1 into g
+                       group r by r.DateId into g
+                       orderby g.Key descending
                        select new
                        {
-                           AssistsAverage = g.Average(x => x.AssistsChange),
-                           TasksCompletedAverage = g.Average(x => x.TasksCompletedChange),
-                           ComplexityAverage = g.Average(x => x.ComplexityChange)
-                       }).FirstOrDefault();
+                           g.Key,
+                           Assists = g.Sum(x => x.AssistsChange),
+                           TasksCompleted = g.Sum(x => x.TasksCompletedChange),
+                           Complexity = g.Sum(x => x.ComplexityChange)
+                       }).Take(30).ToArray();
 
             var tm = DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == profileId && x.TeamId.HasValue);
 
@@ -338,13 +342,13 @@ namespace Tayra.Services
 
             return new ProfileRadarChartDTO
             {
-                AssistsAverage = Math.Round(prd?.AssistsAverage ?? 0f, 2),
+                AssistsAverage = Math.Round(prd?.Average(x => x.Assists) ?? 0f, 2),
                 AssistsTotal = 0,
 
-                TasksCompletedAverage = Math.Round(prd?.TasksCompletedAverage ?? 0f, 2),
+                TasksCompletedAverage = Math.Round(prd?.Average(x => x.TasksCompleted) ?? 0f, 2),
                 TasksCompletedTotal = 0,
 
-                ComplexityAverage = Math.Round(prd?.ComplexityAverage ?? 0f, 2),
+                ComplexityAverage = Math.Round(prd?.Average(x => x.Complexity) ?? 0f, 2),
                 ComplexityTotal = 0,
 
                 TeamAssistsAverage = Math.Round(trw?.AssistsAverage ?? 0f, 2),
@@ -400,18 +404,26 @@ namespace Tayra.Services
                                        PowerAverage = g.Average(x => x.PowerAverage),
                                        SpeedAverage = g.Average(x => x.SpeedAverage),
                                        OImpactAverage = g.Average(x => x.OImpactAverage),
-                                       HeatTrend = g.Select(x => Math.Round(x.Heat, 2)).Take(4).ToArray()
                                    }).FirstOrDefault();
 
             profileDto.Power = Math.Round(lastWeeklyStats?.PowerAverage ?? 0d, 2);
             profileDto.Speed = Math.Round(lastWeeklyStats?.SpeedAverage ?? 0d, 2);
             profileDto.OImpact = Math.Round(lastWeeklyStats?.OImpactAverage ?? 0d, 2);
 
-            //var heatStats = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).Where(x => x.ProfileId == profileDto.ProfileId).GroupBy(x => x.ProfileId)
+            var heatTrend = (from r in DbContext.ProfileReportsWeekly
+                            where r.ProfileId == profileDto.ProfileId
+                            group r by r.DateId into g
+                            orderby g.Key descending
+                            select new
+                            {
+                                g.Key,
+                                Heat = g.Average(x => x.Heat),
+                            }).Take(4).Select(x => x.Heat).ToArray();
+
             profileDto.Heat = lastWeeklyStats == null ? null : new ProfileViewDTO.HeatDTO
             {
                 LastDateId = lastWeeklyStats.DateId,
-                Values = lastWeeklyStats.HeatTrend
+                Values = heatTrend
             };
 
             return profileDto;
@@ -484,11 +496,11 @@ namespace Tayra.Services
                         AssistsData = new ProfileActivityChartDTO.AssistsDTO
                         {
                             Endorsed = g.SelectMany(x => x.ActivityChart.AssistsData?.Endorsed ?? new string[0]).ToArray(),
-                            EndorsedBy = g.SelectMany(x => x.ActivityChart.AssistsData.EndorsedBy).ToArray()
+                            EndorsedBy = g.SelectMany(x => x.ActivityChart.AssistsData?.EndorsedBy ?? new string[0]).ToArray()
                         },
                         DeliveryData = new ProfileActivityChartDTO.DeliveryDTO
                         {
-                            TaskName = g.SelectMany(x => x.ActivityChart.DeliveryData.TaskName).ToArray(),
+                            TaskName = g.SelectMany(x => x.ActivityChart.DeliveryData?.TaskName ?? new string[0]).ToArray(),
                             TokensGained = g.Sum(x => x.ActivityChart.DeliveryData.TokensGained),
                         },
                         ItemActivityData = new ProfileActivityChartDTO.ItemActivityDTO

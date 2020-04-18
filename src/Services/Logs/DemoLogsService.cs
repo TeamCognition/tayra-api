@@ -24,11 +24,18 @@ namespace Tayra.Services
         public void LogEvent(LogCreateDTO dto)
         {
             Random rnd = new Random();
-            var created = DateTime.UtcNow.AddDays(rnd.Next(-30, -1)).AddMinutes(rnd.Next(-59, -1));
+            var created = DateTime.UtcNow.AddDays(rnd.Next(-30, -1)).AddMinutes(rnd.Next(-150, -1));
 
-            if (dto.Data.TryGetValue("timestamp", out string _))
-                dto.Data["timestamp"] = created.ToString();
-            
+            if (dto.Data.TryGetValue("timestamp", out string value))
+            {
+                created = DateTime.Parse(value);
+
+                //if its utcNow, randomize it
+                if (created >= DateTime.UtcNow.AddMinutes(-5))
+                {
+                    dto.Data["timestamp"] = created.ToString();
+                }
+            }
             var log = new Log
             {
                 Event = dto.Event,

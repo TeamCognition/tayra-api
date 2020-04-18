@@ -43,7 +43,7 @@ namespace Tayra.Services
         public class HeatDTO
         {
             public int LastDateId { get; set; }
-            public double[] Values { get; set; }
+            public float[] Values { get; set; }
         }
 
         public class TeamDTO

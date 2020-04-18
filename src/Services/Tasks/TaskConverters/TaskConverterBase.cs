@@ -1,14 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Firdaws.Core;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services.TaskConverters
 {
+    public enum TaskConverterMode
+    {
+        TEST,
+        NORMAL,
+        BULK
+    }
     public abstract class TaskConverterBase
     {
+        protected TaskConverterMode Mode;
         protected OrganizationDbContext DbContext;
         protected ProfileAssignment CachedProfileAssignment;
         public TaskAddOrUpdateDTO Data {get; protected set;}
@@ -186,13 +194,14 @@ namespace Tayra.Services.TaskConverters
         {
             if (AssigneeProfile != null && logsService != null)
             {
+                var timestamp = Mode == TaskConverterMode.TEST ? DateHelper2.ParseDate(GetLastModifiedDateId().Value) : DateTime.UtcNow;
                 LogEvents eventType = IsCompleted() ? LogEvents.StatusChangeToCompleted : LogEvents.IssueStatusChange;
                 var logData = new LogCreateDTO
                 {
                     Event = eventType,
                     Data = new Dictionary<string, string>
                     {
-                        { "timestamp", DateTime.UtcNow.ToString() },
+                        { "timestamp", timestamp.ToString() },
                         { "issueUrl", GetIssueUrl() },
                         { "issueKey", GetExternalId() },
                         { "issueSummary", GetSummary() },

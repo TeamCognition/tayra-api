@@ -142,7 +142,7 @@ namespace Tayra.Services
 
             if (!InventoryRules.CanGiftInventoryItem(profileId, dto.ReceiverId, invItem.ProfileId, invItem.Item.IsGiftable, invItem.IsActive))
             {
-                throw new ApplicationException("We are unable to perform this action :) " + profileId + " " + dto.ReceiverId + " " + invItem.ProfileId + " " + invItem.Item.IsGiftable);
+                throw new ApplicationException("We are unable to perform this action :)");
             }
 
             DbContext.ProfileInventoryItems.Remove(invItem);
@@ -152,7 +152,8 @@ namespace Tayra.Services
                 ProfileId = dto.ReceiverId,
                 AcquireMethod = InventoryAcquireMethods.MemberGift,
                 ClaimRequired = true,
-                ItemType = invItem.Item.Type
+                ItemType = invItem.Item.Type,
+                Created = dto.DemoDate ?? DateTime.UtcNow
             }).Entity;
             
             DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.Gift).AddItems(giftedEntity);
@@ -164,7 +165,7 @@ namespace Tayra.Services
                 Event = LogEvents.InventoryItemGifted,
                 Data = new Dictionary<string, string>
                 {
-                    { "timestamp", DateTime.UtcNow.ToString() },
+                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
                     { "profileUsername", gifterUsername },
                     { "receiverUsername", receiverUsername },
                     { "itemName", invItem.Item.Name }
@@ -177,7 +178,7 @@ namespace Tayra.Services
                 Event = LogEvents.InventoryItemReceived,
                 Data = new Dictionary<string, string>
                 {
-                    { "timestamp", DateTime.UtcNow.ToString() },
+                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
                     { "profileUsername", receiverUsername },
                     { "gifterUsername", gifterUsername },
                     { "itemName", invItem.Item.Name }

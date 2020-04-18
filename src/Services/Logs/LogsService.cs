@@ -82,7 +82,7 @@ namespace Tayra.Services
 
         public GridData<LogGridDTO> GetGridData(LogGridParams gridParams)
         {
-            IQueryable<Log> query = DbContext.Logs.OrderByDescending(x => x.Created);
+            IQueryable<Log> query = DbContext.Logs;
 
             if (gridParams.ProfileIds.Length > 0)
             {
@@ -116,7 +116,7 @@ namespace Tayra.Services
                 query = from l in query
                         join sl in DbContext.ShopLogs on l.Id equals sl.LogId
                         where sl.ShopId == shopId
-                        select sl.Log;
+                        select l;
             }
 
             GridData<LogGridDTO> gridData = query.Select(l => new LogGridDTO
@@ -130,7 +130,5 @@ namespace Tayra.Services
         }
 
         #endregion
-
-
     }
 }

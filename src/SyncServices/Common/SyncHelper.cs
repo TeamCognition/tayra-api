@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using Tayra.DAL;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
+using Tayra.Services;
 using Tayra.SyncServices.Tayra;
 
 namespace Tayra.SyncServices.Common

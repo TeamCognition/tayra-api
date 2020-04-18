@@ -248,20 +248,20 @@ namespace Tayra.SyncServices.Tayra
                         DateId = dateId,
                         AssistsData = new ProfileActivityChartDTO.AssistsDTO
                         {
-                            Endorsed = upsG?.Usernames,
-                            EndorsedBy = upsR?.Usernames
+                            Endorsed = upsG?.Usernames ?? new string[0],
+                            EndorsedBy = upsR?.Usernames ?? new string[0]
                         },
                         DeliveryData = new ProfileActivityChartDTO.DeliveryDTO
                         {
-                            TaskName = ts?.CompletedNames,
-                            TokensGained = t?.CompanyTokensEarned ?? 0d
+                            TaskName = ts?.CompletedNames ?? new string[0],
+                            TokensGained = ts?.EffortScore ?? 0d
                         },
                         ItemActivityData = new ProfileActivityChartDTO.ItemActivityDTO
                         {
-                            GiftsSent = iGiftS?.Gifts,
-                            GiftsReceived = iGiftR?.Gifts,
-                            Bought = sp?.Names,
-                            Disenchanted = iDissed?.Names
+                            GiftsSent = iGiftS?.Gifts ?? new string[0],
+                            GiftsReceived = iGiftR?.Gifts ?? new string[0],
+                            Bought = sp?.Names ?? new string[0],
+                            Disenchanted = iDissed?.Names ?? new string[0]
                         }
                     };
 
