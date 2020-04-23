@@ -63,6 +63,7 @@ namespace Tayra.Services
                     ShopId = dto.ShopId.Value,
                 });
             }
+
         }
 
         public void SendLog(int profileId, LogEvents logEvent, ITemplateEmailDTO dto)
@@ -88,7 +89,7 @@ namespace Tayra.Services
             {
                 query = from l in query
                         join pl in DbContext.ProfileLogs on l.Id equals pl.LogId
-                        where gridParams.ProfileIds.Contains(pl.ProfileId)
+                        where gridParams.ProfileIds.Contains(pl.ProfileId) && pl.Event != LogEvents.ProfileOneUpReceived && pl.Event != LogEvents.InventoryItemReceived
                         select l;
             }
             if (gridParams.TeamIds.Length > 0)
@@ -116,7 +117,7 @@ namespace Tayra.Services
                 query = from l in query
                         join sl in DbContext.ShopLogs on l.Id equals sl.LogId
                         where sl.ShopId == shopId
-                        select l;
+                        select sl.Log;
             }
 
             GridData<LogGridDTO> gridData = query.Select(l => new LogGridDTO
@@ -130,5 +131,7 @@ namespace Tayra.Services
         }
 
         #endregion
+
+
     }
 }
