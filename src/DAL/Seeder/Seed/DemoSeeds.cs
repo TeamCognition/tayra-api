@@ -17,14 +17,19 @@ using Tayra.Services.TaskConverters;
 
 namespace Tayra.Models.Seeder.DemoSeeds
 {
+    public class ProfileAssignmentDemo
+    {
+        public int TeamId { get; set; }
+        public int MembersCount { get; set; }
+
+    }
     public class DemoSeedData
     {
         public Profile[] Profiles { get; set; }
         public Segment[] Segments { get; set; }
         public Team[] Teams { get; set; }
-        public ProfileAssignment[] ProfileAssignments { get; set; }
+        public ProfileAssignmentDemo[] ProfileAssignmentDemos { get; set; }
         public Task[] Tasks { get; set; }
-        public TokenTransaction[] Transactions { get; set; }
     }
     
     public static class DemoSeeds
@@ -71,24 +76,16 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 }
             }
         }
-        public static void AddOrganizationAndAdminAccount(OrganizationDbContext organizationDb)
+        public static void AddOrganization(OrganizationDbContext organizationDb)
         {
             Console.WriteLine("Seeding demo account");
-            organizationDb.Add(new Organization()
+            organizationDb.Add(new Organization
             {
                 Name = "Demo organization",
-                Address = "Some street 123",
+                Address = "Street demo 123",
                 Id = TenantUtilities.GenerateShardingKey(Seeder.DemoKey)
             });
             organizationDb.SaveChanges();
-            organizationDb.Profiles.Add(new Profile()
-            {
-                FirstName = "Admin",
-                LastName = "Demo",
-                Username = "admin_demo",
-                Role = ProfileRoles.Admin,
-                IdentityId = 20
-            });
         }
         public static void SeedDemo(OrganizationDbContext organizationDb)
         {
@@ -98,7 +95,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
 
             //Essentials
             Seeder.SeedNoSave(organizationDb);
-            AddOrganizationAndAdminAccount(organizationDb);
+            AddOrganization(organizationDb);
             organizationDb.SaveChanges();
 
 
@@ -107,6 +104,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
             organizationDb.SaveChanges();
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
+            demoData.Profiles = demoData.Profiles.Where(x => x.Role == ProfileRoles.Member).ToArray();
 
             Console.WriteLine("Seeding Segments ...");
             organizationDb.Segments.AddRange(demoData.Segments);
@@ -115,7 +113,8 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 foreach (var segment in demoData.Segments)
                 {
                     segment.IsReportingUnlocked = true;
-                    organizationDb.Integrations.Add(new Integration {
+                    organizationDb.Integrations.Add(new Integration
+                    {
                         SegmentId = segment.Id,
                         ProfileId = profile.Id,
                         Type = IntegrationType.ATJ,
@@ -126,7 +125,8 @@ namespace Tayra.Models.Seeder.DemoSeeds
                             }
                         }
                     });
-                    organizationDb.ProfileExternalIds.Add(new ProfileExternalId {
+                    organizationDb.ProfileExternalIds.Add(new ProfileExternalId
+                    {
                         ExternalId = "External-" + profile.Id,
                         IntegrationType = IntegrationType.ATJ,
                         ProfileId = profile.Id,
@@ -147,29 +147,52 @@ namespace Tayra.Models.Seeder.DemoSeeds
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
 
             Console.WriteLine("Seeding ProfileAssignments ...");
-            demoData.ProfileAssignments = demoData.ProfileAssignments.DistinctBy(x => new { x.ProfileId, x.SegmentId, x.TeamId }).ToArray();
-            var unassignedProfiles = demoData.Profiles.Where(x => !demoData.ProfileAssignments.Select(a => a.ProfileId).Contains(x.Id)).Select(x => new ProfileAssignment
+            demoData.ProfileAssignmentDemos = demoData.ProfileAssignmentDemos.DistinctBy(x => new { x.TeamId }).ToArray();
+            if(demoData.ProfileAssignmentDemos.Sum(x => x.MembersCount) > demoData.Profiles.Length)
+            {
+                throw new Exception("Not enough members for Profile Assignments");
+            }
+            var profileAssignmentsData = new List<ProfileAssignment>();
+            {
+                int toSkip = 0;
+                for (int i = 0; i < demoData.ProfileAssignmentDemos.Length; i++)
+                {
+                    var pad = demoData.ProfileAssignmentDemos[i];
+                    var segmentId = demoData.Teams.First(x => x.Id == pad.TeamId).SegmentId;
+                    profileAssignmentsData.AddRange(demoData.Profiles.Skip(toSkip).Take(pad.MembersCount).Select(x => new ProfileAssignment
+                    {
+                        TeamId = pad.TeamId,
+                        SegmentId = segmentId,
+                        ProfileId = x.Id
+                    }));
+                    toSkip += pad.MembersCount;
+                }
+            }
+
+            var unassignedProfiles = demoData.Profiles.Where(x => !profileAssignmentsData.Select(a => a.ProfileId).Contains(x.Id)).Select(x => new ProfileAssignment
             {
                 ProfileId = x.Id,
                 SegmentId = demoData.Segments[0].Id,
                 TeamId = demoData.Teams[0].Id,
             });
-            organizationDb.ProfileAssignments.AddRange(demoData.ProfileAssignments.Concat(unassignedProfiles));
+           
+            organizationDb.ProfileAssignments.AddRange(profileAssignmentsData.Concat(unassignedProfiles));
             organizationDb.SaveChanges();
 
-            
+
             Console.WriteLine("Seeding Tasks ...");
             Random rnd = new Random();
-            ITokensService TokensService = new TokensService(organizationDb);
+            ITokensService TokensService = new DemoTokensService(organizationDb);
             ILogsService LogsService = new DemoLogsService(organizationDb);
             IProfilesService ProfilesService = new ProfilesService(TokensService, LogsService, null, organizationDb);
             ITasksService TasksService = new TasksService(organizationDb);
             IAssistantService AdvisorService = new AssistantService(organizationDb);
             IInventoriesService InventoryService = new InventoryService(LogsService, TokensService, organizationDb);
+            IShopItemsService ShopItemsService = new ShopItemsService(LogsService, TokensService, organizationDb);
 
-            foreach (var t in demoData.Tasks.Concat(demoData.Tasks))
+            foreach (var t in demoData.Tasks.Concat(demoData.Tasks.Take(40)))
             {
-                t.LastModifiedDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(rnd.Next(-30, -1)));
+                t.LastModifiedDateId = DateHelper2.ToDateId(GetRandomDateTimeInPast());
                 t.Priority = TaskPriorities.Medium;
                 t.Status = TaskStatuses.Done;
                 t.Type = TaskTypes.Task;
@@ -177,35 +200,43 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 TaskConverterJira taskConverter = new TaskConverterJira(
                     organizationDb,
                     ProfilesService,
-                    new WebhookEvent {
-                        JiraIssue = new JiraIssue {
+                    new WebhookEvent
+                    {
+                        JiraIssue = new JiraIssue
+                        {
                             Id = "DemoIssue-" + t.Id,
                             Key = "TSK-" + rnd.Next(101, 9998),
-                            Fields = new JiraIssue.IssueFields {
+                            Fields = new JiraIssue.IssueFields
+                            {
                                 Status = new JiraStatus
                                 {
-                                    Category = new JiraStatusCategory {
+                                    Category = new JiraStatusCategory
+                                    {
                                         Id = IssueStatusCategories.Done
                                     },
                                     Id = "REWARDING_ID",
                                     Name = "Done"
                                 },
-                                Project = new JiraProject {
+                                Project = new JiraProject
+                                {
                                     Id = "DemoProject-" + t.SegmentId
                                 },
                                 StoryPointsCF = t.StoryPoints,
                                 Summary = t.Summary,
                                 TimeOriginalEstimate = t.TimeOriginalEstimatInMinutes * 60,
                                 Timespent = t.TimeSpentInMinutes * 60,
-                                Assignee = new JiraUser {
-                                    AccountId = "External-" + t.AssigneeProfileId
+                                Assignee = new JiraUser
+                                {
+                                    AccountId = "External-" + demoData.Profiles[rnd.Next(demoData.Profiles.Length)].Id // lenght-1??
                                 },
                                 Labels = new string[] { "label-1", "label-2" },
                                 StatusCategoryChangeDate = DateHelper2.ParseDate(t.LastModifiedDateId),
-                                Priority = new JiraPriority {
+                                Priority = new JiraPriority
+                                {
                                     Id = "3"
                                 },
-                                IssueType = new JiraIssueType {
+                                IssueType = new JiraIssueType
+                                {
                                     Id = "10003"
                                 }
                             },
@@ -219,34 +250,44 @@ namespace Tayra.Models.Seeder.DemoSeeds
             organizationDb.SaveChanges();
 
             Console.WriteLine("Seeding TokenTransactions ...");
-            foreach (var singleTokenTransaction in demoData.Transactions)
+            foreach (var p in demoData.Profiles)
             {
                 TokensService.CreateTransaction(
                     TokenType.CompanyToken,
-                    singleTokenTransaction.ProfileId,
-                    singleTokenTransaction.Value,
+                    p.Id,
+                    rnd.Next(1500, 7000),
                     TransactionReason.Manual,
                     null
                 );
             }
             organizationDb.SaveChanges();
 
+            Console.WriteLine("Seeding Shop purchases ...");
+            var shopItems = organizationDb.ShopItems.Where(x => x.QuantityReservedRemaining == null).ToArray();
+            foreach (var p in demoData.Profiles)
+            {
+                foreach(var toBuy in shopItems.RandomSubset(rnd.Next(3)))
+                {
+                    ShopItemsService.PurchaseShopItem(p.Id, new ShopItemPurchaseDTO
+                    {
+                        ItemId = toBuy.ItemId,
+                        DemoDate = GetRandomDateTimeInPast()
+                    });
+                }
+            }
+
             Console.WriteLine("Seeding Praises ...");
             foreach (var p in demoData.Profiles)
             {
-                var dateIndex = rnd.Next(-30, -1);
-                var count = rnd.Next(0, 10);
-
-                for (int i = 0; i < count; i++)
+                foreach(var pToPraise in demoData.Profiles.RandomSubset(rnd.Next(10)))
                 {
-                    var toPraise = demoData.Profiles[(count + i) % demoData.Profiles.Length];
-                    if (p.Id == toPraise.Id)
+                    if (p.Id == pToPraise.Id)
                         continue;
 
                     ProfilesService.OneUpProfile(p.Id, new ProfileOneUpDTO
                     {
-                        ProfileId = toPraise.Id,
-                        DemoDate = DateTime.UtcNow.AddDays((++dateIndex + i) % -30).AddMinutes(rnd.Next(1,150))
+                        ProfileId = pToPraise.Id,
+                        DemoDate = GetRandomDateTimeInPast()
                     });
                 }
             }
@@ -256,25 +297,25 @@ namespace Tayra.Models.Seeder.DemoSeeds
             var allItems = organizationDb.Items.ToArray();
             foreach (var p in demoData.Profiles)
             {
-                var index = rnd.Next(1, allItems.Length - 11);
                 var toGive = rnd.Next(1, 10);
-                for (int i = 0; i < toGive; i++)
+                foreach(var item in allItems.RandomSubset(toGive))
                 {
-                    InventoryService.Give(adminProfile.Id, new InventoryGiveDTO { ItemId = allItems[index + i].Id, ReceiverUsername = p.Username, ClaimRequired = false });
+                    InventoryService.Give(adminProfile.Id, new InventoryGiveDTO { ItemId = item.Id, ReceiverUsername = p.Username, ClaimRequired = false });
                 }
             }
+
             organizationDb.SaveChanges();
-            foreach(var p in demoData.Profiles)
+            foreach (var p in demoData.Profiles)
             {
                 var invItems = organizationDb.ProfileInventoryItems.Where(x => x.ProfileId == p.Id).ToList();
                 var receiverId = rnd.Next(p.Id, demoData.Profiles.Max(x => x.Id));
                 if (invItems.Count() == 0 || p.Id == receiverId)
                     continue;
 
-                var toGift = rnd.Next(0, invItems.Count()-1);
+                var toGift = rnd.Next(0, invItems.Count() - 1);
                 for (int i = 0; i < toGift; i++)
                 {
-                    InventoryService.Gift(p.Id, new InventoryItemGiftDTO { InventoryItemId = invItems[i].Id, ReceiverId = receiverId, DemoDate = DateTime.UtcNow.AddDays(rnd.Next(-30, -1)).AddMinutes(rnd.Next(1, 150))});
+                    InventoryService.Gift(p.Id, new InventoryItemGiftDTO { InventoryItemId = invItems[i].Id, ReceiverId = receiverId, DemoDate = GetRandomDateTimeInPast() });
                 }
                 invItems.RemoveRange(0, toGift);
                 var ownedTitle = invItems.FirstOrDefault(x => x.ProfileId == p.Id && x.ItemType == ItemTypes.TayraTitle);
@@ -288,15 +329,15 @@ namespace Tayra.Models.Seeder.DemoSeeds
             }
 
             Console.WriteLine("Seeding Assistent Action Points ...");
-            for(int i = 0; i < 3; i ++)
+            for (int i = 0; i < 3; i++)
             {
                 var index = rnd.Next(1, 5);
                 organizationDb.Add(new ActionPoint
                 {
                     Type = ActionPointTypes.ProfilesLowImpactFor2Weeks,
-                    DateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(rnd.Next(-14, -1))),
-                    ProfileId = demoData.Profiles[i+index].Id,
-                    SegmentId = demoData.Segments[rnd.Next(0,1)].Id,
+                    DateId = DateHelper2.ToDateId(GetRandomDateTimeInPast(14)),
+                    ProfileId = demoData.Profiles[i + index].Id,
+                    SegmentId = demoData.Segments[rnd.Next(0, 1)].Id,
                 });
             }
 
@@ -306,7 +347,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 organizationDb.Add(new ActionPoint
                 {
                     Type = ActionPointTypes.ProfilesNoCompletedTasksIn1Week,
-                    DateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(rnd.Next(-14, -1))),
+                    DateId = DateHelper2.ToDateId(GetRandomDateTimeInPast(14)),
                     ProfileId = demoData.Profiles[i + index].Id,
                     SegmentId = demoData.Segments[rnd.Next(0, 1)].Id,
                 });
@@ -318,7 +359,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 organizationDb.Add(new ActionPoint
                 {
                     Type = ActionPointTypes.ProfilesHighSpeedFor2Weeks,
-                    DateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(rnd.Next(-14, -1))),
+                    DateId = DateHelper2.ToDateId(GetRandomDateTimeInPast(14)),
                     ProfileId = demoData.Profiles[i + index].Id,
                     SegmentId = demoData.Segments[rnd.Next(0, 1)].Id,
                 });
@@ -332,6 +373,10 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 new ReportsService(organizationDb).UnlockReporting(Seeder.DemoKey, segment.Id);
             }
             organizationDb.SaveChanges();
+
+            DateTime GetRandomDateTimeInPast(int maxDaysInPast = 30) =>
+                DateTime.UtcNow.Date.Subtract(new TimeSpan(rnd.Next(0, maxDaysInPast-1), rnd.Next(0, 23), rnd.Next(0, 59), rnd.Next(0, 59)));
+            
         }
     }
 }

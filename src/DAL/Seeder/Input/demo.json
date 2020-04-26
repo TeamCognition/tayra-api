@@ -2,11 +2,20 @@
   "Utils": null,
   "Profiles": [
     {
+      "Id": 1,
+      "FirstName": "Admin",
+      "LastName": "Demo",
+      "Username": "admin_demo",
+      "Role": "Admin",
+      "IdentityId": 20
+    },
+    {
       "Id": 2,
-      "FirstName": "Rhonda",
-      "LastName": "Lee",
-      "Username": "rhonda.lee",
-      "Role": "Member"
+      "FirstName": "Hasan",
+      "LastName": "Mujić",
+      "Username": "member_demo",
+      "Role": "Member",
+      "IdentityId": 27
     },
     {
       "Id": 3,
@@ -90,7 +99,7 @@
       "FirstName": "Compton",
       "LastName": "Bowers",
       "Username": "compton.bowers",
-      "Role": "Manager"
+      "Role": "Member"
     },
     {
       "Id": 15,
@@ -105,387 +114,132 @@
       "LastName": "Shepherd",
       "Username": "wilkins.shepherd",
       "Role": "Member"
+    },
+    {
+      "Id": 17,
+      "FirstName": "Travis",
+      "LastName": "Donald",
+      "Username": "travis.donald",
+      "Role": "Member"
+    },
+    {
+      "Id": 18,
+      "FirstName": "Wilkins",
+      "LastName": "Shepherd",
+      "Username": "wilkins.shepherd",
+      "Role": "Member"
+    },
+    {
+      "Id": 19,
+      "FirstName": "Jad",
+      "LastName": "Tate",
+      "Username": "jad.tate",
+      "Role": "Member"
+    },
+    {
+      "Id": 20,
+      "FirstName": "Noel",
+      "LastName": "Bryan",
+      "Username": "noel.bryan",
+      "Role": "Member"
+    },
+    {
+      "Id": 21,
+      "FirstName": "Alaya",
+      "LastName": "Villa",
+      "Username": "alaya.villa",
+      "Role": "Member"
     }
   ],
   "Segments": [
     {
       "Id": 1,
       "Name": "Project Alpha",
-      "Key": "PROJECT ALPHA"
+      "Key": "ALPHA"
     },
     {
       "Id": 2,
       "Name": "Project Beta",
-      "Key": "PROJECT BETA"
+      "Key": "BETA"
     },
     {
       "Id": 3,
       "Name": "Project Gamma",
-      "Key": "PROJECT GAMMA"
+      "Key": "GAMMA"
     }
   ],
   "Teams": [
     {
       "Id": 1,
       "Name": "Team 1",
-      "Key": "TEAM 1",
+      "Key": "T1",
       "SegmentId": 1
     },
     {
       "Id": 2,
       "Name": "Team 2",
-      "Key": "TEAM 2",
-      "SegmentId": 2
+      "Key": "T2",
+      "SegmentId": 1
     },
     {
       "Id": 3,
       "Name": "Team 3",
-      "Key": "TEAM 3",
-      "SegmentId": 2
+      "Key": "T3",
+      "SegmentId": 1
     },
     {
       "Id": 4,
       "Name": "Team 4",
-      "Key": "TEAM 4",
-      "SegmentId": 3
+      "Key": "T4",
+      "SegmentId": 2
     },
     {
       "Id": 5,
       "Name": "Team 5",
-      "Key": "TEAM 5",
+      "Key": "T5",
       "SegmentId": 2
     },
     {
       "Id": 6,
       "Name": "Team 6",
-      "Key": "TEAM 6",
+      "Key": "T6",
       "SegmentId": 3
     },
     {
       "Id": 7,
       "Name": "Team 7",
-      "Key": "TEAM 7",
-      "SegmentId": 2
-    },
-    {
-      "Id": 8,
-      "Name": "Team 8",
-      "Key": "TEAM 8",
-      "SegmentId": 2
-    },
-    {
-      "Id": 9,
-      "Name": "Team 9",
-      "Key": "TEAM 9",
-      "SegmentId": 2
-    },
-    {
-      "Id": 10,
-      "Name": "Team 10",
-      "Key": "TEAM 10",
-      "SegmentId": 1
+      "Key": "T7",
+      "SegmentId": 3
     }
   ],
-  "ProfileAssignments": [
+  "ProfileAssignmentDemos": [
     {
-      "ProfileId": 8,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 8,
-      "TeamId": 5,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 14,
-      "TeamId": 7,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 7,
       "TeamId": 1,
-      "SegmentId": 1
+      "MembersCount": 5
     },
     {
-      "ProfileId": 4,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 7,
-      "TeamId": 1,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 12,
       "TeamId": 2,
-      "SegmentId": 2
+      "MembersCount": 3
     },
     {
-      "ProfileId": 4,
       "TeamId": 3,
-      "SegmentId": 2
+      "MembersCount": 2
     },
     {
-      "ProfileId": 11,
       "TeamId": 4,
-      "SegmentId": 3
+      "MembersCount": 3
     },
     {
-      "ProfileId": 11,
-      "TeamId": 4,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 14,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 15,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 2,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 14,
-      "TeamId": 7,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 14,
       "TeamId": 5,
-      "SegmentId": 2
+      "MembersCount": 2
     },
     {
-      "ProfileId": 12,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 13,
-      "TeamId": 7,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 13,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 4,
-      "TeamId": 4,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 2,
-      "TeamId": 5,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 10,
       "TeamId": 6,
-      "SegmentId": 3
+      "MembersCount": 3
     },
     {
-      "ProfileId": 11,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 3,
-      "TeamId": 8,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 5,
-      "TeamId": 4,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 12,
-      "TeamId": 3,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 3,
-      "TeamId": 5,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 8,
-      "TeamId": 2,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 6,
-      "TeamId": 4,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 3,
-      "TeamId": 2,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 4,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 14,
-      "TeamId": 8,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 16,
       "TeamId": 7,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 11,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 3,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 7,
-      "TeamId": 6,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 2,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 2,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 9,
-      "TeamId": 7,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 2,
-      "TeamId": 6,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 15,
-      "TeamId": 7,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 15,
-      "TeamId": 7,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 3,
-      "TeamId": 2,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 16,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 8,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 7,
-      "TeamId": 6,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 11,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 11,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 15,
-      "TeamId": 3,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 8,
-      "TeamId": 7,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 10,
-      "TeamId": 4,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 3,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 9,
-      "TeamId": 8,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 3,
-      "TeamId": 10,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 11,
-      "TeamId": 9,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 11,
-      "TeamId": 6,
-      "SegmentId": 3
-    },
-    {
-      "ProfileId": 3,
-      "TeamId": 7,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 14,
-      "TeamId": 5,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 14,
-      "TeamId": 1,
-      "SegmentId": 1
-    },
-    {
-      "ProfileId": 15,
-      "TeamId": 8,
-      "SegmentId": 2
-    },
-    {
-      "ProfileId": 14,
-      "TeamId": 10,
-      "SegmentId": 1
+      "MembersCount": 2
     }
   ],
   "Tasks": [
@@ -493,1203 +247,901 @@
       "Summary": "consequat consectetur ut id cillum",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 14,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 953
     },
     {
       "Summary": "eiusmod laboris et sint anim",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 10,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 526
     },
     {
       "Summary": "irure Lorem minim laboris dolore",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 3,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 988
     },
     {
       "Summary": "in dolore quis excepteur dolore",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 7,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 8,
       "TimeSpentInMinutes": 444
     },
     {
       "Summary": "aliqua irure ut ex dolor",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 14,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 424
     },
     {
       "Summary": "adipisicing sunt aliqua Lorem excepteur",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 15,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 534
     },
     {
       "Summary": "consequat eiusmod enim enim voluptate",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 14,
       "TeamId": 5,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 380
     },
     {
       "Summary": "consequat dolor adipisicing nostrud eu",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 15,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 453
     },
     {
       "Summary": "qui id quis ullamco irure",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 16,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 5,
+      "StoryPoints": 8,
       "TimeSpentInMinutes": 697
     },
     {
       "Summary": "imporove do anim nostrud pariatur",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 4,
       "TeamId": 5,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 345
     },
     {
       "Summary": "non tempor cupidatat reprehenderit Lorem",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 16,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 333
     },
     {
       "Summary": "cupidatat fugiat esse et duis",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 3,
       "TeamId": 8,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 448
     },
     {
       "Summary": "cillum ad imporove anim cillum",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 15,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 830
     },
     {
       "Summary": "nisi tempor imporove magna in",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 6,
       "TeamId": 5,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 241
     },
     {
       "Summary": "imporove enim culpa ullamco consectetur",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 15,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 611
     },
     {
       "Summary": "quis sit est labore et",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 7,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 662
     },
     {
       "Summary": "enim eu incididunt fugiat labore",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 5,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 130
     },
     {
       "Summary": "exercitation eiusmod veniam dolore id",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 4,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 203
     },
     {
       "Summary": "excepteur laboris consequat nisi et",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 2,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 234
     },
     {
       "Summary": "culpa consequat cillum imporove commodo",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 7,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 885
     },
     {
       "Summary": "pariatur sunt laboris dolor incididunt",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 15,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 859
     },
     {
       "Summary": "magna nostrud elit cupidatat velit",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 9,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 576
     },
     {
       "Summary": "est veniam elit magna quis",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 4,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 362
     },
     {
       "Summary": "quis non est sint laboris",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 7,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 835
     },
     {
       "Summary": "sunt nisi reprehenderit ipsum laborum",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 5,
       "TeamId": 5,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 549
     },
     {
       "Summary": "commodo consectetur incididunt enim laboris",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 14,
       "TeamId": 5,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 817
     },
     {
       "Summary": "consectetur in labore exercitation aliqua",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 9,
       "TeamId": 5,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 684
     },
     {
       "Summary": "velit est ut veniam qui",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 8,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 564
     },
     {
       "Summary": "eiusmod commodo in et aliqua",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 15,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 781
     },
     {
       "Summary": "velit voluptate dolore officia officia",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 2,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 277
     },
     {
       "Summary": "sunt et minim sit velit",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 7,
       "TeamId": 3,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 585
     },
     {
       "Summary": "imporove officia aute excepteur quis",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 15,
       "TeamId": 5,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 657
     },
     {
       "Summary": "deserunt nostrud incididunt enim cupidatat",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 10,
       "TeamId": 6,
       "SegmentId": 3,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 619
     },
     {
       "Summary": "veniam velit pariatur aute deserunt",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 4,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 189
     },
     {
       "Summary": "exercitation dolor ut est voluptate",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 11,
       "TeamId": 1,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 133
     },
     {
       "Summary": "quis velit magna esse Lorem",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 6,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 893
     },
     {
       "Summary": "quis deserunt tempor fugiat incididunt",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 5,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 517
     },
     {
       "Summary": "esse anim excepteur magna culpa",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 11,
       "TeamId": 8,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 816
     },
     {
       "Summary": "aliqua eu veniam magna eu",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 2,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 668
     },
     {
       "Summary": "labore exercitation magna tempor nostrud",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 13,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 849
     },
     {
       "Summary": "est sunt mollit veniam duis",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 14,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 195
     },
     {
       "Summary": "id ea officia tempor est",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 12,
       "TeamId": 6,
       "SegmentId": 3,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 543
     },
     {
       "Summary": "in cillum aliqua cupidatat voluptate",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 2,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 224
     },
     {
       "Summary": "dolor cupidatat quis nisi elit",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 12,
       "TeamId": 1,
       "SegmentId": 1,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 689
     },
     {
       "Summary": "consectetur sit duis officia sint",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 4,
       "TeamId": 5,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 275
     },
     {
       "Summary": "incididunt pariatur do imporove ipsum",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 7,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 695
     },
     {
       "Summary": "mollit magna laboris sunt nostrud",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 16,
       "TeamId": 3,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 466
     },
     {
       "Summary": "ex in proident laboris labore",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 11,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 248
     },
     {
       "Summary": "reprehenderit laborum duis fugiat adipisicing",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 12,
       "TeamId": 3,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 540
     },
     {
       "Summary": "sint veniam dolor ad elit",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 9,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 123
     },
     {
       "Summary": "irure qui dolor nostrud mollit",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 11,
       "TeamId": 6,
       "SegmentId": 3,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 532
     },
     {
       "Summary": "deserunt eiusmod in eiusmod do",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 14,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 245
     },
     {
       "Summary": "do voluptate laboris culpa qui",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 14,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 350
     },
     {
       "Summary": "consectetur adipisicing officia et enim",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 10,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 598
     },
     {
       "Summary": "laborum excepteur ullamco eu est",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 2,
       "TeamId": 3,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 626
     },
     {
       "Summary": "minim in labore cupidatat consectetur",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 8,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 675
     },
     {
       "Summary": "pariatur consequat ad magna aliquip",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 10,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 689
     },
     {
       "Summary": "laborum adipisicing deserunt voluptate nostrud",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 10,
       "TeamId": 6,
       "SegmentId": 3,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 441
     },
     {
       "Summary": "qui incididunt proident magna voluptate",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 12,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 478
     },
     {
       "Summary": "excepteur exercitation exercitation qui quis",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 15,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 626
     },
     {
       "Summary": "nostrud nisi sunt cupidatat commodo",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 6,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 561
     },
     {
       "Summary": "laborum incididunt ad ad reprehenderit",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 8,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 681
     },
     {
       "Summary": "dolor cupidatat consectetur adipisicing ipsum",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 15,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 412
     },
     {
       "Summary": "cupidatat nisi deserunt non commodo",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 9,
       "TeamId": 6,
       "SegmentId": 3,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 722
     },
     {
       "Summary": "pariatur sit ad aute adipisicing",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 11,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 741
     },
     {
       "Summary": "et est eu ullamco cupidatat",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 12,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 131
     },
     {
       "Summary": "aliquip est mollit ad ut",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 7,
       "TeamId": 8,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 500
     },
     {
       "Summary": "ex Lorem ipsum et elit",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 9,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 292
     },
     {
       "Summary": "est laborum sit labore dolor",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 4,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 761
     },
     {
       "Summary": "id ex cillum non culpa",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 16,
       "TeamId": 5,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 141
     },
     {
       "Summary": "nostrud mollit consectetur id non",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 5,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 553
     },
     {
       "Summary": "nostrud qui id ea exercitation",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 13,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 990
     },
     {
       "Summary": "dolore aliqua commodo consequat dolor",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 6,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 883
     },
     {
       "Summary": "veniam reprehenderit amet exercitation ut",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 13,
       "TeamId": 3,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 697
     },
     {
       "Summary": "consequat eu anim sint quis",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 4,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 190
     },
     {
       "Summary": "culpa elit ea non cupidatat",
       "Status": "Done",
       "Type": "Bug",
-      "AssigneeProfileId": 16,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 632
     },
     {
       "Summary": "veniam non est sunt amet",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 6,
       "TeamId": 1,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 766
     },
     {
       "Summary": "exercitation ullamco veniam adipisicing nisi",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 12,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 278
     },
     {
       "Summary": "officia exercitation incididunt laboris proident",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 10,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 4,
+      "StoryPoints": 8,
       "TimeSpentInMinutes": 445
     },
     {
       "Summary": "qui excepteur velit sunt ut",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 13,
       "TeamId": 8,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 165
     },
     {
       "Summary": "est ex nostrud ullamco tempor",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 3,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 568
     },
     {
       "Summary": "amet velit velit et ullamco",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 11,
       "TeamId": 8,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 591
     },
     {
       "Summary": "in excepteur imporove laboris exercitation",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 8,
       "TeamId": 8,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 711
     },
     {
       "Summary": "nisi do aliquip do laborum",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 15,
       "TeamId": 2,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 785
     },
     {
       "Summary": "commodo ullamco occaecat ex culpa",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 15,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 374
     },
     {
       "Summary": "consequat et occaecat cupidatat veniam",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 16,
       "TeamId": 1,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 698
     },
     {
       "Summary": "reprehenderit culpa laboris dolore sit",
       "Status": "Open",
       "Type": "Bug",
-      "AssigneeProfileId": 2,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 685
     },
     {
       "Summary": "consectetur esse nostrud ipsum nisi",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 2,
       "TeamId": 6,
       "SegmentId": 3,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 699
     },
     {
       "Summary": "nisi exercitation aliquip aliquip eu",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 9,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 295
     },
     {
       "Summary": "qui consectetur dolore reprehenderit est",
       "Status": "NoCategory",
       "Type": "Bug",
-      "AssigneeProfileId": 16,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 829
     },
     {
       "Summary": "mollit aliqua id velit et",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 6,
       "TeamId": 6,
       "SegmentId": 3,
-      "Complexity": 5,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 499
     },
     {
       "Summary": "ex sint do eiusmod veniam",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 14,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 757
     },
     {
       "Summary": "ea sit consequat anim proident",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 4,
       "TeamId": 9,
       "SegmentId": 2,
-      "Complexity": 5,
+      "StoryPoints": 8,
       "TimeSpentInMinutes": 276
     },
     {
       "Summary": "cupidatat ea cillum laborum aliquip",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 2,
       "TeamId": 6,
       "SegmentId": 3,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 960
     },
     {
       "Summary": "sit non occaecat ad qui",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 11,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 3,
+      "StoryPoints": 3,
       "TimeSpentInMinutes": 183
     },
     {
       "Summary": "minim et veniam amet magna",
       "Status": "Open",
       "Type": "Task",
-      "AssigneeProfileId": 11,
       "TeamId": 10,
       "SegmentId": 1,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 353
     },
     {
       "Summary": "cupidatat quis in culpa ut",
       "Status": "Done",
       "Type": "Task",
-      "AssigneeProfileId": 14,
       "TeamId": 4,
       "SegmentId": 3,
-      "Complexity": 2,
+      "StoryPoints": 2,
       "TimeSpentInMinutes": 986
     },
     {
       "Summary": "dolor dolor do nisi est",
       "Status": "InProgress",
       "Type": "Bug",
-      "AssigneeProfileId": 10,
       "TeamId": 7,
       "SegmentId": 2,
-      "Complexity": 1,
+      "StoryPoints": 1,
       "TimeSpentInMinutes": 771
     },
     {
       "Summary": "ea occaecat aliqua ut id",
       "Status": "InProgress",
       "Type": "Task",
-      "AssigneeProfileId": 8,
       "TeamId": 3,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 617
     },
     {
       "Summary": "in anim occaecat elit adipisicing",
       "Status": "NoCategory",
       "Type": "Task",
-      "AssigneeProfileId": 15,
       "TeamId": 3,
       "SegmentId": 2,
-      "Complexity": 4,
+      "StoryPoints": 5,
       "TimeSpentInMinutes": 450
-    }
-  ],
-  "Transactions": [
-    {
-      "Value": 143,
-      "Reason": "Manual",
-      "ProfileId": 12
-    },
-    {
-      "Value": 25,
-      "Reason": "Manual",
-      "ProfileId": 15
-    },
-    {
-      "Value": 22,
-      "Reason": "Manual",
-      "ProfileId": 9
-    },
-    {
-      "Value": 99,
-      "Reason": "Manual",
-      "ProfileId": 4
-    },
-    {
-      "Value": 136,
-      "Reason": "Manual",
-      "ProfileId": 5
-    },
-    {
-      "Value": 23,
-      "Reason": "Manual",
-      "ProfileId": 2
-    },
-    {
-      "Value": 26,
-      "Reason": "Manual",
-      "ProfileId": 12
-    },
-    {
-      "Value": 78,
-      "Reason": "Manual",
-      "ProfileId": 2
-    },
-    {
-      "Value": 84,
-      "Reason": "Manual",
-      "ProfileId": 12
-    },
-    {
-      "Value": 37,
-      "Reason": "Manual",
-      "ProfileId": 8
-    },
-    {
-      "Value": 127,
-      "Reason": "Manual",
-      "ProfileId": 6
-    },
-    {
-      "Value": 118,
-      "Reason": "Manual",
-      "ProfileId": 14
-    },
-    {
-      "Value": 51,
-      "Reason": "Manual",
-      "ProfileId": 8
-    },
-    {
-      "Value": 45,
-      "Reason": "Manual",
-      "ProfileId": 3
-    },
-    {
-      "Value": 142,
-      "Reason": "Manual",
-      "ProfileId": 16
-    },
-    {
-      "Value": 132,
-      "Reason": "Manual",
-      "ProfileId": 10
-    },
-    {
-      "Value": 143,
-      "Reason": "Manual",
-      "ProfileId": 3
-    },
-    {
-      "Value": 97,
-      "Reason": "Manual",
-      "ProfileId": 8
-    },
-    {
-      "Value": 110,
-      "Reason": "Manual",
-      "ProfileId": 14
-    },
-    {
-      "Value": 100,
-      "Reason": "Manual",
-      "ProfileId": 7
-    },
-    {
-      "Value": 94,
-      "Reason": "Manual",
-      "ProfileId": 5
-    },
-    {
-      "Value": 34,
-      "Reason": "Manual",
-      "ProfileId": 6
-    },
-    {
-      "Value": 66,
-      "Reason": "Manual",
-      "ProfileId": 6
-    },
-    {
-      "Value": 54,
-      "Reason": "Manual",
-      "ProfileId": 15
-    },
-    {
-      "Value": 138,
-      "Reason": "Manual",
-      "ProfileId": 4
-    },
-    {
-      "Value": 42,
-      "Reason": "Manual",
-      "ProfileId": 3
-    },
-    {
-      "Value": 75,
-      "Reason": "Manual",
-      "ProfileId": 5
-    },
-    {
-      "Value": 95,
-      "Reason": "Manual",
-      "ProfileId": 7
-    },
-    {
-      "Value": 121,
-      "Reason": "Manual",
-      "ProfileId": 16
-    },
-    {
-      "Value": 72,
-      "Reason": "Manual",
-      "ProfileId": 13
-    },
-    {
-      "Value": 146,
-      "Reason": "Manual",
-      "ProfileId": 11
-    },
-    {
-      "Value": 93,
-      "Reason": "Manual",
-      "ProfileId": 12
-    },
-    {
-      "Value": 105,
-      "Reason": "Manual",
-      "ProfileId": 15
-    },
-    {
-      "Value": 18,
-      "Reason": "Manual",
-      "ProfileId": 11
-    },
-    {
-      "Value": 134,
-      "Reason": "Manual",
-      "ProfileId": 12
-    },
-    {
-      "Value": 115,
-      "Reason": "Manual",
-      "ProfileId": 5
-    },
-    {
-      "Value": 90,
-      "Reason": "Manual",
-      "ProfileId": 14
-    },
-    {
-      "Value": 22,
-      "Reason": "Manual",
-      "ProfileId": 15
-    },
-    {
-      "Value": 94,
-      "Reason": "Manual",
-      "ProfileId": 8
-    },
-    {
-      "Value": 118,
-      "Reason": "Manual",
-      "ProfileId": 7
     }
   ]
 }

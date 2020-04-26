@@ -340,6 +340,9 @@ namespace Tayra.Services
 
             };
 
+            if (!prd.Any()) //Average throws exception if count is 0
+                prd = null;
+
             return new ProfileRadarChartDTO
             {
                 AssistsAverage = Math.Round(prd?.Average(x => x.Assists) ?? 0f, 2),
