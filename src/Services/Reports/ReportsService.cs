@@ -343,7 +343,7 @@ namespace Tayra.Services
             var ms = (from prw in DbContext.ProfileReportsWeekly
                       where prw.DateId >= reportParams.From && prw.DateId <= reportParams.To && prw.SegmentId == reportParams.SegmentId
                       where prw.ProfileRole == ProfileRoles.Member && profileIds.Contains(prw.ProfileId)
-                      orderby prw.DateId ascending
+                      orderby prw.DateId descending
                       group prw by prw.ProfileId into pr
                       select new ReportStatisticsTeamMetricsDTO.MemberDTO
                       {

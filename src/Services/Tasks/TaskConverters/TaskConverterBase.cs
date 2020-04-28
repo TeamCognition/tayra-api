@@ -19,7 +19,7 @@ namespace Tayra.Services.TaskConverters
         protected TaskConverterMode Mode;
         protected OrganizationDbContext DbContext;
         protected ProfileAssignment CachedProfileAssignment;
-        public TaskAddOrUpdateDTO Data {get; protected set;}
+        public TaskAddOrUpdateDTO Data { get; protected set; }
         protected IProfilesService ProfilesService;
         protected Profile AssigneeProfile;
         protected bool BasicTaskDataUpdated { get; private set; }
@@ -194,7 +194,12 @@ namespace Tayra.Services.TaskConverters
         {
             if (AssigneeProfile != null && logsService != null)
             {
-                var timestamp = Mode == TaskConverterMode.TEST ? DateHelper2.ParseDate(GetLastModifiedDateId().Value) : DateTime.UtcNow;
+                var timestamp = DateTime.UtcNow;
+                if(Mode == TaskConverterMode.TEST)
+                {
+                    Random rnd = new Random();
+                    timestamp = DateHelper2.ParseDate(GetLastModifiedDateId().Value).AddHours(rnd.Next(23)).AddMinutes(59).AddSeconds(59);
+                }
                 LogEvents eventType = IsCompleted() ? LogEvents.StatusChangeToCompleted : LogEvents.IssueStatusChange;
                 var logData = new LogCreateDTO
                 {

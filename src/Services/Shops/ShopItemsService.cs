@@ -91,19 +91,19 @@ namespace Tayra.Services
             var token = DbContext.Tokens.FirstOrDefault(x => x.Type == TokenType.CompanyToken);
             var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs and price*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
             var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == token.Id).Sum(x => x.Value);
-            var  segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => (int?)x.Team.SegmentId).FirstOrDefault();
+            var segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => (int?)x.Team.SegmentId).FirstOrDefault();
 
             shop.EnsureNotNull(shop.Id);
             shopItem.EnsureNotNull(shop.Id, dto.ItemId);
 
-            if (!ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Item.Price, shopItem.QuantityReservedRemaining))
+            if (!dto.DemoDate.HasValue && !ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Item.Price, shopItem.QuantityReservedRemaining))
             {
                 throw new ApplicationException("We are unable to perform the action :)");
             }
 
             shopItem.QuantityReservedRemaining--;
 
-            TokensService.CreateTransaction(token.Id, profileId, shopItem.Item.Price * -1, TransactionReason.ShopItemPurchase, null);
+            TokensService.CreateTransaction(token.Id, profileId, shopItem.Item.Price * -1, TransactionReason.ShopItemPurchase, null, dto.DemoDate);
 
             var purchaseStatus = ItemRules.IsItemTypeTayra(shopItem.Item.Type) ? ShopPurchaseStatuses.Fulfilled : ShopPurchaseStatuses.PendingApproval;
             DbContext.Add(new ShopPurchase
@@ -117,7 +117,8 @@ namespace Tayra.Services
                 Price = shopItem.Item.Price,
                 PriceDiscountedFor = shopItem.Item.Price - shopItem.DiscountPrice,
                 GiftFor = null,
-                SegmentId = segmentId
+                SegmentId = segmentId,
+                Created = dto.DemoDate ?? DateTime.UtcNow
             });
 
             if (purchaseStatus == ShopPurchaseStatuses.Fulfilled)
@@ -128,7 +129,8 @@ namespace Tayra.Services
                     ProfileId = profileId,
                     AcquireMethod = InventoryAcquireMethods.ShopPurchase,
                     IsActive = false,
-                    ItemType = shopItem.Item.Type
+                    ItemType = shopItem.Item.Type,
+                    Created = dto.DemoDate ?? DateTime.UtcNow
                 });
             }
 
@@ -138,7 +140,7 @@ namespace Tayra.Services
                 Event = LogEvents.ShopItemPurchased,
                 Data = new Dictionary<string, string>
                 {
-                    { "timestamp", DateTime.UtcNow.ToString() },
+                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
                     { "profileUsername", buyerUsername },
                     { "itemPrice", shopItem.DiscountPrice?.ToString() ?? shopItem.Item.Price.ToString() },
                     { "itemId", shopItem.ItemId.ToString() },
