@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using Firdaws.Core;
 using Firdaws.DAL;
 using Microsoft.EntityFrameworkCore;
+using MoreLinq;
 using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Mailer;
@@ -77,11 +78,11 @@ namespace Tayra.Services
             return !dbContext.Profiles.Any(x => x.Username == username);
         }
 
-        public int OneUpProfile(int profileId, ProfileOneUpDTO dto)
+        public int PraiseProfile(int profileId, ProfilePraiseDTO dto)
         {
-            int? lastUppedAt = (from u in DbContext.ProfileOneUps
+            int? lastUppedAt = (from u in DbContext.ProfilePraises
                                 where u.CreatedBy == profileId
-                                where u.UppedProfileId == dto.ProfileId
+                                where u.ProfileId == dto.ProfileId
                                 orderby u.DateId descending
                                 select u.DateId
                                 ).FirstOrDefault();
@@ -92,9 +93,9 @@ namespace Tayra.Services
                 throw new ApplicationException("Profile already upped by same user today");
             }
 
-            DbContext.Add(new ProfileOneUp
+            DbContext.Add(new ProfilePraise
             {
-                UppedProfileId = dto.ProfileId,
+                ProfileId = dto.ProfileId,
                 DateId = DateHelper2.ToDateId(dto.DemoDate ?? DateTime.UtcNow),
                 CreatedBy = profileId, //when user is not logged in, ex. demo,
                 Created = dto.DemoDate ?? DateTime.UtcNow
@@ -104,7 +105,7 @@ namespace Tayra.Services
             var oneUpReceiverUsername = DbContext.Profiles.Where(x => x.Id == dto.ProfileId).Select(x => x.Username).FirstOrDefault();
             LogsService.LogEvent(new LogCreateDTO
             {
-                Event = LogEvents.ProfileOneUpGave,
+                Event = LogEvents.ProfilePraiseGiven,
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
@@ -116,7 +117,7 @@ namespace Tayra.Services
 
             LogsService.LogEvent(new LogCreateDTO
             {
-                Event = LogEvents.ProfileOneUpReceived,
+                Event = LogEvents.ProfilePraiseReceived,
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
@@ -126,7 +127,7 @@ namespace Tayra.Services
                 ProfileId = dto.ProfileId,
             });
 
-            LogsService.SendLog(dto.ProfileId, LogEvents.ProfileOneUpReceived, new EmailPraiseReceivedDTO(oneUpGiverUsername));
+            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(oneUpGiverUsername));
 
             var totalUps = TokensService.CreateTransaction(TokenType.OneUp, dto.ProfileId, 1, TransactionReason.OneUpProfile, null);
             return Convert.ToInt32(totalUps);
@@ -236,7 +237,7 @@ namespace Tayra.Services
                             {
                                 Type = x.Type,
                                 IntegratedOn = x.Created
-                            }).Distinct().ToArray(),
+                            }).DistinctBy(x => x.Type).ToArray(),
                         }; 
 
             GridData<ProfileSummaryGridDTO> gridData = query.GetGridData(gridParams);
@@ -386,9 +387,9 @@ namespace Tayra.Services
 
             if (profileId != profileDto.ProfileId)
             {
-                profileDto.LastUppedAt = (from u in DbContext.ProfileOneUps
+                profileDto.LastUppedAt = (from u in DbContext.ProfilePraises
                                           where u.CreatedBy == profileId
-                                          where u.UppedProfileId == profileDto.ProfileId
+                                          where u.ProfileId == profileDto.ProfileId
                                           orderby u.DateId descending
                                           select u.Created).FirstOrDefault();
             }

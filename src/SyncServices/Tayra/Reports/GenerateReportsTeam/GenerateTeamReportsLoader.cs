@@ -105,11 +105,11 @@ namespace Tayra.SyncServices.Tayra
                     EffortScoreChange = mr.Sum(x => x.EffortScoreChange),
                     EffortScoreTotal = mr.Sum(x => x.EffortScoreTotal),
 
-                    OneUpsGivenChange = mr.Sum(x => x.OneUpsGivenChange),
-                    OneUpsGivenTotal = mr.Sum(x => x.OneUpsGivenTotal),
+                    PraisesGivenChange = mr.Sum(x => x.PraisesGivenChange),
+                    PraisesGivenTotal = mr.Sum(x => x.PraisesGivenTotal),
 
-                    OneUpsReceivedChange = mr.Sum(x => x.OneUpsReceivedChange),
-                    OneUpsReceivedTotal = mr.Sum(x => x.OneUpsReceivedTotal),
+                    PraisesReceivedChange = mr.Sum(x => x.PraisesReceivedChange),
+                    PraisesReceivedTotal = mr.Sum(x => x.PraisesReceivedTotal),
 
                     AssistsChange = mr.Sum(x => x.AssistsChange),
                     AssistsTotal = mr.Sum(x => x.AssistsTotal),
@@ -225,11 +225,11 @@ namespace Tayra.SyncServices.Tayra
                     EffortScoreChange = dmr.Sum(x => x.EffortScoreChange),
                     EffortScoreAverage = dmr.Average(x => x.EffortScoreChange),
 
-                    OneUpsGivenChange = dmr.Sum(x => x.OneUpsGivenChange),
-                    OneUpsGivenAverage = (float)dmr.Average(x => x.OneUpsGivenChange),
+                    PraisesGivenChange = dmr.Sum(x => x.PraisesGivenChange),
+                    PraisesGivenAverage = (float)dmr.Average(x => x.PraisesGivenChange),
 
-                    OneUpsReceivedChange = dmr.Sum(x => x.OneUpsReceivedChange),
-                    OneUpsReceivedAverage = (float)dmr.Average(x => x.OneUpsReceivedChange),
+                    PraisesReceivedChange = dmr.Sum(x => x.PraisesReceivedChange),
+                    PraisesReceivedAverage = (float)dmr.Average(x => x.PraisesReceivedChange),
 
                     AssistsChange = dmr.Sum(x => x.AssistsChange),
                     AssistsAverage = (float)dmr.Average(x => x.AssistsChange),

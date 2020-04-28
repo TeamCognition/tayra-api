@@ -5,8 +5,8 @@
         System = 1000,
 
         Profile = 2000,
-        ProfileOneUpGave = 2001,
-        ProfileOneUpReceived = 2002,
+        ProfilePraiseGiven = 2001,
+        ProfilePraiseReceived = 2002,
 
         Competition = 3000,
 

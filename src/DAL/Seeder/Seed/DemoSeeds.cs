@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
+using Tayra.Connectors.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.TaskConverters;
@@ -90,6 +91,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
         public static void SeedDemo(OrganizationDbContext organizationDb)
         {
             var demoData = JsonConvert.DeserializeObject<DemoSeedData>(File.ReadAllText("input/demo.json"));
+            var demoTaskNames = File.ReadAllLines("input/demo-task-names.txt");
 
             UnseedDemo(organizationDb);
 
@@ -113,6 +115,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 foreach (var segment in demoData.Segments)
                 {
                     segment.IsReportingUnlocked = true;
+
                     organizationDb.Integrations.Add(new Integration
                     {
                         SegmentId = segment.Id,
@@ -122,6 +125,10 @@ namespace Tayra.Models.Seeder.DemoSeeds
                             new IntegrationField {
                                 Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + "DemoProject-" + segment.Id,
                                 Value = "REWARDING_ID"
+                            },
+                            new IntegrationField {
+                                Key = Constants.PROFILE_EXTERNAL_ID,
+                                Value = "ExternalIdFor" + segment.Id
                             }
                         }
                     });
@@ -148,7 +155,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
 
             Console.WriteLine("Seeding ProfileAssignments ...");
             demoData.ProfileAssignmentDemos = demoData.ProfileAssignmentDemos.DistinctBy(x => new { x.TeamId }).ToArray();
-            if(demoData.ProfileAssignmentDemos.Sum(x => x.MembersCount) > demoData.Profiles.Length)
+            if (demoData.ProfileAssignmentDemos.Sum(x => x.MembersCount) > demoData.Profiles.Length)
             {
                 throw new Exception("Not enough members for Profile Assignments");
             }
@@ -175,7 +182,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 SegmentId = demoData.Segments[0].Id,
                 TeamId = demoData.Teams[0].Id,
             });
-           
+
             organizationDb.ProfileAssignments.AddRange(profileAssignmentsData.Concat(unassignedProfiles));
             organizationDb.SaveChanges();
 
@@ -189,9 +196,12 @@ namespace Tayra.Models.Seeder.DemoSeeds
             IAssistantService AdvisorService = new AssistantService(organizationDb);
             IInventoriesService InventoryService = new InventoryService(LogsService, TokensService, organizationDb);
             IShopItemsService ShopItemsService = new ShopItemsService(LogsService, TokensService, organizationDb);
+            IItemsService ItemService = new ItemsService(organizationDb);
 
+            int taskCounter = -1;
             foreach (var t in demoData.Tasks.Concat(demoData.Tasks.Take(40)))
             {
+                taskCounter++;
                 t.LastModifiedDateId = DateHelper2.ToDateId(GetRandomDateTimeInPast());
                 t.Priority = TaskPriorities.Medium;
                 t.Status = TaskStatuses.Done;
@@ -222,7 +232,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                                     Id = "DemoProject-" + t.SegmentId
                                 },
                                 StoryPointsCF = t.StoryPoints,
-                                Summary = t.Summary,
+                                Summary = demoTaskNames[taskCounter % demoTaskNames.Length],
                                 TimeOriginalEstimate = t.TimeOriginalEstimatInMinutes * 60,
                                 Timespent = t.TimeSpentInMinutes * 60,
                                 Assignee = new JiraUser
@@ -255,36 +265,23 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 TokensService.CreateTransaction(
                     TokenType.CompanyToken,
                     p.Id,
-                    rnd.Next(1500, 7000),
+                    rnd.Next(1500, 5500),
                     TransactionReason.Manual,
-                    null
+                    null,
+                    new DateTime()
                 );
             }
             organizationDb.SaveChanges();
 
-            Console.WriteLine("Seeding Shop purchases ...");
-            var shopItems = organizationDb.ShopItems.Where(x => x.QuantityReservedRemaining == null).ToArray();
-            foreach (var p in demoData.Profiles)
-            {
-                foreach(var toBuy in shopItems.RandomSubset(rnd.Next(3)))
-                {
-                    ShopItemsService.PurchaseShopItem(p.Id, new ShopItemPurchaseDTO
-                    {
-                        ItemId = toBuy.ItemId,
-                        DemoDate = GetRandomDateTimeInPast()
-                    });
-                }
-            }
-
             Console.WriteLine("Seeding Praises ...");
             foreach (var p in demoData.Profiles)
             {
-                foreach(var pToPraise in demoData.Profiles.RandomSubset(rnd.Next(10)))
+                foreach (var pToPraise in demoData.Profiles.RandomSubset(rnd.Next(10)))
                 {
                     if (p.Id == pToPraise.Id)
                         continue;
 
-                    ProfilesService.OneUpProfile(p.Id, new ProfileOneUpDTO
+                    ProfilesService.PraiseProfile(p.Id, new ProfilePraiseDTO
                     {
                         ProfileId = pToPraise.Id,
                         DemoDate = GetRandomDateTimeInPast()
@@ -298,7 +295,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
             foreach (var p in demoData.Profiles)
             {
                 var toGive = rnd.Next(1, 10);
-                foreach(var item in allItems.RandomSubset(toGive))
+                foreach (var item in allItems.RandomSubset(toGive))
                 {
                     InventoryService.Give(adminProfile.Id, new InventoryGiveDTO { ItemId = item.Id, ReceiverUsername = p.Username, ClaimRequired = false });
                 }
@@ -315,7 +312,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 var toGift = rnd.Next(0, invItems.Count() - 1);
                 for (int i = 0; i < toGift; i++)
                 {
-                    InventoryService.Gift(p.Id, new InventoryItemGiftDTO { InventoryItemId = invItems[i].Id, ReceiverId = receiverId, DemoDate = GetRandomDateTimeInPast() });
+                    InventoryService.Gift(p.Id, new InventoryItemGiftDTO { InventoryItemId = invItems[i].Id, ReceiverId = receiverId, ClaimRequired = false, DemoDate = GetRandomDateTimeInPast() });
                 }
                 invItems.RemoveRange(0, toGift);
                 var ownedTitle = invItems.FirstOrDefault(x => x.ProfileId == p.Id && x.ItemType == ItemTypes.TayraTitle);
@@ -326,6 +323,78 @@ namespace Tayra.Models.Seeder.DemoSeeds
 
                 if (ownedBadge != null)
                     ownedBadge.IsActive = true;
+            }
+
+            {
+                Console.WriteLine("Seeding Shop data ...");
+                var shopItems = organizationDb.ShopItems.Where(x => x.QuantityReservedRemaining == null).ToArray();
+                foreach (var p in demoData.Profiles)
+                {
+                    foreach (var toBuy in shopItems.RandomSubset(rnd.Next(3)))
+                    {
+                        ShopItemsService.PurchaseShopItem(p.Id, new ShopItemPurchaseDTO
+                        {
+                            ItemId = toBuy.ItemId,
+                            DemoDate = GetRandomDateTimeInPast()
+                        });
+                    }
+                }
+
+                var customItems = new List<Item>();
+
+                customItems.Add(ItemService.CreateItem(new ItemCreateDTO
+                {
+                    Name = "Company T-Shirt",
+                    Image = "https://tayra.blob.core.windows.net/demo-images/item-tshirt.jpg",
+                    Type = ItemTypes.PhysicalGood,
+                    Price = 200,
+                    Description = "A T-shirt is a style of fabric shirt named after the T shape of its body and sleeves. Traditionally it has short sleeves and a round neckline, known as a crew neck, which lacks a collar. T-shirts are generally made of a stretchy, light and inexpensive fabric and are easy to clean.",
+                    IsActivable = false,
+                    IsGiftable = true,
+                    IsDisenchantable = false,
+                    PlaceInShop = true,
+                    Quantity = 10,
+                    ShopQuantity = 5,
+                    Rarity = ItemRarities.Common
+                }));
+                customItems.Add(ItemService.CreateItem(new ItemCreateDTO
+                {
+                    Name = "Family Trip",
+                    Image = "https://tayra.blob.core.windows.net/demo-images/item-trip.jpg",
+                    Type = ItemTypes.Digital,
+                    Price = 1500,
+                    Description = "Travel is the movement of people between distant geographical locations.",
+                    IsActivable = true,
+                    IsGiftable = false,
+                    IsDisenchantable = false,
+                    PlaceInShop = true,
+                    Quantity = 2,
+                    ShopQuantity = 2,
+                    Rarity = ItemRarities.Legendary
+                }));
+                customItems.Add(ItemService.CreateItem(new ItemCreateDTO
+                {
+                    Name = "Xbox One X",
+                    Image = "https://tayra.blob.core.windows.net/demo-images/item-xbox.jpg",
+                    Type = ItemTypes.PhysicalGood,
+                    Price = 999,
+                    Description = "The Xbox One is an eighth-generation home video game console developed by Microsoft.",
+                    IsActivable = true,
+                    IsGiftable = false,
+                    IsDisenchantable = false,
+                    PlaceInShop = true,
+                    Quantity = 4,
+                    ShopQuantity = 4,
+                    Rarity = ItemRarities.Legendary
+                }));
+
+                organizationDb.SaveChanges();
+                foreach (var ci in customItems)
+                {
+                    ci.Created = GetRandomDateTimeInPast();
+                    ci.CreatedBy = 1;
+                    ShopItemsService.PurchaseShopItem(demoData.Profiles[0].Id, new ShopItemPurchaseDTO { ItemId = ci.Id, DemoDate = GetRandomDateTimeInPast() });
+                }
             }
 
             Console.WriteLine("Seeding Assistent Action Points ...");
@@ -375,8 +444,8 @@ namespace Tayra.Models.Seeder.DemoSeeds
             organizationDb.SaveChanges();
 
             DateTime GetRandomDateTimeInPast(int maxDaysInPast = 30) =>
-                DateTime.UtcNow.Date.Subtract(new TimeSpan(rnd.Next(0, maxDaysInPast-1), rnd.Next(0, 23), rnd.Next(0, 59), rnd.Next(0, 59)));
-            
+                DateTime.UtcNow.Date.Subtract(new TimeSpan(rnd.Next(0, maxDaysInPast - 1), rnd.Next(0, 23), rnd.Next(0, 59), rnd.Next(0, 59)));
+
         }
     }
 }

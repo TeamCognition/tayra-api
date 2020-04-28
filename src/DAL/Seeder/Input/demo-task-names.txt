@@ -1,0 +1,194 @@
+﻿Limit status changes on admin shop orders and fix toast message when status is changed 
+Incorrect toast message when trying to buy a shop item without having enough tokens
+Make new user shop display with new fetures that are preset on admin shop display
+Add warning message/modal on Edit item form when Affect owned item is clicked
+Inspect item card on weird screen resolutions to check left border behaviour
+Update shop items list when item is removed & fix disabled icon on shop item
+Add authorization to the project. Implement OAuth2 protocol. (roles Admin)
+Format all dates on platform starting from info menus on Profile and Shop
+Add "No items in inventory" placeholder when users inventory is empty"
+Create Item information modal distinction between shop and inventory
+In Purchase orders list display "modified" date instead of "created"
+Make members cards and filters on the members page fully responsive
+Implement Review questionnaire templates for employee assessments
+Disable admin profile visit and praise via route or log activity
+Add profile id/nickname to inventory items search call - backend
+Switch scroll to ScrollArea scroll on remaining shop components
+Activity log displays disenchanted item logs from current user.
+Implement functionality to send email using SendGrid templates
+Create NIVO chart server to generate charts for email reports
+Implement functionality to change time period on Reports page
+Fix memory leak in Shop on user orders and shop activity log
+Remove chat widget and report a bug button from unnecessary
+Admin should be able to modify users's tokens (client side)
+Admin should be able to modify users's tokens (server side)
+Remove Tokens from profile when viewing others profile page
+Add team activnity log and implement endpoint for all logs
+Implement complete challenge functionality on members page
+Add aditional data in admin shop orders on bigger screens 
+Disenchant item - backend code and frontend implementation
+Add members dashboard layout and all necessary components
+Implement appropriate error handling for all user actions
+Add functionality to set email notification preferences
+Add pending requests count on Orders tab button in shop
+Remove Disabled items from USER item list in Shop page
+Code better solution for storing external webhook logs
+Visually improve member card on team and segment page
+Rework Advisor page and every advisor api on platform
+Add link to profile on nickname in shop activity logs
+Substitute current toast message system with toastify
+Add team and segment names to manage users component
+Add Affiliate/Featured items suggestions on ItemCRUD
+Display latest finished challenge on challenges page
+Add Jira webhook instructions on Jira Settings Page
+buttons have no space between when item is disabled
+Implement challenge admin approvals functionality 
+Change impact chart names on team and segment page
+Show flag if challenge completion date had expired
+Implement filter on Admin order list - client side
+Don't show any title if none are currently active
+Display completed challenges on user profile page
+make server configurations shared among projects
+Create Shop purchase Requests component (member)
+Add paginations to filters in shop and inventory
+Handle purchase error when item quantity is zero
+Implement disenchant functionality - client side
+Remove redundant logs on team and dashboard log
+Add "Affect owned items" in shop item edit form
+Implement Export functionality on Reports page
+Make Resource List element properly scrollable
+Adjust the challenges page for non-admin users
+Fix line chart x-axis label and y-axis offset
+Add link and modal components to members page
+Make token amount update after buying an item
+Refactor responsiveness on shop activity log 
+Fix search so it works with name and nickname
+Implement shop purchanse status functionality
+Add functionality to 'Refund bought shop item
+Report page configs should be present in URL
+Items Manager and ItemCRUD tweaks and fixes"
+Add remove item from shop option on frontend
+Replace old user shop display with a new one
+Implement claim by categories functionality
+Create ActionPoints component for tayra-web
+Rework shopPurchaseStatuses lookup api call
+Update profile page layout with new metrics
+fetch completed challenges for certain user
+Update register page "assign" functianlity"
+Implement nivo charts data on Reports page
+Fix bold text line-height in activity logs
+Add radar chart design to the profile page
+Implement Pie and Line chart on Team Page
+Fix manage users list on single team page
+Fix Activity log issues (link to profile)
+Review Reports page and fix eventual bugs
+Implement email notifications server side
+Remove admin page and remove competitions
+Fix bug on shop page when form is opened
+Implement badge activation - client side
+Add banner area for missed integrations
+Implement extended Praise functionality
+Add interactivity chart on Reports page
+Implement BannerArea component properly
+Redesign modals to include close button
+Segments tweaks and login state update
+Add Heat trend chart on Statistics Tab
+Create collaborationProgress component
+Add "Give Item" button to Items Manger
+Change projectKey from "up1" to "dev1"
+Implement profile Level functionality
+Implement topBar search functionality
+Create JIRA integration settings page
+Fix bug on crud form when adding item
+Implement end challenge functionality
+Implement new design of Landing page
+Implement real data in report tables
+Create exportable data table element
+Add Moment.js library to the project
+Implement backend user permissions 
+Add Suggested Items feature on Shop
+Implement API calls to advisor page
+Implement mute on advisor category 
+Fix Dropzone reupload functionality
+Add Smooth scrollbar to the project
+Team page should not return admins
+Create platform notifications page
+Create profileChallenges component
+Drop database and create fresh one
+Fetch 'Issue Labels' from Jira API
+Implement LazyLoad on orders lists
+Fix memory leak on Challenges page
+Create "Set a title" functionality
+Create integration card component
+Implement Cookie usage on backend
+Fix activity log and token issues
+Add Group purchases on Shop items
+Change "Save" button to "Confirm"
+Add titles to Jira Settings page
+Implement dashboard activity log
+Implement APIs to Hearthbeat app
+Implement First time login steps
+Create deactivated accounts list
+Implement platform notifications
+Redesign Shop Activity Log style
+Rewatch Redux Tutorial for React
+Remove shadow on activity chart
+Add null return to reports API 
+Create challenge CRUD component
+Create shop item CRUD component
+Add moment.js for activity logs
+Add "Send Invite" functionality
+Implement create segment modal
+Create Shop Requests component
+Fix scrollbar to work smoothly
+Update Inventory after gifting
+Implement segment page charts
+Create Teams page (All teams)
+Create segment card component
+Create activity log component
+Create first time login steps
+Add real data for Radar Chart
+Create badge spots on Profile
+Register and Profile Settings
+Add Azure DevOps integration
+Implement Gift functionality
+Create segment settings page
+Create ActivityChart element
+Backend - give item to user 
+Implement Gift functionality
+Implement Shop overview API
+Inventory/Shop visual fixes
+Implement team activity log
+Make members page for admin
+Code new quality algorithm 
+Dashboard tweaks and fixes
+Implement apis for Reports
+Implement Badge activation
+Create single segment page
+Create Admin Settings page
+Create Collaborations page
+Create inventory component
+Add BitBucket integration
+Create Items Manager page
+Create RadarChart element
+General display bug fixes
+Fix shop sort not working
+Advisor tweaks and fixes
+Profile tweaks and fixes
+Add MS Teams integration
+Create Interactivity tab
+Create Integrations page
+Create Edit Profile page
+Create registration page
+Add Redux to the project
+Research testing options
+Improve challenges style
+Create Single Team page
+Add Redmine integration
+Add Team page to Header
+Redesign item component
+Implement apis for Join
+Add GitLab integration
+Add Trello integration
+Add GitHub integration
+Create Challenges Page

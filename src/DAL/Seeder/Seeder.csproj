@@ -33,6 +33,7 @@
     <ProjectReference Include="..\CatalogModel\CatalogModel.csproj" />
     <ProjectReference Include="..\..\Services\Services.csproj" />
     <ProjectReference Include="..\..\Common\Common.csproj" />
+    <ProjectReference Include="..\..\Connectors\Connectors.Common\Connectors.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Seed\" />

@@ -3,6 +3,7 @@
   "Profiles": [
     {
       "Id": 1,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male1.png",
       "FirstName": "Admin",
       "LastName": "Demo",
       "Username": "admin_demo",
@@ -11,6 +12,7 @@
     },
     {
       "Id": 2,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male2.png",
       "FirstName": "Hasan",
       "LastName": "Mujić",
       "Username": "member_demo",
@@ -19,6 +21,7 @@
     },
     {
       "Id": 3,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/female1.png",
       "FirstName": "Short",
       "LastName": "Elliott",
       "Username": "short.elliott",
@@ -26,13 +29,15 @@
     },
     {
       "Id": 4,
-      "FirstName": "Black",
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male3.png",
+      "FirstName": "Raphael",
       "LastName": "Harrison",
-      "Username": "black.harrison",
+      "Username": "raphael.harrison",
       "Role": "Member"
     },
     {
       "Id": 5,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/female2.png",
       "FirstName": "Lea",
       "LastName": "Kirk",
       "Username": "lea.kirk",
@@ -40,6 +45,7 @@
     },
     {
       "Id": 6,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/female3.png",
       "FirstName": "Marlene",
       "LastName": "Vasquez",
       "Username": "marlene.vasquez",
@@ -47,6 +53,7 @@
     },
     {
       "Id": 7,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/female4.png",
       "FirstName": "Stella",
       "LastName": "White",
       "Username": "stella.white",
@@ -54,6 +61,7 @@
     },
     {
       "Id": 8,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/female5.png",
       "FirstName": "Candice",
       "LastName": "Blevins",
       "Username": "candice.blevins",
@@ -61,6 +69,7 @@
     },
     {
       "Id": 9,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/female6.png",
       "FirstName": "Helga",
       "LastName": "Wyatt",
       "Username": "helga.wyatt",
@@ -68,6 +77,7 @@
     },
     {
       "Id": 10,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male4.png",
       "FirstName": "Morgan",
       "LastName": "Reilly",
       "Username": "morgan.reilly",
@@ -75,6 +85,7 @@
     },
     {
       "Id": 11,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male5.png",
       "FirstName": "Cash",
       "LastName": "Stein",
       "Username": "cash.stein",
@@ -82,6 +93,7 @@
     },
     {
       "Id": 12,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/female7.png",
       "FirstName": "Debra",
       "LastName": "Glass",
       "Username": "debra.glass",
@@ -89,6 +101,7 @@
     },
     {
       "Id": 13,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male6.png",
       "FirstName": "Rene",
       "LastName": "Sampson",
       "Username": "rene.sampson",
@@ -96,6 +109,7 @@
     },
     {
       "Id": 14,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male7.png",
       "FirstName": "Compton",
       "LastName": "Bowers",
       "Username": "compton.bowers",
@@ -103,13 +117,15 @@
     },
     {
       "Id": 15,
-      "FirstName": "Lydia",
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male8.png",
+      "FirstName": "Edgar",
       "LastName": "Conner",
-      "Username": "lydia.conner",
+      "Username": "edgar.conner",
       "Role": "Member"
     },
     {
       "Id": 16,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male9.png",
       "FirstName": "Wilkins",
       "LastName": "Shepherd",
       "Username": "wilkins.shepherd",
@@ -117,6 +133,7 @@
     },
     {
       "Id": 17,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male10.png",
       "FirstName": "Travis",
       "LastName": "Donald",
       "Username": "travis.donald",
@@ -124,13 +141,15 @@
     },
     {
       "Id": 18,
-      "FirstName": "Wilkins",
-      "LastName": "Shepherd",
-      "Username": "wilkins.shepherd",
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male11.png",
+      "FirstName": "Darren",
+      "LastName": "Patel",
+      "Username": "darren.patel",
       "Role": "Member"
     },
     {
       "Id": 19,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male12.png",
       "FirstName": "Jad",
       "LastName": "Tate",
       "Username": "jad.tate",
@@ -138,6 +157,7 @@
     },
     {
       "Id": 20,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male13.png",
       "FirstName": "Noel",
       "LastName": "Bryan",
       "Username": "noel.bryan",
@@ -145,25 +165,29 @@
     },
     {
       "Id": 21,
-      "FirstName": "Alaya",
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male14.png",
+      "FirstName": "Jeremy",
       "LastName": "Villa",
-      "Username": "alaya.villa",
+      "Username": "jeremy.villa",
       "Role": "Member"
     }
   ],
   "Segments": [
     {
       "Id": 1,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/demoSegment1.png",
       "Name": "Project Alpha",
       "Key": "ALPHA"
     },
     {
       "Id": 2,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/demoSegment2.png",
       "Name": "Project Beta",
       "Key": "BETA"
     },
     {
       "Id": 3,
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/demoSegment3.png",
       "Name": "Project Gamma",
       "Key": "GAMMA"
     }
@@ -171,42 +195,49 @@
   "Teams": [
     {
       "Id": 1,
+      "AvatarColor": "#9b59b6",
       "Name": "Team 1",
       "Key": "T1",
       "SegmentId": 1
     },
     {
       "Id": 2,
+      "AvatarColor": "#3498db",
       "Name": "Team 2",
       "Key": "T2",
       "SegmentId": 1
     },
     {
       "Id": 3,
+      "AvatarColor": "#2ecc71",
       "Name": "Team 3",
       "Key": "T3",
       "SegmentId": 1
     },
     {
       "Id": 4,
+      "AvatarColor": "#e67e22",
       "Name": "Team 4",
       "Key": "T4",
       "SegmentId": 2
     },
     {
       "Id": 5,
+      "AvatarColor": "#e74c3c",
       "Name": "Team 5",
       "Key": "T5",
       "SegmentId": 2
     },
     {
       "Id": 6,
+      "AvatarColor": "#63393E",
       "Name": "Team 6",
       "Key": "T6",
       "SegmentId": 3
     },
     {
       "Id": 7,
+      "AvatarColor": "#F3D89F",
       "Name": "Team 7",
       "Key": "T7",
       "SegmentId": 3

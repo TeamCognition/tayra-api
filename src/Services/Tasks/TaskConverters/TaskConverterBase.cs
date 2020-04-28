@@ -124,8 +124,8 @@ namespace Tayra.Services.TaskConverters
         // Intended to be overridable
         protected virtual void DoAddTokens(double effortScoreDiff, ITokensService tokensService)
         {
-            tokensService.CreateTransaction(TokenType.CompanyToken, Data.AssigneeProfileId.Value, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
-            tokensService.CreateTransaction(TokenType.Experience, Data.AssigneeProfileId.Value, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork);
+            tokensService.CreateTransaction(TokenType.CompanyToken, Data.AssigneeProfileId.Value, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork, DateHelper2.ParseDate(GetLastModifiedDateId().Value));
+            tokensService.CreateTransaction(TokenType.Experience, Data.AssigneeProfileId.Value, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork, DateHelper2.ParseDate(GetLastModifiedDateId().Value));
         }
 
         protected virtual void FillEffortScore()

@@ -2,7 +2,7 @@
 
 namespace Tayra.Services
 {
-    public class ProfileOneUpDTO
+    public class ProfilePraiseDTO
     {
         public int ProfileId { get; set; }
         public DateTime? DemoDate  { get; set; }

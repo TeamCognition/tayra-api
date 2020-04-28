@@ -52,7 +52,7 @@ namespace Tayra.Models.Seeder
         {
             using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenantKey), shardMapProvider))
             {
-                var tasks = System.IO.File.ReadAllLines(@"./Inputs/tasks.txt");
+                var tasks = File.ReadAllLines(@"./Inputs/tasks.txt");
 
                 List<Task> results = new List<Task>();
 

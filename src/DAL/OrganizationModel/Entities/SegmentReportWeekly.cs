@@ -26,11 +26,11 @@ namespace Tayra.Models.Organizations
         public float EffortScoreChange { get; set; }
         public float EffortScoreAverage { get; set; }
 
-        public int OneUpsGivenChange { get; set; }
-        public float OneUpsGivenAverage { get; set; }
+        public int PraisesGivenChange { get; set; }
+        public float PraisesGivenAverage { get; set; }
 
-        public int OneUpsReceivedChange { get; set; }
-        public float OneUpsReceivedAverage { get; set; }
+        public int PraisesReceivedChange { get; set; }
+        public float PraisesReceivedAverage { get; set; }
 
         public int AssistsChange { get; set; }
         public float AssistsAverage { get; set; }

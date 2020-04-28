@@ -27,6 +27,8 @@ namespace Tayra.Models.Organizations
 
         public virtual ICollection<ItemReservation> Reservations { get; set; }
 
+        public int CreatedDateId { get; set; }
+
         #region IAuditedEntity
 
         public DateTime Created { get; set; }

@@ -146,18 +146,29 @@ namespace Tayra.Services
             }
 
             DbContext.ProfileInventoryItems.Remove(invItem);
-            var giftedEntity = DbContext.Add(new ProfileInventoryItem
+            var giftedItem = DbContext.Add(new ProfileInventoryItem
             {
                 ItemId = invItem.ItemId,
                 ProfileId = dto.ReceiverId,
                 AcquireMethod = InventoryAcquireMethods.MemberGift,
-                ClaimRequired = true,
+                ClaimRequired = dto.ClaimRequired,
                 ItemType = invItem.Item.Type,
                 Created = dto.DemoDate ?? DateTime.UtcNow
             }).Entity;
-            
-            DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.Gift).AddItems(giftedEntity);
-            
+
+            DbContext.Add(new ItemGift
+            {
+                ItemId = invItem.ItemId,
+                ReceiverId = dto.ReceiverId,
+                SenderId = profileId,
+                Created = dto.DemoDate ?? DateTime.UtcNow
+            });
+
+            if (dto.ClaimRequired)
+            {
+                DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.Gift).AddItems(giftedItem);
+            }
+
             var gifterUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
             var receiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId).Username;
             LogsService.LogEvent(new LogCreateDTO

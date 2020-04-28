@@ -20,6 +20,8 @@ namespace Tayra.Models.Organizations
         [MaxLength(250)]
         public string Message { get; set; }
 
+        public int DateId { get; set; }
+
         #region ITimeStampedEntity
 
         public DateTime Created { get; set; }

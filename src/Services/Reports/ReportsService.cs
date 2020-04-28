@@ -183,7 +183,7 @@ namespace Tayra.Services
             var wr = (from trw in DbContext.TeamReportsWeekly
                       where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
                       where teamIds.Contains(trw.TeamId)
-                      orderby trw.DateId ascending
+                      orderby trw.DateId descending
                       select new
                       {
                           trw.TeamId,
@@ -198,12 +198,12 @@ namespace Tayra.Services
                 return null;
             }
 
-            var startDateId = wr.First().DateId;
-            var endDateId = wr.Last().DateId;
+            var earliestDateId = wr.Last().DateId;
+            var oldestDateId = wr.First().DateId;
 
             var minTime = (from t in DbContext.Tasks
                            where t.Status == TaskStatuses.Done
-                           where t.LastModifiedDateId >= startDateId && t.LastModifiedDateId <= endDateId
+                           where t.LastModifiedDateId >= earliestDateId && t.LastModifiedDateId <= oldestDateId
                            where t.SegmentId == reportParams.SegmentId
                            where t.TimeSpentInMinutes > 0
                            orderby t.TimeSpentInMinutes, t.AutoTimeSpentInMinutes
@@ -212,17 +212,17 @@ namespace Tayra.Services
 
             var maxTime = (from t in DbContext.Tasks
                            where t.Status == TaskStatuses.Done
-                           where t.LastModifiedDateId >= startDateId && t.LastModifiedDateId <= endDateId
+                           where t.LastModifiedDateId >= earliestDateId && t.LastModifiedDateId <= oldestDateId
                            where t.SegmentId == reportParams.SegmentId
                            orderby t.TimeSpentInMinutes descending, t.AutoTimeSpentInMinutes descending
                            select t.TimeSpentInMinutes ?? t.AutoTimeSpentInMinutes)
                            .FirstOrDefault();
 
-            var weeks = wr.Count(); //((endDateId - startDateId) / 7) + 1;
+            var weeks = wr.Select(x => x.DateId).Distinct().Count(); //((endDateId - startDateId) / 7) + 1;
             return new ReportDeliverySegmentMetricsDTO
             {
-                StartDateId = startDateId,
-                EndDateId = endDateId,
+                StartDateId = earliestDateId,
+                EndDateId = oldestDateId,
                 MinTime = minTime ?? 0,
                 MaxTime = maxTime ?? 0,
                 TotalTasksCompleted = wr.Sum(x => x.TasksCompletedChange),
@@ -536,7 +536,7 @@ namespace Tayra.Services
                           InventoryValue = pr.OrderByDescending(x => x.DateId).Select(x => x.InventoryValueTotal).FirstOrDefault(),
                           InventoryCount = pr.OrderByDescending(x => x.DateId).Select(x => x.InventoryCountTotal).FirstOrDefault(),
                           DisenchantCount = pr.Sum(x => x.ItemsDisenchantedChange),
-                          GiftedCount = pr.Sum(x => x.ItemsDisenchantedChange)
+                          GiftedCount = pr.Sum(x => x.ItemsGiftedChange)
                       }).ToArray();
 
             if(!ms.Any())

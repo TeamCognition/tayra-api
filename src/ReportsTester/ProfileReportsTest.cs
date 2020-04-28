@@ -96,7 +96,7 @@ namespace ReportsTester
             var profiles = SeedProfiles(dbContext);
 
             SeedTasks(dbContext, profiles);
-            SeedOneUps(dbContext, profiles);
+            SeedPraises(dbContext, profiles);
 
             var teams = SeedTeams(dbContext, profiles);
             SeedSegments(dbContext, profiles, teams);
@@ -113,8 +113,8 @@ namespace ReportsTester
                 },
                 new Token
                 {
-                    Id = (int)TokenType.OneUp,
-                    Type = TokenType.OneUp
+                    Id = (int)TokenType.Experience,
+                    Type = TokenType.Experience
                 }
             };
 
@@ -206,26 +206,26 @@ namespace ReportsTester
         }
 
 
-        private void SeedOneUps(OrganizationDbContext dbContext, List<Profile> profiles)
+        private void SeedPraises(OrganizationDbContext dbContext, List<Profile> profiles)
         {
             var p1 = profiles.First().Id;
             var p2 = profiles.Last().Id;
 
-            var oneUps = new List<ProfileOneUp>();
+            var oneUps = new List<ProfilePraise>();
             foreach (var date in workDays)
             {
                 var dateId = DateHelper2.ToDateId(date);
-                oneUps.AddRange(new List<ProfileOneUp>
+                oneUps.AddRange(new List<ProfilePraise>
                 {
-                    new ProfileOneUp
+                    new ProfilePraise
                     {
-                        UppedProfileId = p1,
+                        ProfileId = p1,
                         CreatedBy = p2,
                         DateId = dateId
                     },
-                    new ProfileOneUp
+                    new ProfilePraise
                     {
-                        UppedProfileId = p2,
+                        ProfileId = p2,
                         CreatedBy = p1,
                         DateId = dateId
                     },

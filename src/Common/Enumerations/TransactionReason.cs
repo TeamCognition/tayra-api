@@ -4,11 +4,10 @@
     {
         Manual = 1,
         ShopItemPurchase = 2,
-        Reward = 3,
-        JiraIssueCompleted = 4,
-        ChallengeCompleted = 5,
-        OneUpProfile = 6,
-        ItemDisenchant = 7,
-        ShopItemRefund = 8
+        JiraIssueCompleted = 3,
+        ChallengeCompleted = 4,
+        ItemDisenchant = 5,
+        ShopItemRefund = 6,
+            OneUpProfile = 999
     }
 }

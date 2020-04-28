@@ -131,7 +131,7 @@ namespace Tayra.SyncServices.Tayra
                                   CompanyTokensSpentTotal = Math.Abs(total.Where(x => x.Value < 0).Sum(x => x.Value))
                               }).ToList();
 
-                var oneUpsGiven = (from u in organizationDb.ProfileOneUps
+                var praisesGiven = (from u in organizationDb.ProfilePraises
                                    where profileIds.Contains(u.CreatedBy)
                                    group u by u.CreatedBy into total
                                    let change = total.Where(x => x.DateId == dateId)
@@ -139,14 +139,14 @@ namespace Tayra.SyncServices.Tayra
                                    {
                                        ProfileId = total.Key,
 
-                                       Usernames = change.Select(x => x.UppedProfile.Username).ToArray(),
+                                       Usernames = change.Select(x => x.Prroofile.Username).ToArray(),
                                        Count = change.Count(),
                                        CountTotal = total.Count()
                                    }).ToList();
 
-                var oneUpsReceived = (from u in organizationDb.ProfileOneUps
-                                      where profileIds.Contains(u.UppedProfileId)
-                                      group u by u.UppedProfileId into total
+                var praisesReceived = (from u in organizationDb.ProfilePraises
+                                      where profileIds.Contains(u.ProfileId)
+                                      group u by u.ProfileId into total
                                       let change = total.Where(x => x.DateId == dateId)
                                       select new
                                       {
@@ -206,14 +206,13 @@ namespace Tayra.SyncServices.Tayra
 
                 var shopPurchases = (from sp in organizationDb.ShopPurchases
                                      where profileIds.Contains(sp.ProfileId)
-                                     where sp.SegmentId == segmentId
                                      where sp.Status == ShopPurchaseStatuses.Fulfilled
                                      group sp by sp.ProfileId into total
                                      let change = total.Where(x => x.Created.Date == fromDay.Date)
                                      select new
                                      {
                                          ProfileId = total.Key,
- 
+                                         Something = total.Select(x => x.Created).ToArray(),
                                          Names = change.Select(x => x.Item.Name).ToArray(),
                                          Count = change.Count(),
                                          CountTotal = total.Count()
@@ -234,8 +233,8 @@ namespace Tayra.SyncServices.Tayra
                 {
                     var ts = taskStats.FirstOrDefault(x => x.ProfileId == p.Id);
                     var t = tokens.FirstOrDefault(x => x.ProfileId == p.Id);
-                    var upsG = oneUpsGiven.FirstOrDefault(x => x.ProfileId == p.Id);
-                    var upsR = oneUpsReceived.FirstOrDefault(x => x.ProfileId == p.Id);
+                    var praisesG = praisesGiven.FirstOrDefault(x => x.ProfileId == p.Id);
+                    var praisesR = praisesReceived.FirstOrDefault(x => x.ProfileId == p.Id);
                     var sp = shopPurchases.FirstOrDefault(x => x.ProfileId == p.Id);
                     var iCreated = itemsCreated.FirstOrDefault(x => x.ProfileId == p.Id);
                     var iDissed = itemsDissed.FirstOrDefault(x => x.ProfileId == p.Id);
@@ -249,8 +248,8 @@ namespace Tayra.SyncServices.Tayra
                         DateId = dateId,
                         AssistsData = new ProfileActivityChartDTO.AssistsDTO
                         {
-                            Endorsed = upsG?.Usernames ?? new string[0],
-                            EndorsedBy = upsR?.Usernames ?? new string[0]
+                            Endorsed = praisesG?.Usernames ?? new string[0],
+                            EndorsedBy = praisesR?.Usernames ?? new string[0]
                         },
                         DeliveryData = new ProfileActivityChartDTO.DeliveryDTO
                         {
@@ -287,14 +286,14 @@ namespace Tayra.SyncServices.Tayra
                         EffortScoreChange = ts?.EffortScore ?? 0f,
                         EffortScoreTotal = ts?.EffortScoreTotal ?? 0f,
 
-                        OneUpsGivenChange = upsG?.Count ?? 0,
-                        OneUpsGivenTotal = upsG?.CountTotal ?? 0,
+                        PraisesGivenChange = praisesG?.Count ?? 0,
+                        PraisesGivenTotal = praisesG?.CountTotal ?? 0,
 
-                        OneUpsReceivedChange = upsR?.Count ?? 0,
-                        OneUpsReceivedTotal = upsR?.CountTotal ?? 0,
+                        PraisesReceivedChange = praisesR?.Count ?? 0,
+                        PraisesReceivedTotal = praisesR?.CountTotal ?? 0,
 
-                        AssistsChange = (upsR?.Count) ?? 0,
-                        AssistsTotal = (upsR?.CountTotal) ?? 0,
+                        AssistsChange = (praisesR?.Count) ?? 0,
+                        AssistsTotal = (praisesR?.CountTotal) ?? 0,
 
                         TasksCompletedChange = ts?.Completed ?? 0,
                         TasksCompletedTotal = ts?.CompletedTotal ?? 0,
@@ -411,11 +410,11 @@ namespace Tayra.SyncServices.Tayra
                                        EffortScoreChange = last1.Sum(x => x.EffortScoreChange),
                                        EffortScoreTotalAverage = dg.Sum(c => c.EffortScoreChange) / ic,
 
-                                       OneUpsGivenChange = last1.Sum(x => x.OneUpsGivenChange),
-                                       OneUpsGivenTotalAverage = (float)dg.Sum(c => c.OneUpsGivenChange) / ic,
+                                       PraisesGivenChange = last1.Sum(x => x.PraisesGivenChange),
+                                       PraisesGivenTotalAverage = (float)dg.Sum(c => c.PraisesGivenChange) / ic,
 
-                                       OneUpsReceivedChange = last1.Sum(x => x.OneUpsReceivedChange),
-                                       OneUpsReceivedTotalAverage = (float)dg.Sum(c => c.OneUpsReceivedChange) / ic,
+                                       PraisesReceivedChange = last1.Sum(x => x.PraisesReceivedChange),
+                                       PraisesReceivedTotalAverage = (float)dg.Sum(c => c.PraisesReceivedChange) / ic,
 
                                        AssistsChange = last1.Sum(x => x.AssistsChange),
                                        AssistsTotalAverage = (float)dg.Sum(c => c.AssistsChange) / ic,

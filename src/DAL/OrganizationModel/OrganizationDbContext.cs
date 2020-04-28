@@ -84,7 +84,7 @@ namespace Tayra.Models.Organizations
         public DbSet<ProfileExternalId> ProfileExternalIds { get; set; }
         public DbSet<ProfileInventoryItem> ProfileInventoryItems { get; set; }
         public DbSet<ProfileLog> ProfileLogs { get; set; }
-        public DbSet<ProfileOneUp> ProfileOneUps { get; set; }
+        public DbSet<ProfilePraise> ProfilePraises { get; set; }
         public DbSet<ProfileReportDaily> ProfileReportsDaily { get; set; }
         public DbSet<ProfileReportWeekly> ProfileReportsWeekly { get; set; }
         public DbSet<Segment> Segments { get; set; }
@@ -219,7 +219,7 @@ namespace Tayra.Models.Organizations
                 entity.HasIndex(x => new { x.ProfileId, x.Event });
             });
 
-            modelBuilder.Entity<ProfileOneUp>().HasKey(x => new { x.DateId, x.UppedProfileId, x.CreatedBy });
+            modelBuilder.Entity<ProfilePraise>().HasKey(x => new { x.DateId, x.ProfileId, x.PraiserProfileId });
 
             modelBuilder.Entity<ProfileReportDaily>(entity =>
             {

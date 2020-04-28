@@ -13,6 +13,8 @@ namespace Tayra.Models.Organizations
         public int ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
+        public int DateId { get; set; }
+
         #region ITimeStampedEntity
 
         public DateTime Created { get; set; }

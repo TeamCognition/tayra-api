@@ -204,7 +204,7 @@ namespace Tayra.Services
                     TokenType.CompanyToken,
                     p.ProfileId,
                     competition.TokenRewardValue / (winner.ScoreValue / p.Score),
-                    TransactionReason.Reward,
+                    TransactionReason.Manual,
                     ClaimBundleTypes.CompetitionWinner);
             }
 

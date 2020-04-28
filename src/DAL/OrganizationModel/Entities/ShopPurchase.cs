@@ -25,6 +25,8 @@ namespace Tayra.Models.Organizations
 
         public int? GiftFor { get; set; }
 
+        public int LastModifiedDateId { get; set; }
+
         /// <summary>
         /// Price Paid
         /// </summary>

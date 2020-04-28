@@ -13,7 +13,7 @@ namespace Tayra.Services
         Profile GetByEmail(string email);
         Profile GetMemberByExternalId(string externalId, IntegrationType integrationType);
         bool IsUsernameUnique(string username);
-        int OneUpProfile(int profileId, ProfileOneUpDTO dto);
+        int PraiseProfile(int profileId, ProfilePraiseDTO dto);
         GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams);
         GridData<ProfileSummaryGridDTO> GetGridDataWithSummary(int profileId, ProfileSummaryGridParams gridParams);
         GridData<ProfileCompletedChallengesGridDTO> GetCompletedChallengesGridDTO(ProfileCompletedChallengesGridParams gridParams);

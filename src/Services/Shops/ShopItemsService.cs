@@ -91,7 +91,7 @@ namespace Tayra.Services
             var token = DbContext.Tokens.FirstOrDefault(x => x.Type == TokenType.CompanyToken);
             var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs and price*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
             var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == token.Id).Sum(x => x.Value);
-            var segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => (int?)x.Team.SegmentId).FirstOrDefault();
+            var segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => (int?)x.SegmentId).FirstOrDefault();
 
             shop.EnsureNotNull(shop.Id);
             shopItem.EnsureNotNull(shop.Id, dto.ItemId);

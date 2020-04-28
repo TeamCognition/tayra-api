@@ -25,6 +25,8 @@ namespace Tayra.Models.Organizations
         public int TokenId { get; set; }
         public virtual Token Token { get; set; }
 
+        public int DateId { get; set; }
+
         #region IClaimableEntity
 
         public bool ClaimRequired { get; set; }

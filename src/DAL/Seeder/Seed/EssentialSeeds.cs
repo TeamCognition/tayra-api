@@ -13,7 +13,6 @@ namespace Tayra.Models.Seeder
             {
                 new Token { Name = "Company Token", Symbol = "CT", Type = TokenType.CompanyToken },
                 new Token { Symbol = "EXP", Name = nameof(TokenType.Experience), Type = TokenType.Experience },
-                new Token { Symbol = "1Up", Name = nameof(TokenType.OneUp), Type = TokenType.OneUp }
             };
 
             var shopsSeed = new List<Shop>
