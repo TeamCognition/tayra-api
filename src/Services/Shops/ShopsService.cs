@@ -120,6 +120,7 @@ namespace Tayra.Services
                             ShopPurchaseId = sp.Id,
                             FirstName = sp.Profile.FirstName,
                             LastName = sp.Profile.LastName,
+                            Avatar = sp.Profile.Avatar,
                             BuyerUsername = sp.Profile.Username,
                             Price = sp.Price,
                             Status = sp.Status,
