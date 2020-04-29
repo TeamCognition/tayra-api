@@ -121,7 +121,7 @@ namespace Tayra.SyncServices.Tayra
                               where profileIds.Contains(tt.ProfileId)
                               where tt.TokenId == companyTokenId
                               group tt by tt.ProfileId into total
-                              let change = total.Where(x => x.Created.Date == fromDay.Date)
+                              let change = total.Where(x => x.DateId == dateId)
                               select new
                               {
                                   ProfileId = total.Key,
@@ -132,14 +132,14 @@ namespace Tayra.SyncServices.Tayra
                               }).ToList();
 
                 var praisesGiven = (from u in organizationDb.ProfilePraises
-                                   where profileIds.Contains(u.CreatedBy)
-                                   group u by u.CreatedBy into total
+                                   where profileIds.Contains(u.PraiserProfileId)
+                                   group u by u.PraiserProfileId into total
                                    let change = total.Where(x => x.DateId == dateId)
                                    select new
                                    {
                                        ProfileId = total.Key,
 
-                                       Usernames = change.Select(x => x.Prroofile.Username).ToArray(),
+                                       Usernames = change.Select(x => x.Profile.Username).ToArray(),
                                        Count = change.Count(),
                                        CountTotal = total.Count()
                                    }).ToList();
@@ -160,7 +160,7 @@ namespace Tayra.SyncServices.Tayra
                 var itemsCreated = (from i in organizationDb.Items
                                     where profileIds.Contains(i.CreatedBy)
                                     group i by i.CreatedBy into total
-                                    let change = total.Where(x => x.Created.Date == fromDay.Date)
+                                    let change = total.Where(x => x.CreatedDateId == dateId)
                                     select new
                                     {
                                         ProfileId = total.Key,
@@ -172,7 +172,7 @@ namespace Tayra.SyncServices.Tayra
                 var itemsDissed = (from i in organizationDb.ItemDisenchants
                                    where profileIds.Contains(i.ProfileId)
                                    group i by i.ProfileId into total
-                                   let change = total.Where(x => x.Created.Date == fromDay.Date)
+                                   let change = total.Where(x => x.DateId == dateId)
                                    select new
                                    {
                                        ProfileId = total.Key,
@@ -185,7 +185,7 @@ namespace Tayra.SyncServices.Tayra
                 var giftsSent = (from u in organizationDb.ItemGifts
                                  where profileIds.Contains(u.SenderId)
                                  group u by u.SenderId into total
-                                 let change = total.Where(x => x.Created.Date == fromDay.Date)
+                                 let change = total.Where(x => x.DateId == dateId)
                                  select new
                                  {
                                      ProfileId = total.Key,
@@ -197,7 +197,7 @@ namespace Tayra.SyncServices.Tayra
                 var giftsReceived = (from u in organizationDb.ItemGifts
                                      where profileIds.Contains(u.ReceiverId)
                                      group u by u.ReceiverId into total
-                                     let change = total.Where(x => x.Created.Date == fromDay.Date)
+                                     let change = total.Where(x => x.DateId == dateId)
                                      select new
                                      {
                                          ProfileId = total.Key,
@@ -208,7 +208,7 @@ namespace Tayra.SyncServices.Tayra
                                      where profileIds.Contains(sp.ProfileId)
                                      where sp.Status == ShopPurchaseStatuses.Fulfilled
                                      group sp by sp.ProfileId into total
-                                     let change = total.Where(x => x.Created.Date == fromDay.Date)
+                                     let change = total.Where(x => x.LastModifiedDateId == dateId)
                                      select new
                                      {
                                          ProfileId = total.Key,

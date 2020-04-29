@@ -11,9 +11,9 @@ namespace Tayra.Services
                 && profileTokenBalance >= shopItemPrice;
         }
 
-        public static bool CanUpdateShopPurchaseStatus(ShopPurchaseStatuses prevStatus, ShopPurchaseStatuses newStatus)
+        public static bool CanUpdateShopPurchaseStatus(ShopPurchaseStatuses currentStatus, ShopPurchaseStatuses newStatus)
         {
-            return prevStatus > newStatus && prevStatus != ShopPurchaseStatuses.Fulfilled;
+            return newStatus > currentStatus && currentStatus != ShopPurchaseStatuses.Fulfilled;
         }
     }
 }

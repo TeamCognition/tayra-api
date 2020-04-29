@@ -225,12 +225,13 @@ namespace Tayra.Services
                 EndDateId = oldestDateId,
                 MinTime = minTime ?? 0,
                 MaxTime = maxTime ?? 0,
-                TotalTasksCompleted = wr.Sum(x => x.TasksCompletedChange),
+                TaskCompletedCount = wr.Sum(x => x.TasksCompletedChange), //rename to TasksCompleted
                 AvgTime = Math.Round(wr.Sum(x => x.TasksCompletionTimeChange) / (float)wr.Sum(x => x.TasksCompletedChange), 2),
                 Teams = teamIds.Select(tId => new ReportDeliverySegmentMetricsDTO.TeamDTO
                 {
                     TeamId = tId,
-                    AverageTaskCompletionTime = wr.Where(x => x.TeamId == tId).Select(x => x.MinutesSpentAverage).ToArray().EnsureSize(weeks)
+                    AverageTaskCompletionTime = wr.Where(x => x.TeamId == tId).Select(x => x.MinutesSpentAverage).ToArray().EnsureSize(weeks),
+                    TaskCompletedCount = wr.Where(x => x.TeamId == tId).Sum(x => x.TasksCompletedChange)
                 }).ToArray()
             };
         }

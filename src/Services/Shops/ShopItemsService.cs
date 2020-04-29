@@ -118,7 +118,7 @@ namespace Tayra.Services
                 PriceDiscountedFor = shopItem.Item.Price - shopItem.DiscountPrice,
                 GiftFor = null,
                 SegmentId = segmentId,
-                Created = dto.DemoDate ?? DateTime.UtcNow
+                LastModifiedDateId = DateHelper2.ToDateId(dto.DemoDate ?? DateTime.UtcNow)
             });
 
             if (purchaseStatus == ShopPurchaseStatuses.Fulfilled)

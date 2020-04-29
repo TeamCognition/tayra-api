@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Firdaws.Core;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 
@@ -54,7 +55,7 @@ namespace Tayra.Services
                 Value = value,
                 FinalBalance = scope.Sum(x => x.Value) + value,
                 ClaimRequired = false,
-                Created = date ?? DateTime.UtcNow
+                DateId = DateHelper2.ToDateId(date ?? DateTime.UtcNow)
             };
 
             if (txn.FinalBalance < 0)

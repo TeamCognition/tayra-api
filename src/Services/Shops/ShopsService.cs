@@ -148,12 +148,13 @@ namespace Tayra.Services
 
             shopPurchase.EnsureNotNull(shopPurchaseId);
 
-            if (ShopRules.CanUpdateShopPurchaseStatus(shopPurchase.Status, newStatus))
+            if (!ShopRules.CanUpdateShopPurchaseStatus(shopPurchase.Status, newStatus))
             {
                 throw new ApplicationException("Can't update to this status");
             }
 
             shopPurchase.Status = newStatus;
+            shopPurchase.LastModifiedDateId = DateHelper2.ToDateId(DateTime.UtcNow);
 
             if (newStatus == ShopPurchaseStatuses.Fulfilled)
             {

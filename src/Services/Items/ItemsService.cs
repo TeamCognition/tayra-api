@@ -115,6 +115,7 @@ namespace Tayra.Services
                 Rarity = dto.Rarity,
                 Price = dto.Price,
                 IsQuantityLimited = dto.Quantity.HasValue,
+                CreatedDateId = DateHelper2.ToDateId(DateTime.UtcNow),
                 Reservations = !dto.Quantity.HasValue ? null : new ItemReservation[]
                 {
                     new ItemReservation

@@ -88,19 +88,18 @@ namespace Tayra.Services
                                 ).FirstOrDefault();
 
 
-            if (!ProfileRules.CanPraiseProfile(profileId, dto.ProfileId, lastPraisedAt))
+            if (!ProfileRules.CanPraiseProfile(profileId, dto.ProfileId, lastPraisedAt, dto.Message))
             {
                 throw new ApplicationException("Profile already praised by same user today");
             }
 
-            DbContext.Add(new ProfilePraise
+            DbContext.ProfilePraises.Add(new ProfilePraise
             {
                 PraiserProfileId = profileId,
                 ProfileId = dto.ProfileId,
                 Type = dto.Type,
                 DateId = DateHelper2.ToDateId(dto.DemoDate ?? DateTime.UtcNow),
-                CreatedBy = profileId, //when user is not logged in, ex. demo,
-                Created = dto.DemoDate ?? DateTime.UtcNow
+                Message = dto.Message
             });
 
             var praiseGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
@@ -125,8 +124,8 @@ namespace Tayra.Services
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", praiseGiverUsername },
-                    { "giverUsername", praiseReceiverUsername },
+                    { "profileUsername", praiseReceiverUsername },
+                    { "giverUsername", praiseGiverUsername },
                     { "type", dto.Type.ToString() }
                 },
                 ProfileId = dto.ProfileId,
@@ -134,9 +133,7 @@ namespace Tayra.Services
 
             LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
 
-            var totalPraises = DbContext.ProfilePraises.Where(x => x.ProfileId == dto.ProfileId).Count();
-            
-            return Convert.ToInt32(totalPraises);
+            return DbContext.ProfilePraises.Where(x => x.ProfileId == dto.ProfileId).Count();
         }
 
         public GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams)
@@ -384,7 +381,7 @@ namespace Tayra.Services
                                   Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
                                   CompanyTokens = Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),
                                   Experience = Convert.ToInt32(tt.Where(x => x.Type == TokenType.Experience).Select(x => x.Value).FirstOrDefault()),
-                                  Praises = DbContext.ProfilePraises.Where(x => x.ProfileId == p.Id).Count(),
+                                  Praises = p.Praises.Count(),
                                   CustomTokens = tt.Where(x => x.Type == TokenType.Custom).ToList(),
                               }).FirstOrDefault();
 

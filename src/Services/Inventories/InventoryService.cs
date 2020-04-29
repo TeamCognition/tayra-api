@@ -161,7 +161,7 @@ namespace Tayra.Services
                 ItemId = invItem.ItemId,
                 ReceiverId = dto.ReceiverId,
                 SenderId = profileId,
-                Created = dto.DemoDate ?? DateTime.UtcNow
+                DateId = DateHelper2.ToDateId(dto.DemoDate ?? DateTime.UtcNow)
             });
 
             if (dto.ClaimRequired)
@@ -209,7 +209,8 @@ namespace Tayra.Services
             DbContext.Add(new ItemDisenchant
             {
                 ItemId = invItem.ItemId,
-                ProfileId = profileId
+                ProfileId = profileId,
+                DateId = DateHelper2.ToDateId(DateTime.UtcNow)
             });
 
             var disenchantValue = Math.Round(invItem.Item.Price * 0.90, 2);
