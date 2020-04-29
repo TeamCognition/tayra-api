@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\shared\firdawsCore.props" />
+  <Import Project="..\..\shared\firdawsDAL.props" />
+  
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>Tayra.Services</RootNamespace>
+    <AssemblyName>Tayra.Services</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="morelinq" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DAL\CatalogModel\CatalogModel.csproj" />
+    <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
+    <ProjectReference Include="..\Mailer\Mailer.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Logs\" />
+    <Folder Include="Logs\DTO\" />
+    <Folder Include="Tasks\" />
+    <Folder Include="Tasks\DTO\" />
+    <Folder Include="Challenges\" />
+    <Folder Include="Challenges\DTO\" />
+    <Folder Include="ClaimBundle\" />
+    <Folder Include="ClaimBundle\DTO\" />
+    <Folder Include="Shops\" />
+    <Folder Include="Shops\DTO\" />
+    <Folder Include="Inventories\" />
+    <Folder Include="Organizations\" />
+    <Folder Include="Organizations\DTO\" />
+    <Folder Include="Blobs\" />
+    <Folder Include="Blobs\DTO\" />
+    <Folder Include="Items\DTO\" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileFormatDefault" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

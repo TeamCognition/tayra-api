@@ -1,0 +1,505 @@
+2019-06-14 17:41:24.853 +02:00 [WRN] No XML encryptor configured. Key "a75645ed-4cfc-4f8b-9d74-e7d993e07e87" may be persisted to storage in unencrypted form.
+2019-06-14 17:41:24.910 +02:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2019-06-14 17:41:24.919 +02:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2019-06-14 17:41:24.919 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2019-06-14 17:41:24.919 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2019-06-14 17:41:24.919 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2019-06-14 17:41:24.919 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2019-06-14 17:41:24.919 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2019-06-14 18:08:45.469 +02:00 [DBG] Login Url: /Account/Login
+2019-06-14 18:08:45.471 +02:00 [DBG] Login Return Url Parameter: ReturnUrl
+2019-06-14 18:08:45.471 +02:00 [DBG] Logout Url: /Account/Logout
+2019-06-14 18:08:45.471 +02:00 [DBG] ConsentUrl Url: /consent
+2019-06-14 18:08:45.471 +02:00 [DBG] Consent Return Url Parameter: returnUrl
+2019-06-14 18:08:45.471 +02:00 [DBG] Error Url: /home/error
+2019-06-14 18:08:45.471 +02:00 [DBG] Error Id Parameter: errorId
+2019-06-14 18:14:48.912 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:14:48.944 +02:00 [FTL] Unhandled exception: Unable to resolve service for type 'Tayra.Models.Organizations.OrganizationDbContext' while attempting to activate 'Tayra.Auth.ResourceOwnerValidator'.
+System.InvalidOperationException: Unable to resolve service for type 'Tayra.Models.Organizations.OrganizationDbContext' while attempting to activate 'Tayra.Auth.ResourceOwnerValidator'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.CreateServiceAccessor(Type serviceType)
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at IdentityServer4.Hosting.EndpointRouter.GetEndpointHandler(Endpoint endpoint, HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\EndpointRouter.cs:line 52
+   at IdentityServer4.Hosting.EndpointRouter.Find(HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\EndpointRouter.cs:line 39
+   at IdentityServer4.Hosting.IdentityServerMiddleware.Invoke(HttpContext context, IEndpointRouter router, IUserSession session, IEventService events) in C:\local\identity\server4\IdentityServer4\src\Hosting\IdentityServerMiddleware.cs:line 49
+2019-06-14 18:14:48.946 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Unable to resolve service for type 'Tayra.Models.Organizations.OrganizationDbContext' while attempting to activate 'Tayra.Auth.ResourceOwnerValidator'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.CreateServiceAccessor(Type serviceType)
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at IdentityServer4.Hosting.EndpointRouter.GetEndpointHandler(Endpoint endpoint, HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\EndpointRouter.cs:line 52
+   at IdentityServer4.Hosting.EndpointRouter.Find(HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\EndpointRouter.cs:line 39
+   at IdentityServer4.Hosting.IdentityServerMiddleware.Invoke(HttpContext context, IEndpointRouter router, IUserSession session, IEventService events) in C:\local\identity\server4\IdentityServer4\src\Hosting\IdentityServerMiddleware.cs:line 49
+   at IdentityServer4.Hosting.IdentityServerMiddleware.Invoke(HttpContext context, IEndpointRouter router, IUserSession session, IEventService events) in C:\local\identity\server4\IdentityServer4\src\Hosting\IdentityServerMiddleware.cs:line 69
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at IdentityServer4.Hosting.BaseUrlMiddleware.Invoke(HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\BaseUrlMiddleware.cs:line 36
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2019-06-14 18:18:26.507 +02:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2019-06-14 18:18:26.545 +02:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2019-06-14 18:18:26.549 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2019-06-14 18:18:26.549 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2019-06-14 18:18:26.549 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2019-06-14 18:18:26.549 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2019-06-14 18:18:26.549 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2019-06-14 18:18:30.627 +02:00 [DBG] Login Url: /Account/Login
+2019-06-14 18:18:30.629 +02:00 [DBG] Login Return Url Parameter: ReturnUrl
+2019-06-14 18:18:30.629 +02:00 [DBG] Logout Url: /Account/Logout
+2019-06-14 18:18:30.629 +02:00 [DBG] ConsentUrl Url: /consent
+2019-06-14 18:18:30.629 +02:00 [DBG] Consent Return Url Parameter: returnUrl
+2019-06-14 18:18:30.629 +02:00 [DBG] Error Url: /home/error
+2019-06-14 18:18:30.629 +02:00 [DBG] Error Id Parameter: errorId
+2019-06-14 18:18:30.653 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:18:30.677 +02:00 [FTL] Unhandled exception: Unable to resolve service for type 'Tayra.Models.Organizations.OrganizationDbContext' while attempting to activate 'Tayra.Auth.ResourceOwnerValidator'.
+System.InvalidOperationException: Unable to resolve service for type 'Tayra.Models.Organizations.OrganizationDbContext' while attempting to activate 'Tayra.Auth.ResourceOwnerValidator'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.CreateServiceAccessor(Type serviceType)
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at IdentityServer4.Hosting.EndpointRouter.GetEndpointHandler(Endpoint endpoint, HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\EndpointRouter.cs:line 52
+   at IdentityServer4.Hosting.EndpointRouter.Find(HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\EndpointRouter.cs:line 39
+   at IdentityServer4.Hosting.IdentityServerMiddleware.Invoke(HttpContext context, IEndpointRouter router, IUserSession session, IEventService events) in C:\local\identity\server4\IdentityServer4\src\Hosting\IdentityServerMiddleware.cs:line 49
+2019-06-14 18:18:30.680 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Unable to resolve service for type 'Tayra.Models.Organizations.OrganizationDbContext' while attempting to activate 'Tayra.Auth.ResourceOwnerValidator'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(Type serviceType, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(Type serviceType, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(Type serviceType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.CreateServiceAccessor(Type serviceType)
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at IdentityServer4.Hosting.EndpointRouter.GetEndpointHandler(Endpoint endpoint, HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\EndpointRouter.cs:line 52
+   at IdentityServer4.Hosting.EndpointRouter.Find(HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\EndpointRouter.cs:line 39
+   at IdentityServer4.Hosting.IdentityServerMiddleware.Invoke(HttpContext context, IEndpointRouter router, IUserSession session, IEventService events) in C:\local\identity\server4\IdentityServer4\src\Hosting\IdentityServerMiddleware.cs:line 49
+   at IdentityServer4.Hosting.IdentityServerMiddleware.Invoke(HttpContext context, IEndpointRouter router, IUserSession session, IEventService events) in C:\local\identity\server4\IdentityServer4\src\Hosting\IdentityServerMiddleware.cs:line 69
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at IdentityServer4.Hosting.BaseUrlMiddleware.Invoke(HttpContext context) in C:\local\identity\server4\IdentityServer4\src\Hosting\BaseUrlMiddleware.cs:line 36
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2019-06-14 18:21:34.009 +02:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2019-06-14 18:21:34.045 +02:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2019-06-14 18:21:34.048 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2019-06-14 18:21:34.048 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2019-06-14 18:21:34.048 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2019-06-14 18:21:34.049 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2019-06-14 18:21:34.049 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2019-06-14 18:22:07.296 +02:00 [DBG] Login Url: /Account/Login
+2019-06-14 18:22:07.298 +02:00 [DBG] Login Return Url Parameter: ReturnUrl
+2019-06-14 18:22:07.298 +02:00 [DBG] Logout Url: /Account/Logout
+2019-06-14 18:22:07.298 +02:00 [DBG] ConsentUrl Url: /consent
+2019-06-14 18:22:07.298 +02:00 [DBG] Consent Return Url Parameter: returnUrl
+2019-06-14 18:22:07.299 +02:00 [DBG] Error Url: /home/error
+2019-06-14 18:22:07.299 +02:00 [DBG] Error Id Parameter: errorId
+2019-06-14 18:22:07.322 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:22:07.430 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 18:22:07.431 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 18:22:07.434 +02:00 [WRN] Invalid HTTP request for token endpoint
+2019-06-14 18:36:01.071 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:36:01.072 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 18:36:01.072 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 18:36:01.081 +02:00 [DBG] Start token request.
+2019-06-14 18:36:01.088 +02:00 [DBG] Start client validation
+2019-06-14 18:36:01.094 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 18:36:01.097 +02:00 [DBG] Start parsing for secret in post body
+2019-06-14 18:36:01.113 +02:00 [DBG] No secret in post body found
+2019-06-14 18:36:01.113 +02:00 [DBG] Parser found no secret
+2019-06-14 18:36:01.115 +02:00 [ERR] No client identifier found
+2019-06-14 18:40:21.495 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:40:21.495 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 18:40:21.496 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 18:40:21.496 +02:00 [DBG] Start token request.
+2019-06-14 18:40:21.496 +02:00 [DBG] Start client validation
+2019-06-14 18:40:21.496 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 18:40:21.497 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 18:40:21.497 +02:00 [DBG] Secret id found: sMï¿½ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½yï¿½5wgï¿½ï¿½5{ï¿½wkgï¿½kï¿½ï¿½kn
+2019-06-14 18:40:21.504 +02:00 [ERR] No client with id 'sMï¿½ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½yï¿½5wgï¿½ï¿½5{ï¿½wkgï¿½kï¿½ï¿½kn' found. aborting
+2019-06-14 18:40:41.539 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:40:41.540 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 18:40:41.540 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 18:40:41.540 +02:00 [DBG] Start token request.
+2019-06-14 18:40:41.540 +02:00 [DBG] Start client validation
+2019-06-14 18:40:41.540 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 18:40:41.540 +02:00 [WRN] Malformed Basic Authentication credential.
+2019-06-14 18:40:41.540 +02:00 [DBG] Start parsing for secret in post body
+2019-06-14 18:40:41.543 +02:00 [DBG] No secret in post body found
+2019-06-14 18:40:41.543 +02:00 [DBG] Parser found no secret
+2019-06-14 18:40:41.543 +02:00 [ERR] No client identifier found
+2019-06-14 18:40:54.078 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:40:54.079 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 18:40:54.079 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 18:40:54.079 +02:00 [DBG] Start token request.
+2019-06-14 18:40:54.079 +02:00 [DBG] Start client validation
+2019-06-14 18:40:54.079 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 18:40:54.079 +02:00 [WRN] Malformed Basic Authentication credential.
+2019-06-14 18:40:54.079 +02:00 [DBG] Start parsing for secret in post body
+2019-06-14 18:40:54.079 +02:00 [DBG] No secret in post body found
+2019-06-14 18:40:54.079 +02:00 [DBG] Parser found no secret
+2019-06-14 18:40:54.079 +02:00 [ERR] No client identifier found
+2019-06-14 18:43:13.407 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:43:13.407 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 18:43:13.407 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 18:43:13.407 +02:00 [DBG] Start token request.
+2019-06-14 18:43:13.407 +02:00 [DBG] Start client validation
+2019-06-14 18:43:13.408 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 18:43:13.408 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 18:43:13.408 +02:00 [DBG] Secret id found: twc
+2019-06-14 18:43:13.414 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-14 18:43:13.421 +02:00 [DBG] No matching hashed secret found.
+2019-06-14 18:43:13.421 +02:00 [DBG] Secret validators could not validate secret
+2019-06-14 18:43:13.422 +02:00 [ERR] Client secret validation failed for client: twc.
+2019-06-14 18:43:55.890 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:43:55.891 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 18:43:55.891 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 18:43:55.891 +02:00 [DBG] Start token request.
+2019-06-14 18:43:55.891 +02:00 [DBG] Start client validation
+2019-06-14 18:43:55.891 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 18:43:55.891 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 18:43:55.891 +02:00 [DBG] Secret id found: sMï¿½ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½yï¿½5wgï¿½ï¿½5{ï¿½wkgï¿½kï¿½ï¿½kn
+2019-06-14 18:43:55.891 +02:00 [ERR] No client with id 'sMï¿½ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½yï¿½5wgï¿½ï¿½5{ï¿½wkgï¿½kï¿½ï¿½kn' found. aborting
+2019-06-14 18:44:21.084 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 18:44:21.084 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 18:44:21.084 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 18:44:21.084 +02:00 [DBG] Start token request.
+2019-06-14 18:44:21.084 +02:00 [DBG] Start client validation
+2019-06-14 18:44:21.084 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 18:44:21.084 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 18:44:21.084 +02:00 [DBG] Secret id found: twc
+2019-06-14 18:44:21.084 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-14 18:44:21.085 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-14 18:44:21.085 +02:00 [DBG] Client validation success
+2019-06-14 18:44:21.097 +02:00 [DBG] Start token request validation
+2019-06-14 18:44:21.108 +02:00 [DBG] Start resource owner password token request validation
+2019-06-14 18:44:25.081 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-14 18:44:25.091 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://localhost:5000","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-14 18:44:25.119 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-14 18:44:25.120 +02:00 [DBG] Getting claims for access token for subject: 1
+2019-06-14 18:44:25.308 +02:00 [DBG] Creating refresh token
+2019-06-14 18:44:25.308 +02:00 [DBG] Setting an absolute lifetime: 2592000
+2019-06-14 18:44:25.337 +02:00 [DBG] Token request success.
+2019-06-14 19:00:41.783 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 19:00:41.785 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 19:00:41.785 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 19:00:41.785 +02:00 [DBG] Start token request.
+2019-06-14 19:00:41.785 +02:00 [DBG] Start client validation
+2019-06-14 19:00:41.785 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 19:00:41.785 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 19:00:41.785 +02:00 [DBG] Secret id found: twc
+2019-06-14 19:00:41.785 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-14 19:00:41.785 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-14 19:00:41.785 +02:00 [DBG] Client validation success
+2019-06-14 19:00:41.786 +02:00 [DBG] Start token request validation
+2019-06-14 19:00:41.786 +02:00 [DBG] Start resource owner password token request validation
+2019-06-14 19:00:45.406 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-14 19:00:45.406 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://localhost:5000","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-14 19:00:45.407 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-14 19:00:45.407 +02:00 [DBG] Getting claims for access token for subject: 1
+2019-06-14 19:00:45.478 +02:00 [DBG] Creating refresh token
+2019-06-14 19:00:45.478 +02:00 [DBG] Setting an absolute lifetime: 2592000
+2019-06-14 19:00:45.484 +02:00 [DBG] Token request success.
+2019-06-14 19:03:43.678 +02:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2019-06-14 19:03:43.711 +02:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2019-06-14 19:03:43.713 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2019-06-14 19:03:43.713 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2019-06-14 19:03:43.713 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2019-06-14 19:03:43.713 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2019-06-14 19:03:43.713 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2019-06-14 19:03:55.517 +02:00 [DBG] Login Url: /Account/Login
+2019-06-14 19:03:55.518 +02:00 [DBG] Login Return Url Parameter: ReturnUrl
+2019-06-14 19:03:55.518 +02:00 [DBG] Logout Url: /Account/Logout
+2019-06-14 19:03:55.518 +02:00 [DBG] ConsentUrl Url: /consent
+2019-06-14 19:03:55.519 +02:00 [DBG] Consent Return Url Parameter: returnUrl
+2019-06-14 19:03:55.519 +02:00 [DBG] Error Url: /home/error
+2019-06-14 19:03:55.519 +02:00 [DBG] Error Id Parameter: errorId
+2019-06-14 19:03:55.552 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 19:03:55.731 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 19:03:55.731 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 19:03:55.739 +02:00 [DBG] Start token request.
+2019-06-14 19:03:55.745 +02:00 [DBG] Start client validation
+2019-06-14 19:03:55.750 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 19:03:55.751 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 19:03:55.751 +02:00 [DBG] Secret id found: twc
+2019-06-14 19:03:55.762 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-14 19:03:55.770 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-14 19:03:55.770 +02:00 [DBG] Client validation success
+2019-06-14 19:03:55.811 +02:00 [DBG] Start token request validation
+2019-06-14 19:03:55.821 +02:00 [DBG] Start resource owner password token request validation
+2019-06-14 19:04:00.040 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-14 19:04:00.051 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://localhost:5000","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-14 19:04:00.082 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-14 19:04:00.082 +02:00 [DBG] Getting claims for access token for subject: 1
+2019-06-14 19:04:00.323 +02:00 [DBG] Creating refresh token
+2019-06-14 19:04:00.323 +02:00 [DBG] Setting an absolute lifetime: 2592000
+2019-06-14 19:04:00.355 +02:00 [DBG] Token request success.
+2019-06-14 19:04:17.483 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 19:04:17.490 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 19:04:17.490 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 19:04:17.490 +02:00 [DBG] Start token request.
+2019-06-14 19:04:17.490 +02:00 [DBG] Start client validation
+2019-06-14 19:04:17.490 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 19:04:17.490 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 19:04:17.490 +02:00 [DBG] Secret id found: twc
+2019-06-14 19:04:17.490 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-14 19:04:17.490 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-14 19:04:17.490 +02:00 [DBG] Client validation success
+2019-06-14 19:04:17.494 +02:00 [DBG] Start token request validation
+2019-06-14 19:04:17.494 +02:00 [DBG] Start resource owner password token request validation
+2019-06-14 19:04:20.708 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-14 19:04:20.710 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://localhost:5000","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-14 19:04:20.711 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-14 19:04:20.711 +02:00 [DBG] Getting claims for access token for subject: 1
+2019-06-14 19:05:19.606 +02:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2019-06-14 19:05:19.642 +02:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2019-06-14 19:05:19.645 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2019-06-14 19:05:19.645 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2019-06-14 19:05:19.645 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2019-06-14 19:05:19.645 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2019-06-14 19:05:19.645 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2019-06-14 19:05:47.062 +02:00 [DBG] Login Url: /Account/Login
+2019-06-14 19:05:47.064 +02:00 [DBG] Login Return Url Parameter: ReturnUrl
+2019-06-14 19:05:47.064 +02:00 [DBG] Logout Url: /Account/Logout
+2019-06-14 19:05:47.064 +02:00 [DBG] ConsentUrl Url: /consent
+2019-06-14 19:05:47.064 +02:00 [DBG] Consent Return Url Parameter: returnUrl
+2019-06-14 19:05:47.064 +02:00 [DBG] Error Url: /home/error
+2019-06-14 19:05:47.064 +02:00 [DBG] Error Id Parameter: errorId
+2019-06-14 19:05:47.086 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 19:05:47.193 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 19:05:47.193 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 19:05:47.201 +02:00 [DBG] Start token request.
+2019-06-14 19:05:47.208 +02:00 [DBG] Start client validation
+2019-06-14 19:05:47.214 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 19:05:47.214 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 19:05:47.214 +02:00 [DBG] Secret id found: twc
+2019-06-14 19:05:47.227 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-14 19:05:47.235 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-14 19:05:47.235 +02:00 [DBG] Client validation success
+2019-06-14 19:05:47.266 +02:00 [DBG] Start token request validation
+2019-06-14 19:05:47.279 +02:00 [DBG] Start resource owner password token request validation
+2019-06-14 19:05:51.453 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-14 19:05:51.464 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://localhost:5000","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-14 19:05:51.492 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-14 19:05:51.493 +02:00 [DBG] Getting claims for access token for subject: haris@gmail.com
+2019-06-14 19:05:51.861 +02:00 [DBG] Creating refresh token
+2019-06-14 19:05:51.861 +02:00 [DBG] Setting an absolute lifetime: 2592000
+2019-06-14 19:05:51.897 +02:00 [DBG] Token request success.
+2019-06-14 19:07:58.818 +02:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2019-06-14 19:07:58.850 +02:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2019-06-14 19:07:58.854 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2019-06-14 19:07:58.854 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2019-06-14 19:07:58.854 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2019-06-14 19:07:58.854 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2019-06-14 19:07:58.855 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2019-06-14 19:08:10.831 +02:00 [DBG] Login Url: /Account/Login
+2019-06-14 19:08:10.833 +02:00 [DBG] Login Return Url Parameter: ReturnUrl
+2019-06-14 19:08:10.833 +02:00 [DBG] Logout Url: /Account/Logout
+2019-06-14 19:08:10.833 +02:00 [DBG] ConsentUrl Url: /consent
+2019-06-14 19:08:10.833 +02:00 [DBG] Consent Return Url Parameter: returnUrl
+2019-06-14 19:08:10.833 +02:00 [DBG] Error Url: /home/error
+2019-06-14 19:08:10.833 +02:00 [DBG] Error Id Parameter: errorId
+2019-06-14 19:08:10.858 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 19:08:10.966 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 19:08:10.966 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 19:08:10.974 +02:00 [DBG] Start token request.
+2019-06-14 19:08:10.980 +02:00 [DBG] Start client validation
+2019-06-14 19:08:10.984 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 19:08:10.985 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 19:08:10.985 +02:00 [DBG] Secret id found: twc
+2019-06-14 19:08:10.995 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-14 19:08:11.003 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-14 19:08:11.003 +02:00 [DBG] Client validation success
+2019-06-14 19:08:11.033 +02:00 [DBG] Start token request validation
+2019-06-14 19:08:11.045 +02:00 [DBG] Start resource owner password token request validation
+2019-06-14 19:08:15.445 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-14 19:08:15.455 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://localhost:5000","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-14 19:08:15.486 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-14 19:08:15.486 +02:00 [DBG] Getting claims for access token for subject: haris@gmail.com
+2019-06-14 19:08:15.769 +02:00 [DBG] Creating refresh token
+2019-06-14 19:08:15.769 +02:00 [DBG] Setting an absolute lifetime: 2592000
+2019-06-14 19:08:15.807 +02:00 [DBG] Token request success.
+2019-06-14 19:09:18.055 +02:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2019-06-14 19:09:18.089 +02:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2019-06-14 19:09:18.092 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2019-06-14 19:09:18.092 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2019-06-14 19:09:18.092 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2019-06-14 19:09:18.092 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2019-06-14 19:09:18.092 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2019-06-14 19:09:20.038 +02:00 [DBG] Login Url: /Account/Login
+2019-06-14 19:09:20.040 +02:00 [DBG] Login Return Url Parameter: ReturnUrl
+2019-06-14 19:09:20.040 +02:00 [DBG] Logout Url: /Account/Logout
+2019-06-14 19:09:20.040 +02:00 [DBG] ConsentUrl Url: /consent
+2019-06-14 19:09:20.040 +02:00 [DBG] Consent Return Url Parameter: returnUrl
+2019-06-14 19:09:20.040 +02:00 [DBG] Error Url: /home/error
+2019-06-14 19:09:20.040 +02:00 [DBG] Error Id Parameter: errorId
+2019-06-14 19:09:20.076 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 19:09:20.185 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 19:09:20.186 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 19:09:20.195 +02:00 [DBG] Start token request.
+2019-06-14 19:09:20.201 +02:00 [DBG] Start client validation
+2019-06-14 19:09:20.205 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 19:09:20.206 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 19:09:20.206 +02:00 [DBG] Secret id found: twc
+2019-06-14 19:09:20.217 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-14 19:09:20.225 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-14 19:09:20.225 +02:00 [DBG] Client validation success
+2019-06-14 19:09:20.254 +02:00 [DBG] Start token request validation
+2019-06-14 19:09:20.265 +02:00 [DBG] Start resource owner password token request validation
+2019-06-14 19:09:24.418 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-14 19:09:24.430 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://localhost:5000","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-14 19:09:24.462 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-14 19:09:24.462 +02:00 [DBG] Getting claims for access token for subject: haris@gmail.com
+2019-06-14 19:09:24.768 +02:00 [DBG] Creating refresh token
+2019-06-14 19:09:24.768 +02:00 [DBG] Setting an absolute lifetime: 2592000
+2019-06-14 19:09:24.806 +02:00 [DBG] Token request success.
+2019-06-14 19:10:32.963 +02:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2019-06-14 19:10:32.996 +02:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2019-06-14 19:10:32.998 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2019-06-14 19:10:32.998 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2019-06-14 19:10:32.998 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2019-06-14 19:10:32.998 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2019-06-14 19:10:32.999 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2019-06-14 19:10:36.870 +02:00 [DBG] Login Url: /Account/Login
+2019-06-14 19:10:36.872 +02:00 [DBG] Login Return Url Parameter: ReturnUrl
+2019-06-14 19:10:36.872 +02:00 [DBG] Logout Url: /Account/Logout
+2019-06-14 19:10:36.872 +02:00 [DBG] ConsentUrl Url: /consent
+2019-06-14 19:10:36.872 +02:00 [DBG] Consent Return Url Parameter: returnUrl
+2019-06-14 19:10:36.872 +02:00 [DBG] Error Url: /home/error
+2019-06-14 19:10:36.872 +02:00 [DBG] Error Id Parameter: errorId
+2019-06-14 19:10:36.900 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-14 19:10:37.013 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-14 19:10:37.014 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-14 19:10:37.022 +02:00 [DBG] Start token request.
+2019-06-14 19:10:37.028 +02:00 [DBG] Start client validation
+2019-06-14 19:10:37.034 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-14 19:10:37.034 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-14 19:10:37.035 +02:00 [DBG] Secret id found: twc
+2019-06-14 19:10:37.045 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-14 19:10:37.053 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-14 19:10:37.053 +02:00 [DBG] Client validation success
+2019-06-14 19:10:37.081 +02:00 [DBG] Start token request validation
+2019-06-14 19:10:37.092 +02:00 [DBG] Start resource owner password token request validation
+2019-06-14 19:10:41.210 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-14 19:10:41.221 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://localhost:5000","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-14 19:10:41.253 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-14 19:10:41.253 +02:00 [DBG] Getting claims for access token for subject: haris@gmail.com
+2019-06-14 19:10:41.562 +02:00 [DBG] Creating refresh token
+2019-06-14 19:10:41.562 +02:00 [DBG] Setting an absolute lifetime: 2592000
+2019-06-14 19:10:41.595 +02:00 [DBG] Token request success.2019-06-25 20:14:18.373 +02:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2019-06-25 20:14:18.414 +02:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2019-06-25 20:14:18.417 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2019-06-25 20:14:18.417 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2019-06-25 20:14:18.417 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2019-06-25 20:14:18.417 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2019-06-25 20:14:18.417 +02:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2019-06-25 20:15:44.011 +02:00 [DBG] Login Url: /Account/Login
+2019-06-25 20:15:44.013 +02:00 [DBG] Login Return Url Parameter: ReturnUrl
+2019-06-25 20:15:44.013 +02:00 [DBG] Logout Url: /Account/Logout
+2019-06-25 20:15:44.013 +02:00 [DBG] ConsentUrl Url: /consent
+2019-06-25 20:15:44.013 +02:00 [DBG] Consent Return Url Parameter: returnUrl
+2019-06-25 20:15:44.013 +02:00 [DBG] Error Url: /home/error
+2019-06-25 20:15:44.013 +02:00 [DBG] Error Id Parameter: errorId
+2019-06-25 20:15:44.054 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-25 20:15:44.244 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-25 20:15:44.245 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-25 20:15:44.254 +02:00 [DBG] Start token request.
+2019-06-25 20:15:44.259 +02:00 [DBG] Start client validation
+2019-06-25 20:15:44.265 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-25 20:15:44.265 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-25 20:15:44.265 +02:00 [DBG] Secret id found: twc
+2019-06-25 20:15:44.277 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-25 20:15:44.286 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-25 20:15:44.286 +02:00 [DBG] Client validation success
+2019-06-25 20:15:44.325 +02:00 [DBG] Start token request validation
+2019-06-25 20:15:44.336 +02:00 [DBG] Start resource owner password token request validation
+2019-06-25 20:15:52.584 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-25 20:15:52.596 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://localhost:5000","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-25 20:15:52.630 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-25 20:15:52.630 +02:00 [DBG] Getting claims for access token for subject: haris@gmail.com
+2019-06-25 20:16:05.703 +02:00 [DBG] Creating refresh token
+2019-06-25 20:16:05.703 +02:00 [DBG] Setting an absolute lifetime: 2592000
+2019-06-25 20:16:05.742 +02:00 [DBG] Token request success.
+2019-06-25 20:16:19.344 +02:00 [DBG] Request path /connect/token matched to endpoint type Token
+2019-06-25 20:16:19.346 +02:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2019-06-25 20:16:19.346 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2019-06-25 20:16:19.347 +02:00 [DBG] Start token request.
+2019-06-25 20:16:19.347 +02:00 [DBG] Start client validation
+2019-06-25 20:16:19.347 +02:00 [DBG] Start parsing Basic Authentication secret
+2019-06-25 20:16:19.347 +02:00 [DBG] Parser found secret: BasicAuthenticationSecretParser
+2019-06-25 20:16:19.347 +02:00 [DBG] Secret id found: twc
+2019-06-25 20:16:19.347 +02:00 [DBG] client configuration validation for client twc succeeded.
+2019-06-25 20:16:19.347 +02:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2019-06-25 20:16:19.347 +02:00 [DBG] Client validation success
+2019-06-25 20:16:19.352 +02:00 [DBG] Start token request validation
+2019-06-25 20:16:19.352 +02:00 [DBG] Start resource owner password token request validation
+2019-06-25 20:16:22.765 +02:00 [DBG] Resource owner password token request validation success.
+2019-06-25 20:16:22.765 +02:00 [INF] Token request validation success
+{"ClientId":"twc","ClientName":"Tayra Web Client","GrantType":"password","Scopes":"offline_access tAPI","AuthorizationCode":null,"RefreshToken":null,"UserName":"haris@gmail.com","AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"password","username":"haris@gmail.com","password":"***REDACTED***","resource":"https://tayra-dev.azurewebsites.net","scope":"offline_access tAPI"},"$type":"TokenRequestValidationLog"}
+2019-06-25 20:16:22.765 +02:00 [DBG] Getting claims for access token for client: twc
+2019-06-25 20:16:22.765 +02:00 [DBG] Getting claims for access token for subject: haris@gmail.com
+2019-06-25 20:16:26.033 +02:00 [DBG] Creating refresh token
+2019-06-25 20:16:26.033 +02:00 [DBG] Setting an absolute lifetime: 2592000
+2019-06-25 20:16:26.040 +02:00 [DBG] Token request success.
