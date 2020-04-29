@@ -5,7 +5,7 @@ namespace Tayra.Services
 {
     public static class ProfileRules
     {
-        public static bool CanUpProfile(int upperId, int profileToUpId, int? lastUppedAt)
+        public static bool CanPraiseProfile(int upperId, int profileToUpId, int? lastUppedAt)
         {
             return upperId != profileToUpId
                 &&

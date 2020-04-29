@@ -80,7 +80,7 @@ namespace Tayra.Services
 
         public int PraiseProfile(int profileId, ProfilePraiseDTO dto)
         {
-            int? lastUppedAt = (from u in DbContext.ProfilePraises
+            int? lastPraisedAt = (from u in DbContext.ProfilePraises
                                 where u.CreatedBy == profileId
                                 where u.ProfileId == dto.ProfileId
                                 orderby u.DateId descending
@@ -88,29 +88,33 @@ namespace Tayra.Services
                                 ).FirstOrDefault();
 
 
-            if (!ProfileRules.CanUpProfile(profileId, dto.ProfileId, lastUppedAt))
+            if (!ProfileRules.CanPraiseProfile(profileId, dto.ProfileId, lastPraisedAt))
             {
-                throw new ApplicationException("Profile already upped by same user today");
+                throw new ApplicationException("Profile already praised by same user today");
             }
 
             DbContext.Add(new ProfilePraise
             {
+                PraiserProfileId = profileId,
                 ProfileId = dto.ProfileId,
+                Type = dto.Type,
                 DateId = DateHelper2.ToDateId(dto.DemoDate ?? DateTime.UtcNow),
                 CreatedBy = profileId, //when user is not logged in, ex. demo,
                 Created = dto.DemoDate ?? DateTime.UtcNow
             });
 
-            var oneUpGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
-            var oneUpReceiverUsername = DbContext.Profiles.Where(x => x.Id == dto.ProfileId).Select(x => x.Username).FirstOrDefault();
+            var praiseGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
+            var praiseReceiverUsername = DbContext.Profiles.Where(x => x.Id == dto.ProfileId).Select(x => x.Username).FirstOrDefault();
+
             LogsService.LogEvent(new LogCreateDTO
             {
                 Event = LogEvents.ProfilePraiseGiven,
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", oneUpGiverUsername },
-                    { "receiverUsername", oneUpReceiverUsername }
+                    { "profileUsername", praiseGiverUsername },
+                    { "receiverUsername", praiseReceiverUsername },
+                    { "type", dto.Type.ToString() }
                 },
                 ProfileId = profileId,
             });
@@ -121,16 +125,18 @@ namespace Tayra.Services
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", oneUpReceiverUsername },
-                    { "giverUsername", oneUpGiverUsername }
+                    { "profileUsername", praiseGiverUsername },
+                    { "giverUsername", praiseReceiverUsername },
+                    { "type", dto.Type.ToString() }
                 },
                 ProfileId = dto.ProfileId,
             });
 
-            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(oneUpGiverUsername));
+            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
 
-            var totalUps = TokensService.CreateTransaction(TokenType.OneUp, dto.ProfileId, 1, TransactionReason.OneUpProfile, null);
-            return Convert.ToInt32(totalUps);
+            var totalPraises = DbContext.ProfilePraises.Where(x => x.ProfileId == dto.ProfileId).Count();
+            
+            return Convert.ToInt32(totalPraises);
         }
 
         public GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams)
@@ -195,7 +201,6 @@ namespace Tayra.Services
                     scope = scope.Where(byName);
             }
    
-            var upsTokenId = DbContext.Tokens.Where(x => x.Type == TokenType.OneUp).Select(x => x.Id).First();
             var query = from p in scope
                         from title in DbContext.ProfileInventoryItems.Where(x => p.Id == x.ProfileId
                              && x.IsActive == true && x.ItemType == ItemTypes.TayraTitle).DefaultIfEmpty()
@@ -218,7 +223,7 @@ namespace Tayra.Services
                             PlatformInfo = new ProfileSummaryGridDTO.PlatformData
                             {
                                 CompanyTokens = (float)Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),
-                                Praises = (int)p.Tokens.Where(x => x.TokenId == upsTokenId).Sum(x => x.Value),
+                                Praises = DbContext.ProfilePraises.Where(x => x.ProfileId == p.Id).Count(),
                                 CompletedChallenges = p.CompletedChallenges.Count()
                             },
                             Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment
@@ -379,7 +384,7 @@ namespace Tayra.Services
                                   Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
                                   CompanyTokens = Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),
                                   Experience = Convert.ToInt32(tt.Where(x => x.Type == TokenType.Experience).Select(x => x.Value).FirstOrDefault()),
-                                  OneUps = Convert.ToInt32(tt.Where(x => x.Type == TokenType.OneUp).Select(x => x.Value).FirstOrDefault()),
+                                  Praises = DbContext.ProfilePraises.Where(x => x.ProfileId == p.Id).Count(),
                                   CustomTokens = tt.Where(x => x.Type == TokenType.Custom).ToList(),
                               }).FirstOrDefault();
 
