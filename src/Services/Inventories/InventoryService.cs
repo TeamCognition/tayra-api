@@ -55,7 +55,7 @@ namespace Tayra.Services
 
         public GridData<InventoryItemGridDTO> GetInventoryItemViewGridDTO(InventoryItemGridParams gridParams)
         {
-            if(string.IsNullOrEmpty(gridParams.ProfileUsername))
+            if (string.IsNullOrEmpty(gridParams.ProfileUsername))
             {
                 throw new ApplicationException(nameof(gridParams.ProfileUsername) + "must be provided");
             }
@@ -186,7 +186,7 @@ namespace Tayra.Services
 
             LogsService.LogEvent(new LogCreateDTO
             {
-                Event = LogEvents.InventoryItemReceived,
+                Event = LogEvents.InventoryItemGiftReceived,
                 Data = new Dictionary<string, string>
                 {
                     { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },

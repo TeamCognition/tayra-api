@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{A039
 		shared\sharedSettings.json = shared\sharedSettings.json
 		shared\shared.csproj.props = shared\shared.csproj.props
 		shared\deps.csproj.props = shared\deps.csproj.props
-		firdawsCore.props = shared\firdawsCore.props
+		firdawsCore.props = firdawsCore.props
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth", "src\Auth\Auth.csproj", "{7A1AF552-13FE-43F0-91C2-CE18F17E33F6}"
@@ -42,10 +42,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.Atlassian.Jira", "src\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj", "{F17B390B-3774-469C-BF4A-903071183C4C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.App", "src\Connectors\Connectors.App\Connectors.App.csproj", "{5291B6DA-05A4-436A-9845-48D1D79C256C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreModel", "DAL\CoreModel\CoreModel.csproj", "{BAA2F201-D35C-48DD-8B3B-0F66E1517003}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncServices", "SyncServices\SyncServices.csproj", "{0805110C-0402-461C-99AA-5ABD31BFA331}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

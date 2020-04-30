@@ -85,12 +85,18 @@ namespace Tayra.Services
         {
             IQueryable<Log> query = DbContext.Logs;
 
-            if (gridParams.ProfileIds.Length > 0)
+            if (gridParams.ProfileIds.Length == 0)
+            {
+                query = query.Where(x => x.Event != LogEvents.ProfilePraiseReceived
+                                      && x.Event != LogEvents.InventoryItemGiftReceived);
+            }
+            else
             {
                 query = from l in query
                         join pl in DbContext.ProfileLogs on l.Id equals pl.LogId
-                        where gridParams.ProfileIds.Contains(pl.ProfileId) && pl.Event != LogEvents.ProfilePraiseReceived && pl.Event != LogEvents.InventoryItemReceived
+                        where gridParams.ProfileIds.Contains(pl.ProfileId) && pl.Event != LogEvents.ProfilePraiseReceived && pl.Event != LogEvents.InventoryItemGiftReceived
                         select l;
+
             }
             if (gridParams.TeamIds.Length > 0)
             {

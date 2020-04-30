@@ -20,7 +20,7 @@
         InventoryItem = 6000,
         InventoryItemDisenchanted = 6001,
         InventoryItemGifted = 6002,
-        InventoryItemReceived = 6003,
+        InventoryItemGiftReceived = 6003,
 
         Challenge = 7000,
         ChallengeCompleted = 7001,
