@@ -272,7 +272,8 @@ namespace Tayra.Services
                              Name = trd.Summary,
                              MinutesSpent = trd.TimeSpentInMinutes ?? trd.AutoTimeSpentInMinutes,
                              Complexity = trd.Complexity,
-                             AssigneeName = trd.AssigneeProfile.FirstName + " " + trd.AssigneeProfile.LastName
+                             AssigneeName = trd.AssigneeProfile.FirstName + " " + trd.AssigneeProfile.LastName,
+                             AssigneeUsername = trd.AssigneeProfile.Username
                          }).ToArray();
 
             if (!tasks.Any())
@@ -294,7 +295,8 @@ namespace Tayra.Services
                         Name = t.Name,
                         MinutesSpent = t.MinutesSpent ?? 0,
                         Complexity = t.Complexity,
-                        AssigneeName = t.AssigneeName
+                        AssigneeName = t.AssigneeName,
+                        AssigneeUsername = t.AssigneeUsername
                     }).ToArray()
                 }).ToArray()
             };

@@ -21,6 +21,7 @@
                 public int MinutesSpent { get; set; }
                 public int Complexity { get; set; }
                 public string AssigneeName { get; set; }
+                public string AssigneeUsername { get; set; }
             }
         }
     }
