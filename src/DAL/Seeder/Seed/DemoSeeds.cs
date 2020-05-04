@@ -114,8 +114,6 @@ namespace Tayra.Models.Seeder.DemoSeeds
             {
                 foreach (var segment in demoData.Segments)
                 {
-                    segment.IsReportingUnlocked = true;
-
                     organizationDb.Integrations.Add(new Integration
                     {
                         SegmentId = segment.Id,
@@ -140,6 +138,24 @@ namespace Tayra.Models.Seeder.DemoSeeds
                         SegmentId = segment.Id
                     });
                 }
+            }
+
+            foreach (var segment in demoData.Segments)
+            {
+                segment.IsReportingUnlocked = true;
+
+                organizationDb.Integrations.Add(new Integration
+                {
+                    SegmentId = segment.Id,
+                    ProfileId = null,
+                    Type = IntegrationType.ATJ,
+                    Fields = new List<IntegrationField>() {
+                            new IntegrationField {
+                                Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + "DemoProject-" + segment.Id,
+                                Value = "REWARDING_ID"
+                            }
+                        }
+                });
             }
 
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
@@ -327,7 +343,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
 
             {
                 Console.WriteLine("Seeding Shop data ...");
-                var shopItems = organizationDb.ShopItems.Where(x => x.QuantityReservedRemaining == null).ToArray();
+                var shopItems = organizationDb.ShopItems.Where(x => x.Item.ShopQuantityRemaining == null).ToArray();
                 foreach (var p in demoData.Profiles)
                 {
                     foreach (var toBuy in shopItems.RandomSubset(rnd.Next(3)))
@@ -353,8 +369,8 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     IsGiftable = true,
                     IsDisenchantable = false,
                     PlaceInShop = true,
-                    Quantity = 10,
-                    ShopQuantity = 5,
+                    GiveawayQuantityRemaining = 10,
+                    ShopQuantityRemaining = 5,
                     Rarity = ItemRarities.Common
                 }));
                 customItems.Add(ItemService.CreateItem(new ItemCreateDTO
@@ -368,8 +384,8 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     IsGiftable = false,
                     IsDisenchantable = false,
                     PlaceInShop = true,
-                    Quantity = 2,
-                    ShopQuantity = 2,
+                    GiveawayQuantityRemaining = 2,
+                    ShopQuantityRemaining = 2,
                     Rarity = ItemRarities.Legendary
                 }));
                 customItems.Add(ItemService.CreateItem(new ItemCreateDTO
@@ -383,8 +399,8 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     IsGiftable = false,
                     IsDisenchantable = false,
                     PlaceInShop = true,
-                    Quantity = 4,
-                    ShopQuantity = 4,
+                    GiveawayQuantityRemaining = 4,
+                    ShopQuantityRemaining = 4,
                     Rarity = ItemRarities.Legendary
                 }));
 

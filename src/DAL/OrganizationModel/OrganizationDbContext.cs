@@ -73,7 +73,6 @@ namespace Tayra.Models.Organizations
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemDisenchant> ItemDisenchants { get; set; }
         public DbSet<ItemGift> ItemGifts { get; set; }
-        public DbSet<ItemReservation> ItemReservations { get; set; }
         public DbSet<Log> Logs { get; set; }
         public DbSet<LogDevice> LogDevices { get; set; }
         public DbSet<LoginLog> LoginLogs { get; set; }

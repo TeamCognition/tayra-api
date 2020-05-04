@@ -18,12 +18,13 @@ namespace Tayra.Services
         public ItemTypes Type { get; set; }
         public ItemRarities Rarity { get; set; }
 
-        public int? Quantity { get; set; }
+        public int? ShopQuantityRemaining { get; set; }
+        public int? ChallengesQuantityRemaining { get; set; }
+        public int? GiveawayQuantityRemaining { get; set; }
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
 
-        public int? ShopRemainingQuantity { get; set; }
         public bool PlaceInShop { get; set; }
         public bool IsDisabled { get; set; }
     }

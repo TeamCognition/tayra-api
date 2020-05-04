@@ -41,7 +41,9 @@ namespace Tayra.Services
                                IsGiftable = i.IsGiftable,
                                Type = i.Type,
                                Rarity = i.Rarity,
-                               Quantity = i.IsQuantityLimited ? i.Reservations.Sum(x => x.QuantityChange) : (int?)null,
+                               ShopQuantityRemaining = i.ShopQuantityRemaining,
+                               ChallengesQuantityRemaining = i.ChallengesQuantityRemaining,
+                               GiveawayQuantityRemaining = i.GiveawayQuantityRemaining,
                                Created = i.Created,
                                LastModified = i.LastModified
                            }).FirstOrDefault();
@@ -51,7 +53,6 @@ namespace Tayra.Services
             var shopItem = DbContext.ShopItems.Where(x => x.ItemId == itemId).FirstOrDefault();
             if(shopItem != null)
             {
-                itemDto.ShopRemainingQuantity = shopItem.QuantityReservedRemaining;
                 itemDto.PlaceInShop = true;
                 itemDto.IsDisabled = shopItem.DisabledAt.HasValue;
             }
@@ -64,11 +65,6 @@ namespace Tayra.Services
             if(role == ProfileRoles.Member)
             {
                 throw new ApplicationException("Members don't have access to this API");
-            }
-
-            if(gridParams.Sidx == nameof(ItemGridDTO.Quantity))
-            {
-                throw new ApplicationException("Can't order by quantity for now");
             }
 
             IQueryable<Item> scope = DbContext.Items;
@@ -86,7 +82,9 @@ namespace Tayra.Services
                             IsGiftable = i.IsGiftable,
                             Type = i.Type,
                             Rarity = i.Rarity,
-                            Quantity = i.IsQuantityLimited ? i.Reservations.Sum(x => x.QuantityChange) : (int?)null,
+                            ShopQuantityRemaining = i.ShopQuantityRemaining,
+                            ChallengesQuantityRemaining = i.ChallengesQuantityRemaining,
+                            GiveawayQuantityRemaining = i.GiveawayQuantityRemaining,
                             Created = i.Created,
                             LastModified = i.LastModified
                         };
@@ -98,11 +96,6 @@ namespace Tayra.Services
 
         public Item CreateItem(ItemCreateDTO dto)
         {
-            if (ItemRules.IsShopQuantityExceedingItems(dto.Quantity, dto.ShopQuantity))
-            {
-                throw new ApplicationException("shop quantity exceeds item quantity");
-            }
-
             var item = DbContext.Add(new Item
             {
                 Name = dto.Name,
@@ -114,15 +107,10 @@ namespace Tayra.Services
                 Type = dto.Type,
                 Rarity = dto.Rarity,
                 Price = dto.Price,
-                IsQuantityLimited = dto.Quantity.HasValue,
                 CreatedDateId = DateHelper2.ToDateId(DateTime.UtcNow),
-                Reservations = !dto.Quantity.HasValue ? null : new ItemReservation[]
-                {
-                    new ItemReservation
-                    {
-                        QuantityChange = dto.Quantity.Value - dto.ShopQuantity ?? 0
-                    }
-                }
+                ShopQuantityRemaining = dto.ShopQuantityRemaining,
+                ChallengesQuantityRemaining = dto.ChallengesQuantityRemaining,
+                GiveawayQuantityRemaining = dto.GiveawayQuantityRemaining
             }).Entity;
 
             if(dto.PlaceInShop)
@@ -130,7 +118,6 @@ namespace Tayra.Services
                 DbContext.Add(new ShopItem
                 {
                     Item = item,
-                    QuantityReservedRemaining = dto.ShopQuantity,
                     IsGlobal = true
                 });
             }
@@ -140,7 +127,7 @@ namespace Tayra.Services
 
         public Item UpdateItem(ItemUpdateDTO dto)
         {
-            var item = DbContext.Items.Include(x => x.Reservations).FirstOrDefault(x => x.Id == dto.ItemId);
+            var item = DbContext.Items.FirstOrDefault(x => x.Id == dto.ItemId);
 
             item.EnsureNotNull(dto.ItemId);
 
@@ -150,24 +137,7 @@ namespace Tayra.Services
                 item = new Item();
             }
 
-            var currentAvailableQuantity = item?.Reservations.Sum(x => x.QuantityChange) ?? 0;
-
-            var newQ = dto.Quantity - (dto.ShopQuantity ?? 0) - currentAvailableQuantity;
-            if (dto.Quantity.HasValue && newQ != currentAvailableQuantity)
-            {
-                item.Reservations.Add(DbContext.Add(new ItemReservation
-                {
-                    ItemId = item.Id,
-                    QuantityChange = newQ.Value
-                }).Entity);
-            }
-            if (!dto.Quantity.HasValue)
-            {
-                DbContext.RemoveRange(item.Reservations);
-            }
-
             item.Price = dto.Price;
-            item.IsQuantityLimited = dto.Quantity.HasValue;
             item.Name = dto.Name;
             item.Description = dto.Description;
             item.Image = dto.Image;
@@ -176,6 +146,10 @@ namespace Tayra.Services
             item.IsGiftable = dto.IsGiftable;
             item.Type = dto.Type;
             item.Rarity = dto.Rarity;
+
+            item.ShopQuantityRemaining = dto.ShopQuantityRemaining;
+            item.ChallengesQuantityRemaining = dto.ChallengesQuantityRemaining;
+            item.GiveawayQuantityRemaining = dto.GiveawayQuantityRemaining;
 
             var shopItem = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);
             
@@ -189,13 +163,6 @@ namespace Tayra.Services
             }
 
             shopItem = shopItem ?? DbContext.Add(new ShopItem { Item = item, IsGlobal = true }).Entity;
-
-            if (ItemRules.IsShopQuantityExceedingItems(dto.Quantity, dto.ShopQuantity))
-            {
-                throw new ApplicationException("shop quantity exceeds item quantity");
-            }
-
-            shopItem.QuantityReservedRemaining = dto.ShopQuantity;
 
             return shopItem.Item;
         }

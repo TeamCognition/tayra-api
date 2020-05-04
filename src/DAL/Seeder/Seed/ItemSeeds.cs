@@ -717,6 +717,10 @@ namespace Tayra.Models.Seeder
                         item.Price = 1800;
                         break;
                 }
+
+                item.ShopQuantityRemaining = null;
+                item.ChallengesQuantityRemaining = null;
+                item.GiveawayQuantityRemaining = null;
             }
 
             dbContext.AddRange(itemsSeed);
@@ -729,7 +733,6 @@ namespace Tayra.Models.Seeder
                 {
                     ItemId = item.Id,
                     IsGlobal = true,
-                    QuantityReservedRemaining = null
                 });
             }
 

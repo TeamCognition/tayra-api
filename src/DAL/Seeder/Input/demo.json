@@ -3,7 +3,7 @@
   "Profiles": [
     {
       "Id": 1,
-      "Avatar": "https://tayra.blob.core.windows.net/demo-images/male1.png",
+      "Avatar": "https://tayra.blob.core.windows.net/demo-images/adminAvatar.jpg",
       "FirstName": "Admin",
       "LastName": "Demo",
       "Username": "admin_demo",

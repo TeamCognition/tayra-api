@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AssemblyName>Tayra.Connectors.GitHub</AssemblyName>
+    <RootNamespace>Tayra.Connectors.GitHub</RootNamespace>
+  </PropertyGroup>
+    
+  <ItemGroup>
+    <ProjectReference Include="..\Connectors.Common\Connectors.Common.csproj" />
+    <ProjectReference Include="..\..\DAL\OrganizationModel\OrganizationModel.csproj" />
+    <ProjectReference Include="..\..\Common\Common.csproj" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <PackageReference Include="GraphQL.Client" Version="3.1.0" />
+  </ItemGroup>
+    
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileFormatDefault" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

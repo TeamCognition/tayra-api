@@ -99,18 +99,13 @@ namespace Tayra.API.Controllers
             return ProfilesService.IsUsernameUnique(username);
         }
 
-        public interface IPraisesProfile //for swagger
-        {
-            int TotalUps { get; set; }
-        }
-
         [HttpPost("praise")]
-        public ActionResult<IPraisesProfile> PraiseProfile([FromBody] ProfilePraiseDTO dto)
+        public IActionResult PraiseProfile([FromBody] ProfilePraiseDTO dto)
         {
-            int totalUps = ProfilesService.PraiseProfile(CurrentUser.ProfileId, dto);
+            ProfilesService.PraiseProfile(CurrentUser.ProfileId, dto);
             DbContext.SaveChanges();
 
-            return Ok(new { TotalUps = totalUps });
+            return Ok();
         }
 
         [HttpPost("modifyTokens")]

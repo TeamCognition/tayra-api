@@ -33,9 +33,9 @@ namespace Tayra.Services
                                select new ShopItemViewDTO
                                {
                                    ItemId = si.ItemId,
-                                   Quantity = si.QuantityReservedRemaining,
                                    Created = si.Created,
                                    IsDisabled = si.DisabledAt.HasValue,
+                                   Quantity = si.Item.ShopQuantityRemaining,
                                    Price = si.Item.Price,
                                    Name = si.Item.Name,
                                    Description = si.Item.Description,
@@ -66,9 +66,9 @@ namespace Tayra.Services
                         select new ShopItemViewGridDTO
                         {
                             ItemId = si.ItemId,
-                            Quantity = si.QuantityReservedRemaining,
                             Created = si.Created,
                             IsDisabled = si.DisabledAt.HasValue,
+                            Quantity = si.Item.ShopQuantityRemaining,
                             Price = si.Item.Price,
                             Name = si.Item.Name,
                             Description = si.Item.Description,
@@ -96,12 +96,12 @@ namespace Tayra.Services
             shop.EnsureNotNull(shop.Id);
             shopItem.EnsureNotNull(shop.Id, dto.ItemId);
 
-            if (!dto.DemoDate.HasValue && !ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Item.Price, shopItem.QuantityReservedRemaining))
+            if (!dto.DemoDate.HasValue && !ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Item.Price, shopItem.Item.ShopQuantityRemaining))
             {
                 throw new ApplicationException("We are unable to perform the action :)");
             }
 
-            shopItem.QuantityReservedRemaining--;
+            shopItem.Item.ShopQuantityRemaining--;
 
             TokensService.CreateTransaction(token.Id, profileId, shopItem.Item.Price * -1, TransactionReason.ShopItemPurchase, null, dto.DemoDate);
 

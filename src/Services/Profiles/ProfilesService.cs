@@ -78,7 +78,7 @@ namespace Tayra.Services
             return !dbContext.Profiles.Any(x => x.Username == username);
         }
 
-        public int PraiseProfile(int profileId, ProfilePraiseDTO dto)
+        public void PraiseProfile(int profileId, ProfilePraiseDTO dto)
         {
             int? lastPraisedAt = (from u in DbContext.ProfilePraises
                                 where u.CreatedBy == profileId
@@ -93,7 +93,7 @@ namespace Tayra.Services
                 throw new ApplicationException("Profile already praised by same user today");
             }
 
-            DbContext.ProfilePraises.Add(new ProfilePraise
+            DbContext.Add(new ProfilePraise
             {
                 PraiserProfileId = profileId,
                 ProfileId = dto.ProfileId,
@@ -132,8 +132,6 @@ namespace Tayra.Services
             });
 
             LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
-
-            return DbContext.ProfilePraises.Where(x => x.ProfileId == dto.ProfileId).Count();
         }
 
         public GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams)
@@ -211,12 +209,6 @@ namespace Tayra.Services
                             Name = p.FirstName + " " + p.LastName,
                             Username = p.Username,
                             Avatar = p.Avatar,
-                            PersonalInfo = new ProfileSummaryGridDTO.PersonalData
-                            {
-                                JobPosition = p.JobPosition,
-                                EmployedOn = p.EmployedOn,
-                                JoinDate = p.Created
-                            },
                             PlatformInfo = new ProfileSummaryGridDTO.PlatformData
                             {
                                 CompanyTokens = (float)Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),

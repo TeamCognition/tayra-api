@@ -151,7 +151,7 @@ namespace Tayra.Services
                          {
                              ItemId = i.Id,
                              Price = i.Price,
-                             QuantityAvailable = i.IsQuantityLimited ? i.Reservations.Sum(x => x.QuantityChange) : (int?)null,
+                             QuantityAvailable = i.ChallengesQuantityRemaining,
                              QuantityToReserve = dto.Rewards.FirstOrDefault(y => y.ItemId == i.Id).Quantity * (dto.CompletionsLimit ?? 1)
                          }).ToList();
 
@@ -167,11 +167,8 @@ namespace Tayra.Services
                     throw new ApplicationException($"Invalid {nameof(Challenge.CompletionsLimit)}");
                 }
 
-                DbContext.Add(new ItemReservation
-                {
-                    ItemId = i.ItemId,
-                    QuantityChange = i.QuantityToReserve
-                });
+                var entity = DbContext.Items.FirstOrDefault(x => x.Id == i.ItemId);
+                entity.ChallengesQuantityRemaining -= i.QuantityToReserve;
             }
 
             DbContext.Add(new Challenge

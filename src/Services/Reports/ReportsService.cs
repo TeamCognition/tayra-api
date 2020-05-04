@@ -388,7 +388,6 @@ namespace Tayra.Services
                           TokensSpentTotal = g.Sum(x => x.CompanyTokensSpentChange)
                       }).FirstOrDefault();
 
-
             var ms = (from trd in DbContext.SegmentReportsDaily
                       where trd.DateId >= reportParams.From && trd.DateId <= reportParams.To
                       where trd.SegmentId == reportParams.SegmentId
