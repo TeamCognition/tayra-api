@@ -43,6 +43,5 @@ namespace Tayra.Services
 
         #endregion
 
-
     }
 }

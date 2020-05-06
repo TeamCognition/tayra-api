@@ -99,15 +99,6 @@ namespace Tayra.API.Controllers
             return ProfilesService.IsUsernameUnique(username);
         }
 
-        [HttpPost("praise")]
-        public IActionResult PraiseProfile([FromBody] ProfilePraiseDTO dto)
-        {
-            ProfilesService.PraiseProfile(CurrentUser.ProfileId, dto);
-            DbContext.SaveChanges();
-
-            return Ok();
-        }
-
         [HttpPost("modifyTokens")]
         public IActionResult ModifyTokens([FromBody] ProfileModifyTokensDTO dto)
         {

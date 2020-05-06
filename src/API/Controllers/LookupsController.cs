@@ -65,6 +65,12 @@ namespace Tayra.API.Controllers
             return LookupsService.GetFromEnum<ShopPurchaseStatuses>();
         }
 
+        [HttpGet, Route(nameof(LookupTypes.PraiseTypes))]
+        public IEnumerable<LookupDTO> GetPraiseTypes()
+        {
+            return LookupsService.GetFromEnum<PraiseTypes>();
+        }
+
         #endregion
 
         #region From Database
@@ -88,13 +94,14 @@ namespace Tayra.API.Controllers
             {
                 result[type] =
                     (type == LookupTypes.Tokens) ? GetTokens()
-                    : (type == LookupTypes.TokenTypes) ? GetTokenTypes()
-                    : (type == LookupTypes.ExperienceRanks) ? GetExperienceRanks()
-                    : (type == LookupTypes.CompetitionStatuses) ? GetCompetitionStatuses()
                     : (type == LookupTypes.ItemTypes) ? GetItemTypes()
+                    : (type == LookupTypes.TokenTypes) ? GetTokenTypes()
                     : (type == LookupTypes.ItemRarities) ? GetItemRarities()
                     : (type == LookupTypes.ProfileRoles) ? GetProfileRoles()
+                    : (type == LookupTypes.ExperienceRanks) ? GetExperienceRanks()
+                    : (type == LookupTypes.CompetitionStatuses) ? GetCompetitionStatuses()
                     : (type == LookupTypes.ShopPurchaseStatuses) ? GetShopPurchaseStatuses()
+                    : (type == LookupTypes.PraiseTypes) ? GetPraiseTypes()
                     : null;
             }
 

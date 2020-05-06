@@ -10,6 +10,7 @@
         ItemTypes = 6,
         ItemRarities = 7,
         ProfileRoles = 8,
-        ShopPurchaseStatuses = 9
+        ShopPurchaseStatuses = 9,
+        PraiseTypes = 10
     }
 }
