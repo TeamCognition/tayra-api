@@ -19,6 +19,7 @@ namespace Tayra.API.Controllers
         private IShopsService _shopsService;
         private ITasksService _tasksService;
         private ITeamsService _teamsService;
+        private IPraiseService _praiseService;
         private ITokensService _tokensService;
         private ILookupsService _lookupsService;
         private IReportsService _reportsService;
@@ -26,7 +27,6 @@ namespace Tayra.API.Controllers
         private ISegmentsService _segmentsService;
         private IShopItemsService _shopItemsService;
         private IAssistantService _assistantService;
-        private IPraiseWallService _praiseWallService;
         private IChallengesService _challengesService;
         private IIdentitiesService _identitiesService;
         private IInventoriesService _inventoriesService;
@@ -62,6 +62,7 @@ namespace Tayra.API.Controllers
         protected IShopsService ShopsService => _shopsService ?? (_shopsService = Resolve<IShopsService>());
         protected ITasksService TasksService => _tasksService ?? (_tasksService = Resolve<ITasksService>());
         protected ITeamsService TeamsService => _teamsService ?? (_teamsService = Resolve<ITeamsService>());
+        protected IPraiseService PraiseService => _praiseService ?? (_praiseService = Resolve<IPraiseService>());
         protected ITokensService TokensService => _tokensService ?? (_tokensService = Resolve<ITokensService>());
         protected ILookupsService LookupsService => _lookupsService ?? (_lookupsService = Resolve<ILookupsService>());
         protected IReportsService ReportsService => _reportsService ?? (_reportsService = Resolve<IReportsService>());
@@ -70,7 +71,6 @@ namespace Tayra.API.Controllers
         protected IAssistantService AssistantService => _assistantService ?? (_assistantService = Resolve<IAssistantService>());
         protected IShopItemsService ShopItemsService => _shopItemsService ?? (_shopItemsService = Resolve<IShopItemsService>());
         protected IChallengesService ChallengesService => _challengesService ?? (_challengesService = Resolve<IChallengesService>());
-        protected IPraiseWallService PraiseWallService => _praiseWallService ?? (_praiseWallService = Resolve<IPraiseWallService>());
         protected IIdentitiesService IdentitiesService => _identitiesService ?? (_identitiesService = Resolve<IIdentitiesService>());
         protected IInventoriesService InventoriesService => _inventoriesService ?? (_inventoriesService = Resolve<IInventoriesService>());
         protected IClaimBundlesService ClaimBundlesService => _claimBundlesService ?? (_claimBundlesService = Resolve<IClaimBundlesService>());

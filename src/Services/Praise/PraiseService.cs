@@ -10,12 +10,12 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.Services
 {
-    public class PraiseWallService : BaseService<OrganizationDbContext>, IPraiseWallService
+    public class PraiseService : BaseService<OrganizationDbContext>, IPraiseService
     {
         #region Constructor
         protected ILogsService LogsService { get; set; }
 
-        public PraiseWallService(ITokensService tokensService, ILogsService logsService, CatalogDbContext catalogDb, OrganizationDbContext dbContext) : base(dbContext)
+        public PraiseService(ITokensService tokensService, ILogsService logsService, CatalogDbContext catalogDb, OrganizationDbContext dbContext) : base(dbContext)
         {
             LogsService = logsService;
             TokensService = tokensService;
@@ -28,7 +28,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public void PraiseMember(int profileId, PraiseWallPraiseDTO dto)
+        public void PraiseProfile(int profileId, PraiseProfileDTO dto)
         {
             int? lastPraisedAt = (from u in DbContext.ProfilePraises
                                   where u.CreatedBy == profileId
@@ -84,10 +84,10 @@ namespace Tayra.Services
             LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
         }
         
-        public GridData<PraiseGridDTO> SearchPraises(PraiseSearchGridParams gridParams)
+        public GridData<PraiseSearchGridDTO> SearchPraises(PraiseSearchGridParams gridParams)
         {
             var query = from pp in DbContext.ProfilePraises
-                        select new PraiseGridDTO
+                        select new PraiseSearchGridDTO
                         {
                             PraiserUsername = DbContext.Profiles.Where(x => x.Id == pp.PraiserProfileId).Select(x => x.Username).FirstOrDefault(),
                             RecieverUsername = pp.Profile.Username,
@@ -96,7 +96,7 @@ namespace Tayra.Services
                             Message = pp.Message
                         };
 
-            GridData<PraiseGridDTO> gridData = query.GetGridData(gridParams);
+            GridData<PraiseSearchGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
         }

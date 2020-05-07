@@ -6,10 +6,10 @@ using Tayra.Services;
 
 namespace Tayra.API.Controllers
 {
-    public class PraiseWallController : BaseController
+    public class PraiseController : BaseController
     {
         #region Constructor
-        public PraiseWallController(OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
+        public PraiseController(OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
         {
             DbContext = dbContext;
         }
@@ -25,18 +25,18 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpPost("praise")]
-        public IActionResult PraiseProfile([FromBody] PraiseWallPraiseDTO dto)
+        public IActionResult PraiseProfile([FromBody] PraiseProfileDTO dto)
         {
-            PraiseWallService.PraiseMember(CurrentUser.ProfileId, dto);
+            PraiseService.PraiseProfile(CurrentUser.ProfileId, dto);
             DbContext.SaveChanges();
 
             return Ok();
         }
 
         [HttpPost("search")]
-        public ActionResult<GridData<PraiseGridDTO>> GetPraisesGrid([FromBody] PraiseSearchGridParams gridParams)
+        public ActionResult<GridData<PraiseSearchGridDTO>> GetPraisesGrid([FromBody] PraiseSearchGridParams gridParams)
         {
-            return PraiseWallService.SearchPraises(gridParams);
+            return PraiseService.SearchPraises(gridParams);
         }
 
         #endregion

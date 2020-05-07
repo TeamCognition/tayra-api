@@ -6,7 +6,7 @@ using Tayra.Common;
 
 namespace Tayra.Services
 {
-    public class PraiseWallPraiseDTO
+    public class PraiseProfileDTO
     {
         public int ProfileId { get; set; }
         public PraiseTypes Type { get; set; } = PraiseTypes.OneUp;

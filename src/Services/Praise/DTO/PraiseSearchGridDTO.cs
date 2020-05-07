@@ -5,7 +5,7 @@ using Tayra.Common;
 
 namespace Tayra.Services
 {
-    public class PraiseGridDTO
+    public class PraiseSearchGridDTO
     { 
         public string RecieverUsername { get; set; }
         public string PraiserUsername { get; set; }

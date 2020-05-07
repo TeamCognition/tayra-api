@@ -78,62 +78,6 @@ namespace Tayra.Services
             return !dbContext.Profiles.Any(x => x.Username == username);
         }
 
-        public void PraiseProfile(int profileId, ProfilePraiseDTO dto)
-        {
-            int? lastPraisedAt = (from u in DbContext.ProfilePraises
-                                where u.CreatedBy == profileId
-                                where u.ProfileId == dto.ProfileId
-                                orderby u.DateId descending
-                                select u.DateId
-                                ).FirstOrDefault();
-
-
-            if (!ProfileRules.CanPraiseProfile(profileId, dto.ProfileId, lastPraisedAt, dto.Message))
-            {
-                throw new ApplicationException("Profile already praised by same user today");
-            }
-
-            DbContext.Add(new ProfilePraise
-            {
-                PraiserProfileId = profileId,
-                ProfileId = dto.ProfileId,
-                Type = dto.Type,
-                DateId = DateHelper2.ToDateId(dto.DemoDate ?? DateTime.UtcNow),
-                Message = dto.Message
-            });
-
-            var praiseGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
-            var praiseReceiverUsername = DbContext.Profiles.Where(x => x.Id == dto.ProfileId).Select(x => x.Username).FirstOrDefault();
-
-            LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.ProfilePraiseGiven,
-                Data = new Dictionary<string, string>
-                {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", praiseGiverUsername },
-                    { "receiverUsername", praiseReceiverUsername },
-                    { "type", dto.Type.ToString() }
-                },
-                ProfileId = profileId,
-            });
-
-            LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.ProfilePraiseReceived,
-                Data = new Dictionary<string, string>
-                {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", praiseReceiverUsername },
-                    { "giverUsername", praiseGiverUsername },
-                    { "type", dto.Type.ToString() }
-                },
-                ProfileId = dto.ProfileId,
-            });
-
-            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
-        }
-
         public GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams)
         {
             IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Role == ProfileRoles.Member && x.Id != profileId);
