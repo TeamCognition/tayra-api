@@ -173,6 +173,7 @@ namespace Tayra.Services
 
         public void RemoveShopItem(int itemId)
         {
+            
             var shopItem = DbContext.ShopItems.FirstOrDefault(x => x.ItemId == itemId);
 
             shopItem.EnsureNotNull(itemId);

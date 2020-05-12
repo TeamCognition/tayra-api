@@ -51,6 +51,15 @@ namespace Tayra.API.Controllers
             return Ok(new { Id = item.Id });
         }
 
+        [HttpDelete("{itemId:int}")]
+        public IActionResult Archive([FromRoute] int itemId)
+        {
+            ItemsService.Archive(itemId);
+            OrganizationContext.SaveChanges();
+
+            return Ok();
+        }
+
         #endregion
     }
 }

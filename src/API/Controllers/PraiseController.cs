@@ -24,7 +24,7 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpPost("praise")]
+        [HttpPost]
         public IActionResult PraiseProfile([FromBody] PraiseProfileDTO dto)
         {
             PraiseService.PraiseProfile(CurrentUser.ProfileId, dto);
