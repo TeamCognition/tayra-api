@@ -11,6 +11,5 @@ namespace Tayra.Services
         Item CreateItem(ItemCreateDTO dto);
         Item UpdateItem(ItemUpdateDTO dto);
         void DeleteItem(int itemId);
-
     }
 }

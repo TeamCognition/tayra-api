@@ -171,6 +171,14 @@ namespace Tayra.Services
             shopItem.DisabledAt = DateTime.UtcNow;
         }
 
+
+        public void RemoveShopItem(int itemId)
+        {   
+            var shopItem = DbContext.ShopItems.FirstOrDefault(x => x.ItemId == itemId);
+            shopItem.EnsureNotNull(itemId);
+
+            DbContext.Remove(shopItem);
+        }
         #endregion
     }
 }

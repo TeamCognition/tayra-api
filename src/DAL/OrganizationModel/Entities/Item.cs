@@ -5,7 +5,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Item : IAuditedEntity
+    public class Item : IAuditedEntity, IArchivableEntity
     {
         public int Id { get; set; }
 
