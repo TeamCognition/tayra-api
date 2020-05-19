@@ -7,7 +7,6 @@
         JiraIssueCompleted = 3,
         ChallengeCompleted = 4,
         ItemDisenchant = 5,
-        ShopItemRefund = 6,
-            OneUpProfile = 999
+        ShopItemRefund = 6
     }
 }

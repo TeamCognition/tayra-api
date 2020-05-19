@@ -60,15 +60,6 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("{itemId:int}")] 
-        public IActionResult RemoveShopItem([FromRoute] int itemId)
-        {
-            ShopItemsService.RemoveShopItem(itemId);
-            OrganizationContext.SaveChanges();
-
-            return Ok();
-        }
-
         #endregion
     }
 }

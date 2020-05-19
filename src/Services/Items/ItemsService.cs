@@ -167,6 +167,20 @@ namespace Tayra.Services
             return shopItem.Item;
         }
 
+        public void DeleteItem(int itemId)
+        {
+            var item = DbContext.Items.FirstOrDefault(x => x.Id == itemId);
+            item.EnsureNotNull(itemId);
+
+            DbContext.Remove(item);
+
+            var shopItem = DbContext.ShopItems.FirstOrDefault(x => x.ItemId == itemId);
+            if(shopItem != null)
+            {
+                DbContext.Remove(shopItem);
+            }
+        }
+
         #endregion
     }
 }

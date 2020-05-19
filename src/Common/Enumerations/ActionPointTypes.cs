@@ -14,8 +14,8 @@
         ProfilesLowCommitRateFor2Weeks = 107,
         ProfilesHighCommitRateFor2Weeks = 108,
 
-        ProfilesLowHeatFor2Weeks = 109,
-        ProfilesHighHeatFor2Weeks = 110,
+        ProfilesLowHeatFor4Weeks = 109,
+        ProfilesHighHeatFor4Weeks = 110,
 
         ShopNoItemsAddedIn4Weeks = 201,
 

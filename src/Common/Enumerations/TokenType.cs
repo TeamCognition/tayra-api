@@ -12,7 +12,5 @@ namespace Tayra.Common
 
         [Description("Experience")]
         Experience = 2,
-
-        OneUp = 999
     }
 }

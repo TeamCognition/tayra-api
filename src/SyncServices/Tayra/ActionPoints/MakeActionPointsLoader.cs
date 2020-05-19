@@ -55,7 +55,17 @@ namespace Tayra.SyncServices.Tayra
             var dateId = DateHelper2.ToDateId(fromDay);
             var dateId1ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays));
             var dateId2ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 2));
+            var dateId3ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 3));
             var dateId4ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 4));
+
+            var impactBoundaryLow = 10 * 0.27;//2.7
+            var heatBoundaryLow = 45 * 0.27; //12.15
+            var speedBoundaryLow = 2.25 * 0.27; //0.60
+
+            var impactBoundaryHigh = 10 / 1.27;//7.87
+            var heatBoundaryHigh = 45 / 1.27; //35.4
+            var speedBoundaryHigh = 2.25 / 1.27; //1.77
+
 
             var taskStats = (from t in organizationDb.Tasks
                              where t.Status == TaskStatuses.Done
@@ -74,6 +84,8 @@ namespace Tayra.SyncServices.Tayra
                                 group prw by prw.ProfileId into total
                                 let last1 = total.Where(x => x.DateId > dateId1ago) //last 1 iteration
                                 let last2 = total.Where(x => x.DateId > dateId2ago && x.DateId <= dateId1ago) //last 2 iteration
+                                let last3 = total.Where(x => x.DateId > dateId3ago && x.DateId <= dateId2ago) //last 3 iteration
+                                let last4 = total.Where(x => x.DateId > dateId4ago && x.DateId <= dateId3ago) //last 4 iteration
                                 select new
                                 {
                                     ProfileId = total.Key,
@@ -84,6 +96,9 @@ namespace Tayra.SyncServices.Tayra
                                     ImpactFor2Weeks = last2.Select(x => x.OImpactAverage).FirstOrDefault(),
                                     SpeedFor2Weeks = last2.Select(x => x.SpeedAverage).FirstOrDefault(),
                                     HeatFor2Weeks = last2.Select(x => x.Heat).FirstOrDefault(),
+
+                                    HeatFor3Weeks = last3.Select(x => x.Heat).FirstOrDefault(),
+                                    HeatFor4Weeks = last4.Select(x => x.Heat).FirstOrDefault(),
                                 }).ToList();
 
 
@@ -131,7 +146,7 @@ namespace Tayra.SyncServices.Tayra
                             ActionPointTypes.ProfilesNoCompletedTasksIn1Week,
                             segmentId: s.Id,
                             profileId: p.Id,
-                            isTrue: taskStatsBySegment.Any(x => x.ProfileId == p.Id && x.CompletedInLast1 == 0 && x.CompletedInLast2 != 0),//|| !taskStatsBySegment.Any(x => x.ProfileId == p.Id),
+                            isTrue: taskStatsBySegment.Any(x => x.ProfileId == p.Id && x.CompletedInLast1 == 0 && x.CompletedInLast2 != 0),
                             aps);
                     }
 
@@ -141,30 +156,56 @@ namespace Tayra.SyncServices.Tayra
                             ActionPointTypes.ProfilesNoCompletedTasksIn2Week,
                             segmentId: s.Id,
                             profileId: p.Id,
-                            isTrue: taskStatsBySegment.Any(x => x.ProfileId == p.Id && x.CompletedInLast2 == 0),//|| !taskStatsBySegment.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                            isTrue: taskStatsBySegment.Any(x => x.ProfileId == p.Id && x.CompletedInLast2 == 0),
                             aps);
-                        //lkpookpkopkopkopkopkopkoppokpihiuhiuhiuhoiu hoiu hoiu oh uo huiohu i hui hui huh uh ouh ouh uo oiuhoiuh oiuh oiuh oui
                         if (!CommonHelper.IsMonday(fromDay))
                         {
                             MakeProfileAP(organizationDb,
                                 ActionPointTypes.ProfilesLowImpactFor2Weeks,
                                 segmentId: s.Id,
                                 profileId: p.Id,
-                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.ImpactFor1Weeks < 6 && x.ImpactFor2Weeks < 6),//|| !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.ImpactFor1Weeks < impactBoundaryLow && x.ImpactFor2Weeks < impactBoundaryLow),
+                                aps);
+
+                            MakeProfileAP(organizationDb,
+                                ActionPointTypes.ProfilesHighImpactFor2Weeks,
+                                segmentId: s.Id,
+                                profileId: p.Id,
+                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.ImpactFor1Weeks > impactBoundaryHigh && x.ImpactFor2Weeks > impactBoundaryHigh),
                                 aps);
 
                             MakeProfileAP(organizationDb,
                                 ActionPointTypes.ProfilesLowSpeedFor2Weeks,
                                 segmentId: s.Id,
                                 profileId: p.Id,
-                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.SpeedFor1Weeks < 3 && x.SpeedFor2Weeks < 3),//|| !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.SpeedFor1Weeks < speedBoundaryLow && x.SpeedFor2Weeks < speedBoundaryLow),
                                 aps);
 
                             MakeProfileAP(organizationDb,
-                                ActionPointTypes.ProfilesLowHeatFor2Weeks,
+                                ActionPointTypes.ProfilesHighSpeedFor2Weeks,
                                 segmentId: s.Id,
                                 profileId: p.Id,
-                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.HeatFor1Weeks < 15 && x.HeatFor2Weeks < 15),//|| !reportsStats.Any(x => x.ProfileId == p.Id) ? p.Id : 0);
+                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.SpeedFor1Weeks > speedBoundaryHigh && x.SpeedFor2Weeks > speedBoundaryHigh),
+                                aps);
+                        }
+                    }
+
+                    if (p.Created <= DateHelper2.ParseDate(dateId4ago) && joinDate <= DateHelper2.ParseDate(dateId4ago))
+                    {
+                        if (!CommonHelper.IsMonday(fromDay))
+                        {
+                            MakeProfileAP(organizationDb,
+                                ActionPointTypes.ProfilesLowHeatFor4Weeks,
+                                segmentId: s.Id,
+                                profileId: p.Id,
+                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.HeatFor1Weeks < heatBoundaryLow && x.HeatFor2Weeks < heatBoundaryLow && x.HeatFor3Weeks < heatBoundaryLow && x.HeatFor4Weeks < heatBoundaryLow),
+                                aps);
+
+                            MakeProfileAP(organizationDb,
+                                ActionPointTypes.ProfilesHighHeatFor4Weeks,
+                                segmentId: s.Id,
+                                profileId: p.Id,
+                                isTrue: reportsStats.Any(x => x.ProfileId == p.Id && x.HeatFor1Weeks > heatBoundaryHigh && x.HeatFor2Weeks > heatBoundaryHigh && x.HeatFor3Weeks > heatBoundaryHigh && x.HeatFor4Weeks > heatBoundaryHigh),
                                 aps);
                         }
                     }

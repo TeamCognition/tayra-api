@@ -10,6 +10,7 @@ namespace Tayra.Services
         GridData<ItemGridDTO> GetGridData(ProfileRoles role, ItemGridParams gridParams);
         Item CreateItem(ItemCreateDTO dto);
         Item UpdateItem(ItemUpdateDTO dto);
+        void DeleteItem(int itemId);
 
     }
 }
