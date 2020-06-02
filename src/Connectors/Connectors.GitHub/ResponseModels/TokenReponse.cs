@@ -21,6 +21,9 @@ namespace Tayra.Connectors.GitHub
         [DeserializeAs(Name = "expires_in")]
         public string ExpiresIn { get; set; }
 
+        [DeserializeAs(Name = "refresh_token_expires_in")]
+        public string RefreshTokenExpiresIn { get; set; }
+
         public string ExpirationDate
         {
             get

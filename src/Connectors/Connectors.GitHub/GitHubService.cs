@@ -1,31 +1,29 @@
 ﻿using RestSharp;
+using Tayra.Connectors.Common;
 
 namespace Tayra.Connectors.GitHub
 {
     public static class GitHubService
     {
         #region Constants
-        public const string APP_ID = "WTORmTncLPxiByA5UzO0DqMHvjwFBKat";
-        public const string APP_SECRET = "B5-DtqBFoexwA0MprGkRVCdp2XgEE6L8dxBoa5d4QLuVpu8CkyHr030WinYMv9wp";
-        //NON-PRODUCTION KEYS
-        //public const string APP_ID = "nWAFSvAyF83nkGYVtJZxpeutVjZA34gd";
-        //public const string APP_SECRET = "bhCvqhHtcnnx-JMaHkpkUXZ2UsQvCnXhVFGOJyvVlFapdiHXQ_ETht0e6LdHzpvq";
+        public const string CLEINT_ID = "Iv1.8aa19d523bcef4dd";
+        public const string CLIENT_SECRET = "24bbd04c4a071a1298f1dd96b547d3054ef4534a";
 
-        private const string BASE_AUTH_URL = "https://auth.atlassian.com/oauth";
-        private const string ACCESS_TOKEN_URL = "token";
+        private const string BASE_AUTH_URL = "https://github.com/login/oauth";
+        private const string ACCESS_TOKEN_URL = "/access_token";
 
-        private const string BASE_URL = "https://api.atlassian.com/ex/jira/{0}";
-        private const string API = "rest/api/3/";
-        private const string GET_PROJECTS = API + "project/search";
+        private const string BASE_URL = "https://api.github.com";
+        private const string GET_CURRENT_USER = "user";
 
+        //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
         public static IRestResponse<TokenResponse> GetAccessToken(string authorizationCode, string redirectUrl)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", APP_ID);
-            request.AddParameter("client_secret", APP_SECRET);
+            request.AddParameter("client_id", CLEINT_ID);
+            request.AddParameter("client_secret", CLIENT_SECRET);
             request.AddParameter("code", authorizationCode);
             request.AddParameter("redirect_uri", redirectUrl);
-            request.AddParameter("grant_type", "authorization_code");
+            //request.AddParameter("state", The unguessable random string you provided in Step 1.);
 
             request.RequestFormat = DataFormat.Json;
 
@@ -33,11 +31,12 @@ namespace Tayra.Connectors.GitHub
             return client.Execute<TokenResponse>(request);
         }
 
+        //developer.github.com/apps/building-github-apps/refreshing-user-to-server-access-tokens/
         public static IRestResponse<TokenResponse> RefreshAccessToken(string refreshToken)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", APP_ID);
-            request.AddParameter("client_secret", APP_SECRET);
+            request.AddParameter("client_id", CLEINT_ID);
+            request.AddParameter("client_secret", CLIENT_SECRET);
             request.AddParameter("refresh_token", refreshToken);
             request.AddParameter("grant_type", "refresh_token");
 
@@ -46,6 +45,18 @@ namespace Tayra.Connectors.GitHub
             var client = new RestClient(BASE_AUTH_URL);
             return client.Execute<TokenResponse>(request);
         }
+
+        public static IRestResponse<GitHubUser> GetLoggedInUser(string tokenType, string accessToken)
+        {
+            var request = new RestRequest(GET_CURRENT_USER, Method.GET);
+            request.AddHeader("Authorization", $"{tokenType} {accessToken}");
+
+            var client = new RestClient(BASE_URL)
+                .UseSerializer(() => new JsonNetSerializer());
+
+            return client.Execute<GitHubUser>(request);
+        }
+
         #endregion
     }
 }

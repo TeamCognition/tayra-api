@@ -1,11 +1,10 @@
-﻿using Firdaws.Core;
-using Firdaws.DAL;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Firdaws.Core;
+using Firdaws.DAL;
 using Tayra.Common;
 using Tayra.Mailer;
-using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -15,11 +14,10 @@ namespace Tayra.Services
         #region Constructor
         protected ILogsService LogsService { get; set; }
 
-        public PraiseService(ITokensService tokensService, ILogsService logsService, CatalogDbContext catalogDb, OrganizationDbContext dbContext) : base(dbContext)
+        public PraiseService(ITokensService tokensService, ILogsService logsService, OrganizationDbContext dbContext) : base(dbContext)
         {
             LogsService = logsService;
             TokensService = tokensService;
-            //CatalogDb = catalogDb;
         }
 
         #endregion

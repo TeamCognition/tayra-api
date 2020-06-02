@@ -256,11 +256,11 @@ namespace Tayra.Services
                        orderby g.Key descending
                        select new
                        {
-                           g.Key,
+                           DateId = g.Key,
                            Assists = g.Sum(x => x.AssistsChange),
                            TasksCompleted = g.Sum(x => x.TasksCompletedChange),
                            Complexity = g.Sum(x => x.ComplexityChange)
-                       }).Take(30).ToArray();
+                       }).Take(4).ToArray();
 
             var tm = DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == profileId && x.TeamId.HasValue);
 

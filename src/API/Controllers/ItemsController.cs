@@ -52,15 +52,6 @@ namespace Tayra.API.Controllers
         }
 
         [HttpDelete("{itemId:int}")]
-        public IActionResult Archive([FromRoute] int itemId)
-        {
-            ItemsService.DeleteItem(itemId);
-            OrganizationContext.SaveChanges();
-
-            return Ok();
-        }
-
-        [HttpDelete("{itemId:int}")]
         public IActionResult DeleteItem([FromRoute] int itemId)
         {
             ItemsService.DeleteItem(itemId);

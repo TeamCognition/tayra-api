@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Firdaws.Core;
 using Microsoft.AspNetCore.Http;
@@ -13,9 +12,7 @@ namespace Tayra.Connectors.GitHub
 {
     public class GitHubConnector : BaseOAuthConnector
     {
-        private const string AUTH_URL = "https://auth.atlassian.com/authorize";
-        private const string AUDIENCE = "api.atlassian.com";
-        private const string SCOPE = "read%3Ajira-user%20read%3Ajira-work%20offline_access";
+        private const string AUTH_URL = "https://github.com/apps/tayra12/installations/new/permissions";
 
         public GitHubConnector(ILogger logger, OrganizationDbContext dataContext) : base(logger, dataContext)
         {
@@ -31,22 +28,22 @@ namespace Tayra.Connectors.GitHub
 
         public override string GetAuthUrl(string userState)
         {
-            return $"{AUTH_URL}?audience={AUDIENCE}&client_id={GitHubService.APP_ID}&state={userState}&scope={SCOPE}&redirect_uri={GetCallbackUrl(userState)}&response_type=code&prompt=consent";
+            return $"{AUTH_URL}&state={GetCallbackUrl(userState)}";
         }
 
         public override Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState)
         {
             if (HttpContext?.Request != null)
             {
-                var authorizationCode = HttpContext.Request.Query["code"];
-                if (string.IsNullOrWhiteSpace(authorizationCode))
+                var code = HttpContext.Request.Query["code"];
+                if (string.IsNullOrWhiteSpace(code))
                 {
                     var errorDescription = HttpContext.Request.Query["error"];
                     throw new ApplicationException(errorDescription);
                 }
 
-                var tokenData = GitHubService.GetAccessToken(authorizationCode, GetCallbackUrl(userState))?.Data;
-                //var loggedInUser = GitHubService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
+                var tokenData = GitHubService.GetAccessToken(code, GetCallbackUrl(userState))?.Data;
+                var loggedInUser = GitHubService.GetLoggedInUser(tokenData.TokenType, tokenData.AccessToken)?.Data;
 
                 var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == profileId && x.Type == Type);
                 var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == segmentId && x.ProfileId == null && x.Type == Type);

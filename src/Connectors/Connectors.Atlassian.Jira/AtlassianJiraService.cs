@@ -28,7 +28,7 @@ namespace Tayra.Connectors.Atlassian.Jira
         private const string GET_ISSUE_CHANGELOGS = API + "issue/{0}/changelog";
         private const string GET_ISSUE_TYPES = API + "issuetype";
         private const string GET_USERS = API + "users/search";
-        private const string GET_LOGGEDIN_USER = API + "myself";
+        private const string GET_CURRENT_USER = API + "myself";
         private const string CREATE_WEBHOOK = API + "webhook";
         private const string SEARCH_WITH_JQL = API + "search";
 
@@ -170,7 +170,7 @@ namespace Tayra.Connectors.Atlassian.Jira
 
         public static IRestResponse<JiraUser> GetLoggedInUser(string cloudId, string tokenType, string accessToken)
         {
-            var request = new RestRequest(GET_LOGGEDIN_USER, Method.GET);
+            var request = new RestRequest(GET_CURRENT_USER, Method.GET);
             request.AddHeader("Authorization", $"{tokenType} {accessToken}");
 
             var client = new RestClient(string.Format(BASE_URL, cloudId))

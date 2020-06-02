@@ -88,6 +88,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
             });
             organizationDb.SaveChanges();
         }
+
         public static void SeedDemo(OrganizationDbContext organizationDb)
         {
             var demoData = JsonConvert.DeserializeObject<DemoSeedData>(File.ReadAllText("input/demo.json"));
@@ -213,6 +214,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
             IInventoriesService InventoryService = new InventoryService(LogsService, TokensService, organizationDb);
             IShopItemsService ShopItemsService = new ShopItemsService(LogsService, TokensService, organizationDb);
             IItemsService ItemService = new ItemsService(organizationDb);
+            IPraiseService PraiseService = new PraiseService(TokensService, LogsService, organizationDb);
 
             int taskCounter = -1;
             foreach (var t in demoData.Tasks.Concat(demoData.Tasks.Take(40)))
@@ -297,7 +299,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     if (p.Id == pToPraise.Id)
                         continue;
 
-                    ProfilesService.PraiseProfile(p.Id, new ProfilePraiseDTO
+                    PraiseService.PraiseProfile(p.Id, new PraiseProfileDTO
                     {
                         ProfileId = pToPraise.Id,
                         DemoDate = GetRandomDateTimeInPast()

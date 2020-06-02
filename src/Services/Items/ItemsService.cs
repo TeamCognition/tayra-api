@@ -168,7 +168,6 @@ namespace Tayra.Services
         }
         public void Archive(int itemId)
         {
- 
             var item = DbContext.Items.FirstOrDefault(x => x.Id == itemId);
             var shopItem = DbContext.ShopItems.FirstOrDefault(x => x.Id == itemId);
 

@@ -38,14 +38,14 @@ namespace Tayra.Connectors.Atlassian.Jira
         {
             if (HttpContext?.Request != null)
             {
-                var authorizationCode = HttpContext.Request.Query["code"];
-                if (string.IsNullOrWhiteSpace(authorizationCode))
+                var code = HttpContext.Request.Query["code"];
+                if (string.IsNullOrWhiteSpace(code))
                 {
                     var errorDescription = HttpContext.Request.Query["error"];
                     throw new ApplicationException(errorDescription);
                 }
 
-                var tokenData = AtlassianJiraService.GetAccessToken(authorizationCode, GetCallbackUrl(userState))?.Data;
+                var tokenData = AtlassianJiraService.GetAccessToken(code, GetCallbackUrl(userState))?.Data;
                 var accResData = AtlassianJiraService.GetAccessibleResources(tokenData.TokenType, tokenData.AccessToken)?.Data?.FirstOrDefault();
                 var loggedInUser = AtlassianJiraService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
 
