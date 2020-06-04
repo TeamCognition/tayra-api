@@ -1,16 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Tayra.Connectors.Atlassian.Jira</AssemblyName>
     <RootNamespace>Tayra.Connectors.Atlassian.Jira</RootNamespace>
   </PropertyGroup>
     
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App">
-      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
-      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
-    </PackageReference>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,14 +16,7 @@
     <ProjectReference Include="..\Connectors.Atlassian\Connectors.Atlassian.csproj" />
     <ProjectReference Include="..\..\Common\Common.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataModel\Entities\" />
-    <Folder Include="ResponseModels\" />
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="appsettings.json" />
-  </ItemGroup>
+ 
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

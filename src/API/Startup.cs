@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Firdaws.Core;
+using Cog.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Hosting;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
@@ -35,15 +36,6 @@ namespace Tayra.API
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
             services.AddDbContext<OrganizationDbContext>(options => { });
             
-            services.AddAuthentication("Bearer")
-               .AddJwtBearer("Bearer", options =>
-               {
-                   options.Authority = Configuration["Auth:authority"];
-                   options.RequireHttpsMetadata = false;
-
-                   options.Audience = "tAPI";
-               });
-
             //Add Application services
             services.AddTransient<ILogsService, LogsService>();
             services.AddTransient<IBlobsService, BlobsService>();
@@ -87,16 +79,18 @@ namespace Tayra.API
                                                                  .AllowAnyHeader());
             });
 
+            services.AddControllers();
+            services.AddAuthenticationCore();
+
             services.AddMvcCore()
-                .AddAuthorization()
-                .AddJsonFormatters()
+                .AddNewtonsoftJson()
                 .AddApiExplorer(); //for swagger
 
             ConfigureSwagger(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOrganizationsService orgService)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOrganizationsService orgService)
         {
             if (env.IsDevelopment())
             {
@@ -108,13 +102,10 @@ namespace Tayra.API
                 app.UseHsts();
             }
 
-            //app.UseSession(); probably not needed
-
-            app.UseSwagger();
-
-            app.UseCors("AllowAllOrigins");
-
             app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseCors(options => options.AllowAnyOrigin());
+            app.UseSwagger();
 
             app.Use(async (context, next) =>
             {
@@ -137,9 +128,13 @@ namespace Tayra.API
 
 
             app.UseAuthentication();
+            app.UseAuthorization();
 
-            app.UseMvc();
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+            
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tayra API V1");
@@ -153,10 +148,10 @@ namespace Tayra.API
 
         private void ConfigureSwagger(IServiceCollection services)
         {
+            services.AddSwaggerGenNewtonsoftSupport();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Tayra API", Version = "v1" });
-                c.DescribeAllEnumsAsStrings();
 
                 c.CustomSchemaIds(type =>
                 {

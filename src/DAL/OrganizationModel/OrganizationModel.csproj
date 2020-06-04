@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\shared\firdawsCore.props" />
-  <Import Project="..\..\..\shared\firdawsDAL.props" />
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Tayra.Models.Organizations</RootNamespace>
     <AssemblyName>Tayra.Models.Organizations</AssemblyName>
   </PropertyGroup>
@@ -18,21 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\LogEntities\" />
-    <Folder Include="Contracts\" />
-    <Folder Include="FirdawsDAL\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Migrations\20190613173857_initial.cs" />
-    <Compile Remove="Migrations\20190613173857_initial.Designer.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\..\Connectors\Connectors.Atlassian\Connectors.Atlassian.csproj" />
+    <ProjectReference Include="..\..\..\cog\Cog.Core\Cog.Core.csproj" />
+    <ProjectReference Include="..\..\..\cog\Cog.DAL\Cog.DAL.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Remove="Migrations\.DS_Store" />
-  </ItemGroup>
+
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

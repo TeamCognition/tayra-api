@@ -3,7 +3,7 @@
   <Import Project="..\..\shared\shared.csproj.props" />
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
       <RootNamespace>Tayra.Imager</RootNamespace>
       <AssemblyName>Tayra.Imager</AssemblyName>
   </PropertyGroup>

@@ -1,5 +1,5 @@
 ﻿using System;
-using Firdaws.DAL;
+using Cog.DAL;
 using Tayra.Common;
 
 namespace Tayra.Models.Organizations

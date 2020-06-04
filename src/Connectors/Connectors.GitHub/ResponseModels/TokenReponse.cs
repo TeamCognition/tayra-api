@@ -1,5 +1,5 @@
 ﻿using System;
-using Firdaws.Core;
+using Cog.Core;
 using RestSharp.Deserializers;
 
 namespace Tayra.Connectors.GitHub

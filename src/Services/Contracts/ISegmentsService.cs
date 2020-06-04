@@ -1,4 +1,4 @@
-﻿using Firdaws.Core;
+﻿using Cog.Core;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services

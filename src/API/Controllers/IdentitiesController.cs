@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Firdaws.Core;
+using Cog.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Common;
@@ -147,7 +147,7 @@ namespace Tayra.API.Controllers
         {
             if (gridParams.SegmentId.HasValue && !CurrentUser.SegmentsIds.Contains(gridParams.SegmentId.Value))
             {
-                throw new FirdawsSecurityException("You don' have perrmission to segment " + gridParams.SegmentId);
+                throw new CogSecurityException("You don' have perrmission to segment " + gridParams.SegmentId);
             }
 
             return IdentitiesService.GetIdentityManageGridData(CurrentUser.ProfileId,CurrentUser.Role, gridParams);
@@ -158,7 +158,7 @@ namespace Tayra.API.Controllers
         {
             if(profileId == CurrentUser.ProfileId)
             {
-                throw new FirdawsSecurityException("You can't assign yourself to a team or segment");
+                throw new CogSecurityException("You can't assign yourself to a team or segment");
             }
 
             return IdentitiesService.GetIdentityManageAssignsData(CurrentUser.SegmentsIds, profileId);

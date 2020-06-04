@@ -1,6 +1,6 @@
 ﻿using System;
 using RestSharp.Deserializers;
-using Firdaws.Core;
+using Cog.Core;
 
 namespace Tayra.Connectors.Atlassian.Jira
 {

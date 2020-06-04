@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Principal;
-using Firdaws.Core;
+using Cog.Core;
 
 namespace Tayra.Common
 {
-    public class TayraPrincipal : FirdawsPrincipal
+    public class TayraPrincipal : CogPrincipal
     {
         public TayraPrincipal(IPrincipal principal) : base(principal)
         {

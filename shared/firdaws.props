@@ -1,7 +1,0 @@
-<Project>
-   <PropertyGroup>
-    <FirdawsPath>$(MSBuildThisFileDirectory)../../firdaws/</FirdawsPath>
-    <FirdawsSln>$(FirdawsPath)Firdaws.sln</FirdawsSln>
-    <NoWarn>MSB4011</NoWarn>
-    </PropertyGroup>
-</Project>

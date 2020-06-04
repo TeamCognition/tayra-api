@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tayra.Models.Catalog;
+using Microsoft.Extensions.Hosting;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -14,9 +15,9 @@ namespace Tayra.Auth
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        public IHostingEnvironment Environment { get; }
+        public IWebHostEnvironment Environment { get; }
 
-        public Startup(IConfiguration config, IHostingEnvironment env)
+        public Startup(IConfiguration config, IWebHostEnvironment env)
         {
             Configuration = config;
             Environment = env;

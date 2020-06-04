@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Firdaws.Core;
+using Cog.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Models.Organizations;

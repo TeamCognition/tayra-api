@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\shared\firdawsDAL.props" />
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Tayra.Models.Catalog</RootNamespace>
     <AssemblyName>Tayra.Models.Catalog</AssemblyName>
   </PropertyGroup>
@@ -17,6 +16,9 @@
     
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj" />
+    <ProjectReference Include="..\..\..\cog\Cog.Core\Cog.Core.csproj" />
+    <ProjectReference Include="..\..\..\cog\Cog.DAL\Cog.DAL.csproj" />
+
   </ItemGroup>
 
     <ProjectExtensions>

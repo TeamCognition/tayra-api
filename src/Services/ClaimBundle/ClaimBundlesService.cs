@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Firdaws.Core;
-using Firdaws.DAL;
+using Cog.Core;
+using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Models.Organizations;
@@ -99,7 +99,7 @@ namespace Tayra.Services
             {
                 if (!ClaimBundleRules.CanClaimReward(cBundle, profileId))
                 {
-                    throw new FirdawsSecurityException($"ProfileId {profileId} can't claim bundle with id: {cBundle.Id}");
+                    throw new CogSecurityException($"ProfileId {profileId} can't claim bundle with id: {cBundle.Id}");
                 }
 
                 cBundle.RewardClaimedAt = claimedAt;

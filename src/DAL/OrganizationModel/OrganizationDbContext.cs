@@ -2,8 +2,8 @@
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
-using Firdaws.Core;
-using Firdaws.DAL;
+using Cog.Core;
+using Cog.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Tayra.Models.Organizations
 {
-    public class OrganizationDbContext : FirdawsDbContext, IAuditPersistenceStore
+    public class OrganizationDbContext : CogDbContext, IAuditPersistenceStore
     {
         #region Constructor
 
@@ -365,13 +365,13 @@ namespace Tayra.Models.Organizations
 
                 var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
                 var options = optionsBuilder.UseSqlServer(sqlConn).Options;
-                optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>(); //TODO: this goes to FirdawsDB as well?
+                optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>(); //TODO: this goes to CogDB as well?
 
                 return options;
             }
             catch (Exception e)
             {
-                throw new FirdawsSecurityException(e.Message, "OrganizationDbcontext.CreateDDRConnection");
+                throw new CogSecurityException(e.Message, "OrganizationDbcontext.CreateDDRConnection");
             }
         }
 

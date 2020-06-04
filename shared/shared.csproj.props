@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <Product>Tayra API Server</Product>
-    <RepositoryUrl>https://github.com/harisbotic/tayra-api</RepositoryUrl>
+    <RepositoryUrl>https://github.com/TeamCognition/tayra-api</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
   </PropertyGroup>

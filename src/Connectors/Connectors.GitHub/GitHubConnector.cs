@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Firdaws.Core;
+using Cog.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -49,7 +49,7 @@ namespace Tayra.Connectors.GitHub
                 var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == segmentId && x.ProfileId == null && x.Type == Type);
                 if (segmentIntegration == null && profileRole == ProfileRoles.Member)
                 {
-                    throw new FirdawsSecurityException($"profileId: {profileId} tried to integrate {Type} before segment integration");
+                    throw new CogSecurityException($"profileId: {profileId} tried to integrate {Type} before segment integration");
                 }
 
                 //if (loggedInUser != null)
@@ -137,5 +137,6 @@ namespace Tayra.Connectors.GitHub
 
             return account;
         }
+        #endregion
     }
 }

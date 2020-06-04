@@ -1,5 +1,6 @@
 ﻿using System.Linq;
-using Firdaws.Core;
+using Cog.Core;
+using Cog.DAL;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;

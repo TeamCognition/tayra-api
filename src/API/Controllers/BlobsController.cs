@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Firdaws.Core;
+using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Tayra.Models.Organizations;
@@ -38,7 +38,7 @@ namespace Tayra.API.Controllers
 
             if(!isImage)
             {
-                return BadRequest("file has to be an image");
+                throw new Exception("file has to be an image");
             }
 
             var blob = BlobsService.UploadToAzure(dto);

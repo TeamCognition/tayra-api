@@ -1,9 +1,9 @@
 ﻿using System;
-using Firdaws.Core;
+using Cog.Core;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using System.Linq;
-using Firdaws.DAL;
+using Cog.DAL;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;

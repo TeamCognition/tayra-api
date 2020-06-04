@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Firdaws.Core;
-using Firdaws.DAL;
+using Cog.Core;
+using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Mailer;
@@ -178,7 +178,7 @@ namespace Tayra.Services
         {
             if(dto.TeamId.HasValue && !dto.SegmentId.HasValue)
             {
-                throw new FirdawsSecurityException("If teamId is sent, you must also send segmentId");
+                throw new CogSecurityException("If teamId is sent, you must also send segmentId");
             }
 
             var invitation = new Invitation
@@ -476,7 +476,7 @@ namespace Tayra.Services
 
             if (!IdentityRules.CanChangeRole(role, toRole))
             {
-                throw new FirdawsSecurityException("You don't have permissions to change to this role");
+                throw new CogSecurityException("You don't have permissions to change to this role");
             }
 
             profile.Role = toRole;
@@ -490,7 +490,7 @@ namespace Tayra.Services
 
             if(!IdentityRules.CanArchiveProfile(role, profile.Role))
             {
-                throw new FirdawsSecurityException("You don't have permissions to archive this profile");
+                throw new CogSecurityException("You don't have permissions to archive this profile");
             }
 
             DbContext.Remove(profile);

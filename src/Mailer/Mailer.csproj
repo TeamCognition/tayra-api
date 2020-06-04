@@ -3,7 +3,7 @@
   <Import Project="..\..\shared\shared.csproj.props" />
       
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Tayra.Mailer</RootNamespace>
     <AssemblyName>Tayra.Mailer</AssemblyName>
   </PropertyGroup>
@@ -12,13 +12,11 @@
     <PackageReference Include="Sendgrid" Version="9.12.0" />
     <PackageReference Include="MailChimp.Net.V3" Version="4.2.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DTO\" />
-    <Folder Include="DTO\Interfaces\" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
+
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Tayra.Connectors.GitHub</AssemblyName>
     <RootNamespace>Tayra.Connectors.GitHub</RootNamespace>
   </PropertyGroup>
@@ -16,9 +16,6 @@
     <PackageReference Include="GraphQL.Client" Version="3.1.0" />
   </ItemGroup>
     
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

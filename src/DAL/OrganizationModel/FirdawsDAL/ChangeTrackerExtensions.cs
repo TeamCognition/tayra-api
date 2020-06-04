@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Firdaws.DAL
+namespace Cog.DAL
 {
     public static class ChangeTrackerExtensions
     {

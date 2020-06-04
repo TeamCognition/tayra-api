@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Cog.Core</RootNamespace>
+    <AssemblyName>Cog.Core</AssemblyName>
+    <VersionPrefix>1.0.0</VersionPrefix>
+  </PropertyGroup>
+    
+  <PropertyGroup>
+    <NoWarn>NU5105</NoWarn>
+  </PropertyGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.2.1" />
+      <PackageReference Include="NSec.Cryptography" Version="19.5.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+   </ItemGroup>
+</Project>

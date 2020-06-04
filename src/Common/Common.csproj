@@ -1,16 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-   <Import Project="..\..\shared\firdawsCore.props" />
-
    <PropertyGroup>
-      <TargetFramework>netcoreapp2.2</TargetFramework>
+      <TargetFramework>netcoreapp3.1</TargetFramework>
       <RootNamespace>Tayra.Common</RootNamespace>
       <AssemblyName>Tayra.Common</AssemblyName>
    </PropertyGroup>
-  
+
    <ItemGroup>
-      <Folder Include="Enumerations\" />
+     <ProjectReference Include="..\..\cog\Cog.Core\Cog.Core.csproj" />
    </ItemGroup>
-  
+    
     <ProjectExtensions>
       <MonoDevelop>
         <Properties>

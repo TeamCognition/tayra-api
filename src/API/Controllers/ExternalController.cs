@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Firdaws.Core;
+using Cog.Core;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Tayra.API.Helpers;
@@ -80,7 +81,7 @@ namespace Tayra.API.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                throw new Exception();
             }
 
             return Ok();
@@ -95,7 +96,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost, Route("contactUs")]
-        public IActionResult ContactUs([FromBody] ContactFormDTO dto)
+        public ActionResult ContactUs([FromBody] ContactFormDTO dto)
         {
             try
             {
@@ -116,7 +117,7 @@ namespace Tayra.API.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                throw new Exception();
             }
 
             return Ok();
@@ -156,7 +157,7 @@ namespace Tayra.API.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                throw new Exception();
             }
 
             return Ok();

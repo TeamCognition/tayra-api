@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\shared\firdawsCore.props" />
-  <Import Project="..\..\shared\firdawsDAL.props" />
-  
+    
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Tayra.Services</RootNamespace>
     <AssemblyName>Tayra.Services</AssemblyName>
   </PropertyGroup>
@@ -21,27 +19,10 @@
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
     <ProjectReference Include="..\Mailer\Mailer.csproj" />
+    <ProjectReference Include="..\..\cog\Cog.DAL\Cog.DAL.csproj" />
+    <ProjectReference Include="..\..\cog\Cog.Core\Cog.Core.csproj" />
   </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Logs\" />
-    <Folder Include="Logs\DTO\" />
-    <Folder Include="Tasks\" />
-    <Folder Include="Tasks\DTO\" />
-    <Folder Include="Challenges\" />
-    <Folder Include="Challenges\DTO\" />
-    <Folder Include="ClaimBundle\" />
-    <Folder Include="ClaimBundle\DTO\" />
-    <Folder Include="Shops\" />
-    <Folder Include="Shops\DTO\" />
-    <Folder Include="Inventories\" />
-    <Folder Include="Organizations\" />
-    <Folder Include="Organizations\DTO\" />
-    <Folder Include="Blobs\" />
-    <Folder Include="Blobs\DTO\" />
-    <Folder Include="Items\DTO\" />
-  </ItemGroup>
+  
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

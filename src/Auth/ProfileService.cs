@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Firdaws.Core;
+using Cog.Core;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -71,9 +71,9 @@ namespace Tayra.Auth
 
                 var claimList = new List<Claim>
                 {
-                    new Claim(FirdawsClaimTypes.CurrentTenantKey, tenant.Key),
-                    new Claim(FirdawsClaimTypes.ProfileId, profile.Id.ToString()), //For CreatedBy column
-                    new Claim(FirdawsClaimTypes.IdentityId, profile.IdentityId.ToString()),
+                    new Claim(CogClaimTypes.CurrentTenantKey, tenant.Key),
+                    new Claim(CogClaimTypes.ProfileId, profile.Id.ToString()), //For CreatedBy column
+                    new Claim(CogClaimTypes.IdentityId, profile.IdentityId.ToString()),
                     new Claim(TayraClaimTypes.Role, profile.Role.ToString()),
                 };
 

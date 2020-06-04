@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Firdaws.DAL;
+using Cog.DAL;
 using Tayra.Common;
 
 namespace Tayra.Models.Organizations

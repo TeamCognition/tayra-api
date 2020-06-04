@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Firdaws.Core;
-using Firdaws.DAL;
+using Cog.Core;
+using Cog.DAL;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 

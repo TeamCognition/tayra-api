@@ -1,14 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Tayra.Connectors.Atlassian</AssemblyName>
     <RootNamespace>Tayra.Connectors.Atlassian</RootNamespace>
   </PropertyGroup>
   
-  <ItemGroup>
-    <Folder Include="Enums\" />
-  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

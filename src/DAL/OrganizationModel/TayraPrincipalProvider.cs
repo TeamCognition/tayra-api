@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Tayra.Common;
 
-namespace Firdaws.Core
+namespace Cog.Core
 {
     public class TayraPrincipalProvider : IClaimsPrincipalProvider<TayraPrincipal>
     {

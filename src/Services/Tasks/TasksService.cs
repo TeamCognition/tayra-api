@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Firdaws.Core;
+using Cog.Core;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 

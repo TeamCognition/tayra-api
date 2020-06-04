@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Firdaws.DAL;
+using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {

@@ -1,4 +1,4 @@
-﻿using Firdaws.Core;
+﻿using Cog.Core;
 using Tayra.Common;
 
 namespace Tayra.Services

@@ -12,13 +12,13 @@ namespace Tayra.Connectors.App.Controllers
 {
     public class ResultsController : Controller
     {
-        public ResultsController(IHostingEnvironment environment, IConnectorResolver connectorResolver)
+        public ResultsController(IWebHostEnvironment environment, IConnectorResolver connectorResolver)
         {
             Environment = environment;
             ConnectorResolver = connectorResolver;
         }
 
-        public IHostingEnvironment Environment { get; set; }
+        public IWebHostEnvironment Environment { get; set; }
 
         public IConnectorResolver ConnectorResolver { get; }
 

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using Firdaws.Core;
-using Firdaws.DAL;
+using Cog.Core;
+using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Tayra.Common;
@@ -42,7 +42,11 @@ namespace Tayra.Services
             var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
             segment.EnsureNotNull(segmentId);
 
-            int? startDateId = DbContext.Tasks.OrderBy(x => x.LastModifiedDateId).Select(x => (int?)x.LastModifiedDateId).FirstOrDefault().NullIfZero();
+            int? startDateId = DbContext.Tasks.OrderBy(x => x.LastModifiedDateId).Select(x => (int?)x.LastModifiedDateId).FirstOrDefault();
+            if(startDateId == 0)
+            {
+                startDateId = null;
+            }
             using (HttpClient client = new HttpClient())
             {
                 //client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");

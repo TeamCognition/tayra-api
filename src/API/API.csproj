@@ -1,23 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <Import Project="..\..\shared\shared.csproj.props" />
-  <Import Project="..\..\shared\firdawsCore.props" />
-  <Import Project="..\..\shared\firdawsDAL.props" />
       
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Tayra.API</RootNamespace>
     <AssemblyName>Tayra.API</AssemblyName>
+    <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
   </PropertyGroup>
     
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App">
-      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
-      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
-    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.4.1" />
     <PackageReference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,10 +23,7 @@
     <ProjectReference Include="..\Services\Services.csproj" />
     <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-    <Folder Include="Filters\" />
-    <Folder Include="Controllers\BaseControllers\" />
+    <ProjectReference Include="..\..\cog\Cog.DAL\Cog.DAL.csproj" />
+    <ProjectReference Include="..\..\cog\Cog.Core\Cog.Core.csproj" />
   </ItemGroup>
 </Project>

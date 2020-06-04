@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Firdaws.DAL;
+using Cog.DAL;
 using Tayra.Common;
 
 namespace Tayra.Models.Organizations

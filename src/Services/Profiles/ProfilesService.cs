@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Firdaws.Core;
-using Firdaws.DAL;
+using Cog.Core;
+using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Newtonsoft.Json;
@@ -375,7 +375,7 @@ namespace Tayra.Services
         {
             if (profileRole != ProfileRoles.Admin)
             {
-                throw new FirdawsSecurityException("You are not allowed to perform this action!");
+                throw new CogSecurityException("You are not allowed to perform this action!");
             }
 
             TokensService.CreateTransaction(TokenType.CompanyToken, dto.ProfileId, dto.TokenValue, TransactionReason.Manual, null);

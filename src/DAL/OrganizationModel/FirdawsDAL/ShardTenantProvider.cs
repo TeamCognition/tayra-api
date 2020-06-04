@@ -1,5 +1,5 @@
 ﻿using System;
-using Firdaws.DAL;
+using Cog.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;

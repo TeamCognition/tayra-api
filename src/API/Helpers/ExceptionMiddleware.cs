@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Security;
 using System.Threading.Tasks;
-using Firdaws.Core;
+using Cog.Core;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
@@ -42,7 +42,7 @@ namespace Tayra.API.Helpers
                 return context.Response.WriteAsync(JsonConvert.SerializeObject(x.PropertyValidationErrors));
             }
 
-            if (exception is FirdawsSecurityException)
+            if (exception is CogSecurityException)
             {
                 FillRequestData(exception as SecurityException, context);
                 return context.Response.WriteAsync(exception.Message); //TODO: don't show to user
@@ -61,7 +61,7 @@ namespace Tayra.API.Helpers
         {
             if (context?.User != null)
             {
-                var principal = new FirdawsPrincipal(context.User);
+                var principal = new CogPrincipal(context.User);
                 e.Data.Add("ProfileId", principal.ProfileId);//TODO: add more
             }
 
