@@ -19,12 +19,11 @@ namespace ReportsTester
         {
             startDate,
             startDate.AddDays(1),
-            startDate.AddDays(1).AddWeeks(1),
-            startDate.AddDays(1).AddWeeks(2),
-            startDate.AddDays(1).AddWeeks(3),
-            startDate.AddDays(1).AddWeeks(4),
-            startDate.AddDays(1).AddWeeks(5),
-
+            startDate.AddDays(1).AddDays(7*1),
+            startDate.AddDays(1).AddDays(7*2),
+            startDate.AddDays(1).AddDays(7*3),
+            startDate.AddDays(1).AddDays(7*4),
+            startDate.AddDays(1).AddDays(7*5),
         };
 
         [Fact]

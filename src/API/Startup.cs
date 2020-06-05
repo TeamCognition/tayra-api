@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Hosting;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
@@ -146,7 +146,7 @@ namespace Tayra.API
 
         #region Private Methods
 
-        private void ConfigureSwagger(IServiceCollection services)
+        private static void ConfigureSwagger(IServiceCollection services)
         {
             services.AddSwaggerGenNewtonsoftSupport();
             services.AddSwaggerGen(c =>
@@ -157,7 +157,7 @@ namespace Tayra.API
                 {
                     if (type.IsNested)
                     {
-                        return type.FullName.Substring(type.FullName.LastIndexOf('.') + 1).Replace('+', '.');
+                        return type.FullName?.Substring(type.FullName.LastIndexOf('.') + 1).Replace('+', '.');
                     }
                     if (type.IsGenericType)
                     {

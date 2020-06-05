@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    
-  <Import Project="..\..\shared\shared.csproj.props" />
+  <Import Project="..\..\build\shared.csproj.props" />
     
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>

@@ -46,7 +46,7 @@ namespace Tayra.Auth
             var env = hostingContext.HostingEnvironment;
 
             // find the shared folder in the parent folder
-            var sharedFolder = Path.Combine(env.ContentRootPath, "../..", "shared");
+            var sharedFolder = Path.Combine(env.ContentRootPath, "../..", "build");
 
             //load the SharedSettings first, so that appsettings.json overrwrites it
             config

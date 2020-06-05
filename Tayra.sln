@@ -5,12 +5,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{5E95A6E4-610
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", "{62CB41AF-42B6-405D-9E64-B29B0D197A54}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{A0396DC8-C7BC-4D1D-9BC6-8CF3594BAD7A}"
-	ProjectSection(SolutionItems) = preProject
-		shared\sharedSettings.json = shared\sharedSettings.json
-		shared\shared.csproj.props = shared\shared.csproj.props
-		shared\deps.csproj.props = shared\deps.csproj.props
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{A0396DC8-C7BC-4D1D-9BC6-8CF3594BAD7A}"
+ProjectSection(SolutionItems) = preProject
+	build\shared.csproj.props = build\shared.csproj.props
+	build\deps.csproj.props = build\deps.csproj.props
+	build\sharedSettings.json = build\sharedSettings.json
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "src\API\API.csproj", "{368C12CB-4E7E-40F5-B7EF-35F63B123862}"
 EndProject
