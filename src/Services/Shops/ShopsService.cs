@@ -34,11 +34,10 @@ namespace Tayra.Services
                                Name = s.Name,
                                IsClosed = s.ClosedAt.HasValue,
                                Created = s.Created,
-                               TotalRequests = DbContext.ShopPurchases.Where(x => x.Status == ShopPurchaseStatuses.PendingApproval || x.Status == ShopPurchaseStatuses.PendingApproval).Count()
+                               TotalRequests = DbContext.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.PendingApproval || x.Status == ShopPurchaseStatuses.PendingApproval)
                            }).FirstOrDefault();
 
             shopDto.EnsureNotNull();
-
             //some of this code can be shared when reports become more generic
             if (role == ProfileRoles.Member)
             {
@@ -46,7 +45,7 @@ namespace Tayra.Services
                             where r.ProfileId == profileId
                             group r by 1 into total
                             let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
-                            select new ShopViewDTO.ShopStatisticDTO[]
+                            select new []
                             {
                                 new ShopViewDTO.ShopStatisticDTO
                                 {
@@ -78,8 +77,8 @@ namespace Tayra.Services
 
                 var stats = (from r in rQuery
                             group r by 1 into total
-                            let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
-                            select new ShopViewDTO.ShopStatisticDTO[]
+                            let last30 = total.Where(x => x.DateId >= 100)
+                            select new []
                             {
                                 new ShopViewDTO.ShopStatisticDTO
                                 {

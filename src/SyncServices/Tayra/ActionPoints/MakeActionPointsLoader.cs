@@ -124,6 +124,7 @@ namespace Tayra.SyncServices.Tayra
                 {
                     logService.Log<MakeActionPointsLoader>($"deleting {existing} records from database");
                     organizationDb.Database.ExecuteSqlCommand($"delete from {nameof(ActionPoint)}s where {nameof(ProfileReportWeekly.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from {nameof(ActionPoint)}s where {nameof(ProfileReportWeekly.DateId)} = {dateId}");
                     organizationDb.SaveChanges();
                 }
             }

@@ -60,12 +60,8 @@ namespace Tayra.Services
             var pe = DbContext.ProfileExternalIds.Include(x => x.Profile).FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType && x.Profile.Role == ProfileRoles.Member);
 
             //pe.EnsureNotNull(externalId, integrationType);
-            if (pe == null)
-            {
-                return null;
-            }
 
-            return pe.Profile;
+            return pe?.Profile;
         }
 
         public bool IsUsernameUnique(string username)
@@ -146,7 +142,7 @@ namespace Tayra.Services
                         let tt = p.Tokens.Where(x => !x.ClaimRequired || x.ClaimedAt.HasValue).GroupBy( //TokenScope
                          x => x.Token,
                          x => x,
-                         (t, tnxs) => new ProfileViewDTO.TokenDTO { Name = t.Name, Type = t.Type, Value = tnxs.Sum(x => x.Value) })
+                         (t, tnxs) => new ProfileViewDTO.TokenDTO { Type = t.Type, Value = tnxs.Sum(x => x.Value) })
                         select new ProfileSummaryGridDTO
                         {
                             ProfileId = p.Id,
@@ -156,7 +152,7 @@ namespace Tayra.Services
                             PlatformInfo = new ProfileSummaryGridDTO.PlatformData
                             {
                                 CompanyTokens = (float)Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),
-                                Praises = DbContext.ProfilePraises.Where(x => x.ProfileId == p.Id).Count(),
+                                Praises = DbContext.ProfilePraises.Count(x => x.ProfileId == p.Id),
                                 CompletedChallenges = p.CompletedChallenges.Count()
                             },
                             Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment
@@ -301,11 +297,21 @@ namespace Tayra.Services
 
         public ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition)
         {
+            var tokens = (from tt in DbContext.TokenTransactions 
+                where tt.ClaimRequired || tt.ClaimedAt.HasValue
+                group tt by tt.Token.Type into g 
+                select new ProfileViewDTO.TokenDTO
+                {
+                    Type = g.Key,
+                    Value = g.Sum(x => x.Value)
+                }).ToArray();
+            var companyTokens =
+                Math.Round(tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(),
+                    2);
+            var exp = Convert.ToInt32(tokens.Where(x => x.Type == TokenType.Experience).Select(x => x.Value)
+                .FirstOrDefault());
+
             var profileDto = (from p in DbContext.Profiles.Where(condition)
-                              let tt = p.Tokens.Where(x => !x.ClaimRequired || x.ClaimedAt.HasValue).GroupBy( //TokenScope
-                              x => x.Token,
-                              x => x,
-                              (t, tnxs) => new ProfileViewDTO.TokenDTO { Name = t.Name, Type = t.Type, Value = tnxs.Sum(x => x.Value) })
                               select new ProfileViewDTO
                               {
                                   ProfileId = p.Id,
@@ -315,10 +321,9 @@ namespace Tayra.Services
                                   Role = p.Role,
                                   Avatar = p.Avatar,
                                   Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
-                                  CompanyTokens = Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),
-                                  Experience = Convert.ToInt32(tt.Where(x => x.Type == TokenType.Experience).Select(x => x.Value).FirstOrDefault()),
+                                  CompanyTokens = companyTokens,
+                                  Experience = exp,
                                   Praises = p.Praises.Count(),
-                                  CustomTokens = tt.Where(x => x.Type == TokenType.Custom).ToList(),
                               }).FirstOrDefault();
 
             profileDto.EnsureNotNull();
@@ -342,7 +347,7 @@ namespace Tayra.Services
                                    orderby g.Key descending
                                    select new
                                    {
-                                       DateId = g.Select(x => x.DateId).First(),
+                                       DateId = g.Key,
                                        PowerAverage = g.Average(x => x.PowerAverage),
                                        SpeedAverage = g.Average(x => x.SpeedAverage),
                                        OImpactAverage = g.Average(x => x.OImpactAverage),
@@ -403,7 +408,7 @@ namespace Tayra.Services
             {
                 foreach (var sdto in dto.Settings)
                 {
-                    var s = d.Settings.Where(x => x.LogEvent == sdto.LogEvent).FirstOrDefault();
+                    var s = d.Settings.FirstOrDefault(x => x.LogEvent == sdto.LogEvent);
                     if (s == null)
                     {
                         s = new LogSetting

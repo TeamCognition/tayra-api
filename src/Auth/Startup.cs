@@ -28,15 +28,7 @@ namespace Tayra.Auth
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString()));
             services.AddDbContext<OrganizationDbContext>(options => { });
 
-            var identityServer = services.AddIdentityServer()
-                    .AddInMemoryPersistedGrants()
-                    .AddInMemoryIdentityResources(Config.GetIdentityResources())
-                    .AddInMemoryApiResources(Config.GetApis())
-                    .AddInMemoryClients(Config.GetClients())
-                    .AddProfileService<ProfileService>()
-                    .AddResourceOwnerValidator<ResourceOwnerValidator>()
-                    .AddCustomTokenRequestValidator<CustomTokenRequestValidator>();
-
+            services.AddIdentityServerServices(Configuration);
 
             //.AddConfigurationStore(options =>
             //{
@@ -48,12 +40,6 @@ namespace Tayra.Auth
             //    options.EnableTokenCleanup = false;
             //}
 
-            services.AddTransient<IProfilesService, ProfilesService>();
-            services.AddTransient<ITokensService, TokensService>();
-            services.AddTransient<ILogsService, LogsService>();
-            services.AddTransient<IIdentitiesService, IdentitiesService>();
-            services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
-
             services.AddHttpContextAccessor();
 
             services.AddCors(c =>
@@ -61,17 +47,6 @@ namespace Tayra.Auth
                 c.AddPolicy("AllowAllOrigins", options => options.AllowAnyOrigin()
                                                                  .AllowAnyHeader());
             });
-            
-            if (Environment.IsDevelopment())
-            {
-                identityServer.AddDeveloperSigningCredential();
-            }
-            else
-            {
-                identityServer.AddDeveloperSigningCredential();
-                //throw new Exception("need to configure key material");
-            }
-
         }
 
         public void Configure(IApplicationBuilder app)

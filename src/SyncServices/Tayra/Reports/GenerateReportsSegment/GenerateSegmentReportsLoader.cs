@@ -140,6 +140,7 @@ namespace Tayra.SyncServices.Tayra
                 {
                     logService.Log<SegmentReportDaily>($"deleting {existing} records from database");
                     organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsDaily where {nameof(SegmentReportDaily.DateId)} = {dateId} AND  {nameof(SegmentReportDaily.SegmentId)} = {s.SegmentId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from SegmentReportsDaily where {nameof(SegmentReportDaily.DateId)} = {dateId} AND  {nameof(SegmentReportDaily.SegmentId)} = {s.SegmentId}");
                     organizationDb.SaveChanges();
                 }
             }
@@ -279,6 +280,7 @@ namespace Tayra.SyncServices.Tayra
                 {
                     logService.Log<SegmentReportWeekly>($"deleting {existing} records from database");
                     organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsWeekly where {nameof(SegmentReportWeekly.DateId)} = {dateId} AND {nameof(SegmentReportWeekly.SegmentId)} = {s.SegmentId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from SegmentReportsWeekly where {nameof(SegmentReportWeekly.DateId)} = {dateId} AND {nameof(SegmentReportWeekly.SegmentId)} = {s.SegmentId}");
                     organizationDb.SaveChanges();
                 }
             }

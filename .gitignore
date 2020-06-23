@@ -409,3 +409,7 @@ ASALocalRun/
 # Identity Server Log File
 Auth/identityserver4_log.txt
 Auth/tempkey.rsa
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

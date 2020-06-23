@@ -68,7 +68,8 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     Console.WriteLine("Deleting " + tableName);
                     try
                     {
-                        context.Database.ExecuteSqlCommand("DELETE FROM " + tableName);
+                        //context.Database.ExecuteSqlInterpolated($"DELETE FROM {tableName}");
+                        context.Database.ExecuteSqlCommand($"DELETE FROM {tableName}");
                         finishedTables.Add(tableName);
                     } catch(SqlException)
                     {
@@ -104,8 +105,10 @@ namespace Tayra.Models.Seeder.DemoSeeds
 
             Console.WriteLine("Seeding Profiles ...");
             organizationDb.Profiles.AddRange(demoData.Profiles);
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
             organizationDb.SaveChanges();
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
             demoData.Profiles = demoData.Profiles.Where(x => x.Role == ProfileRoles.Member).ToArray();
 
@@ -159,15 +162,19 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 });
             }
 
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
             organizationDb.SaveChanges();
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
 
             Console.WriteLine("Seeding Teams ...");
             organizationDb.Teams.AddRange(demoData.Teams);
 
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
             organizationDb.SaveChanges();
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
 
             Console.WriteLine("Seeding ProfileAssignments ...");

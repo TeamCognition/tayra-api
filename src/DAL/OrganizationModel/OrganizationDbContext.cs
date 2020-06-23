@@ -122,7 +122,7 @@ namespace Tayra.Models.Organizations
             {   //IArchivableEntity
                 if (typeof(IArchivableEntity).IsAssignableFrom(entityType.ClrType))
                 {
-                    entityType.GetOrAddProperty(ArchivedAtProp, typeof(long?));
+                    entityType.AddProperty(ArchivedAtProp, typeof(long?));
                 }
             }
 
@@ -291,8 +291,8 @@ namespace Tayra.Models.Organizations
                 var id = entityType.FindPrimaryKey().Properties.FirstOrDefault(x => x.Name == "Id");
                 if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;
 
-                var orgId = entityType.GetOrAddProperty(TenantIdFK, typeof(int));
-                entityType.GetOrAddForeignKey(orgId, orgPKey, orgEntity);
+                var orgId = entityType.AddProperty(TenantIdFK, typeof(int));
+                entityType.AddForeignKey(orgId, orgPKey, orgEntity);
                 var pk = entityType.FindPrimaryKey().Properties;
                 entityType.SetPrimaryKey(pk.Append(orgId).ToArray());
 
@@ -303,7 +303,7 @@ namespace Tayra.Models.Organizations
                 var idxs = entityType.GetIndexes().Where(x => x.Properties.Count() > 1 || x.Properties[0] != orgId).ToArray();
                 foreach (var idx in idxs)
                 {
-                    entityType.GetOrAddIndex(idx.Properties.Append(orgId).ToArray());
+                    entityType.AddIndex(idx.Properties.Append(orgId).ToArray());
                     entityType.RemoveIndex(idx.Properties);
                 }
                

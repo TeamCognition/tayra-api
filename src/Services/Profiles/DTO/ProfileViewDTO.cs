@@ -30,12 +30,9 @@ namespace Tayra.Services
         public ItemActiveDTO Border { get; set; }
 
         public DateTime? LastUppedAt { get; set; }
-
-        public virtual IList<TokenDTO> CustomTokens { get; set; } //Ienumerable when fixed profileViewGET
-
+        
         public class TokenDTO
         {
-            public string Name { get; set; }
             public TokenType Type { get; set; }
             public double Value { get; set; }
         }

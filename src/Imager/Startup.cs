@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Memory;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
@@ -14,10 +15,9 @@ using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
-using SixLabors.Memory;
-using IHostingEnv = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using SixLabors.ImageSharp.Web.Providers.Azure;
 
-namespace Imager
+namespace Tayra.Imager
 {
     public class Startup
     {
@@ -28,18 +28,7 @@ namespace Imager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddImageSharpCore()
-                .SetRequestParser<QueryCollectionRequestParser>()
-                .Configure<PhysicalFileSystemCacheOptions>(_ => { })
-                .SetCache<PhysicalFileSystemCache>()
-                .SetCacheHash<CacheHash>()
-                .Configure<AzureBlobStorageImageProviderOptions>(options =>
-                {
-                    options.ConnectionString = AppConfiguration["BlobStorageConnectionStr"];
-                    options.ContainerName = AppConfiguration["BlobContainerImages"];
-                })
-                .AddProvider<AzureBlobStorageImageProvider>()
-                .AddProcessor<ResizeWebProcessor>();
+            services.AddImagerServices(AppConfiguration);
 
             // Add the default service and options.
             //
@@ -109,7 +98,7 @@ namespace Imager
                     return new PhysicalFileSystemCache(
                         provider.GetRequiredService<IOptions<PhysicalFileSystemCacheOptions>>(),
 #pragma warning disable CS0618 // Type or member is obsolete
-                        provider.GetRequiredService<IHostingEnv>(),
+                        provider.GetRequiredService<IWebHostEnvironment>(),
 #pragma warning restore CS0618 // Type or member is obsolete
                         provider.GetRequiredService<IOptions<ImageSharpMiddlewareOptions>>(),
                         provider.GetRequiredService<FormatUtilities>());
@@ -123,9 +112,7 @@ namespace Imager
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-#pragma warning disable CS0618 // Type or member is obsolete
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostingEnv hostingEnv)
-#pragma warning restore CS0618 // Type or member is obsolete
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

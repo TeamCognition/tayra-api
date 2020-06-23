@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using Cog.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -8,12 +10,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using SixLabors.ImageSharp.Web.DependencyInjection;
 using Tayra.API.Helpers;
+using Tayra.Auth;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
 using Tayra.DAL;
 using Tayra.Helpers;
+using Tayra.Imager;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -59,7 +64,7 @@ namespace Tayra.API
             services.AddTransient<IIntegrationsService, IntegrationsService>();
 
             services.AddTransient<IOrganizationsService, Services.OrganizationsService>();
-
+            
             services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
             services.AddScoped<ITenantProvider, ShardTenantProvider>();
             services.AddScoped<IClaimsPrincipalProvider<TayraPrincipal>, TayraPrincipalProvider>();
@@ -80,12 +85,26 @@ namespace Tayra.API
             });
 
             services.AddControllers();
-            services.AddAuthenticationCore();
+             services.AddAuthentication(options =>
+             {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+             }).AddJwtBearer("Bearer", options =>
+               {
+                   options.Authority = "https://localhost:5000";
+                   options.RequireHttpsMetadata = false;
+
+                   options.Audience = "tAPI";
+               });
 
             services.AddMvcCore()
                 .AddNewtonsoftJson()
                 .AddApiExplorer(); //for swagger
 
+            services.AddIdentityServerServices(Configuration);
+            services.AddImagerServices(Configuration);
             ConfigureSwagger(services);
         }
 
@@ -104,7 +123,11 @@ namespace Tayra.API
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseCors(options => options.AllowAnyOrigin());
+            app.UseCors(options =>
+            {
+                options.AllowAnyOrigin();
+                options.AllowAnyHeader();
+            });
             app.UseSwagger();
 
             app.Use(async (context, next) =>
@@ -126,6 +149,13 @@ namespace Tayra.API
                 await next.Invoke();
             });
 
+            //Tayra.Auth
+            app.UseIdentityServer();
+            
+            //Tayra.Imager
+            string FilePath = "wwwroot";
+            Directory.CreateDirectory(FilePath);
+            app.UseImageSharp();
 
             app.UseAuthentication();
             app.UseAuthorization();
