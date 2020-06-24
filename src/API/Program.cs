@@ -9,6 +9,9 @@ namespace Tayra.API
     {
         public static void Main(string[] args)
         {
+            string FilePath = "wwwroot";
+            Directory.CreateDirectory(FilePath);
+
             CreateHostBuilder(args).Build().Run();
         }
 
