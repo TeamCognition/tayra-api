@@ -36,4 +36,5 @@ WORKDIR /app
 COPY --from=build /app/src/API/out ./
 EXPOSE 5000
 EXPOSE 5001
-ENTRYPOINT ["dotnet", "Tayra.API.dll"]
+EXPOSE 80    
+ENTRYPOINT ["dotnet", "Tayra.API.dll"] 
