@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -31,9 +31,9 @@ COPY /src/. ./src
 WORKDIR /app/src/API/
 RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
-COPY --from=build /app/src/API/out ./
+COPY --from=0 /app/src/API/out ./
 EXPOSE 5000
 EXPOSE 5001
 EXPOSE 80    
