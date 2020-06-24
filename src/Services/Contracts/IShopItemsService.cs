@@ -10,5 +10,6 @@ namespace Tayra.Services
         void PurchaseShopItem(int profileId, ShopItemPurchaseDTO dto);
         void EnableShopItem(int itemId);
         void DisableShopItem(int itemId);
+        void RemoveShopItem(int itemId);
     }
 }
