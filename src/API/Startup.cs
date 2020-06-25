@@ -104,7 +104,7 @@ namespace Tayra.API
                 .AddApiExplorer(); //for swagger
 
             services.AddIdentityServerServices(Configuration);
-            services.AddImagerServices(Configuration);
+            //services.AddImagerServices(Configuration);
             ConfigureSwagger(services);
         }
 
@@ -153,9 +153,9 @@ namespace Tayra.API
             app.UseIdentityServer();
             
             //Tayra.Imager
-            string FilePath = "wwwroot";
-            Directory.CreateDirectory(FilePath);
-            app.UseImageSharp();
+            // string FilePath = "wwwroot";
+            // Directory.CreateDirectory(FilePath);
+            // app.UseImageSharp();
 
             app.UseAuthentication();
             app.UseAuthorization();
