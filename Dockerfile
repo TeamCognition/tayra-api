@@ -37,4 +37,5 @@ COPY --from=0 /app/src/API/out ./
 EXPOSE 5000
 EXPOSE 5001
 EXPOSE 80    
+RUN mkdir -p wwwroot
 ENTRYPOINT ["dotnet", "Tayra.API.dll"] 
