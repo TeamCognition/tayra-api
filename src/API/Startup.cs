@@ -85,26 +85,26 @@ namespace Tayra.API
             });
 
             services.AddControllers();
-             services.AddAuthentication(options =>
-             {
+            services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 
-             }).AddJwtBearer("Bearer", options =>
-               {
-                   options.Authority = "https://localhost:5000";
-                   options.RequireHttpsMetadata = false;
+            }).AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = Configuration.GetValue<string>("Auth:authority");
+                options.RequireHttpsMetadata = false;
 
-                   options.Audience = "tAPI";
-               });
+                options.Audience = "tAPI";
+            });
 
             services.AddMvcCore()
                 .AddNewtonsoftJson()
                 .AddApiExplorer(); //for swagger
 
             services.AddIdentityServerServices(Configuration);
-            //services.AddImagerServices(Configuration);
+            services.AddImagerServices(Configuration);
             ConfigureSwagger(services);
         }
 
@@ -151,11 +151,11 @@ namespace Tayra.API
 
             //Tayra.Auth
             app.UseIdentityServer();
-            
+
             //Tayra.Imager
-            // string FilePath = "wwwroot";
-            // Directory.CreateDirectory(FilePath);
-            // app.UseImageSharp();
+            string FilePath = "wwwroot";
+            Directory.CreateDirectory(FilePath);
+            app.UseImageSharp();
 
             app.UseAuthentication();
             app.UseAuthorization();

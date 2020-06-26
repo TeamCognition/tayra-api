@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Common;
 using Tayra.Models.Organizations;
@@ -11,9 +12,9 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public LookupsController(IServiceProvider serviceProvider, OrganizationDbContext context) : base(serviceProvider)
+        public LookupsController(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            OrganizationContext = context;
+          //  OrganizationContext = context;
         }
 
         #endregion
@@ -53,7 +54,7 @@ namespace Tayra.API.Controllers
             return LookupsService.GetFromEnum<ItemRarities>();
         }
 
-        [HttpGet, Route(nameof(LookupTypes.ProfileRoles))]
+        [AllowAnonymous, HttpGet, Route(nameof(LookupTypes.ProfileRoles))]
         public IEnumerable<LookupDTO> GetProfileRoles()
         {
             return LookupsService.GetFromEnum<ProfileRoles>();

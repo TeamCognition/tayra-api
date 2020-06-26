@@ -61,6 +61,12 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
+        [HttpGet("tokenAverageEarnings")]
+        public ActionResult<ShopTokenAverageEarningsDTO> GetTokenWeeklyAverageEarnings()
+        {
+            return ShopsService.GetTokenAverageEarnings();
+        }
+
         #endregion
     }
 }

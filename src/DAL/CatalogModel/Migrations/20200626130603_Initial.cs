@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Tayra.Models.Catalog.Migrations
 {
-    public partial class BETA : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,7 +29,7 @@ namespace Tayra.Models.Catalog.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LandingPageContact",
+                name: "LandingPageContacts",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -41,7 +41,20 @@ namespace Tayra.Models.Catalog.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LandingPageContact", x => x.Id);
+                    table.PrimaryKey("PK_LandingPageContacts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LandingPageTry",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    EmailAddress = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LandingPageTry", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,7 +143,10 @@ namespace Tayra.Models.Catalog.Migrations
                 name: "IdentityEmails");
 
             migrationBuilder.DropTable(
-                name: "LandingPageContact");
+                name: "LandingPageContacts");
+
+            migrationBuilder.DropTable(
+                name: "LandingPageTry");
 
             migrationBuilder.DropTable(
                 name: "TenantIdentities");

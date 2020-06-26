@@ -27,7 +27,11 @@
   <ItemGroup>
     <PackageReference Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="1.0.0-rc0002" />
   </ItemGroup>
-  
+    
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+    
   <ItemGroup>
     <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
     <ProjectReference Include="..\DAL\CatalogModel\CatalogModel.csproj" />

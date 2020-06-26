@@ -190,6 +190,16 @@ namespace Tayra.Services
             shop.ClosedAt = DateTime.UtcNow;
         }
 
+        public ShopTokenAverageEarningsDTO GetTokenAverageEarnings()
+        {
+            return new ShopTokenAverageEarningsDTO
+            {
+                AverageEarnings = DbContext.SegmentReportsWeekly.Select(x => x.CompanyTokensEarnedChange)
+                    .DefaultIfEmpty(0)
+                    .Average()
+            };
+        }
+
         #endregion
     }
 }

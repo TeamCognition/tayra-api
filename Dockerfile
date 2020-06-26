@@ -33,9 +33,7 @@ RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
-COPY --from=0 /app/src/API/out ./
-EXPOSE 5000
-EXPOSE 5001
-EXPOSE 80    
+COPY --from=0 /app/src/API/out ./  
 RUN mkdir -p wwwroot
-ENTRYPOINT ["dotnet", "Tayra.API.dll"] 
+EXPOSE 80
+ENTRYPOINT ["dotnet", "Tayra.API.dll"]

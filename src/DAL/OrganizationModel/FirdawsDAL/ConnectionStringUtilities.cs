@@ -21,6 +21,7 @@ namespace Tayra.DAL
                 Password = password,
                 ConnectTimeout = timeout,
                 Encrypt = true,
+                TrustServerCertificate = true //for aws retardness
             };
         }
 

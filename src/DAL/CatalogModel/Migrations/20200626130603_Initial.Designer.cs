@@ -10,8 +10,8 @@ using Tayra.Models.Catalog;
 namespace Tayra.Models.Catalog.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20200319181502_AddLandingPageTryTable")]
-    partial class AddLandingPageTryTable
+    [Migration("20200626130603_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -19,7 +19,7 @@ namespace Tayra.Models.Organizations.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Firdaws.DAL.EntityChangeLog", b =>
+            modelBuilder.Entity("Cog.DAL.EntityChangeLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2372,7 +2372,7 @@ namespace Tayra.Models.Organizations.Migrations
                     b.ToTable("WebhookEventLogs");
                 });
 
-            modelBuilder.Entity("Firdaws.DAL.EntityChangeLog", b =>
+            modelBuilder.Entity("Cog.DAL.EntityChangeLog", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Organization")
                         .WithMany()

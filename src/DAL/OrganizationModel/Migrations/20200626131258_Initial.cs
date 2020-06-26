@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
-    public partial class BETA : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,6 +23,23 @@ namespace Tayra.Models.Organizations.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Organizations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    CreatedBy = table.Column<int>(nullable: false),
+                    LastModifiedBy = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,13 +111,17 @@ namespace Tayra.Models.Organizations.Migrations
                     IsActivable = table.Column<bool>(nullable: false),
                     IsDisenchantable = table.Column<bool>(nullable: false),
                     IsGiftable = table.Column<bool>(nullable: false),
-                    IsQuantityLimited = table.Column<bool>(nullable: false),
+                    ShopQuantityRemaining = table.Column<int>(nullable: true),
+                    ChallengesQuantityRemaining = table.Column<int>(nullable: true),
+                    GiveawayQuantityRemaining = table.Column<int>(nullable: true),
                     Rarity = table.Column<int>(nullable: false),
                     Type = table.Column<int>(nullable: false),
+                    CreatedDateId = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
+                    LastModifiedBy = table.Column<int>(nullable: true),
+                    ArchievedAt = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -236,6 +257,7 @@ namespace Tayra.Models.Organizations.Migrations
                     Timezone = table.Column<string>(maxLength: 50, nullable: true),
                     DataStore = table.Column<string>(maxLength: 4000, nullable: true),
                     DataWarehouse = table.Column<string>(maxLength: 4000, nullable: true),
+                    IsReportingUnlocked = table.Column<bool>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<int>(nullable: false),
@@ -274,31 +296,6 @@ namespace Tayra.Models.Organizations.Migrations
                     table.UniqueConstraint("AK_Shops_Id", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Shops_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TaskCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    CreatedBy = table.Column<int>(nullable: false),
-                    LastModifiedBy = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TaskCategories", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_TaskCategories_Id", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TaskCategories_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
@@ -357,36 +354,6 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemReservations",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    ItemId = table.Column<int>(nullable: false),
-                    QuantityChange = table.Column<int>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemReservations", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_ItemReservations_Id", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ItemReservations_Items_ItemId",
-                        column: x => x.ItemId,
-                        principalTable: "Items",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ItemReservations_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ShopItems",
                 columns: table => new
                 {
@@ -394,7 +361,6 @@ namespace Tayra.Models.Organizations.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrganizationId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
-                    QuantityReservedRemaining = table.Column<int>(nullable: true),
                     DiscountPrice = table.Column<float>(nullable: true),
                     DiscountEndsAt = table.Column<DateTime>(nullable: true),
                     FeaturedUntil = table.Column<DateTime>(nullable: true),
@@ -464,6 +430,7 @@ namespace Tayra.Models.Organizations.Migrations
                     OrganizationId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),
+                    DateId = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },
@@ -502,6 +469,7 @@ namespace Tayra.Models.Organizations.Migrations
                     SenderId = table.Column<int>(nullable: false),
                     ReceiverId = table.Column<int>(nullable: false),
                     Message = table.Column<string>(maxLength: 250, nullable: true),
+                    DateId = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },
@@ -641,29 +609,32 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProfileOneUps",
+                name: "ProfilePraises",
                 columns: table => new
                 {
-                    UppedProfileId = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: false),
+                    PraiserProfileId = table.Column<int>(nullable: false),
                     DateId = table.Column<int>(nullable: false),
-                    CreatedBy = table.Column<int>(nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
+                    Type = table.Column<int>(nullable: false),
+                    Message = table.Column<string>(maxLength: 140, nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true),
+                    CreatedBy = table.Column<int>(nullable: false),
                     LastModifiedBy = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfileOneUps", x => new { x.DateId, x.UppedProfileId, x.CreatedBy, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfilePraises", x => new { x.DateId, x.ProfileId, x.PraiserProfileId, x.OrganizationId });
                     table.ForeignKey(
-                        name: "FK_ProfileOneUps_Organizations_OrganizationId",
+                        name: "FK_ProfilePraises_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProfileOneUps_Profiles_UppedProfileId",
-                        column: x => x.UppedProfileId,
+                        name: "FK_ProfilePraises_Profiles_ProfileId",
+                        column: x => x.ProfileId,
                         principalTable: "Profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -825,17 +796,17 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ProfileExternalIds",
                 columns: table => new
                 {
+                    SegmentId = table.Column<int>(nullable: false),
                     IntegrationType = table.Column<int>(nullable: false),
                     ExternalId = table.Column<string>(maxLength: 100, nullable: false),
                     OrganizationId = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),
-                    SegmentId = table.Column<int>(nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfileExternalIds", x => new { x.ExternalId, x.IntegrationType, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfileExternalIds", x => new { x.ExternalId, x.IntegrationType, x.SegmentId, x.OrganizationId });
                     table.ForeignKey(
                         name: "FK_ProfileExternalIds_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
@@ -857,6 +828,303 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProfileReportsDaily",
+                columns: table => new
+                {
+                    DateId = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
+                    TaskCategoryId = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    IterationCount = table.Column<int>(nullable: false),
+                    ProfileRole = table.Column<int>(nullable: false),
+                    ComplexityChange = table.Column<int>(nullable: false),
+                    ComplexityTotal = table.Column<int>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedTotal = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentTotal = table.Column<float>(nullable: false),
+                    EffortScoreChange = table.Column<float>(nullable: false),
+                    EffortScoreTotal = table.Column<float>(nullable: false),
+                    PraisesGivenChange = table.Column<int>(nullable: false),
+                    PraisesGivenTotal = table.Column<int>(nullable: false),
+                    PraisesReceivedChange = table.Column<int>(nullable: false),
+                    PraisesReceivedTotal = table.Column<int>(nullable: false),
+                    AssistsChange = table.Column<int>(nullable: false),
+                    AssistsTotal = table.Column<int>(nullable: false),
+                    TasksCompletedChange = table.Column<int>(nullable: false),
+                    TasksCompletedTotal = table.Column<int>(nullable: false),
+                    TurnoverChange = table.Column<int>(nullable: false),
+                    TurnoverTotal = table.Column<int>(nullable: false),
+                    ErrorChange = table.Column<float>(nullable: false),
+                    ErrorTotal = table.Column<float>(nullable: false),
+                    ContributionChange = table.Column<float>(nullable: false),
+                    ContributionTotal = table.Column<float>(nullable: false),
+                    SavesChange = table.Column<int>(nullable: false),
+                    SavesTotal = table.Column<int>(nullable: false),
+                    TacklesChange = table.Column<int>(nullable: false),
+                    TacklesTotal = table.Column<int>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeTotal = table.Column<int>(nullable: false),
+                    InventoryCountTotal = table.Column<int>(nullable: false),
+                    InventoryValueTotal = table.Column<float>(nullable: false),
+                    ItemsBoughtChange = table.Column<int>(nullable: false),
+                    ItemsBoughtTotal = table.Column<int>(nullable: false),
+                    ItemsGiftedChange = table.Column<int>(nullable: false),
+                    ItemsGiftedTotal = table.Column<int>(nullable: false),
+                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
+                    ItemsDisenchantedTotal = table.Column<int>(nullable: false),
+                    ItemsCreatedChange = table.Column<int>(nullable: false),
+                    ItemsCreatedTotal = table.Column<int>(nullable: false),
+                    ActivityChartJson = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfileReportsDaily", x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_ProfileReportsDaily_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProfileReportsDaily_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProfileReportsDaily_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProfileReportsWeekly",
+                columns: table => new
+                {
+                    DateId = table.Column<int>(nullable: false),
+                    ProfileId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
+                    TaskCategoryId = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    IterationCount = table.Column<int>(nullable: false),
+                    ProfileRole = table.Column<int>(nullable: false),
+                    ComplexityChange = table.Column<int>(nullable: false),
+                    ComplexityTotalAverage = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedTotalAverage = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentTotalAverage = table.Column<float>(nullable: false),
+                    EffortScoreChange = table.Column<float>(nullable: false),
+                    EffortScoreTotalAverage = table.Column<float>(nullable: false),
+                    PraisesGivenChange = table.Column<int>(nullable: false),
+                    PraisesGivenTotalAverage = table.Column<float>(nullable: false),
+                    PraisesReceivedChange = table.Column<int>(nullable: false),
+                    PraisesReceivedTotalAverage = table.Column<float>(nullable: false),
+                    AssistsChange = table.Column<int>(nullable: false),
+                    AssistsTotalAverage = table.Column<float>(nullable: false),
+                    TasksCompletedChange = table.Column<int>(nullable: false),
+                    TasksCompletedTotalAverage = table.Column<float>(nullable: false),
+                    TurnoverChange = table.Column<int>(nullable: false),
+                    TurnoverTotalAverage = table.Column<float>(nullable: false),
+                    ErrorChange = table.Column<float>(nullable: false),
+                    ErrorTotalAverage = table.Column<float>(nullable: false),
+                    ContributionChange = table.Column<float>(nullable: false),
+                    ContributionTotalAverage = table.Column<float>(nullable: false),
+                    SavesChange = table.Column<int>(nullable: false),
+                    SavesTotalAverage = table.Column<float>(nullable: false),
+                    TacklesChange = table.Column<int>(nullable: false),
+                    TacklesTotalAverage = table.Column<float>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeAverage = table.Column<int>(nullable: false),
+                    RangeChange = table.Column<int>(nullable: false),
+                    RangeTotalAverage = table.Column<int>(nullable: false),
+                    InventoryCountTotal = table.Column<int>(nullable: false),
+                    InventoryValueTotal = table.Column<float>(nullable: false),
+                    ItemsBoughtChange = table.Column<int>(nullable: false),
+                    ItemsGiftedChange = table.Column<int>(nullable: false),
+                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
+                    ItemsCreatedChange = table.Column<int>(nullable: false),
+                    OImpactAverage = table.Column<float>(nullable: false),
+                    OImpactTotalAverage = table.Column<float>(nullable: false),
+                    DImpactAverage = table.Column<float>(nullable: false),
+                    DImpactTotalAverage = table.Column<float>(nullable: false),
+                    PowerAverage = table.Column<float>(nullable: false),
+                    PowerTotalAverage = table.Column<float>(nullable: false),
+                    SpeedAverage = table.Column<float>(nullable: false),
+                    SpeedTotalAverage = table.Column<float>(nullable: false),
+                    Heat = table.Column<float>(nullable: false),
+                    HeatIndex = table.Column<float>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfileReportsWeekly", x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_ProfileReportsWeekly_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProfileReportsWeekly_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProfileReportsWeekly_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SegmentReportsDaily",
+                columns: table => new
+                {
+                    DateId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
+                    TaskCategoryId = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    IterationCount = table.Column<int>(nullable: false),
+                    ComplexityChange = table.Column<int>(nullable: false),
+                    ComplexityTotal = table.Column<int>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedTotal = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentTotal = table.Column<float>(nullable: false),
+                    EffortScoreChange = table.Column<float>(nullable: false),
+                    EffortScoreTotal = table.Column<float>(nullable: false),
+                    PraisesGivenChange = table.Column<int>(nullable: false),
+                    PraisesGivenTotal = table.Column<int>(nullable: false),
+                    PraisesReceivedChange = table.Column<int>(nullable: false),
+                    PraisesReceivedTotal = table.Column<int>(nullable: false),
+                    AssistsChange = table.Column<int>(nullable: false),
+                    AssistsTotal = table.Column<int>(nullable: false),
+                    TasksCompletedChange = table.Column<int>(nullable: false),
+                    TasksCompletedTotal = table.Column<int>(nullable: false),
+                    TurnoverChange = table.Column<int>(nullable: false),
+                    TurnoverTotal = table.Column<int>(nullable: false),
+                    ErrorChange = table.Column<float>(nullable: false),
+                    ErrorTotal = table.Column<float>(nullable: false),
+                    ContributionChange = table.Column<float>(nullable: false),
+                    ContributionTotal = table.Column<float>(nullable: false),
+                    SavesChange = table.Column<int>(nullable: false),
+                    SavesTotal = table.Column<int>(nullable: false),
+                    TacklesChange = table.Column<int>(nullable: false),
+                    TacklesTotal = table.Column<int>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeTotal = table.Column<int>(nullable: false),
+                    ItemsBoughtChange = table.Column<int>(nullable: false),
+                    ItemsBoughtTotal = table.Column<int>(nullable: false),
+                    ItemsGiftedChange = table.Column<int>(nullable: false),
+                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
+                    ItemsCreatedChange = table.Column<int>(nullable: false),
+                    MembersCountTotal = table.Column<int>(nullable: false),
+                    NonMembersCountTotal = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SegmentReportsDaily", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_SegmentReportsDaily_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SegmentReportsDaily_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SegmentReportsWeekly",
+                columns: table => new
+                {
+                    DateId = table.Column<int>(nullable: false),
+                    SegmentId = table.Column<int>(nullable: false),
+                    TaskCategoryId = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
+                    IterationCount = table.Column<int>(nullable: false),
+                    ComplexityChange = table.Column<int>(nullable: false),
+                    ComplexityAverage = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
+                    CompanyTokensEarnedAverage = table.Column<float>(nullable: false),
+                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
+                    CompanyTokensSpentAverage = table.Column<float>(nullable: false),
+                    EffortScoreChange = table.Column<float>(nullable: false),
+                    EffortScoreAverage = table.Column<float>(nullable: false),
+                    PraisesGivenChange = table.Column<int>(nullable: false),
+                    PraisesGivenAverage = table.Column<float>(nullable: false),
+                    PraisesReceivedChange = table.Column<int>(nullable: false),
+                    PraisesReceivedAverage = table.Column<float>(nullable: false),
+                    AssistsChange = table.Column<int>(nullable: false),
+                    AssistsAverage = table.Column<float>(nullable: false),
+                    TasksCompletedChange = table.Column<int>(nullable: false),
+                    TasksCompletedAverage = table.Column<float>(nullable: false),
+                    TurnoverChange = table.Column<int>(nullable: false),
+                    TurnoverAverage = table.Column<float>(nullable: false),
+                    ErrorChange = table.Column<float>(nullable: false),
+                    ErrorAverage = table.Column<float>(nullable: false),
+                    ContributionChange = table.Column<float>(nullable: false),
+                    ContributionAverage = table.Column<float>(nullable: false),
+                    SavesChange = table.Column<int>(nullable: false),
+                    SavesAverage = table.Column<float>(nullable: false),
+                    TacklesChange = table.Column<int>(nullable: false),
+                    TacklesAverage = table.Column<float>(nullable: false),
+                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
+                    TasksCompletionTimeAverage = table.Column<int>(nullable: false),
+                    RangeChange = table.Column<int>(nullable: false),
+                    RangeAverage = table.Column<int>(nullable: false),
+                    ItemsBoughtChange = table.Column<int>(nullable: false),
+                    ItemsGiftedChange = table.Column<int>(nullable: false),
+                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
+                    ItemsCreatedChange = table.Column<int>(nullable: false),
+                    OImpactAverage = table.Column<float>(nullable: false),
+                    OImpactAverageTotal = table.Column<float>(nullable: false),
+                    DImpactAverage = table.Column<float>(nullable: false),
+                    DImpactAverageTotal = table.Column<float>(nullable: false),
+                    PowerAverage = table.Column<float>(nullable: false),
+                    PowerAverageTotal = table.Column<float>(nullable: false),
+                    SpeedAverage = table.Column<float>(nullable: false),
+                    SpeedAverageTotal = table.Column<float>(nullable: false),
+                    HeatAverageTotal = table.Column<float>(nullable: false),
+                    MembersCountTotal = table.Column<int>(nullable: false),
+                    NonMembersCountTotal = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModified = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SegmentReportsWeekly", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
+                    table.ForeignKey(
+                        name: "FK_SegmentReportsWeekly_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SegmentReportsWeekly_Segments_SegmentId",
+                        column: x => x.SegmentId,
+                        principalTable: "Segments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ShopPurchases",
                 columns: table => new
                 {
@@ -871,6 +1139,7 @@ namespace Tayra.Models.Organizations.Migrations
                     IsFeatured = table.Column<bool>(nullable: false),
                     IsDiscounted = table.Column<bool>(nullable: false),
                     GiftFor = table.Column<int>(nullable: true),
+                    LastModifiedDateId = table.Column<int>(nullable: false),
                     Price = table.Column<float>(nullable: false),
                     PriceDiscountedFor = table.Column<float>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
@@ -1006,313 +1275,6 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProfileReportsDaily",
-                columns: table => new
-                {
-                    DateId = table.Column<int>(nullable: false),
-                    ProfileId = table.Column<int>(nullable: false),
-                    TaskCategoryId = table.Column<int>(nullable: false),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    IterationCount = table.Column<int>(nullable: false),
-                    ProfileRole = table.Column<int>(nullable: false),
-                    ComplexityChange = table.Column<int>(nullable: false),
-                    ComplexityTotal = table.Column<int>(nullable: false),
-                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
-                    CompanyTokensEarnedTotal = table.Column<float>(nullable: false),
-                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
-                    CompanyTokensSpentTotal = table.Column<float>(nullable: false),
-                    EffortScoreChange = table.Column<float>(nullable: false),
-                    EffortScoreTotal = table.Column<float>(nullable: false),
-                    OneUpsGivenChange = table.Column<int>(nullable: false),
-                    OneUpsGivenTotal = table.Column<int>(nullable: false),
-                    OneUpsReceivedChange = table.Column<int>(nullable: false),
-                    OneUpsReceivedTotal = table.Column<int>(nullable: false),
-                    AssistsChange = table.Column<int>(nullable: false),
-                    AssistsTotal = table.Column<int>(nullable: false),
-                    TasksCompletedChange = table.Column<int>(nullable: false),
-                    TasksCompletedTotal = table.Column<int>(nullable: false),
-                    TurnoverChange = table.Column<int>(nullable: false),
-                    TurnoverTotal = table.Column<int>(nullable: false),
-                    ErrorChange = table.Column<float>(nullable: false),
-                    ErrorTotal = table.Column<float>(nullable: false),
-                    ContributionChange = table.Column<float>(nullable: false),
-                    ContributionTotal = table.Column<float>(nullable: false),
-                    SavesChange = table.Column<int>(nullable: false),
-                    SavesTotal = table.Column<int>(nullable: false),
-                    TacklesChange = table.Column<int>(nullable: false),
-                    TacklesTotal = table.Column<int>(nullable: false),
-                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
-                    TasksCompletionTimeTotal = table.Column<int>(nullable: false),
-                    InventoryCountTotal = table.Column<int>(nullable: false),
-                    InventoryValueTotal = table.Column<float>(nullable: false),
-                    ItemsBoughtChange = table.Column<int>(nullable: false),
-                    ItemsBoughtTotal = table.Column<int>(nullable: false),
-                    ItemsGiftedChange = table.Column<int>(nullable: false),
-                    ItemsGiftedTotal = table.Column<int>(nullable: false),
-                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
-                    ItemsDisenchantedTotal = table.Column<int>(nullable: false),
-                    ItemsCreatedChange = table.Column<int>(nullable: false),
-                    ItemsCreatedTotal = table.Column<int>(nullable: false),
-                    ActivityChartJson = table.Column<string>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProfileReportsDaily", x => new { x.DateId, x.ProfileId, x.TaskCategoryId, x.OrganizationId });
-                    table.ForeignKey(
-                        name: "FK_ProfileReportsDaily_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProfileReportsDaily_Profiles_ProfileId",
-                        column: x => x.ProfileId,
-                        principalTable: "Profiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProfileReportsDaily_TaskCategories_TaskCategoryId",
-                        column: x => x.TaskCategoryId,
-                        principalTable: "TaskCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProfileReportsWeekly",
-                columns: table => new
-                {
-                    DateId = table.Column<int>(nullable: false),
-                    ProfileId = table.Column<int>(nullable: false),
-                    TaskCategoryId = table.Column<int>(nullable: false),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    IterationCount = table.Column<int>(nullable: false),
-                    ProfileRole = table.Column<int>(nullable: false),
-                    ComplexityChange = table.Column<int>(nullable: false),
-                    ComplexityTotalAverage = table.Column<float>(nullable: false),
-                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
-                    CompanyTokensEarnedTotalAverage = table.Column<float>(nullable: false),
-                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
-                    CompanyTokensSpentTotalAverage = table.Column<float>(nullable: false),
-                    EffortScoreChange = table.Column<float>(nullable: false),
-                    EffortScoreTotalAverage = table.Column<float>(nullable: false),
-                    OneUpsGivenChange = table.Column<int>(nullable: false),
-                    OneUpsGivenTotalAverage = table.Column<float>(nullable: false),
-                    OneUpsReceivedChange = table.Column<int>(nullable: false),
-                    OneUpsReceivedTotalAverage = table.Column<float>(nullable: false),
-                    AssistsChange = table.Column<int>(nullable: false),
-                    AssistsTotalAverage = table.Column<float>(nullable: false),
-                    TasksCompletedChange = table.Column<int>(nullable: false),
-                    TasksCompletedTotalAverage = table.Column<float>(nullable: false),
-                    TurnoverChange = table.Column<int>(nullable: false),
-                    TurnoverTotalAverage = table.Column<float>(nullable: false),
-                    ErrorChange = table.Column<float>(nullable: false),
-                    ErrorTotalAverage = table.Column<float>(nullable: false),
-                    ContributionChange = table.Column<float>(nullable: false),
-                    ContributionTotalAverage = table.Column<float>(nullable: false),
-                    SavesChange = table.Column<int>(nullable: false),
-                    SavesTotalAverage = table.Column<float>(nullable: false),
-                    TacklesChange = table.Column<int>(nullable: false),
-                    TacklesTotalAverage = table.Column<float>(nullable: false),
-                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
-                    TasksCompletionTimeAverage = table.Column<int>(nullable: false),
-                    RangeChange = table.Column<int>(nullable: false),
-                    RangeTotalAverage = table.Column<int>(nullable: false),
-                    InventoryCountTotal = table.Column<int>(nullable: false),
-                    InventoryValueTotal = table.Column<float>(nullable: false),
-                    ItemsBoughtChange = table.Column<int>(nullable: false),
-                    ItemsGiftedChange = table.Column<int>(nullable: false),
-                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
-                    ItemsCreatedChange = table.Column<int>(nullable: false),
-                    OImpactAverage = table.Column<float>(nullable: false),
-                    OImpactTotalAverage = table.Column<float>(nullable: false),
-                    DImpactAverage = table.Column<float>(nullable: false),
-                    DImpactTotalAverage = table.Column<float>(nullable: false),
-                    PowerAverage = table.Column<float>(nullable: false),
-                    PowerTotalAverage = table.Column<float>(nullable: false),
-                    SpeedAverage = table.Column<float>(nullable: false),
-                    SpeedTotalAverage = table.Column<float>(nullable: false),
-                    Heat = table.Column<float>(nullable: false),
-                    HeatIndex = table.Column<float>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProfileReportsWeekly", x => new { x.DateId, x.ProfileId, x.TaskCategoryId, x.OrganizationId });
-                    table.ForeignKey(
-                        name: "FK_ProfileReportsWeekly_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProfileReportsWeekly_Profiles_ProfileId",
-                        column: x => x.ProfileId,
-                        principalTable: "Profiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProfileReportsWeekly_TaskCategories_TaskCategoryId",
-                        column: x => x.TaskCategoryId,
-                        principalTable: "TaskCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SegmentReportsDaily",
-                columns: table => new
-                {
-                    DateId = table.Column<int>(nullable: false),
-                    SegmentId = table.Column<int>(nullable: false),
-                    TaskCategoryId = table.Column<int>(nullable: false),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    IterationCount = table.Column<int>(nullable: false),
-                    ComplexityChange = table.Column<int>(nullable: false),
-                    ComplexityTotal = table.Column<int>(nullable: false),
-                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
-                    CompanyTokensEarnedTotal = table.Column<float>(nullable: false),
-                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
-                    CompanyTokensSpentTotal = table.Column<float>(nullable: false),
-                    EffortScoreChange = table.Column<float>(nullable: false),
-                    EffortScoreTotal = table.Column<float>(nullable: false),
-                    OneUpsGivenChange = table.Column<int>(nullable: false),
-                    OneUpsGivenTotal = table.Column<int>(nullable: false),
-                    OneUpsReceivedChange = table.Column<int>(nullable: false),
-                    OneUpsReceivedTotal = table.Column<int>(nullable: false),
-                    AssistsChange = table.Column<int>(nullable: false),
-                    AssistsTotal = table.Column<int>(nullable: false),
-                    TasksCompletedChange = table.Column<int>(nullable: false),
-                    TasksCompletedTotal = table.Column<int>(nullable: false),
-                    TurnoverChange = table.Column<int>(nullable: false),
-                    TurnoverTotal = table.Column<int>(nullable: false),
-                    ErrorChange = table.Column<float>(nullable: false),
-                    ErrorTotal = table.Column<float>(nullable: false),
-                    ContributionChange = table.Column<float>(nullable: false),
-                    ContributionTotal = table.Column<float>(nullable: false),
-                    SavesChange = table.Column<int>(nullable: false),
-                    SavesTotal = table.Column<int>(nullable: false),
-                    TacklesChange = table.Column<int>(nullable: false),
-                    TacklesTotal = table.Column<int>(nullable: false),
-                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
-                    TasksCompletionTimeTotal = table.Column<int>(nullable: false),
-                    ItemsBoughtChange = table.Column<int>(nullable: false),
-                    ItemsBoughtTotal = table.Column<int>(nullable: false),
-                    ItemsGiftedChange = table.Column<int>(nullable: false),
-                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
-                    ItemsCreatedChange = table.Column<int>(nullable: false),
-                    MembersCountTotal = table.Column<int>(nullable: false),
-                    NonMembersCountTotal = table.Column<int>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SegmentReportsDaily", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
-                    table.ForeignKey(
-                        name: "FK_SegmentReportsDaily_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SegmentReportsDaily_Segments_SegmentId",
-                        column: x => x.SegmentId,
-                        principalTable: "Segments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SegmentReportsDaily_TaskCategories_TaskCategoryId",
-                        column: x => x.TaskCategoryId,
-                        principalTable: "TaskCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SegmentReportsWeekly",
-                columns: table => new
-                {
-                    DateId = table.Column<int>(nullable: false),
-                    SegmentId = table.Column<int>(nullable: false),
-                    TaskCategoryId = table.Column<int>(nullable: false),
-                    OrganizationId = table.Column<int>(nullable: false),
-                    IterationCount = table.Column<int>(nullable: false),
-                    ComplexityChange = table.Column<int>(nullable: false),
-                    ComplexityAverage = table.Column<float>(nullable: false),
-                    CompanyTokensEarnedChange = table.Column<float>(nullable: false),
-                    CompanyTokensEarnedAverage = table.Column<float>(nullable: false),
-                    CompanyTokensSpentChange = table.Column<float>(nullable: false),
-                    CompanyTokensSpentAverage = table.Column<float>(nullable: false),
-                    EffortScoreChange = table.Column<float>(nullable: false),
-                    EffortScoreAverage = table.Column<float>(nullable: false),
-                    OneUpsGivenChange = table.Column<int>(nullable: false),
-                    OneUpsGivenAverage = table.Column<float>(nullable: false),
-                    OneUpsReceivedChange = table.Column<int>(nullable: false),
-                    OneUpsReceivedAverage = table.Column<float>(nullable: false),
-                    AssistsChange = table.Column<int>(nullable: false),
-                    AssistsAverage = table.Column<float>(nullable: false),
-                    TasksCompletedChange = table.Column<int>(nullable: false),
-                    TasksCompletedAverage = table.Column<float>(nullable: false),
-                    TurnoverChange = table.Column<int>(nullable: false),
-                    TurnoverAverage = table.Column<float>(nullable: false),
-                    ErrorChange = table.Column<float>(nullable: false),
-                    ErrorAverage = table.Column<float>(nullable: false),
-                    ContributionChange = table.Column<float>(nullable: false),
-                    ContributionAverage = table.Column<float>(nullable: false),
-                    SavesChange = table.Column<int>(nullable: false),
-                    SavesAverage = table.Column<float>(nullable: false),
-                    TacklesChange = table.Column<int>(nullable: false),
-                    TacklesAverage = table.Column<float>(nullable: false),
-                    TasksCompletionTimeChange = table.Column<int>(nullable: false),
-                    TasksCompletionTimeAverage = table.Column<int>(nullable: false),
-                    RangeChange = table.Column<int>(nullable: false),
-                    RangeAverage = table.Column<int>(nullable: false),
-                    ItemsBoughtChange = table.Column<int>(nullable: false),
-                    ItemsGiftedChange = table.Column<int>(nullable: false),
-                    ItemsDisenchantedChange = table.Column<int>(nullable: false),
-                    ItemsCreatedChange = table.Column<int>(nullable: false),
-                    OImpactAverage = table.Column<float>(nullable: false),
-                    OImpactAverageTotal = table.Column<float>(nullable: false),
-                    DImpactAverage = table.Column<float>(nullable: false),
-                    DImpactAverageTotal = table.Column<float>(nullable: false),
-                    PowerAverage = table.Column<float>(nullable: false),
-                    PowerAverageTotal = table.Column<float>(nullable: false),
-                    SpeedAverage = table.Column<float>(nullable: false),
-                    SpeedAverageTotal = table.Column<float>(nullable: false),
-                    HeatAverageTotal = table.Column<float>(nullable: false),
-                    MembersCountTotal = table.Column<int>(nullable: false),
-                    NonMembersCountTotal = table.Column<int>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SegmentReportsWeekly", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
-                    table.ForeignKey(
-                        name: "FK_SegmentReportsWeekly_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SegmentReportsWeekly_Segments_SegmentId",
-                        column: x => x.SegmentId,
-                        principalTable: "Segments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SegmentReportsWeekly_TaskCategories_TaskCategoryId",
-                        column: x => x.TaskCategoryId,
-                        principalTable: "TaskCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Competitions",
                 columns: table => new
                 {
@@ -1384,6 +1346,7 @@ namespace Tayra.Models.Organizations.Migrations
                     Reason = table.Column<int>(nullable: false),
                     ProfileId = table.Column<int>(nullable: false),
                     TokenId = table.Column<int>(nullable: false),
+                    DateId = table.Column<int>(nullable: false),
                     ClaimRequired = table.Column<bool>(nullable: false),
                     ClaimedAt = table.Column<DateTime>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
@@ -1946,10 +1909,10 @@ namespace Tayra.Models.Organizations.Migrations
                     CompanyTokensSpentTotal = table.Column<float>(nullable: false),
                     EffortScoreChange = table.Column<float>(nullable: false),
                     EffortScoreTotal = table.Column<float>(nullable: false),
-                    OneUpsGivenChange = table.Column<int>(nullable: false),
-                    OneUpsGivenTotal = table.Column<int>(nullable: false),
-                    OneUpsReceivedChange = table.Column<int>(nullable: false),
-                    OneUpsReceivedTotal = table.Column<int>(nullable: false),
+                    PraisesGivenChange = table.Column<int>(nullable: false),
+                    PraisesGivenTotal = table.Column<int>(nullable: false),
+                    PraisesReceivedChange = table.Column<int>(nullable: false),
+                    PraisesReceivedTotal = table.Column<int>(nullable: false),
                     AssistsChange = table.Column<int>(nullable: false),
                     AssistsTotal = table.Column<int>(nullable: false),
                     TasksCompletedChange = table.Column<int>(nullable: false),
@@ -1981,12 +1944,6 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TeamReportsDaily_TaskCategories_TaskCategoryId",
-                        column: x => x.TaskCategoryId,
-                        principalTable: "TaskCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_TeamReportsDaily_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
@@ -2012,10 +1969,10 @@ namespace Tayra.Models.Organizations.Migrations
                     CompanyTokensSpentAverage = table.Column<float>(nullable: false),
                     EffortScoreChange = table.Column<float>(nullable: false),
                     EffortScoreAverage = table.Column<float>(nullable: false),
-                    OneUpsGivenChange = table.Column<int>(nullable: false),
-                    OneUpsGivenAverage = table.Column<float>(nullable: false),
-                    OneUpsReceivedChange = table.Column<int>(nullable: false),
-                    OneUpsReceivedAverage = table.Column<float>(nullable: false),
+                    PraisesGivenChange = table.Column<int>(nullable: false),
+                    PraisesGivenAverage = table.Column<float>(nullable: false),
+                    PraisesReceivedChange = table.Column<int>(nullable: false),
+                    PraisesReceivedAverage = table.Column<float>(nullable: false),
                     AssistsChange = table.Column<int>(nullable: false),
                     AssistsAverage = table.Column<float>(nullable: false),
                     TasksCompletedChange = table.Column<int>(nullable: false),
@@ -2057,12 +2014,6 @@ namespace Tayra.Models.Organizations.Migrations
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TeamReportsWeekly_TaskCategories_TaskCategoryId",
-                        column: x => x.TaskCategoryId,
-                        principalTable: "TaskCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TeamReportsWeekly_Teams_TeamId",
                         column: x => x.TeamId,
@@ -2638,16 +2589,6 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: new[] { "SenderId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemReservations_OrganizationId",
-                table: "ItemReservations",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemReservations_ItemId_OrganizationId",
-                table: "ItemReservations",
-                columns: new[] { "ItemId", "OrganizationId" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Items_OrganizationId",
                 table: "Items",
                 column: "OrganizationId");
@@ -2753,14 +2694,14 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: new[] { "ProfileId", "Event", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileOneUps_OrganizationId",
-                table: "ProfileOneUps",
+                name: "IX_ProfilePraises_OrganizationId",
+                table: "ProfilePraises",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileOneUps_UppedProfileId_OrganizationId",
-                table: "ProfileOneUps",
-                columns: new[] { "UppedProfileId", "OrganizationId" });
+                name: "IX_ProfilePraises_ProfileId_OrganizationId",
+                table: "ProfilePraises",
+                columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProfileReportsDaily_OrganizationId",
@@ -2773,9 +2714,9 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsDaily_TaskCategoryId_OrganizationId",
+                name: "IX_ProfileReportsDaily_SegmentId_OrganizationId",
                 table: "ProfileReportsDaily",
-                columns: new[] { "TaskCategoryId", "OrganizationId" });
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProfileReportsWeekly_OrganizationId",
@@ -2788,9 +2729,9 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: new[] { "ProfileId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsWeekly_TaskCategoryId_OrganizationId",
+                name: "IX_ProfileReportsWeekly_SegmentId_OrganizationId",
                 table: "ProfileReportsWeekly",
-                columns: new[] { "TaskCategoryId", "OrganizationId" });
+                columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Profiles_OrganizationId",
@@ -2828,11 +2769,6 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: new[] { "SegmentId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SegmentReportsDaily_TaskCategoryId_OrganizationId",
-                table: "SegmentReportsDaily",
-                columns: new[] { "TaskCategoryId", "OrganizationId" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SegmentReportsWeekly_OrganizationId",
                 table: "SegmentReportsWeekly",
                 column: "OrganizationId");
@@ -2841,11 +2777,6 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "IX_SegmentReportsWeekly_SegmentId_OrganizationId",
                 table: "SegmentReportsWeekly",
                 columns: new[] { "SegmentId", "OrganizationId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SegmentReportsWeekly_TaskCategoryId_OrganizationId",
-                table: "SegmentReportsWeekly",
-                columns: new[] { "TaskCategoryId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Segments_OrganizationId",
@@ -2913,14 +2844,11 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskCategories_OrganizationId",
+                name: "IX_TaskCategories_Name",
                 table: "TaskCategories",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TaskCategories_Name_OrganizationId",
-                table: "TaskCategories",
-                columns: new[] { "Name", "OrganizationId" });
+                column: "Name",
+                unique: true,
+                filter: "[Name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskLogs_OrganizationId",
@@ -2998,11 +2926,6 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsDaily_TaskCategoryId_OrganizationId",
-                table: "TeamReportsDaily",
-                columns: new[] { "TaskCategoryId", "OrganizationId" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TeamReportsDaily_TeamId_OrganizationId",
                 table: "TeamReportsDaily",
                 columns: new[] { "TeamId", "OrganizationId" });
@@ -3011,11 +2934,6 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "IX_TeamReportsWeekly_OrganizationId",
                 table: "TeamReportsWeekly",
                 column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsWeekly_TaskCategoryId_OrganizationId",
-                table: "TeamReportsWeekly",
-                columns: new[] { "TaskCategoryId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_TeamReportsWeekly_TeamId_OrganizationId",
@@ -3115,9 +3033,6 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ItemGifts");
 
             migrationBuilder.DropTable(
-                name: "ItemReservations");
-
-            migrationBuilder.DropTable(
                 name: "LoginLogs");
 
             migrationBuilder.DropTable(
@@ -3133,7 +3048,7 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "ProfileLogs");
 
             migrationBuilder.DropTable(
-                name: "ProfileOneUps");
+                name: "ProfilePraises");
 
             migrationBuilder.DropTable(
                 name: "ProfileReportsDaily");
