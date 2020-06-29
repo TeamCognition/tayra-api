@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tayra.Common;
 
 namespace Tayra.Services
@@ -11,6 +12,8 @@ namespace Tayra.Services
         public string LastName { get; set; }
         public string Username { get; set; }
 
+        public PulseDTO Pulse { get; set; }
+        
         public ProfileRoles Role { get; set; }
         public TeamDTO[] Teams { get; set; }
         public string Avatar { get; set; }
@@ -47,6 +50,18 @@ namespace Tayra.Services
         {
             public string Key { get; set; }
             public string Name { get; set; }
+        }
+        
+        public class PulseDTO
+        {
+            public Task[] InProgress { get; set; }
+            public Task[] RecentlyDone { get; set; }
+            public class Task
+            {
+                public TaskStatuses Status { get; set; }
+                public string Summary { get; set; }
+                public string ExternalUrl { get; set; }
+            }
         }
     }
 }

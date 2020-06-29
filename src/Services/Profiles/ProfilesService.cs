@@ -171,7 +171,7 @@ namespace Tayra.Services
                             {
                                 Type = x.Type,
                                 IntegratedOn = x.Created
-                            }).DistinctBy(x => x.Type).ToArray(),
+                            }).DistinctBy(x => x.Type).ToArray()
                         }; 
 
             GridData<ProfileSummaryGridDTO> gridData = query.GetGridData(gridParams);
@@ -298,13 +298,14 @@ namespace Tayra.Services
         public ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition)
         {
             var tokens = (from tt in DbContext.TokenTransactions 
-                where tt.ClaimRequired || tt.ClaimedAt.HasValue
+                where !tt.ClaimRequired || tt.ClaimedAt.HasValue
                 group tt by tt.Token.Type into g 
                 select new ProfileViewDTO.TokenDTO
                 {
                     Type = g.Key,
                     Value = g.Sum(x => x.Value)
                 }).ToArray();
+            
             var companyTokens =
                 Math.Round(tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(),
                     2);
@@ -373,6 +374,8 @@ namespace Tayra.Services
                 Values = heatTrend
             };
 
+            profileDto.Pulse = GetProfilePulseDTO(profileId);
+            
             return profileDto;
         }
 
@@ -494,6 +497,30 @@ namespace Tayra.Services
             };
         }
 
+        private ProfileViewDTO.PulseDTO GetProfilePulseDTO(int profileId)
+        {
+            var yesterdayDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-1));
+            var tasks = (from t in DbContext.Tasks
+                        where t.AssigneeProfileId == profileId
+                        where t.Status == TaskStatuses.InProgress || (t.Status == TaskStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)
+                        select new
+                        {
+                            DTO = new ProfileViewDTO.PulseDTO.Task
+                            {
+                                Status = t.Status,
+                                Summary = t.Summary,
+                                ExternalUrl = t.ExternalUrl    
+                            },
+                            LastModifiedDateId = t.LastModifiedDateId
+                        }).ToArray();
+
+            return new ProfileViewDTO.PulseDTO
+            {
+                InProgress = tasks.Select(x => x.DTO).Where(x => x.Status == TaskStatuses.InProgress).ToArray(),
+                RecentlyDone = tasks.Select(x => x.DTO).Where(x => x.Status == TaskStatuses.Done).ToArray()
+            };
+        }
+        
         #endregion
     }
 }

@@ -40,6 +40,7 @@ namespace Tayra.Services.TaskConverters
             {
                 ExternalId = GetExternalId(),
                 ExternalProjectId = GetExternalProjectId(),
+                ExternalUrl = GetIssueUrl(),
                 IntegrationType = GetIntegrationType(),
                 Summary = GetSummary(),
                 JiraStatusCategory = GetJiraStatusCategory(),

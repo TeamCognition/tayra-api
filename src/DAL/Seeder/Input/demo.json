@@ -8,7 +8,7 @@
       "LastName": "Demo",
       "Username": "admin_demo",
       "Role": "Admin",
-      "IdentityId": 20
+      "IdentityId": 3
     },
     {
       "Id": 2,
@@ -17,7 +17,7 @@
       "LastName": "Mujić",
       "Username": "member_demo",
       "Role": "Member",
-      "IdentityId": 27
+      "IdentityId": 4
     },
     {
       "Id": 3,

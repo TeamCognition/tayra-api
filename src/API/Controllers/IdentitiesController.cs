@@ -36,22 +36,22 @@ namespace Tayra.API.Controllers
             //var o = Resolve<IOrganizationsService>();
             //o.Create(new OrganizationCreateDTO
             //{
-            //    Key = "devtenant.tayra.local",
-            //    Name = "Tayra Dev Tenant",
+            //    Key = "mop.tayra.io",
+            //    Name = "Ministry of Programming",
             //    Timezone = "Central Europe Standard Time",
             //    DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
-            //    DatabaseName = "tayra-tenant_dev",
+            //    DatabaseName = "tayra-tenant_mop",
             //    TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
             //});
 
-            IdentitiesService.CreateInvitation(0, "devtenant.tayra.local", new IdentityInviteDTO
-            {
-                EmailAddress = "haris+1@tayra.io",
-                FirstName = "Bota",
-                LastName = "Admin",
-                Role = ProfileRoles.Admin
-            });
-            DbContext.SaveChanges();
+            // IdentitiesService.CreateInvitation(0, "demo.tayra.io", new IdentityInviteDTO
+            // {
+            //     EmailAddress = "haris+95@tayra.io",
+            //     FirstName = "Bota",
+            //     LastName = "Admin",
+            //     Role = ProfileRoles.Admin
+            // });
+            // DbContext.SaveChanges();
 
             //IdentitiesService.InternalCreateWithProfile(dto);
             //DbContext.SaveChanges();
@@ -60,7 +60,7 @@ namespace Tayra.API.Controllers
         }
 
         [AllowAnonymous, HttpPost("join")]
-        public IActionResult Sendinvitation([FromBody] IdentityJoinDTO dto)
+        public IActionResult SendInvitation([FromBody] IdentityJoinDTO dto)
         {
             IdentitiesService.InvitationJoinWithSaveChanges(dto);
 
@@ -68,7 +68,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost("invitation")]
-        public IActionResult Sendinvitation([FromBody] IdentityInviteDTO dto)
+        public IActionResult SendInvitation([FromBody] IdentityInviteDTO dto)
         {
             IdentitiesService.CreateInvitation(CurrentUser.ProfileId, TenantProvider.GetTenant().Key, dto);
 
@@ -83,15 +83,15 @@ namespace Tayra.API.Controllers
         }
 
         [AllowAnonymous, HttpGet("invitation")]
-        public ActionResult<IdentityInvitationViewDTO> Getinvitation([FromQuery] string InvitationCode)
+        public ActionResult<IdentityInvitationViewDTO> GetInvitation([FromQuery] string invitationCode)
         {
-            var invitation = IdentitiesService.GetInvitation(InvitationCode);
+            var invitation = IdentitiesService.GetInvitation(invitationCode);
             DbContext.SaveChanges();
             return invitation;
         }
 
         [HttpDelete("invitation/{invitationId:int}")]
-        public IActionResult Deleteinvitation([FromRoute] int invitationId)
+        public IActionResult DeleteInvitation([FromRoute] int invitationId)
         {
             IdentitiesService.DeleteInvitation(invitationId);
 
@@ -147,7 +147,7 @@ namespace Tayra.API.Controllers
         {
             if (gridParams.SegmentId.HasValue && !CurrentUser.SegmentsIds.Contains(gridParams.SegmentId.Value))
             {
-                throw new CogSecurityException("You don' have perrmission to segment " + gridParams.SegmentId);
+                throw new CogSecurityException("You don' have permission to segment " + gridParams.SegmentId);
             }
 
             return IdentitiesService.GetIdentityManageGridData(CurrentUser.ProfileId,CurrentUser.Role, gridParams);

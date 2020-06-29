@@ -69,10 +69,11 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     try
                     {
                         //context.Database.ExecuteSqlInterpolated($"DELETE FROM {tableName}");
-                        context.Database.ExecuteSqlCommand($"DELETE FROM {tableName}");
+                        context.Database.ExecuteSqlCommand($"DELETE FROM {tableName}", tableName);
                         finishedTables.Add(tableName);
-                    } catch(SqlException)
+                    } catch(SqlException e)
                     {
+                        Console.WriteLine("Error on unseed: " + e.Message);
                         wasError = true;
                     }
                 }

@@ -14,6 +14,8 @@ namespace Tayra.Models.Organizations
         /// </summary>
         public string ExternalProjectId { get; set; }
 
+        public string ExternalUrl { get; set; }
+
         public IntegrationType IntegrationType { get; set; }
 
         public string Summary { get; set; }
