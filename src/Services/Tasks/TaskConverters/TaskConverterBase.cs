@@ -19,6 +19,8 @@ namespace Tayra.Services.TaskConverters
         protected TaskConverterMode Mode;
         protected OrganizationDbContext DbContext;
         protected ProfileAssignment CachedProfileAssignment;
+        protected int? IntegrationIdCache;
+        
         public TaskAddOrUpdateDTO Data { get; protected set; }
         protected IProfilesService ProfilesService;
         protected Profile AssigneeProfile;
@@ -45,7 +47,7 @@ namespace Tayra.Services.TaskConverters
                 Summary = GetSummary(),
                 JiraStatusCategory = GetJiraStatusCategory(),
                 TimeSpentInMinutes = GetTimeSpentInMinutes(),
-                TimeOriginalEstimatInMinutes = GetTimeOriginalEstimateInMinutes(),
+                TimeOriginalEstimateInMinutes = GetTimeOriginalEstimateInMinutes(),
                 StoryPoints = GetStoryPoints(),
                 Priority = GetPriority(),
                 Type = GetTaskType(),
@@ -164,6 +166,20 @@ namespace Tayra.Services.TaskConverters
         protected int? GetCurrentSegmentId()
         {
             return GetProfileAssignment()?.SegmentId;
+        }
+        
+        //not used beacuse there is a problem when profile is not assigned to any segment and gets wrong integrationid with no refresh token
+        protected int? GetIntegrationId()
+        {
+            if (IntegrationIdCache == null)
+            {
+                IntegrationIdCache = DbContext
+                    .Integrations
+                    .Where(x => x.SegmentId == GetCurrentSegmentId())
+                    .OrderByDescending(x => x.Created)
+                    .FirstOrDefault()?.Id;
+            }
+            return IntegrationIdCache;
         }
 
         protected int? GetTeamId()

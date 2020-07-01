@@ -27,6 +27,7 @@ namespace Tayra.Services
                 task = new Task
                 {
                     ExternalId = dto.ExternalId,
+                    ExternalUrl = dto.ExternalUrl,
                     ExternalProjectId = dto.ExternalProjectId,
                     IntegrationType = dto.IntegrationType
                 };
@@ -40,7 +41,7 @@ namespace Tayra.Services
             task.Type = dto.Type;
             task.AutoTimeSpentInMinutes = dto.AutoTimeSpentInMinutes;
             task.TimeSpentInMinutes = dto.TimeSpentInMinutes;
-            task.TimeOriginalEstimatInMinutes = dto.TimeOriginalEstimatInMinutes;
+            task.TimeOriginalEstimatInMinutes = dto.TimeOriginalEstimateInMinutes;
             task.StoryPoints = dto.StoryPoints;
             task.Complexity = TayraPersonalPerformance.MapSPToComplexity(dto.StoryPoints);
             task.BugSeverity = dto.Type == TaskTypes.Task ? (int?)null : TayraPersonalPerformance.MapPriorityToSeverity(dto.Priority);

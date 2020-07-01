@@ -23,19 +23,39 @@ namespace Tayra.Services
         public TeamViewDTO GetTeamViewDTO(string teamKey)
         {
             var teamDto = (from t in DbContext.Teams
-                           where t.Key == teamKey
-                           select new TeamViewDTO
-                           {
-                               TeamId = t.Id,
-                               TeamKey = t.Key,
-                               Name = t.Name,
-                               AvatarColor = t.AvatarColor,
-                               Created = t.Created
-                           }).FirstOrDefault();
+                where t.Key == teamKey
+                select new TeamViewDTO
+                {
+                    TeamId = t.Id,
+                    TeamKey = t.Key,
+                    Name = t.Name,
+                    AvatarColor = t.AvatarColor,
+                    Created = t.Created
+                }).FirstOrDefault();
 
             teamDto.EnsureNotNull(teamKey);
-
+            
             return teamDto;
+        }
+
+        public TeamRawScoreDTO GetTeamRawScoreDTO(string teamKey)
+        {
+            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
+            team.EnsureNotNull(teamKey);
+
+            return (from r in DbContext.TeamReportsDaily
+                where r.TeamId == team.Id
+                select new TeamRawScoreDTO
+                {
+                    TasksCompleted = r.TasksCompletedTotal,
+                    AssistsGained = r.AssistsTotal,
+                    TimeWorked =  r.TasksCompletionTimeTotal,
+                    TokensEarned =  r.CompanyTokensEarnedTotal,
+                    TokensSpent =  r.CompanyTokensSpentTotal,
+                    ItemsBought = r.ItemsBoughtTotal,
+                    QuestsCompleted = r.QuestsCompletedTotal,
+                    DaysOnTayra = EF.Functions.DateDiffDay(team.Created, DateTime.UtcNow)
+                }).FirstOrDefault();
         }
 
         public GridData<TeamViewGridDTO> GetViewGridData(int[] segmentIds, TeamViewGridParams gridParams)

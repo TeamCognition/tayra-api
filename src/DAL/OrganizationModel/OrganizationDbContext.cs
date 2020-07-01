@@ -51,13 +51,13 @@ namespace Tayra.Models.Organizations
         public DbSet<ActionPoint> ActionPoints { get; set; }
         public DbSet<ActionPointSetting> ActionPointSettings { get; set; }
         public DbSet<Blob> Blobs { get; set; }
-        public DbSet<Challenge> Challenges { get; set; }
-        public DbSet<ChallengeCommit> ChallengeCommits { get; set; }
-        public DbSet<ChallengeCompletion> ChallengeCompletions { get; set; }
-        public DbSet<ChallengeGoal> ChallengeGoals { get; set; }
-        public DbSet<ChallengeGoalCompletion> ChallengeGoalCompletions { get; set; }
-        public DbSet<ChallengeReward> ChallengeRewards { get; set; }
-        public DbSet<ChallengeSegment> ChallengeSegments { get; set; }
+        public DbSet<Quest> Quests { get; set; }
+        public DbSet<QuestCommit> QuestCommits { get; set; }
+        public DbSet<QuestCompletion> QuestCompletions { get; set; }
+        public DbSet<QuestGoal> QuestGoals { get; set; }
+        public DbSet<QuestGoalCompletion> QuestGoalCompletions { get; set; }
+        public DbSet<QuestReward> QuestRewards { get; set; }
+        public DbSet<QuestSegment> QuestSegments { get; set; }
         public DbSet<ClaimBundle> ClaimBundles { get; set; }
         public DbSet<ClaimBundleItem> ClaimBundleItems { get; set; }
         public DbSet<ClaimBundleTokenTxn> ClaimBundleTokenTxns { get; set; }
@@ -131,22 +131,22 @@ namespace Tayra.Models.Organizations
                 entity.HasKey(x => new { x.Type });
             });
 
-            modelBuilder.Entity<ChallengeCommit>().HasKey(x => new { x.ChallengeId, x.ProfileId });
-            modelBuilder.Entity<ChallengeCompletion>().HasKey(x => new { x.ChallengeId, x.ProfileId });
+            modelBuilder.Entity<QuestCommit>().HasKey(x => new { QuestId = x.QuestId, x.ProfileId });
+            modelBuilder.Entity<QuestCompletion>().HasKey(x => new { x.QuestId, x.ProfileId });
 
-            modelBuilder.Entity<ChallengeGoalCompletion>(entity =>
+            modelBuilder.Entity<QuestGoalCompletion>(entity =>
             {
                 entity.HasKey(x => new { x.GoalId, x.ProfileId });
             });
 
-            modelBuilder.Entity<ChallengeReward>(entity =>
+            modelBuilder.Entity<QuestReward>(entity =>
             {
-                entity.HasKey(x => new { x.ChallengeId, x.ItemId });
+                entity.HasKey(x => new { x.QuestId, x.ItemId });
             });
 
-            modelBuilder.Entity<ChallengeSegment>(entity =>
+            modelBuilder.Entity<QuestSegment>(entity =>
             {
-                entity.HasKey(x => new { x.ChallengeId, x.SegmentId });
+                entity.HasKey(x => new { x.QuestId, x.SegmentId });
             });
 
             modelBuilder.Entity<ClaimBundleItem>().HasKey(x => new { x.ClaimBundleId, x.ProfileInventoryItemId });

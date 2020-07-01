@@ -27,6 +27,12 @@ namespace Tayra.API.Controllers
             return Ok(TeamsService.GetTeamViewDTO(teamKey));
         }
 
+        [HttpGet("{teamKey}/rawScore")]
+        public ActionResult<TeamRawScoreDTO> GetTeamRawScore([FromRoute]string teamKey)
+        {
+            return Ok(TeamsService.GetTeamRawScoreDTO(teamKey));
+        }
+        
         [HttpPost("search")]
         public ActionResult<GridData<TeamViewGridDTO>> Search([FromBody] TeamViewGridParams gridParams)
         {

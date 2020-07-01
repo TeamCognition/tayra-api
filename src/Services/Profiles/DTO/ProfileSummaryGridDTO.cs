@@ -18,7 +18,7 @@ namespace Tayra.Services
         { 
             public float CompanyTokens { get; set; }
             public int? Praises { get; set; }
-            public int? CompletedChallenges { get; set; } = 0;
+            public int? CompletedQuests { get; set; } = 0;
         }
 
         public class Team

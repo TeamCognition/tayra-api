@@ -22,7 +22,7 @@ namespace Tayra.Services
 
         public int? AutoTimeSpentInMinutes { get; set; }
         public int? TimeSpentInMinutes { get; set; }
-        public int? TimeOriginalEstimatInMinutes { get; set; }
+        public int? TimeOriginalEstimateInMinutes { get; set; }
 
         public int? StoryPoints { get; set; }
         public TaskPriorities Priority { get; set; }

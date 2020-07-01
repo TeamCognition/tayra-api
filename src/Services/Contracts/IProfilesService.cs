@@ -15,12 +15,13 @@ namespace Tayra.Services
         bool IsUsernameUnique(string username);
         GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams);
         GridData<ProfileSummaryGridDTO> GetGridDataWithSummary(int profileId, ProfileSummaryGridParams gridParams);
-        GridData<ProfileCompletedChallengesGridDTO> GetCompletedChallengesGridDTO(ProfileCompletedChallengesGridParams gridParams);
-        GridData<ProfileCommittedChallengesGridDTO> GetCommittedChallengesGridDTO(ProfileCommittedChallengesGridParams gridParams);
+        GridData<ProfileCompletedQuestsGridDTO> GetCompletedQuestsGridDTO(ProfileCompletedQuestsGridParams gridParams);
+        GridData<ProfileCommittedQuestsGridDTO> GetCommittedQuestsGridDTO(ProfileCommittedQuestsGridParams gridParams);
         ProfileUpdateDTO GetUpdateProfileData(int profileId);
         void UpdateProfile(int profileId, ProfileUpdateDTO dto);
         ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId);
         ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition);
+        ProfileRawScoreDTO GetProfileRawScoreDTO(string username);
         void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto);
         ProfileNotificationSettingsDTO GetNotificationSettings(int profileId);
         void UpdateNotificationSettings(int profileId, ProfileNotificationSettingsDTO dto);

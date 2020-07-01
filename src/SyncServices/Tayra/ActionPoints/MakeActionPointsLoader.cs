@@ -108,7 +108,7 @@ namespace Tayra.SyncServices.Tayra
                                         select si).Count();
 
 
-            var challengesCreatedInLast4 = (from c in organizationDb.ChallengeSegments
+            var questsCreatedInLast4 = (from c in organizationDb.QuestSegments
                                             where c.Created > DateHelper2.ParseDate(dateId4ago)
                                             group c by c.SegmentId into g
                                             select new
@@ -219,8 +219,8 @@ namespace Tayra.SyncServices.Tayra
                             isTrue: shopItemsAddedInLast4 == 0,
                             aps);
                         
-                        MakeSegmentAP(organizationDb, ActionPointTypes.ChallengeNotCreatedIn4Weeks, s.Id,
-                            isTrue: (challengesCreatedInLast4.FirstOrDefault(x => x.SegmentId == s.Id)?.Count ?? 0) == 0,
+                        MakeSegmentAP(organizationDb, ActionPointTypes.QuestsNotCreatedIn4Weeks, s.Id,
+                            isTrue: (questsCreatedInLast4.FirstOrDefault(x => x.SegmentId == s.Id)?.Count ?? 0) == 0,
                             aps);   
                     }
                 }

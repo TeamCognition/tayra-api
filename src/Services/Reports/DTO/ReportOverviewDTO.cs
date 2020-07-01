@@ -13,7 +13,7 @@ namespace Tayra.Services
         {
             public int ActiveTeams { get; set; }
             public int ActiveMembers { get; set; }
-            public int ActiveChallenges { get; set; }
+            public int ActiveQuests { get; set; }
             public int ActiveIntegrations { get; set; }
             public int ShopItemsBought { get; set; }
         }

@@ -150,193 +150,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.ToTable("Blobs");
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.Challenge", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime?>("ActiveUntil");
-
-                    b.Property<int?>("CompletionsLimit");
-
-                    b.Property<int?>("CompletionsRemaining");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("CreatedBy");
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime?>("EndedAt");
-
-                    b.Property<string>("Image");
-
-                    b.Property<bool>("IsArchived");
-
-                    b.Property<bool>("IsEasterEgg");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int?>("LastModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.Property<float>("RewardValue");
-
-                    b.Property<int?>("SegmentId");
-
-                    b.Property<int>("Status");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("SegmentId", "OrganizationId");
-
-                    b.ToTable("Challenges");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeCommit", b =>
-                {
-                    b.Property<int>("ChallengeId");
-
-                    b.Property<int>("ProfileId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime?>("CompletedAt");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("ChallengeId", "ProfileId", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProfileId", "OrganizationId");
-
-                    b.ToTable("ChallengeCommits");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeCompletion", b =>
-                {
-                    b.Property<int>("ChallengeId");
-
-                    b.Property<int>("ProfileId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("ChallengeId", "ProfileId", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProfileId", "OrganizationId");
-
-                    b.ToTable("ChallengeCompletions");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeGoal", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<int>("ChallengeId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsCommentRequired");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<string>("Title");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ChallengeId", "OrganizationId");
-
-                    b.ToTable("ChallengeGoals");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeGoalCompletion", b =>
-                {
-                    b.Property<int>("GoalId");
-
-                    b.Property<int>("ProfileId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<string>("Comment");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("GoalId", "ProfileId", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProfileId", "OrganizationId");
-
-                    b.ToTable("ChallengeGoalCompletions");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeReward", b =>
-                {
-                    b.Property<int>("ChallengeId");
-
-                    b.Property<int>("ItemId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int>("Quantity");
-
-                    b.HasKey("ChallengeId", "ItemId", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ItemId", "OrganizationId");
-
-                    b.ToTable("ChallengeRewards");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeSegment", b =>
-                {
-                    b.Property<int>("ChallengeId");
-
-                    b.Property<int>("SegmentId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.HasKey("ChallengeId", "SegmentId", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("SegmentId", "OrganizationId");
-
-                    b.ToTable("ChallengeSegments");
-                });
-
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundle", b =>
                 {
                     b.Property<int>("Id")
@@ -728,8 +541,6 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<long?>("ArchievedAt");
 
-                    b.Property<int?>("ChallengesQuantityRemaining");
-
                     b.Property<DateTime>("Created");
 
                     b.Property<int>("CreatedBy");
@@ -756,6 +567,8 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasMaxLength(100);
 
                     b.Property<float>("Price");
+
+                    b.Property<int?>("QuestsQuantityRemaining");
 
                     b.Property<int>("Rarity");
 
@@ -1253,6 +1066,10 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("ProfileRole");
 
+                    b.Property<int>("QuestsCompletedChange");
+
+                    b.Property<int>("QuestsCompletedTotal");
+
                     b.Property<int>("SavesChange");
 
                     b.Property<int>("SavesTotal");
@@ -1405,6 +1222,193 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("SegmentId", "OrganizationId");
 
                     b.ToTable("ProfileReportsWeekly");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.Quest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime?>("ActiveUntil");
+
+                    b.Property<int?>("CompletionsLimit");
+
+                    b.Property<int?>("CompletionsRemaining");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<int>("CreatedBy");
+
+                    b.Property<string>("Description");
+
+                    b.Property<DateTime?>("EndedAt");
+
+                    b.Property<string>("Image");
+
+                    b.Property<bool>("IsArchived");
+
+                    b.Property<bool>("IsEasterEgg");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.Property<int?>("LastModifiedBy");
+
+                    b.Property<string>("Name");
+
+                    b.Property<float>("RewardValue");
+
+                    b.Property<int?>("SegmentId");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("Id", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("SegmentId", "OrganizationId");
+
+                    b.ToTable("Quests");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestCommit", b =>
+                {
+                    b.Property<int>("QuestId");
+
+                    b.Property<int>("ProfileId");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime?>("CompletedAt");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.HasKey("QuestId", "ProfileId", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ProfileId", "OrganizationId");
+
+                    b.ToTable("QuestCommits");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestCompletion", b =>
+                {
+                    b.Property<int>("QuestId");
+
+                    b.Property<int>("ProfileId");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.HasKey("QuestId", "ProfileId", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ProfileId", "OrganizationId");
+
+                    b.ToTable("QuestCompletions");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestGoal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<bool>("IsCommentRequired");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.Property<int>("QuestId");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("QuestId", "OrganizationId");
+
+                    b.ToTable("QuestGoals");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestGoalCompletion", b =>
+                {
+                    b.Property<int>("GoalId");
+
+                    b.Property<int>("ProfileId");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<string>("Comment");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.HasKey("GoalId", "ProfileId", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ProfileId", "OrganizationId");
+
+                    b.ToTable("QuestGoalCompletions");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestReward", b =>
+                {
+                    b.Property<int>("QuestId");
+
+                    b.Property<int>("ItemId");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.Property<int>("Quantity");
+
+                    b.HasKey("QuestId", "ItemId", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("ItemId", "OrganizationId");
+
+                    b.ToTable("QuestRewards");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestSegment", b =>
+                {
+                    b.Property<int>("QuestId");
+
+                    b.Property<int>("SegmentId");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.HasKey("QuestId", "SegmentId", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("SegmentId", "OrganizationId");
+
+                    b.ToTable("QuestSegments");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Segment", b =>
@@ -2120,6 +2124,10 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<bool>("IsUnassigned");
 
+                    b.Property<int>("ItemsBoughtChange");
+
+                    b.Property<int>("ItemsBoughtTotal");
+
                     b.Property<int>("IterationCount");
 
                     b.Property<DateTime?>("LastModified");
@@ -2135,6 +2143,10 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<int>("PraisesReceivedChange");
 
                     b.Property<int>("PraisesReceivedTotal");
+
+                    b.Property<int>("QuestsCompletedChange");
+
+                    b.Property<int>("QuestsCompletedTotal");
 
                     b.Property<int>("SavesChange");
 
@@ -2422,134 +2434,6 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.Challenge", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Segment")
-                        .WithMany("Challenges")
-                        .HasForeignKey("SegmentId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeCommit", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Challenge", "Challenge")
-                        .WithMany("Commits")
-                        .HasForeignKey("ChallengeId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
-                        .WithMany()
-                        .HasForeignKey("ProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeCompletion", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Challenge", "Challenge")
-                        .WithMany()
-                        .HasForeignKey("ChallengeId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
-                        .WithMany("CompletedChallenges")
-                        .HasForeignKey("ProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeGoal", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Challenge", "Challenge")
-                        .WithMany("Goals")
-                        .HasForeignKey("ChallengeId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeGoalCompletion", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.ChallengeGoal", "Goal")
-                        .WithMany("Completitions")
-                        .HasForeignKey("GoalId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
-                        .WithMany()
-                        .HasForeignKey("ProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeReward", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Challenge", "Challenge")
-                        .WithMany("Rewards")
-                        .HasForeignKey("ChallengeId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.ChallengeSegment", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Challenge", "Challenge")
-                        .WithMany("Segments")
-                        .HasForeignKey("ChallengeId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
-                        .WithMany()
-                        .HasForeignKey("SegmentId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundle", b =>
@@ -3032,6 +2916,134 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("StatsWeekly")
                         .HasForeignKey("ProfileId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
+                        .WithMany()
+                        .HasForeignKey("SegmentId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.Quest", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Segment")
+                        .WithMany("Quests")
+                        .HasForeignKey("SegmentId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestCommit", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
+                        .WithMany("Commits")
+                        .HasForeignKey("QuestId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestCompletion", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
+                        .WithMany("CompletedQuests")
+                        .HasForeignKey("ProfileId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
+                        .WithMany()
+                        .HasForeignKey("QuestId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestGoal", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
+                        .WithMany("Goals")
+                        .HasForeignKey("QuestId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestGoalCompletion", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.QuestGoal", "Goal")
+                        .WithMany("Completitions")
+                        .HasForeignKey("GoalId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestReward", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
+                        .WithMany("Rewards")
+                        .HasForeignKey("QuestId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestSegment", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
+                        .WithMany("Segments")
+                        .HasForeignKey("QuestId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 

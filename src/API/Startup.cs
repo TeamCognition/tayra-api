@@ -49,6 +49,7 @@ namespace Tayra.API
             services.AddTransient<ITasksService, TasksService>();
             services.AddTransient<ITeamsService, TeamsService>();
             services.AddTransient<IPraiseService, PraiseService>();
+            services.AddTransient<IQuestsService, QuestsService>();
             services.AddTransient<ITokensService, TokensService>();
             services.AddTransient<ILookupsService, LookupsService>();
             services.AddTransient<IReportsService, ReportsService>();
@@ -56,7 +57,6 @@ namespace Tayra.API
             services.AddTransient<ISegmentsService, SegmentsService>();
             services.AddTransient<IShopItemsService, ShopItemsService>();
             services.AddTransient<IAssistantService, AssistantService>();
-            services.AddTransient<IChallengesService, ChallengesService>();
             services.AddTransient<IIdentitiesService, IdentitiesService>();
             services.AddTransient<IInventoriesService, InventoryService>();
             services.AddTransient<IClaimBundlesService, ClaimBundlesService>();
@@ -78,11 +78,7 @@ namespace Tayra.API
             services.AddDistributedMemoryCache();
             //services.AddSession();
 
-            services.AddCors(c =>
-            {
-                c.AddPolicy("AllowAllOrigins", options => options.AllowAnyOrigin()
-                                                                 .AllowAnyHeader());
-            });
+            services.AddCors();
 
             services.AddControllers();
             services.AddAuthentication(options =>
@@ -123,11 +119,11 @@ namespace Tayra.API
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseCors(options =>
-            {
-                options.AllowAnyOrigin();
-                options.AllowAnyHeader();
-            });
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());   
+
             app.UseSwagger();
 
             app.Use(async (context, next) =>

@@ -38,6 +38,12 @@ namespace Tayra.API.Controllers
         {
             return Ok(ProfilesService.GetProfileViewDTO(CurrentUser.ProfileId, x => x.Username == username));
         }
+        
+        [HttpGet("{username}/rawScore")]
+        public ActionResult<ProfileViewDTO> GetUserRawScore([FromRoute] string username)
+        {
+            return Ok(ProfilesService.GetProfileRawScoreDTO(username));
+        }
 
         [HttpPost("search")]
         public ActionResult<GridData<ProfileGridDTO>> Search([FromBody] ProfileGridParams gridParams)
@@ -51,20 +57,20 @@ namespace Tayra.API.Controllers
             return ProfilesService.GetGridDataWithSummary(CurrentUser.ProfileId, gridParams);
         }
 
-        [HttpPost("searchCompletedChallenges")]
-        public ActionResult<GridData<ProfileCompletedChallengesGridDTO>> GetCompletedChallengesGrid([FromBody] ProfileCompletedChallengesGridParams gridParams)
+        [HttpPost("searchCompletedQuests")]
+        public ActionResult<GridData<ProfileCompletedQuestsGridDTO>> GetCompletedQuestsGrid([FromBody] ProfileCompletedQuestsGridParams gridParams)
         {
             //gridParams.ProfileUsernameQuery ??= CurrentUser.Username
             gridParams.ProfileId = gridParams.ProfileId ?? CurrentUser.ProfileId;
-            return ProfilesService.GetCompletedChallengesGridDTO(gridParams);
+            return ProfilesService.GetCompletedQuestsGridDTO(gridParams);
         }
 
-        [HttpPost("searchCommittedChallenges")]
-        public ActionResult<GridData<ProfileCommittedChallengesGridDTO>> GetCommittedChallengesGrid([FromBody] ProfileCommittedChallengesGridParams gridParams)
+        [HttpPost("searchCommittedQuests")]
+        public ActionResult<GridData<ProfileCommittedQuestsGridDTO>> GetCommittedQuestsGrid([FromBody] ProfileCommittedQuestsGridParams gridParams)
         {
             //gridParams.ProfileUsernameQuery ??= CurrentUser.Username
             gridParams.ProfileId = gridParams.ProfileId ?? CurrentUser.ProfileId;
-            return ProfilesService.GetCommittedChallengesGridDTO(gridParams);
+            return ProfilesService.GetCommittedQuestsGridDTO(gridParams);
         }
 
         [HttpGet, Route("integrations")]

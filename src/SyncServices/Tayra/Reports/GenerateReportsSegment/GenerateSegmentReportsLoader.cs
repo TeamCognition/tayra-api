@@ -203,7 +203,7 @@ namespace Tayra.SyncServices.Tayra
                 if (dmr.Count() == 0)
                     continue;
 
-                //active teams, active integrations, active challenges are missing. reports/overview
+                //active teams, active integrations, active quests are missing. reports/overview
                 reportsToInsert.Add(new SegmentReportWeekly
                 {
                     SegmentId = s.SegmentId,

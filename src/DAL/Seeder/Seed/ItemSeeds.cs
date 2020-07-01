@@ -15,7 +15,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "A Mild Case of Dedication",
                     Description = "Item Desc",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon56.png",
+                    Image = "https://api.tayra.io/imgs/icon56.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -27,7 +27,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Skilled!",
                     Description = "Have confidence in your skills.",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon02.png",
+                    Image = "https://api.tayra.io/imgs/icon02.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -39,7 +39,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Merchant",
                     Description = "Caveat Venditor",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon07.png",
+                    Image = "https://api.tayra.io/imgs/icon07.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -51,7 +51,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Overachiever",
                     Description = "When you do more than you’re paid for, eventually you’ll be paid for more than you do.",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon04.png",
+                    Image = "https://api.tayra.io/imgs/icon04.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -63,7 +63,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "My Precious",
                     Description = "We wants it. We needs it. Must have the precious!",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon06.png",
+                    Image = "https://api.tayra.io/imgs/icon06.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -75,7 +75,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Wizard",
                     Description = "Don't mess with a wizard when he's wizarding!",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon10.png",
+                    Image = "https://api.tayra.io/imgs/icon10.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -87,7 +87,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Spooky",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon11.png",
+                    Image = "https://api.tayra.io/imgs/icon11.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -99,7 +99,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Champion",
                     Description = "It's pretty cool to be called a champion.",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon03.png",
+                    Image = "https://api.tayra.io/imgs/icon03.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -111,7 +111,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Lucky",
                     Description = "'I’m a great believer in luck, and I find the harder I work the more I have of it.' -Thomas Jefferson, American Founding Father",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon16.png",
+                    Image = "https://api.tayra.io/imgs/icon16.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -123,7 +123,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "A Helping Paw",
                     Description = "Who does not need a helping paw in their life?",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon17.png",
+                    Image = "https://api.tayra.io/imgs/icon17.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -135,7 +135,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Tactical genius",
                     Description = "The best tactics are elegantly simple.",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon18.png",
+                    Image = "https://api.tayra.io/imgs/icon18.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -147,7 +147,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "No stop 'til the Top",
                     Description = "There are no shortcuts to any place worth going.",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon01.png",
+                    Image = "https://api.tayra.io/imgs/icon01.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -159,7 +159,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "HTML/CSS Hipster",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon20.png",
+                    Image = "https://api.tayra.io/imgs/icon20.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -171,7 +171,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "C# Disciple",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon21.png",
+                    Image = "https://api.tayra.io/imgs/icon21.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -183,7 +183,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "React.js Lover",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon24.png",
+                    Image = "https://api.tayra.io/imgs/icon24.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -195,7 +195,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Angular Admirer",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon22.png",
+                    Image = "https://api.tayra.io/imgs/icon22.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -207,7 +207,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Python Devotee",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon23.png",
+                    Image = "https://api.tayra.io/imgs/icon23.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -219,7 +219,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Terminal Aficionado",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon25.png",
+                    Image = "https://api.tayra.io/imgs/icon25.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -231,7 +231,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Linux Fanatic",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon26.png",
+                    Image = "https://api.tayra.io/imgs/icon26.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -243,7 +243,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Team Booster",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon27.png",
+                    Image = "https://api.tayra.io/imgs/icon27.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -255,7 +255,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Design Junkie",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon28.png",
+                    Image = "https://api.tayra.io/imgs/icon28.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -267,7 +267,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "PHP Believer",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon29.png",
+                    Image = "https://api.tayra.io/imgs/icon29.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -279,7 +279,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Code Detective",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon57.png",
+                    Image = "https://api.tayra.io/imgs/icon57.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -291,7 +291,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Java Enthusiast",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon31.png",
+                    Image = "https://api.tayra.io/imgs/icon31.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -303,7 +303,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "SQL Whiz",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon32.png",
+                    Image = "https://api.tayra.io/imgs/icon32.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -315,7 +315,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "C# Prodigy",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon21.png",
+                    Image = "https://api.tayra.io/imgs/icon21.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -327,7 +327,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "React.js Prodigy",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon24.png",
+                    Image = "https://api.tayra.io/imgs/icon24.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -339,7 +339,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Angular Prodigy",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon22.png",
+                    Image = "https://api.tayra.io/imgs/icon22.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -351,7 +351,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "JavaScript Prodigy",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon33.png",
+                    Image = "https://api.tayra.io/imgs/icon33.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -363,7 +363,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Python Prodigy",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon23.png",
+                    Image = "https://api.tayra.io/imgs/icon23.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -375,7 +375,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "PHP Prodigy",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon29.png",
+                    Image = "https://api.tayra.io/imgs/icon29.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -387,7 +387,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Java Prodigy",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon31.png",
+                    Image = "https://api.tayra.io/imgs/icon31.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -399,7 +399,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "SQL Prodigy",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon32.png",
+                    Image = "https://api.tayra.io/imgs/icon32.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -411,7 +411,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "C++ Prodigy",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon34.png",
+                    Image = "https://api.tayra.io/imgs/icon34.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -423,7 +423,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "codeConventionsFreak",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon35.png",
+                    Image = "https://api.tayra.io/imgs/icon35.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -435,7 +435,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Slack Spammer",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon36.png",
+                    Image = "https://api.tayra.io/imgs/icon36.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -447,7 +447,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "I speak Code",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon37.png",
+                    Image = "https://api.tayra.io/imgs/icon37.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -459,7 +459,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Coffee Addict",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon38.png",
+                    Image = "https://api.tayra.io/imgs/icon38.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -471,7 +471,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "No unit tests needed",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon39.png",
+                    Image = "https://api.tayra.io/imgs/icon39.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -483,7 +483,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Works on my machine",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon40.png",
+                    Image = "https://api.tayra.io/imgs/icon40.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -495,7 +495,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "I will refactor later",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon41.png",
+                    Image = "https://api.tayra.io/imgs/icon41.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -507,7 +507,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "{Hello World!}",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon42.png",
+                    Image = "https://api.tayra.io/imgs/icon42.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -519,7 +519,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Vim Lover",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon43.png",
+                    Image = "https://api.tayra.io/imgs/icon43.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -531,7 +531,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Vim FTW",
                     Description = "Mouse is overrated!",
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon43.png",
+                    Image = "https://api.tayra.io/imgs/icon43.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -543,7 +543,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Gaming brought me here",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon44.png",
+                    Image = "https://api.tayra.io/imgs/icon44.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -555,7 +555,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "I started coding because of games",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon45.png",
+                    Image = "https://api.tayra.io/imgs/icon45.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -567,7 +567,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Casual gamer",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon46.png",
+                    Image = "https://api.tayra.io/imgs/icon46.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -579,7 +579,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "GG EZ",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon47.png",
+                    Image = "https://api.tayra.io/imgs/icon47.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -591,7 +591,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Easy game easy life",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon48.png",
+                    Image = "https://api.tayra.io/imgs/icon48.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -603,7 +603,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Bug? ...or feature?",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon50.png",
+                    Image = "https://api.tayra.io/imgs/icon50.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -615,7 +615,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Bug Fixer",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon49.png",
+                    Image = "https://api.tayra.io/imgs/icon49.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -627,7 +627,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Production Guardian",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon51.png",
+                    Image = "https://api.tayra.io/imgs/icon51.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -639,7 +639,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Hero of the day!",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon52.png",
+                    Image = "https://api.tayra.io/imgs/icon52.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -651,7 +651,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Bugs 404",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon53.png",
+                    Image = "https://api.tayra.io/imgs/icon53.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -663,7 +663,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "All tests matter!",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon54.png",
+                    Image = "https://api.tayra.io/imgs/icon54.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -675,7 +675,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Build breaker",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon55.png",
+                    Image = "https://api.tayra.io/imgs/icon55.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -687,7 +687,7 @@ namespace Tayra.Models.Seeder
                 {
                     Name = "Hacker",
                     Description = null,
-                    Image = "https://tayra-imager.azurewebsites.net/imgs/icon30.png",
+                    Image = "https://api.tayra.io/imgs/icon30.png",
                     Price = 10.2f,
                     IsActivable = true,
                     IsDisenchantable = true,
@@ -719,7 +719,7 @@ namespace Tayra.Models.Seeder
                 }
 
                 item.ShopQuantityRemaining = null;
-                item.ChallengesQuantityRemaining = null;
+                item.QuestsQuantityRemaining = null;
                 item.GiveawayQuantityRemaining = null;
             }
 

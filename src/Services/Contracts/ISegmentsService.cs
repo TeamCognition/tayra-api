@@ -1,4 +1,5 @@
 ﻿using Cog.Core;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -12,7 +13,7 @@ namespace Tayra.Services
         SegmentViewDTO GetSegmnetViewDTO(string segmentKey);
         SegmentImpactPieChartDTO GetImpactPieChart(int segmentId);
         SegmentImpactLineChartDTO GetImpactLineChart(int segmentId);
-        void Create(int profileId, SegmentCreateDTO dto);
+        void Create(int profileId, ProfileRoles role, SegmentCreateDTO dto);
         void Update(int segmentId, SegmentCreateDTO dto);
         void AddMember(SegmentMemberAddRemoveDTO dto);
         void RemoveMember(SegmentMemberAddRemoveDTO dto);

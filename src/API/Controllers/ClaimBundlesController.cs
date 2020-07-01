@@ -23,7 +23,7 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpPost("search")]
-        public ActionResult<GridData<ClaimBundleViewGridDTO>> GetSegmentChallenges([FromBody] ClaimBundleViewGridParams gridParams)
+        public ActionResult<GridData<ClaimBundleViewGridDTO>> GetSegmentQuests([FromBody] ClaimBundleViewGridParams gridParams)
         {
             return ClaimBundlesService.GetClaimBundlesGrid(CurrentUser.ProfileId, gridParams);
         }

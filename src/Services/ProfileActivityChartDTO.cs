@@ -6,7 +6,7 @@
         public AssistsDTO AssistsData { get; set; }
         public DeliveryDTO DeliveryData { get; set; }
         public ItemActivityDTO ItemActivityData { get; set; }
-        //public ChallengesDTO ChallengesData { get; set; }
+        //public QuestDTO QuestsData { get; set; }
 
         public class AssistsDTO
         {
@@ -28,9 +28,9 @@
             public string[] GiftsSent { get; set; }
         }
 
-        public class ChallengesDTO
+        public class QuestsDTO
         {
-            public string[] CommitedTo { get; set; }
+            public string[] CommittedTo { get; set; }
             public string[] GoalsCompleted { get; set; }
             public string[] Completed { get; set; }
         }

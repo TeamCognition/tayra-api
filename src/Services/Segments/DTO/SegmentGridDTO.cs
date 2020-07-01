@@ -11,8 +11,8 @@ namespace Tayra.Services
         public string Avatar { get; set; }
         public DateTime Created { get; set; }
 
-        public int ChallengesActive { get; set; }
-        public int ChallengesCompleted { get; set; }
+        public int QuestsActive { get; set; }
+        public int QuestsCompleted { get; set; }
         public int ShopItemsBought { get; set; }
         public IntegrationType[] Integrations  { get; set; }
         public int ActionPointsCount { get; set; }

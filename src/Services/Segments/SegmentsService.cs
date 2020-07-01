@@ -42,8 +42,8 @@ namespace Tayra.Services
                             Key = s.Key,
                             Avatar = s.Avatar,
                             Created = s.Created,
-                            ChallengesActive = s.Challenges.Count(x => x.Status == ChallengeStatuses.Active),
-                            ChallengesCompleted = s.Challenges.Count(x => x.Status == ChallengeStatuses.Ended),
+                            QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),
+                            QuestsCompleted = s.Quests.Count(x => x.Status == QuestStatuses.Ended),
                             ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
                             Integrations = s.Integrations.Where(x => x.ProfileId == null).Select(x => x.Type).ToArray(),
                             ActionPointsCount = s.ActionPoints.Where(x => x.ConcludedOn == null).Select(x => x.Type).Distinct().Count()
@@ -56,7 +56,7 @@ namespace Tayra.Services
 
         public GridData<SegmentMemberGridDTO> GetSegmentMembersGridData(string segmentKey, SegmentMemberGridParams gridParams)
         {
-            var segment = DbContext.Segments.Where(s => s.Key == segmentKey).FirstOrDefault();
+            var segment = DbContext.Segments.FirstOrDefault(s => s.Key == segmentKey);
 
             segment.EnsureNotNull(segmentKey);
 
@@ -110,8 +110,8 @@ namespace Tayra.Services
                                     Avatar = s.Avatar,
                                     TokensEarned = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensEarnedTotal).FirstOrDefault(), 2),
                                     TokensSpent = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensSpentTotal).FirstOrDefault(), 2),
-                                    ChallengesActive = s.Challenges.Count(x => x.Status == ChallengeStatuses.Active),
-                                    ChallengesCompleted = s.Challenges.Count(x => x.Status == ChallengeStatuses.Ended),
+                                    QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),
+                                    QuestsCompleted = s.Quests.Count(x => x.Status == QuestStatuses.Ended),
                                     ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
                                 }).FirstOrDefault();
 
@@ -248,7 +248,7 @@ namespace Tayra.Services
             DbContext.Remove(DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == dto.ProfileId && x.TeamId == dto.TeamId));
         }
 
-        public void Create(int profileId, SegmentCreateDTO dto)
+        public void Create(int profileId, ProfileRoles role, SegmentCreateDTO dto)
         {
             if (!IsSegmentKeyUnique(dto.Key))
             {
@@ -268,13 +268,16 @@ namespace Tayra.Services
                 Name = "Unassigned",
                 Key = null                
             }).Entity;
-
-            DbContext.Add(new ProfileAssignment
+            
+            if(role != ProfileRoles.Admin)
             {
-                ProfileId = profileId,
-                SegmentId = segment.Id,
-                Team = team,
-            });
+                DbContext.Add(new ProfileAssignment
+                {
+                    ProfileId = profileId,
+                    SegmentId = segment.Id,
+                    Team = team,
+                });
+            }
         }
 
         public void Update(int segmentId, SegmentCreateDTO dto)

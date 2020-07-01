@@ -153,7 +153,7 @@ namespace Tayra.Services
                             {
                                 CompanyTokens = (float)Math.Round(tt.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2),
                                 Praises = DbContext.ProfilePraises.Count(x => x.ProfileId == p.Id),
-                                CompletedChallenges = p.CompletedChallenges.Count()
+                                CompletedQuests = p.CompletedQuests.Count()
                             },
                             Segments = p.Assignments.Select(x => new ProfileSummaryGridDTO.Segment
                             {
@@ -179,38 +179,38 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public GridData<ProfileCompletedChallengesGridDTO> GetCompletedChallengesGridDTO(ProfileCompletedChallengesGridParams gridParams)
+        public GridData<ProfileCompletedQuestsGridDTO> GetCompletedQuestsGridDTO(ProfileCompletedQuestsGridParams gridParams)
         {
-            var query = from cc in DbContext.ChallengeCompletions
+            var query = from cc in DbContext.QuestCompletions
                         where cc.ProfileId == gridParams.ProfileId
-                        select new ProfileCompletedChallengesGridDTO
+                        select new ProfileCompletedQuestsGridDTO
                         {
-                            ChallengeId = cc.ChallengeId,
-                            ChallengeName = cc.Challenge.Name,
-                            ChallengeImage = cc.Challenge.Image,
+                            QuestId = cc.QuestId,
+                            QuestName = cc.Quest.Name,
+                            QuestImage = cc.Quest.Image,
                             CompletedAt = cc.Created
                         };
 
-            GridData<ProfileCompletedChallengesGridDTO> gridData = query.GetGridData(gridParams);
+            GridData<ProfileCompletedQuestsGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
         }
 
-        public GridData<ProfileCommittedChallengesGridDTO> GetCommittedChallengesGridDTO(ProfileCommittedChallengesGridParams gridParams)
+        public GridData<ProfileCommittedQuestsGridDTO> GetCommittedQuestsGridDTO(ProfileCommittedQuestsGridParams gridParams)
         {
-            var query = from cc in DbContext.ChallengeCommits
+            var query = from cc in DbContext.QuestCommits
                         where cc.ProfileId == gridParams.ProfileId
-                        select new ProfileCommittedChallengesGridDTO
+                        select new ProfileCommittedQuestsGridDTO
                         {
-                            ChallengeId = cc.ChallengeId,
-                            Name = cc.Challenge.Name,
-                            Image = cc.Challenge.Image,
-                            Status = cc.Challenge.Status,
+                            QuestId = cc.QuestId,
+                            Name = cc.Quest.Name,
+                            Image = cc.Quest.Image,
+                            Status = cc.Quest.Status,
                             CompletedAt = cc.CompletedAt,
                             CommittedAt = cc.Created
                         };
 
-            GridData<ProfileCommittedChallengesGridDTO> gridData = query.GetGridData(gridParams);
+            GridData<ProfileCommittedQuestsGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
         }
@@ -377,6 +377,26 @@ namespace Tayra.Services
             profileDto.Pulse = GetProfilePulseDTO(profileId);
             
             return profileDto;
+        }
+        
+        public ProfileRawScoreDTO GetProfileRawScoreDTO(string username)
+        {
+            var profile = DbContext.Profiles.FirstOrDefault(x => x.Username == username);
+            profile.EnsureNotNull(username);
+
+            return (from r in DbContext.ProfileReportsDaily
+                where r.ProfileId == profile.Id
+                select new ProfileRawScoreDTO
+                {
+                    TasksCompleted = r.TasksCompletedTotal,
+                    AssistsGained = r.AssistsTotal,
+                    TimeWorked =  r.TasksCompletionTimeTotal,
+                    TokensEarned =  r.CompanyTokensEarnedTotal,
+                    TokensSpent =  r.CompanyTokensSpentTotal,
+                    ItemsBought = r.ItemsBoughtTotal,
+                    QuestsCompleted = r.QuestsCompletedTotal,
+                    DaysOnTayra = EF.Functions.DateDiffDay(profile.Created, DateTime.UtcNow)
+                }).FirstOrDefault();
         }
 
         public void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto)
