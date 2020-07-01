@@ -88,7 +88,7 @@ namespace Tayra.Services
                               {
                                   ActiveTeams = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom && x.Created <= dateTo).Count(),
                                   ActiveMembers = r.Select(x => x.MembersCountTotal).FirstOrDefault(),
-                                  ActiveChallenges = DbContext.ChallengeSegments.Where(x => x.SegmentId == reportParams.SegmentId && x.Challenge.Status == ChallengeStatuses.Active && x.Created >= dateFrom && x.Created <= dateTo).Count(),
+                                  ActiveQuests = DbContext.QuestSegments.Where(x => x.SegmentId == reportParams.SegmentId && x.Quest.Status == QuestStatuses.Active && x.Created >= dateFrom && x.Created <= dateTo).Count(),
                                   ActiveIntegrations = DbContext.Integrations.Where(x => x.SegmentId == reportParams.SegmentId && x.Created >= dateFrom && x.Created <= dateTo).GroupBy(x => x.Type).Count(),
                                   ShopItemsBought = r.Sum(x => x.ItemsBoughtChange)
                               }).FirstOrDefault(),

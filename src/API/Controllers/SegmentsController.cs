@@ -66,7 +66,7 @@ namespace Tayra.API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] SegmentCreateDTO dto)
         {
-            SegmentsService.Create(CurrentUser.ProfileId, dto);
+            SegmentsService.Create(CurrentUser.ProfileId, CurrentUser.Role, dto);
             DbContext.SaveChanges();
             return Ok();
         }

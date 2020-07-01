@@ -41,7 +41,7 @@ namespace Tayra.Models.Organizations
         public virtual ICollection<TokenTransaction> Tokens { get; set; }
         public virtual ICollection<ProfileReportDaily> StatsDaily { get; set; }
         public virtual ICollection<ProfileReportWeekly> StatsWeekly { get; set; }
-        public virtual ICollection<ChallengeCompletion> CompletedChallenges { get; set; }
+        public virtual ICollection<QuestCompletion> CompletedQuests { get; set; }
 
         #region IAuditedEntity
 

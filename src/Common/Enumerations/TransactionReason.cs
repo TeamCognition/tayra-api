@@ -5,7 +5,7 @@
         Manual = 1,
         ShopItemPurchase = 2,
         JiraIssueCompleted = 3,
-        ChallengeCompleted = 4,
+        QuestCompleted = 4,
         ItemDisenchant = 5,
         ShopItemRefund = 6
     }

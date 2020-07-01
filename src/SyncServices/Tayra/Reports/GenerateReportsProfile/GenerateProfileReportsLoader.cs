@@ -229,6 +229,19 @@ namespace Tayra.SyncServices.Tayra
                                      TotalValue = total.Sum(x => x.Item.Price)
                                  }).ToList();
 
+                var quests = (from cc in organizationDb.QuestCompletions
+                    where profileIds.Contains(cc.ProfileId)
+                    group cc by cc.ProfileId
+                    into total
+                    let change = total.Where(x => x.Created.Date == fromDay.Date)
+                    select new
+                    {
+                        ProfileId = total.Key,
+
+                        Count = change.Count(),
+                        CountTotal = total.Count()
+                    }).ToList();
+
                 foreach (var p in profiles)
                 {
                     var ts = taskStats.FirstOrDefault(x => x.ProfileId == p.Id);
@@ -241,6 +254,7 @@ namespace Tayra.SyncServices.Tayra
                     var iGiftS = giftsSent.FirstOrDefault(x => x.ProfileId == p.Id);
                     var iGiftR = giftsReceived.FirstOrDefault(x => x.ProfileId == p.Id);
                     var inv = inventory.FirstOrDefault(x => x.ProfileId == p.Id);
+                    var q = quests.FirstOrDefault(x => x.ProfileId == p.Id);
                     var iterationCount = 1;
 
                     var activityChart = new ProfileActivityChartDTO
@@ -331,6 +345,9 @@ namespace Tayra.SyncServices.Tayra
                         ItemsGiftedChange = (iGiftS?.Count) ?? 0,
                         ItemsGiftedTotal = (iGiftS?.CountTotal) ?? 0,
 
+                        QuestsCompletedChange = (q?.Count) ?? 0,
+                        QuestsCompletedTotal = (q?.CountTotal) ?? 0,
+                        
                         ActivityChartJson = JsonConvert.SerializeObject(activityChart)
                     });
                 }

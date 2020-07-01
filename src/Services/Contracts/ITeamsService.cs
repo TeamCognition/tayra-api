@@ -6,7 +6,8 @@ namespace Tayra.Services
 {
     public interface ITeamsService
     {
-        TeamViewDTO GetTeamViewDTO(string teamId);
+        TeamViewDTO GetTeamViewDTO(string teamKey);
+        TeamRawScoreDTO GetTeamRawScoreDTO(string teamKey);
         GridData<TeamViewGridDTO> GetViewGridData(int[] teamIds, TeamViewGridParams gridParams);
         GridData<TeamMembersGridDTO> GetTeamMembersGridData(TeamMembersGridParams gridParams);
         TeamImpactPieChartDTO GetImpactPieChart(int teamId);

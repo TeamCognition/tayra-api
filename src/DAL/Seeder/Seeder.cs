@@ -18,7 +18,7 @@ namespace Tayra.Models.Seeder
         {
             using (var catalogDbContext = new CatalogDbContext(ConnectionStringUtilities.GetCatalogDbConnStr(config)))
             {
-                var tenantKeys = catalogDbContext.Tenants.Select(x => x.Key).ToArray();
+                var tenantKeys = catalogDbContext.Tenants.Where(x => x.Key != "demo.tayra.io").Select(x => x.Key).ToArray();
                 Seed(shardMapProvider, tenantKeys);
             }
         }

@@ -9,8 +9,8 @@
 
         public double TokensEarned { get; set; }
         public double TokensSpent { get; set; }
-        public int ChallengesActive { get; set; }
-        public int ChallengesCompleted { get; set; }
+        public int QuestsActive { get; set; }
+        public int QuestsCompleted { get; set; }
         public int ShopItemsBought { get; set; }
     }
 }

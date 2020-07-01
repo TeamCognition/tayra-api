@@ -42,7 +42,7 @@ namespace Tayra.Services
                                Type = i.Type,
                                Rarity = i.Rarity,
                                ShopQuantityRemaining = i.ShopQuantityRemaining,
-                               ChallengesQuantityRemaining = i.ChallengesQuantityRemaining,
+                               QuestsQuantityRemaining = i.QuestsQuantityRemaining,
                                GiveawayQuantityRemaining = i.GiveawayQuantityRemaining,
                                Created = i.Created,
                                LastModified = i.LastModified
@@ -83,7 +83,7 @@ namespace Tayra.Services
                             Type = i.Type,
                             Rarity = i.Rarity,
                             ShopQuantityRemaining = i.ShopQuantityRemaining,
-                            ChallengesQuantityRemaining = i.ChallengesQuantityRemaining,
+                            QuestsQuantityRemaining = i.QuestsQuantityRemaining,
                             GiveawayQuantityRemaining = i.GiveawayQuantityRemaining,
                             Created = i.Created,
                             LastModified = i.LastModified
@@ -109,7 +109,7 @@ namespace Tayra.Services
                 Price = dto.Price,
                 CreatedDateId = DateHelper2.ToDateId(DateTime.UtcNow),
                 ShopQuantityRemaining = dto.ShopQuantityRemaining,
-                ChallengesQuantityRemaining = dto.ChallengesQuantityRemaining,
+                QuestsQuantityRemaining = dto.QuestsQuantityRemaining,
                 GiveawayQuantityRemaining = dto.GiveawayQuantityRemaining
             }).Entity;
 
@@ -148,7 +148,7 @@ namespace Tayra.Services
             item.Rarity = dto.Rarity;
 
             item.ShopQuantityRemaining = dto.ShopQuantityRemaining;
-            item.ChallengesQuantityRemaining = dto.ChallengesQuantityRemaining;
+            item.QuestsQuantityRemaining = dto.QuestsQuantityRemaining;
             item.GiveawayQuantityRemaining = dto.GiveawayQuantityRemaining;
 
             var shopItem = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);

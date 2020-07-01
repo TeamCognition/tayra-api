@@ -31,7 +31,7 @@ namespace Tayra.Models.Organizations
         public bool IsReportingUnlocked { get; set; }
 
         public virtual ICollection<Team> Teams { get; set; }
-        public virtual ICollection<Challenge> Challenges { get; set; }
+        public virtual ICollection<Quest> Quests { get; set; }
         public virtual ICollection<Integration> Integrations { get; set; }
         public virtual ICollection<ProfileAssignment> Members { get; set; }
         public virtual ICollection<ProfileExternalId> MembersLinked { get; set; }

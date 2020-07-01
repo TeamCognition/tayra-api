@@ -43,7 +43,7 @@ namespace Tayra.Connectors.Common
 
         protected virtual string GetCallbackUrl(string userState)//userState is not used, but everything works
         {
-            return $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/external/callback/{Type.ToString().ToLower()}";
+            return $"https://{HttpContext.Request.Host}/external/callback/{Type.ToString().ToLower()}";
         }
 
         protected string ReadAccessToken(int integrationId)

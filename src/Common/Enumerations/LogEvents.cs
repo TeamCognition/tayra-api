@@ -22,8 +22,8 @@
         InventoryItemGifted = 6002,
         InventoryItemGiftReceived = 6003,
 
-        Challenge = 7000,
-        ChallengeCompleted = 7001,
-        ChallengeGoalCompleted = 7002
+        Quest = 7000,
+        QuestCompleted = 7001,
+        QuestGoalCompleted = 7002
     }
 }

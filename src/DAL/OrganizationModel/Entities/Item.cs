@@ -20,7 +20,7 @@ namespace Tayra.Models.Organizations
         public bool IsGiftable { get; set; }
 
         public int? ShopQuantityRemaining { get; set; }
-        public int? ChallengesQuantityRemaining { get; set; }
+        public int? QuestsQuantityRemaining { get; set; }
         public int? GiveawayQuantityRemaining { get; set; }
 
         public ItemRarities Rarity { get; set; }

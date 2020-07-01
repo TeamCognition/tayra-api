@@ -57,6 +57,12 @@ namespace Tayra.Models.Organizations
 
         public int TasksCompletionTimeChange { get; set; }
         public int TasksCompletionTimeTotal { get; set; }
+        
+        public int ItemsBoughtChange { get; set; }
+        public int ItemsBoughtTotal { get; set; }
+
+        public int QuestsCompletedChange { get; set; }
+        public int QuestsCompletedTotal { get; set; }
 
         #region Team Stats
 

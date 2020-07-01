@@ -5,6 +5,6 @@
         Custom = 0,
         Profile = 100,
         Shop = 200,
-        Challenge = 300
+        Quest = 300
     }
 }

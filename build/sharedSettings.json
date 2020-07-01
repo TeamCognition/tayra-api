@@ -17,7 +17,7 @@
     "CatalogServer": "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
     "CatalogDatabase": "tayra-catalog",
 
-    "ImagerServer": "https://tayra-imager.azurewebsites.net/",
+    "ImagerServer": "https://api.tayra.io/",
     "BlobStorageConnectionStr": "DefaultEndpointsProtocol=https;AccountName=tayra;AccountKey=98ZragdvKWY2WgKDOsKTZfhXze0nAe8/wkZKzOanlcF7W9qrjqwX/HMg6upmZ9c3Sgu9FvvGyfh1N+zb1gtPVA==;EndpointSuffix=core.windows.net",
     "BlobContainerImages": "imgs"
 }

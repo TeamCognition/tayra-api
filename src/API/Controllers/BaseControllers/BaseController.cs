@@ -27,7 +27,7 @@ namespace Tayra.API.Controllers
         private ISegmentsService _segmentsService;
         private IShopItemsService _shopItemsService;
         private IAssistantService _assistantService;
-        private IChallengesService _challengesService;
+        private IQuestsService _questsService;
         private IIdentitiesService _identitiesService;
         private IInventoriesService _inventoriesService;
         private IClaimBundlesService _claimBundlesService;
@@ -70,7 +70,7 @@ namespace Tayra.API.Controllers
         protected ISegmentsService SegmentsService => _segmentsService ?? (_segmentsService = Resolve<ISegmentsService>());
         protected IAssistantService AssistantService => _assistantService ?? (_assistantService = Resolve<IAssistantService>());
         protected IShopItemsService ShopItemsService => _shopItemsService ?? (_shopItemsService = Resolve<IShopItemsService>());
-        protected IChallengesService ChallengesService => _challengesService ?? (_challengesService = Resolve<IChallengesService>());
+        protected IQuestsService QuestsService => _questsService ?? (_questsService = Resolve<IQuestsService>());
         protected IIdentitiesService IdentitiesService => _identitiesService ?? (_identitiesService = Resolve<IIdentitiesService>());
         protected IInventoriesService InventoriesService => _inventoriesService ?? (_inventoriesService = Resolve<IInventoriesService>());
         protected IClaimBundlesService ClaimBundlesService => _claimBundlesService ?? (_claimBundlesService = Resolve<IClaimBundlesService>());

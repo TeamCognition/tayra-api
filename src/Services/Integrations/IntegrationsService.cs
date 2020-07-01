@@ -87,7 +87,7 @@ namespace Tayra.Services
                     Type = x.Type,
                     Created = x.Created,
                     LastModified = x.LastModified ?? x.Created,
-                    MembersCount = DbContext.Integrations.Where(y => y.Type == x.Type && y.SegmentId == segment.Id).GroupBy(y => y.ProfileId).Count()
+                    MembersCount = DbContext.Integrations.Where(y => y.Type == x.Type && y.SegmentId == segment.Id && x.ProfileId != null).GroupBy(y => y.ProfileId).Count()
                 })
                 .DistinctBy(x => x.Type)
                 .OrderByDescending(x => x.Created)

@@ -19,7 +19,7 @@
 
         ShopNoItemsAddedIn4Weeks = 201,
 
-        ChallengeNotCreatedIn4Weeks = 302
+        QuestsNotCreatedIn4Weeks = 302
 
     }
 }
