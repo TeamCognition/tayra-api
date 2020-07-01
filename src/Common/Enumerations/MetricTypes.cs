@@ -20,6 +20,9 @@ namespace Tayra.Common
         Assist = 5,
 
         [Description("Completion")]
-        TaskCompletion = 6
+        TaskCompletion = 6,
+        
+        [Description("Heat")]
+        Heat = 7
     }
 }
