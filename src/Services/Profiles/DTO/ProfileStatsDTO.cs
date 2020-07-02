@@ -6,7 +6,7 @@ namespace Tayra.Services
     public class ProfileStatsDTO
     {
         public int LatestUpdateDateId;
-        public ProfileMetricDTO[] Metric;
+        public ProfileMetricDTO[] Metrics;
         
         public class ProfileMetricDTO
         {
