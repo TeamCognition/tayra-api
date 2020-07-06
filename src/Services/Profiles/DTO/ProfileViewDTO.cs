@@ -27,6 +27,8 @@ namespace Tayra.Services
         public int Experience { get; set; }
         public double AverageScore { get; set; }
         public int Praises { get; set; }
+        
+        public string AssistantSummary { get; set; }
 
         public IList<ItemActiveDTO> Badges { get; set; }
         public ItemActiveDTO Title { get; set; }

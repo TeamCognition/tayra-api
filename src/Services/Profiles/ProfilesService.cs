@@ -322,6 +322,7 @@ namespace Tayra.Services
                                   Username = p.Username,
                                   Role = p.Role,
                                   Avatar = p.Avatar,
+                                  AssistantSummary = p.AssistantSummary,
                                   Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
                                   CompanyTokens = companyTokens,
                                   Experience = exp,

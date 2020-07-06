@@ -32,6 +32,8 @@ namespace Tayra.Models.Organizations
         public DateTime? BornOn { get; set; }
         public DateTime? EmployedOn { get; set; }
 
+        public string AssistantSummary { get; set; }
+        
         public int IdentityId { get; set; }
 
         public virtual ICollection<ProfilePraise> Praises { get; set; }

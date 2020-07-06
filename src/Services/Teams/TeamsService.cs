@@ -5,6 +5,7 @@ using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Models.Organizations;
+using DateRanges = Cog.Core.DateRanges;
 
 namespace Tayra.Services
 {
@@ -30,7 +31,8 @@ namespace Tayra.Services
                     TeamKey = t.Key,
                     Name = t.Name,
                     AvatarColor = t.AvatarColor,
-                    Created = t.Created
+                    AssistantSummary = t.AssistantSummary,
+                    Created = t.Created,
                 }).FirstOrDefault();
 
             teamDto.EnsureNotNull(teamKey);
@@ -56,6 +58,106 @@ namespace Tayra.Services
                     QuestsCompleted = r.QuestsCompletedTotal,
                     DaysOnTayra = EF.Functions.DateDiffDay(team.Created, DateTime.UtcNow)
                 }).FirstOrDefault();
+        }
+        
+        public TeamSwarmPlotDTO GetTeamSwarmPloteDTO(string teamKey)
+        {
+            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
+            team.EnsureNotNull(teamKey);
+            
+            var teamStats = (from r in DbContext.TeamReportsWeekly
+                where r.TeamId == team.Id
+                orderby r.DateId descending
+                select new
+                {
+                    DateId = r.DateId,
+                    Impact = r.OImpactAverage,
+                    Speed = r.SpeedAverage,
+                    Power = r.PowerAverage,
+                    Assists = r.AssistsChange,
+                    Completion = r.ComplexityAverage,
+                    Complexity = r.ComplexityAverage
+                }).Take(4).ToArray();
+
+            if (teamStats.Length == 0)
+                return null;
+
+            var p = DateHelper.FindPeriod(DateRanges.Last4Week);
+            
+            var teamProfiles = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId).ToArray();
+
+            var profileStats = (from r in DbContext.ProfileReportsWeekly
+                where teamProfiles.Contains(r.ProfileId)
+                where r.DateId >= p.FromId
+                orderby r.DateId descending 
+                select new
+                {
+                    ProfileId = r.ProfileId,
+                    Impact = r.OImpactAverage,
+                    Speed = r.SpeedAverage,
+                    Heat = r.Heat,
+                    Power = r.PowerAverage,
+                    Assists = r.AssistsTotalAverage,
+                    Completion = r.ComplexityTotalAverage,
+                    Complexity = r.ComplexityTotalAverage
+                }).ToArray();
+
+            return new TeamSwarmPlotDTO
+            {
+                LastUpdateDateId = teamStats.Select(x => x.DateId).FirstOrDefault(),
+                Metrics = new[]
+                {
+                    new TeamSwarmPlotDTO.DataDTO
+                    {
+                        MetricType = MetricTypes.OImpact,
+                        Averages = teamStats.Select(x => x.Impact).ToArray(),
+                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
+                            .ToDictionary(x => x.Key, x => x.Select(s => s.Impact).ToArray())
+                    },
+                    new TeamSwarmPlotDTO.DataDTO
+                    {
+                        MetricType = MetricTypes.Speed,
+                        Averages = teamStats.Select(x => x.Speed).ToArray(),
+                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
+                            .ToDictionary(x => x.Key, x => x.Select(s => s.Speed).ToArray())
+                    },
+                    new TeamSwarmPlotDTO.DataDTO
+                    {
+                        MetricType = MetricTypes.Heat,
+                        Averages = new float[]{},
+                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
+                            .ToDictionary(x => x.Key, x => x.Select(s => s.Heat).ToArray())
+                    },
+                    new TeamSwarmPlotDTO.DataDTO
+                    {
+                        MetricType = MetricTypes.Power,
+                        Averages = teamStats.Select(x => x.Power).ToArray(),
+                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
+                            .ToDictionary(x => x.Key, x => x.Select(s => s.Power).ToArray())
+                    },
+                    new TeamSwarmPlotDTO.DataDTO
+                    {
+                        MetricType = MetricTypes.Assist,
+                        Averages = teamStats.Select(x => (float)x.Assists).ToArray(),
+                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
+                            .ToDictionary(x => x.Key, x => x.Select(s => s.Assists).ToArray())
+                    },
+                    new TeamSwarmPlotDTO.DataDTO
+                    {
+                        MetricType = MetricTypes.TaskCompletion,
+                        Averages = teamStats.Select(x => x.Completion).ToArray(),
+                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
+                            .ToDictionary(x => x.Key, x => x.Select(s => s.Completion).ToArray())
+                    },
+                    new TeamSwarmPlotDTO.DataDTO
+                    {
+                        MetricType = MetricTypes.Complexity,
+                        Averages = teamStats.Select(x => x.Complexity).ToArray(),
+                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
+                            .ToDictionary(x => x.Key, x => x.Select(s => s.Complexity).ToArray())
+                    },
+                }
+            };
         }
 
         public GridData<TeamViewGridDTO> GetViewGridData(int[] segmentIds, TeamViewGridParams gridParams)
