@@ -108,6 +108,7 @@ namespace Tayra.Services
                                     Name = s.Name,
                                     Key = s.Key,
                                     Avatar = s.Avatar,
+                                    AssistantSummary = s.AssistantSummary,
                                     TokensEarned = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensEarnedTotal).FirstOrDefault(), 2),
                                     TokensSpent = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensSpentTotal).FirstOrDefault(), 2),
                                     QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),

@@ -25,6 +25,8 @@ namespace Tayra.Models.Organizations
         [MaxLength(50)]
         public string AvatarColor { get; set; }
 
+        public string AssistantSummary { get; set; }
+
         public virtual ICollection<ProfileAssignment> Members { get; set; }
         public virtual ICollection<TeamReportDaily> ReportsDaily { get; set; }
         public virtual ICollection<TeamReportWeekly> ReportsWeekly { get; set; }

@@ -32,14 +32,21 @@ namespace Cog.Core
                 case DateRanges.LastWeek:
                     {
                         var aWeekAgo = today.Subtract(TimeSpan.FromDays(7));
-                        var start = today.Subtract(TimeSpan.FromDays((int)aWeekAgo.DayOfWeek));
+                        var start = aWeekAgo.Subtract(TimeSpan.FromDays((int)aWeekAgo.DayOfWeek));
                         var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
                         return new DateRange(start, end);
                     }
+                case DateRanges.Last4Week:
+                {
+                    var fourWeeksAgo = today.Subtract(TimeSpan.FromDays(7 * 4));
+                    var start = fourWeeksAgo.Subtract(TimeSpan.FromDays((int)fourWeeksAgo.DayOfWeek));
+                    var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
+                    return new DateRange(start, end);
+                }
                 default:
-                    {
-                        return new DateRange(yesterday, yesterday);
-                    }
+                {
+                    return new DateRange(yesterday, yesterday);
+                }
             }
         }
 

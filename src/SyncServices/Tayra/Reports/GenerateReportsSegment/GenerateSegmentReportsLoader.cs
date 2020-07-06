@@ -213,52 +213,52 @@ namespace Tayra.SyncServices.Tayra
                     MembersCountTotal = dmr.Count(),
                     NonMembersCountTotal = dnmr.Count(),
 
-                    ComplexityChange = dmr.Sum(x => x.ComplexityChange),
-                    ComplexityAverage = (float)dmr.Average(x => x.ComplexityChange),
+                    ComplexityChange = wmr.Sum(x => x.ComplexityChange),
+                    ComplexityAverage = (float)wmr.Average(x => x.ComplexityChange),
 
-                    CompanyTokensEarnedChange = dmr.Sum(x => x.CompanyTokensEarnedChange),
-                    CompanyTokensEarnedAverage = dmr.Average(x => x.CompanyTokensEarnedChange),
+                    CompanyTokensEarnedChange = wmr.Sum(x => x.CompanyTokensEarnedChange),
+                    CompanyTokensEarnedAverage = wmr.Average(x => x.CompanyTokensEarnedChange),
 
-                    CompanyTokensSpentChange = dmr.Sum(x => x.CompanyTokensSpentChange),
-                    CompanyTokensSpentAverage = dmr.Average(x => x.CompanyTokensSpentChange),
+                    CompanyTokensSpentChange = wmr.Sum(x => x.CompanyTokensSpentChange),
+                    CompanyTokensSpentAverage = wmr.Average(x => x.CompanyTokensSpentChange),
 
-                    EffortScoreChange = dmr.Sum(x => x.EffortScoreChange),
-                    EffortScoreAverage = dmr.Average(x => x.EffortScoreChange),
+                    EffortScoreChange = wmr.Sum(x => x.EffortScoreChange),
+                    EffortScoreAverage = wmr.Average(x => x.EffortScoreChange),
 
-                    PraisesGivenChange = dmr.Sum(x => x.PraisesGivenChange),
-                    PraisesGivenAverage = (float)dmr.Average(x => x.PraisesGivenChange),
+                    PraisesGivenChange = wmr.Sum(x => x.PraisesGivenChange),
+                    PraisesGivenAverage = (float)wmr.Average(x => x.PraisesGivenChange),
 
-                    PraisesReceivedChange = dmr.Sum(x => x.PraisesReceivedChange),
-                    PraisesReceivedAverage = (float)dmr.Average(x => x.PraisesReceivedChange),
+                    PraisesReceivedChange = wmr.Sum(x => x.PraisesReceivedChange),
+                    PraisesReceivedAverage = (float)wmr.Average(x => x.PraisesReceivedChange),
 
-                    AssistsChange = dmr.Sum(x => x.AssistsChange),
-                    AssistsAverage = (float)dmr.Average(x => x.AssistsChange),
+                    AssistsChange = wmr.Sum(x => x.AssistsChange),
+                    AssistsAverage = (float)wmr.Average(x => x.AssistsChange),
 
-                    TasksCompletedChange = dmr.Sum(x => x.TasksCompletedChange),
-                    TasksCompletedAverage = (float)dmr.Average(x => x.TasksCompletedChange),
+                    TasksCompletedChange = wmr.Sum(x => x.TasksCompletedChange),
+                    TasksCompletedAverage = (float)wmr.Average(x => x.TasksCompletedChange),
 
-                    TurnoverChange = dmr.Sum(x => x.TurnoverChange),
-                    TurnoverAverage = (float)dmr.Average(x => x.TurnoverChange),
+                    TurnoverChange = wmr.Sum(x => x.TurnoverChange),
+                    TurnoverAverage = (float)wmr.Average(x => x.TurnoverChange),
 
-                    ErrorChange = dmr.Sum(x => x.ErrorChange),
-                    ErrorAverage = dmr.Average(x => x.ErrorChange),
+                    ErrorChange = wmr.Sum(x => x.ErrorChange),
+                    ErrorAverage = wmr.Average(x => x.ErrorChange),
 
-                    ContributionChange = dmr.Sum(x => x.ContributionChange),
-                    ContributionAverage = dmr.Average(x => x.ContributionChange),
+                    ContributionChange = wmr.Sum(x => x.ContributionChange),
+                    ContributionAverage = wmr.Average(x => x.ContributionChange),
 
-                    SavesChange = dmr.Sum(x => x.SavesChange),
-                    SavesAverage = (float)dmr.Average(x => x.SavesChange),
+                    SavesChange = wmr.Sum(x => x.SavesChange),
+                    SavesAverage = (float)wmr.Average(x => x.SavesChange),
 
-                    TacklesChange = dmr.Sum(x => x.TacklesChange),
-                    TacklesAverage = (float)dmr.Average(x => x.TacklesChange),
+                    TacklesChange = wmr.Sum(x => x.TacklesChange),
+                    TacklesAverage = (float)wmr.Average(x => x.TacklesChange),
 
-                    TasksCompletionTimeChange = dmr.Sum(x => x.TasksCompletionTimeChange),
-                    TasksCompletionTimeAverage = (int)dmr.Average(x => x.TasksCompletionTimeChange),
+                    TasksCompletionTimeChange = wmr.Sum(x => x.TasksCompletionTimeChange),
+                    TasksCompletionTimeAverage = (int)wmr.Average(x => x.TasksCompletionTimeChange),
 
-                    ItemsBoughtChange = dmr.Sum(x => x.ItemsBoughtChange),
-                    ItemsCreatedChange = dnmr.Sum(x => x.ItemsCreatedChange),
-                    ItemsDisenchantedChange = dmr.Sum(x => x.ItemsDisenchantedChange),
-                    ItemsGiftedChange = dmr.Sum(x => x.ItemsGiftedChange),
+                    ItemsBoughtChange = wmr.Sum(x => x.ItemsBoughtChange),
+                    ItemsCreatedChange = wnmr.Sum(x => x.ItemsCreatedChange),
+                    ItemsDisenchantedChange = wmr.Sum(x => x.ItemsDisenchantedChange),
+                    ItemsGiftedChange = wmr.Sum(x => x.ItemsGiftedChange),
 
                     OImpactAverage = wmr.Average(x => x.OImpactAverage),
                     OImpactAverageTotal = wmr.Sum(x => x.OImpactAverage),

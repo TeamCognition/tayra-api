@@ -33,6 +33,12 @@ namespace Tayra.API.Controllers
             return Ok(TeamsService.GetTeamRawScoreDTO(teamKey));
         }
         
+        [HttpGet("{teamKey}/swarmPlot")]
+        public ActionResult<TeamSwarmPlotDTO> GetTeamSwarmPlot([FromRoute]string teamKey)
+        {
+            return Ok(TeamsService.GetTeamSwarmPloteDTO(teamKey));
+        }
+        
         [HttpPost("search")]
         public ActionResult<GridData<TeamViewGridDTO>> Search([FromBody] TeamViewGridParams gridParams)
         {

@@ -1,15 +1,15 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
- using System.Linq.Dynamic.Core;
- using System.Linq.Expressions;
+using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Newtonsoft.Json;
- using RestSharp.Extensions;
- using Tayra.Common;
+using RestSharp.Extensions;
+using Tayra.Common;
 using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -324,7 +324,8 @@ namespace Tayra.Services
                                   Role = p.Role,
                                   Avatar = p.Avatar,
                                   Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Key = x.Segment.Key, Id = x.Segment.Id, Name = x.Segment.Name}).ToArray(),
-                                  Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Id = x.Team.Id, Name = x.Team.Name }).ToArray(),
+                                  Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
+                                  AssistantSummary = p.AssistantSummary,
                                   CompanyTokens = companyTokens,
                                   Experience = exp,
                                   Praises = p.Praises.Count(),
