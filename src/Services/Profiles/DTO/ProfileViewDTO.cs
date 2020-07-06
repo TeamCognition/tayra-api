@@ -16,6 +16,7 @@ namespace Tayra.Services
         
         public ProfileRoles Role { get; set; }
         public TeamDTO[] Teams { get; set; }
+        public SegmentDTO[] Segments { get; set; }
         public string Avatar { get; set; }
 
         public double? Power { get; set; }
@@ -49,6 +50,14 @@ namespace Tayra.Services
         public class TeamDTO
         {
             public string Key { get; set; }
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
+
+        public class SegmentDTO
+        {
+            public string Key { get; set; }
+            public int Id { get; set; }
             public string Name { get; set; }
         }
         
