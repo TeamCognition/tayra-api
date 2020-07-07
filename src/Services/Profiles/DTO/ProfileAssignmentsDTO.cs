@@ -6,6 +6,6 @@ namespace Tayra.Services
     public class ProfileAssignmentsDTO
     {
         public int[] Segments { get; set; }
-        public int?[] Teams { get; set; }
+        public int? TeamId { get; set; }
     }
 }

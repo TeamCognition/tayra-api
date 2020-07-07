@@ -308,9 +308,10 @@ namespace Tayra.Services
                                   Username = p.Username,
                                   Role = p.Role,
                                   Avatar = p.Avatar,
-                                  AssistantSummary = p.AssistantSummary,
+                                  Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Key = x.Segment.Key, Id = x.Segment.Id, Name = x.Segment.Name}).ToArray(),
                                   Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
-                                  Praises = p.Praises.GroupBy(x => x.Type).Select(x => new ProfileViewDTO.PraiseDTO{Type = x.Key, Count = x.Count()}).ToArray()
+                                  Praises = p.Praises.GroupBy(x => x.Type).Select(x => new ProfileViewDTO.PraiseDTO{Type = x.Key, Count = x.Count()}).ToArray(),
+                                  AssistantSummary = p.AssistantSummary,
                               }).FirstOrDefault();
 
             profileDto.EnsureNotNull();
@@ -482,12 +483,12 @@ namespace Tayra.Services
                     }).ToArray();
         }
         
-        public ProfileStatsDTO GetProfileStatsData(int profileId,ProfileAssignmentsDTO dto)
+        public ProfileStatsDTO GetProfileStatsData(int profileId)
         {
             var latestUpdateDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-32));
             
             var segments = from pa in DbContext.ProfileAssignments
-                where pa.ProfileId == profileId && dto.Segments.Contains(pa.SegmentId)
+                where pa.ProfileId == profileId
                 select pa.SegmentId;
 
             var segmentsStats =
@@ -505,7 +506,7 @@ namespace Tayra.Services
                     });
             
             var teams = from pa in DbContext.ProfileAssignments
-                where pa.ProfileId == profileId && dto.Teams.Contains(pa.TeamId)
+                where pa.ProfileId == profileId 
                 select pa.TeamId;
 
             var teamsStats =
@@ -534,105 +535,119 @@ namespace Tayra.Services
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
                             Id = MetricTypes.OImpact,
-                            SegmentAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
-                                Averages = x.Value.Impact
+                                Averages = x.Value.Impact,
+                                TotalAverage = x.Value.Impact.Sum() / 4f
                             }).ToArray(),
-                            TeamAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key ,
-                                Averages = x.Value.Impact
+                                Averages = x.Value.Impact,
+                                TotalAverage = x.Value.Impact.Sum() / 4f
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => x.OImpactTotalAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
                             Id = MetricTypes.Speed,
-                            SegmentAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
-                                Averages = x.Value.Speed
+                                Averages = x.Value.Speed,
+                                TotalAverage = x.Value.Speed.Sum() / 4f
                             }).ToArray(),
-                            TeamAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key ,
-                                Averages = x.Value.Speed
+                                Averages = x.Value.Speed,
+                                TotalAverage = x.Value.Speed.Sum() / 4f
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => x.SpeedTotalAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
                             Id = MetricTypes.Power,
-                            SegmentAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
-                                Averages = x.Value.Power
+                                Averages = x.Value.Power,
+                                TotalAverage = x.Value.Power.Sum() / 4f
                             }).ToArray(),
-                            TeamAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key ,
-                                Averages = x.Value.Power
+                                Averages = x.Value.Power,
+                                TotalAverage = x.Value.Power.Sum() / 4f
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => x.PowerTotalAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
                             Id = MetricTypes.Heat,
-                            SegmentAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
-                                Averages = x.Value.Heat
+                                Averages = x.Value.Heat,
+                                TotalAverage = x.Value.Heat.Sum() / 4f
                             }).ToArray(),
-                            TeamAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key ,
-                                Averages = x.Value.Heat
+                                Averages = x.Value.Heat,
+                                TotalAverage = x.Value.Heat.Sum() / 4f
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => x.Heat).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
                             Id = MetricTypes.Assist,
-                            SegmentAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
-                                Averages = x.Value.Assists
+                                Averages = x.Value.Assists,
+                                TotalAverage = x.Value.Assists.Sum() / 4f
                             }).ToArray(),
-                            TeamAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key ,
-                                Averages = x.Value.Assists
+                                Averages = x.Value.Assists,
+                                TotalAverage = x.Value.Assists.Sum() / 4f
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => x.AssistsTotalAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
                             Id = MetricTypes.Complexity,
-                            SegmentAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
-                                Averages = x.Value.Complexity
+                                Averages = x.Value.Complexity,
+                                TotalAverage = x.Value.Complexity.Sum() / 4f
                             }).ToArray(),
-                            TeamAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key ,
-                                Averages = x.Value.Complexity
+                                Averages = x.Value.Complexity,
+                                TotalAverage = x.Value.Complexity.Sum() / 4f
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => x.ComplexityTotalAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
                             Id = MetricTypes.TaskCompletion,
-                            SegmentAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
-                                Averages = x.Value.TaskCompletion
+                                Averages = x.Value.TaskCompletion,
+                                TotalAverage = x.Value.TaskCompletion.Sum() / 4f
                             }).ToArray(),
-                            TeamAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key ,
-                                Averages = x.Value.TaskCompletion
+                                Averages = x.Value.TaskCompletion,
+                                TotalAverage = x.Value.TaskCompletion.Sum() / 4f
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => x.TasksCompletedTotalAverage).ToArray()
                         }
