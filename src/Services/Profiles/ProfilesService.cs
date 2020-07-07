@@ -13,8 +13,9 @@ using Tayra.Common;
 using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
+ using DateRanges = Cog.Core.DateRanges;
 
-namespace Tayra.Services
+ namespace Tayra.Services
 {
     public class ProfilesService : BaseService<OrganizationDbContext>, IProfilesService
     {
@@ -308,8 +309,8 @@ namespace Tayra.Services
                                   Username = p.Username,
                                   Role = p.Role,
                                   Avatar = p.Avatar,
-                                  Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Key = x.Segment.Key, Id = x.Segment.Id, Name = x.Segment.Name}).ToArray(),
-                                  Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
+                                  Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Id = x.Segment.Id, Key = x.Segment.Key, Name = x.Segment.Name}).ToArray(),
+                                  Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Id = x.Team.Id, Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
                                   Praises = p.Praises.GroupBy(x => x.Type).Select(x => new ProfileViewDTO.PraiseDTO{Type = x.Key, Count = x.Count()}).ToArray(),
                                   AssistantSummary = p.AssistantSummary,
                               }).FirstOrDefault();
@@ -453,7 +454,7 @@ namespace Tayra.Services
         
         public ProfileStatsDTO GetProfileStatsData(int profileId)
         {
-            var latestUpdateDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-32));
+            var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
             
             var segments = from pa in DbContext.ProfileAssignments
                 where pa.ProfileId == profileId

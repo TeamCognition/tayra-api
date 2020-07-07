@@ -20,7 +20,6 @@ namespace Tayra.Services
         public string Avatar { get; set; }
         public double CompanyTokens { get; set; }
         public int Experience { get; set; }
-        public PraiseTypes[] Praises { get; set; }
         
         public string AssistantSummary { get; set; }
 
