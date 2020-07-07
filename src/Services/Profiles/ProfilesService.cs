@@ -323,12 +323,12 @@ namespace Tayra.Services
                                   Username = p.Username,
                                   Role = p.Role,
                                   Avatar = p.Avatar,
-                                  Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Key = x.Segment.Key, Id = x.Segment.Id, Name = x.Segment.Name}).ToArray(),
-                                  Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
+                                  Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Id = x.Segment.Id,  Key = x.Segment.Key, Name = x.Segment.Name}).ToArray(),
+                                  Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Id = x.Team.Id, Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
                                   AssistantSummary = p.AssistantSummary,
                                   CompanyTokens = companyTokens,
                                   Experience = exp,
-                                  Praises = p.Praises.Count(),
+                                  Praises = DbContext.ProfilePraises.Where(x => x.ProfileId == p.Id).Select(x => x.Type).ToArray(),
                               }).FirstOrDefault();
 
             profileDto.EnsureNotNull();
@@ -344,39 +344,7 @@ namespace Tayra.Services
             var activeItems = GetProfileActiveItems(DbContext, profileDto.ProfileId);
             profileDto.Badges = activeItems.Badges;
             profileDto.Title = activeItems.Title;
-            profileDto.Border = activeItems.Border;
-
-            var lastWeeklyStats = (from r in DbContext.ProfileReportsWeekly
-                                   where r.ProfileId == profileDto.ProfileId
-                                   group r by r.DateId into g
-                                   orderby g.Key descending
-                                   select new
-                                   {
-                                       DateId = g.Key,
-                                       PowerAverage = g.Average(x => x.PowerAverage),
-                                       SpeedAverage = g.Average(x => x.SpeedAverage),
-                                       OImpactAverage = g.Average(x => x.OImpactAverage),
-                                   }).FirstOrDefault();
-
-            profileDto.Power = Math.Round(lastWeeklyStats?.PowerAverage ?? 0d, 2);
-            profileDto.Speed = Math.Round(lastWeeklyStats?.SpeedAverage ?? 0d, 2);
-            profileDto.OImpact = Math.Round(lastWeeklyStats?.OImpactAverage ?? 0d, 2);
-
-            var heatTrend = (from r in DbContext.ProfileReportsWeekly
-                            where r.ProfileId == profileDto.ProfileId
-                            group r by r.DateId into g
-                            orderby g.Key descending
-                            select new
-                            {
-                                g.Key,
-                                Heat = g.Average(x => x.Heat),
-                            }).Take(4).Select(x => x.Heat).ToArray();
-
-            profileDto.Heat = lastWeeklyStats == null ? null : new ProfileViewDTO.HeatDTO
-            {
-                LastDateId = lastWeeklyStats.DateId,
-                Values = heatTrend
-            };
+            profileDto.Border = activeItems.Border;     
 
             profileDto.Pulse = GetProfilePulseDTO(profileId);
             

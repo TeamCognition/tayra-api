@@ -9,7 +9,7 @@ namespace Tayra.Services
     public class PraiseProfileDTO
     {
         public int ProfileId { get; set; }
-        public PraiseTypes Type { get; set; } = PraiseTypes.OneUp;
+        public PraiseTypes Type { get; set; } = PraiseTypes.HardWorker;
         public DateTime? DemoDate { get; set; }
 
         [MaxLength(140)]

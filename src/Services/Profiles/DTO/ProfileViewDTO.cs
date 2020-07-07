@@ -18,16 +18,9 @@ namespace Tayra.Services
         public TeamDTO[] Teams { get; set; }
         public SegmentDTO[] Segments { get; set; }
         public string Avatar { get; set; }
-
-        public double? Power { get; set; }
-        public double? Speed { get; set; }
-        public double? OImpact { get; set; }
-        public HeatDTO Heat { get; set; }
-
         public double CompanyTokens { get; set; }
         public int Experience { get; set; }
-        public double AverageScore { get; set; }
-        public int Praises { get; set; }
+        public PraiseTypes[] Praises { get; set; }
         
         public string AssistantSummary { get; set; }
 
