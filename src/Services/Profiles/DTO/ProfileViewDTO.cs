@@ -29,6 +29,8 @@ namespace Tayra.Services
         public ItemActiveDTO Border { get; set; }
 
         public DateTime? LastUppedAt { get; set; }
+
+        public PraiseDTO[] Praises { get; set; }
         
         public class TokenDTO
         {
@@ -66,6 +68,12 @@ namespace Tayra.Services
                 public string Summary { get; set; }
                 public string ExternalUrl { get; set; }
             }
+        }
+        
+        public class PraiseDTO
+        {
+            public PraiseTypes Type { get; set; }
+            public int Count { get; set; }
         }
     }
 }
