@@ -33,7 +33,7 @@ namespace Tayra.Services
                         SegmentId = s.Id,
                         IsReportingUnlocked = s.IsReportingUnlocked,
                         TotalMembers = s.Members.Where(x => x.Profile.Role == ProfileRoles.Member).Select(x => x.ProfileId).Distinct().Count(),
-                        LinkedMembers = s.MembersLinked.Count(x => x.IntegrationType == IntegrationType.ATJ)
+                        LinkedMembers = s.MembersLinked.Count(x => x.Profile.Role == ProfileRoles.Member && x.IntegrationType == IntegrationType.ATJ)
                     }).ToArray();
         }
 
@@ -49,8 +49,8 @@ namespace Tayra.Services
             }
             using (HttpClient client = new HttpClient())
             {
-                //client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");
-                client.BaseAddress = new Uri("http://localhost:7071/");
+                client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");
+                //client.BaseAddress = new Uri("http://localhost:7071/");
                 client.DefaultRequestHeaders.Add("x-functions-key", "bjae2tiYmu2Z5dT62aCikVMsc6YTMXkc9PylfWQUjFA9e0HuicFr4w==");
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 

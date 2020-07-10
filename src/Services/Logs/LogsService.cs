@@ -94,7 +94,7 @@ namespace Tayra.Services
             {
                 query = from l in query
                         join pl in DbContext.ProfileLogs on l.Id equals pl.LogId
-                        where gridParams.ProfileIds.Contains(pl.ProfileId) && pl.Event != LogEvents.ProfilePraiseReceived && pl.Event != LogEvents.InventoryItemGiftReceived
+                        where gridParams.ProfileIds.Contains(pl.ProfileId)
                         select l;
 
             }
