@@ -310,8 +310,62 @@ namespace Tayra.Services
                 DbContext.Remove(m);
             }
         }
-
-
+        
+         public TeamStatsDTO GetTeamStatsData(string teamKey)
+        {
+            var latestUpdateDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-32));
+            
+            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
+            team.EnsureNotNull(teamKey);
+            
+            return (from trw in DbContext.TeamReportsWeekly
+                where trw.TeamId == team.Id
+                where trw.DateId >= latestUpdateDateId
+                group trw by 1 into r
+                select new TeamStatsDTO
+                {
+                    LatestUpdateDateId = latestUpdateDateId,
+                    Metrics = (new TeamStatsDTO.TeamMetricDTO[]
+                    {
+                        new TeamStatsDTO.TeamMetricDTO
+                        {
+                            Id = MetricTypes.OImpact,
+                            WeeklyAverages = r.Select(x => x.OImpactAverageTotal).ToArray()
+                        },
+                        new TeamStatsDTO.TeamMetricDTO
+                        {
+                            Id = MetricTypes.Speed,
+                            WeeklyAverages = r.Select(x => x.SpeedAverageTotal).ToArray()
+                        },
+                        new TeamStatsDTO.TeamMetricDTO
+                        {
+                            Id = MetricTypes.Power,
+                            WeeklyAverages = r.Select(x => x.PowerAverageTotal).ToArray()
+                        },
+                        new TeamStatsDTO.TeamMetricDTO
+                        {
+                            Id = MetricTypes.Heat,
+                            WeeklyAverages = r.Select(x => x.HeatAverageTotal).ToArray()
+                        },
+                        new TeamStatsDTO.TeamMetricDTO
+                        {
+                            Id = MetricTypes.Assist,
+                            WeeklyAverages = r.Select(x => x.AssistsAverage).ToArray()
+                        },
+                        new TeamStatsDTO.TeamMetricDTO
+                        {
+                            Id = MetricTypes.Complexity,
+                            WeeklyAverages = r.Select(x => x.ComplexityAverage).ToArray()
+                        },
+                        new TeamStatsDTO.TeamMetricDTO
+                        {
+                            Id = MetricTypes.TaskCompletion,
+                            WeeklyAverages = r.Select(x => x.TasksCompletedAverage).ToArray()
+                        }
+                    }).ToArray()
+                }).FirstOrDefault();
+        }
+         
         #endregion
 
         #region Private Methods

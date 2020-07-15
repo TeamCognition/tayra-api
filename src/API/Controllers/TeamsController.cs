@@ -90,6 +90,12 @@ namespace Tayra.API.Controllers
 
             return Ok();
         }
+        
+        [HttpGet("{teamKey}/statsWidget")]
+        public ActionResult<TeamStatsDTO> GetTeamStatsData([FromRoute]string teamKey)
+        {
+            return TeamsService.GetTeamStatsData(teamKey);
+        }
 
         #endregion
     }
