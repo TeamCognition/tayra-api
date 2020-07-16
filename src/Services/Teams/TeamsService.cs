@@ -349,13 +349,13 @@ namespace Tayra.Services
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.Assist,
-                            WeeklyAverages = r.Select(x => x.AssistsAverage).ToArray()
+                            Id = MetricTypes.Complexity,
+                            WeeklyAverages = r.Select(x => x.ComplexityAverage).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.Complexity,
-                            WeeklyAverages = r.Select(x => x.ComplexityAverage).ToArray()
+                            Id = MetricTypes.Assist,
+                            WeeklyAverages = r.Select(x => x.AssistsAverage).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {

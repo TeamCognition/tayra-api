@@ -13,8 +13,9 @@ using Tayra.Common;
 using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
+ using DateRanges = Cog.Core.DateRanges;
 
-namespace Tayra.Services
+ namespace Tayra.Services
 {
     public class ProfilesService : BaseService<OrganizationDbContext>, IProfilesService
     {
@@ -299,21 +300,6 @@ namespace Tayra.Services
 
         public ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition)
         {
-            var tokens = (from tt in DbContext.TokenTransactions 
-                where !tt.ClaimRequired || tt.ClaimedAt.HasValue
-                group tt by tt.Token.Type into g 
-                select new ProfileViewDTO.TokenDTO
-                {
-                    Type = g.Key,
-                    Value = g.Sum(x => x.Value)
-                }).ToArray();
-            
-            var companyTokens =
-                Math.Round(tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(),
-                    2);
-            var exp = Convert.ToInt32(tokens.Where(x => x.Type == TokenType.Experience).Select(x => x.Value)
-                .FirstOrDefault());
-
             var profileDto = (from p in DbContext.Profiles.Where(condition)
                               select new ProfileViewDTO
                               {
@@ -325,14 +311,25 @@ namespace Tayra.Services
                                   Avatar = p.Avatar,
                                   Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Id = x.Segment.Id, Key = x.Segment.Key, Name = x.Segment.Name}).ToArray(),
                                   Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Id = x.Team.Id, Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
+                                  Praises = p.Praises.GroupBy(x => x.Type).Select(x => new ProfileViewDTO.PraiseDTO{Type = x.Key, Count = x.Count()}).ToArray(),
                                   AssistantSummary = p.AssistantSummary,
-                                  CompanyTokens = companyTokens,
-                                  Experience = exp,
-                                  Praises = p.Praises.Count(),
                               }).FirstOrDefault();
 
             profileDto.EnsureNotNull();
 
+            var tokens = (from tt in DbContext.TokenTransactions 
+                where !tt.ClaimRequired || tt.ClaimedAt.HasValue
+                where tt.ProfileId == profileDto.ProfileId 
+                group tt by tt.Token.Type into g 
+                select new ProfileViewDTO.TokenDTO
+                {
+                    Type = g.Key,
+                    Value = g.Sum(x => x.Value)
+                }).ToArray();
+            
+            profileDto.CompanyTokens = Math.Round(tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2);
+            profileDto.Experience = Convert.ToInt32(tokens.Where(x => x.Type == TokenType.Experience).Select(x => x.Value).FirstOrDefault()); 
+            
             if (profileId != profileDto.ProfileId)
             {
                 profileDto.LastUppedAt = (from u in DbContext.ProfilePraises
@@ -344,39 +341,7 @@ namespace Tayra.Services
             var activeItems = GetProfileActiveItems(DbContext, profileDto.ProfileId);
             profileDto.Badges = activeItems.Badges;
             profileDto.Title = activeItems.Title;
-            profileDto.Border = activeItems.Border;
-
-            var lastWeeklyStats = (from r in DbContext.ProfileReportsWeekly
-                                   where r.ProfileId == profileDto.ProfileId
-                                   group r by r.DateId into g
-                                   orderby g.Key descending
-                                   select new
-                                   {
-                                       DateId = g.Key,
-                                       PowerAverage = g.Average(x => x.PowerAverage),
-                                       SpeedAverage = g.Average(x => x.SpeedAverage),
-                                       OImpactAverage = g.Average(x => x.OImpactAverage),
-                                   }).FirstOrDefault();
-
-            profileDto.Power = Math.Round(lastWeeklyStats?.PowerAverage ?? 0d, 2);
-            profileDto.Speed = Math.Round(lastWeeklyStats?.SpeedAverage ?? 0d, 2);
-            profileDto.OImpact = Math.Round(lastWeeklyStats?.OImpactAverage ?? 0d, 2);
-
-            var heatTrend = (from r in DbContext.ProfileReportsWeekly
-                            where r.ProfileId == profileDto.ProfileId
-                            group r by r.DateId into g
-                            orderby g.Key descending
-                            select new
-                            {
-                                g.Key,
-                                Heat = g.Average(x => x.Heat),
-                            }).Take(4).Select(x => x.Heat).ToArray();
-
-            profileDto.Heat = lastWeeklyStats == null ? null : new ProfileViewDTO.HeatDTO
-            {
-                LastDateId = lastWeeklyStats.DateId,
-                Values = heatTrend
-            };
+            profileDto.Border = activeItems.Border;     
 
             profileDto.Pulse = GetProfilePulseDTO(profileId);
             
@@ -489,7 +454,7 @@ namespace Tayra.Services
         
         public ProfileStatsDTO GetProfileStatsData(int profileId)
         {
-            var latestUpdateDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-32));
+            var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
             
             var segments = from pa in DbContext.ProfileAssignments
                 where pa.ProfileId == profileId
@@ -500,13 +465,13 @@ namespace Tayra.Services
                     .Where(x => segments.Contains(x.SegmentId) && x.DateId >= latestUpdateDateId)
                     .ToLookup(x => x.SegmentId).ToDictionary(x => x.Key, x => new 
                     {
-                        Impact = x.Select(y => y.OImpactAverageTotal).ToArray(),
-                        Speed = x.Select(y => y.SpeedAverageTotal).ToArray(),
-                        Power = x.Select(y => y.PowerAverageTotal).ToArray(),
-                        Heat = x.Select(y => y.HeatAverageTotal).ToArray(),
-                        Assists = x.Select(y => y.AssistsAverage).ToArray(),
-                        TaskCompletion = x.Select(y => y.TasksCompletedAverage).ToArray(),
-                        Complexity = x.Select(y => y.ComplexityAverage).ToArray(),
+                        Impact = x.Select(r => r.OImpactAverageTotal).ToArray(),
+                        Speed = x.Select(r => r.SpeedAverageTotal).ToArray(),
+                        Power = x.Select(r => r.PowerAverageTotal).ToArray(),
+                        Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
+                        Assists = x.Select(r => r.AssistsAverage).ToArray(),
+                        TaskCompletion = x.Select(r => r.TasksCompletedAverage).ToArray(),
+                        Complexity = x.Select(r => r.ComplexityAverage).ToArray(),
                     });
             
             var teams = from pa in DbContext.ProfileAssignments
@@ -518,13 +483,13 @@ namespace Tayra.Services
                     .Where(x => teams.Contains(x.TeamId) && x.DateId >= latestUpdateDateId)
                     .ToLookup(x => x.TeamId).ToDictionary(x => x.Key, x => new 
                     {
-                        Impact = x.Select(y => y.OImpactAverageTotal).ToArray(),
-                        Speed = x.Select(y => y.SpeedAverageTotal).ToArray(),
-                        Power = x.Select(y => y.PowerAverageTotal).ToArray(),
-                        Heat = x.Select(y => y.HeatAverageTotal).ToArray(),
-                        Assists = x.Select(y => y.AssistsAverage).ToArray(),
-                        TaskCompletion = x.Select(y => y.TasksCompletedAverage).ToArray(),
-                        Complexity = x.Select(y => y. ComplexityAverage).ToArray(),
+                        Impact = x.Select(r => r.OImpactAverageTotal).ToArray(),
+                        Speed = x.Select(r => r.SpeedAverageTotal).ToArray(),
+                        Power = x.Select(r => r.PowerAverageTotal).ToArray(),
+                        Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
+                        Assists = x.Select(r => r.AssistsAverage).ToArray(),
+                        TaskCompletion = x.Select(r => r.TasksCompletedAverage).ToArray(),
+                        Complexity = x.Select(r => r.ComplexityAverage).ToArray(),
                     });
             
             return (from prw in DbContext.ProfileReportsWeekly
@@ -606,23 +571,6 @@ namespace Tayra.Services
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
-                            Id = MetricTypes.Assist,
-                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
-                            {
-                                Id = x.Key,
-                                Averages = x.Value.Assists,
-                                TotalAverage = x.Value.Assists.Sum() / 4f
-                            }).ToArray(),
-                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.Assists,
-                                TotalAverage = x.Value.Assists.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.AssistsTotalAverage).ToArray()
-                        },
-                        new ProfileStatsDTO.ProfileMetricDTO
-                        {
                             Id = MetricTypes.Complexity,
                             SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
@@ -637,6 +585,23 @@ namespace Tayra.Services
                                 TotalAverage = x.Value.Complexity.Sum() / 4f
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => x.ComplexityTotalAverage).ToArray()
+                        },
+                        new ProfileStatsDTO.ProfileMetricDTO
+                        {
+                            Id = MetricTypes.Assist,
+                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            {
+                                Id = x.Key,
+                                Averages = x.Value.Assists,
+                                TotalAverage = x.Value.Assists.Sum() / 4f
+                            }).ToArray(),
+                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            {
+                                Id = x.Key ,
+                                Averages = x.Value.Assists,
+                                TotalAverage = x.Value.Assists.Sum() / 4f
+                            }).ToArray(),
+                            WeeklyAverages = r.Select(x => x.AssistsTotalAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {

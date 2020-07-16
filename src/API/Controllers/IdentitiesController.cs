@@ -13,10 +13,10 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public IdentitiesController(ITenantProvider tenantProvider, OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
+        public IdentitiesController(ITenantProvider tenantProvider, IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            TenantProvider = tenantProvider;
-            DbContext = dbContext;
+            TenantProvider = tenantProvider; 
+            //DbContext = dbContext;
         }
 
         #endregion
@@ -33,21 +33,21 @@ namespace Tayra.API.Controllers
         [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {
-            //var o = Resolve<IOrganizationsService>();
-            //o.Create(new OrganizationCreateDTO
-            //{
-            //    Key = "mop.tayra.io",
-            //    Name = "Ministry of Programming",
-            //    Timezone = "Central Europe Standard Time",
-            //    DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
-            //    DatabaseName = "tayra-tenant_mop",
-            //    TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
-            //});
+            var o = Resolve<IOrganizationsService>();
+            o.Create(new OrganizationCreateDTO
+            {
+                Key = "test4.tayra.io",
+                Name = "test4",
+                Timezone = "Central Europe Standard Time",
+                DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
+                DatabaseName = "test4",
+                TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
+            });
 
-            // IdentitiesService.CreateInvitation(0, "demo.tayra.io", new IdentityInviteDTO
+            // IdentitiesService.CreateInvitation(0, "test3.tayra.io", new IdentityInviteDTO
             // {
-            //     EmailAddress = "haris+95@tayra.io",
-            //     FirstName = "Bota",
+            //     EmailAddress = "amar.mahmic+3@tayra.io",
+            //     FirstName = "Mahma",
             //     LastName = "Admin",
             //     Role = ProfileRoles.Admin
             // });

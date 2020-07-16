@@ -47,8 +47,8 @@ namespace Tayra.Services
             SqlConnectionStringBuilder connStrBldr = new SqlConnectionStringBuilder(dto.TemplateConnectionString);
             connStrBldr.DataSource = dto.DatabaseServer;
             connStrBldr.InitialCatalog = dto.DatabaseName;
-            //connStrBldr.Encrypt = true;
-            //connStrBldr.TrustServerCertificate = true; //for aws retardness
+            connStrBldr.Encrypt = true;
+            connStrBldr.TrustServerCertificate = true; //for aws retardness
 
             // Go into a DbContext to trigger migrations and schema deployment for the new shard.
             // This requires an un-opened connection.

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200707101348_FixUniqueIndexConstrains")]
+    partial class FixUniqueIndexConstrains
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -545,7 +547,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("OrganizationId");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long?>("ArchivedAt");
 
                     b.Property<DateTime>("Created");
 
@@ -791,7 +793,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("OrganizationId");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long?>("ArchivedAt");
 
                     b.Property<string>("AssistantSummary");
 
@@ -1431,7 +1433,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("OrganizationId");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long?>("ArchivedAt");
 
                     b.Property<string>("AssistantSummary");
 
@@ -1470,7 +1472,8 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.HasIndex("Key", "ArchivedAt", "OrganizationId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[ArchivedAt] IS NOT NULL");
 
                     b.ToTable("Segments");
                 });
@@ -1749,7 +1752,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("OrganizationId");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long?>("ArchivedAt");
 
                     b.Property<DateTime>("Created");
 
@@ -2072,7 +2075,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("OrganizationId");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long?>("ArchivedAt");
 
                     b.Property<string>("AssistantSummary");
 
@@ -2101,7 +2104,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("SegmentId", "Key", "ArchivedAt", "OrganizationId")
                         .IsUnique()
-                        .HasFilter("[Key] IS NOT NULL");
+                        .HasFilter("[Key] IS NOT NULL AND [ArchivedAt] IS NOT NULL");
 
                     b.ToTable("Teams");
                 });

@@ -17,7 +17,7 @@ namespace Cog.DAL
         protected const string AuditLastModifiedByProp = "LastModifiedBy";
         
         protected const string TenantIdFK = "OrganizationId";
-        protected const string ArchivedAtProp = "ArchievedAt";
+        protected const string ArchivedAtProp = "ArchivedAt";
 
 
         #region Properties

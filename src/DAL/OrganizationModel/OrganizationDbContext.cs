@@ -9,6 +9,7 @@ using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Tayra.Models.Organizations
 {
@@ -115,14 +116,14 @@ namespace Tayra.Models.Organizations
         #endregion
 
         #region Protected Methods
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {   //IArchivableEntity
                 if (typeof(IArchivableEntity).IsAssignableFrom(entityType.ClrType))
                 {
-                    entityType.AddProperty(ArchivedAtProp, typeof(long?));
+                    entityType.AddProperty(ArchivedAtProp, typeof(long));
                 }
             }
 
@@ -303,7 +304,8 @@ namespace Tayra.Models.Organizations
                 var idxs = entityType.GetIndexes().Where(x => x.Properties.Count() > 1 || x.Properties[0] != orgId).ToArray();
                 foreach (var idx in idxs)
                 {
-                    entityType.AddIndex(idx.Properties.Append(orgId).ToArray());
+                    var newIndex = entityType.AddIndex(idx.Properties.Append(orgId).ToArray());
+                    newIndex.IsUnique = idx.IsUnique;
                     entityType.RemoveIndex(idx.Properties);
                 }
                
@@ -333,7 +335,7 @@ namespace Tayra.Models.Organizations
             if (typeof(IArchivableEntity).IsAssignableFrom(typeof(T)))
             {
                 builder.Entity<T>().HasQueryFilter(e =>
-                    EF.Property<long?>(e, ArchivedAtProp) == null &&
+                    EF.Property<long>(e, ArchivedAtProp) == 0 &&
                     EF.Property<int>(e, TenantIdFK) == CurrentTenant.ShardingKey);
             }
             else
