@@ -84,7 +84,8 @@ namespace Tayra.Services
                             IsActivable = i.Item.IsActivable,
                             IsDisenchantable = i.Item.IsDisenchantable,
                             IsGiftable = i.Item.IsGiftable,
-                            Price = i.Item.Price
+                            Price = i.Item.Price,
+                            AcquireMethod=i.AcquireMethod
                         };
 
             GridData<InventoryItemGridDTO> gridData = query.GetGridData(gridParams);
@@ -203,7 +204,10 @@ namespace Tayra.Services
         public void Disenchant(int profileId, InventoryItemDisenchantDTO dto)
         {
             var invItem = DbContext.ProfileInventoryItems.Include(x => x.Item).Include(x => x.Profile).FirstOrDefault(x => x.ProfileId == profileId && x.Id == dto.InventoryItemId);
+            var claimBundleItem =
+                DbContext.ClaimBundleItems.FirstOrDefault(x => x.ProfileInventoryItemId == dto.InventoryItemId);
 
+            claimBundleItem.EnsureNotNull(dto.InventoryItemId);
             invItem.EnsureNotNull(profileId, dto.InventoryItemId);
 
             DbContext.Add(new ItemDisenchant
@@ -230,6 +234,7 @@ namespace Tayra.Services
                 ProfileId = profileId,
             });
 
+            DbContext.Remove(claimBundleItem);
             DbContext.Remove(invItem);
 
             TokensService.CreateTransaction(TokenType.CompanyToken, profileId, disenchantValue, TransactionReason.ItemDisenchant, null);
