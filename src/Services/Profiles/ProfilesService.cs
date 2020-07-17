@@ -492,7 +492,7 @@ using Tayra.Models.Organizations;
                         Complexity = x.Select(r => r.ComplexityAverage).ToArray(),
                     });
             
-            var stats = (from prw in DbContext.ProfileReportsWeekly
+            return (from prw in DbContext.ProfileReportsWeekly
                 where prw.ProfileId == profileId
                 where prw.DateId >= latestUpdateDateId
                 group prw by 1 into r
@@ -571,23 +571,6 @@ using Tayra.Models.Organizations;
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
-                            Id = MetricTypes.Assist,
-                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
-                            {
-                                Id = x.Key,
-                                Averages = x.Value.Assists,
-                                TotalAverage = x.Value.Assists.Sum() / 4f
-                            }).ToArray(),
-                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.Assists,
-                                TotalAverage = x.Value.Assists.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.AssistsTotalAverage).ToArray()
-                        },
-                        new ProfileStatsDTO.ProfileMetricDTO
-                        {
                             Id = MetricTypes.Complexity,
                             SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
@@ -602,6 +585,23 @@ using Tayra.Models.Organizations;
                                 TotalAverage = x.Value.Complexity.Sum() / 4f
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => x.ComplexityTotalAverage).ToArray()
+                        },
+                        new ProfileStatsDTO.ProfileMetricDTO
+                        {
+                            Id = MetricTypes.Assist,
+                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            {
+                                Id = x.Key,
+                                Averages = x.Value.Assists,
+                                TotalAverage = x.Value.Assists.Sum() / 4f
+                            }).ToArray(),
+                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
+                            {
+                                Id = x.Key ,
+                                Averages = x.Value.Assists,
+                                TotalAverage = x.Value.Assists.Sum() / 4f
+                            }).ToArray(),
+                            WeeklyAverages = r.Select(x => x.AssistsTotalAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
@@ -622,8 +622,6 @@ using Tayra.Models.Organizations;
                         }
                     }).ToArray()
                 }).FirstOrDefault();
-        
-            return stats;
         }
         
         #endregion

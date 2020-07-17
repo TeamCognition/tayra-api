@@ -16,5 +16,6 @@ namespace Tayra.Services
         void Create(int segmentId, TeamCreateDTO dto);
         void Update(int teamId, TeamUpdateDTO dto);
         void Archive(int profileId, string teamKey);
+        TeamStatsDTO GetTeamStatsData(string teamKey);
     }
 }
