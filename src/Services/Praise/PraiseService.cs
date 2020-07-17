@@ -82,7 +82,7 @@ namespace Tayra.Services
             LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
         }
         
-        public GridData<PraiseSearchGridDTO> SearchPraises(PraiseSearchGridParams gridParams)
+        public GridData<PraiseSearchGridDTO> SearchPraises(PraiseGridParams gridParams)
         {
             var query = from pp in DbContext.ProfilePraises
                         select new PraiseSearchGridDTO
@@ -99,8 +99,23 @@ namespace Tayra.Services
 
             return gridData;
         }
+        
+        public GridData<PraiseSearchProfilesDTO> SearchProfiles(PraiseGridParams gridParams)
+        {
+            
+            IQueryable<PraiseSearchProfilesDTO> query = from p in DbContext.Profiles
+                select new PraiseSearchProfilesDTO
+                {
+                    ProfileId = p.Id,
+                    Name = p.FirstName + " " + p.LastName,
+                    Username = p.Username,
+                    Avatar = p.Avatar
+                };
 
+            GridData<PraiseSearchProfilesDTO> gridData = query.GetGridData(gridParams);
+
+            return gridData;
+        }
         #endregion
-
     }
 }
