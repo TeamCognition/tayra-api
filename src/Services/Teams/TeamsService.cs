@@ -310,18 +310,19 @@ namespace Tayra.Services
                 DbContext.Remove(m);
             }
         }
-        
-         public TeamStatsDTO GetTeamStatsData(string teamKey)
+
+        public TeamStatsDTO GetTeamStatsData(string teamKey)
         {
             var latestUpdateDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-32));
-            
+
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
             team.EnsureNotNull(teamKey);
-            
+
             return (from trw in DbContext.TeamReportsWeekly
                 where trw.TeamId == team.Id
                 where trw.DateId >= latestUpdateDateId
-                group trw by 1 into r
+                group trw by 1
+                into r
                 select new TeamStatsDTO
                 {
                     LatestUpdateDateId = latestUpdateDateId,
@@ -365,7 +366,7 @@ namespace Tayra.Services
                     }).ToArray()
                 }).FirstOrDefault();
         }
-         
+
         #endregion
 
         #region Private Methods
