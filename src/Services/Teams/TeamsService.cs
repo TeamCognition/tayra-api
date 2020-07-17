@@ -316,8 +316,25 @@ namespace Tayra.Services
             var latestUpdateDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-32));
 
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
+            
             team.EnsureNotNull(teamKey);
+            
+            var otherTeams = DbContext.Teams.Where(x => x.Key != teamKey).Select(x => x.Id).ToArray();
 
+            var otherTeamsStats =
+                DbContext.TeamReportsWeekly
+                    .Where(x => otherTeams.Contains(x.TeamId) && x.DateId >= latestUpdateDateId)
+                    .ToLookup(x => x.TeamId).ToDictionary(x => x.Key, x => new 
+                    {
+                        Impact = x.Select(r => r.OImpactAverageTotal).ToArray(),
+                        Speed = x.Select(r => r.SpeedAverageTotal).ToArray(),
+                        Power = x.Select(r => r.PowerAverageTotal).ToArray(),
+                        Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
+                        Assists = x.Select(r => r.AssistsAverage).ToArray(),
+                        TaskCompletion = x.Select(r => r.TasksCompletedAverage).ToArray(),
+                        Complexity = x.Select(r => r.ComplexityAverage).ToArray(),
+                    });
+            
             return (from trw in DbContext.TeamReportsWeekly
                 where trw.TeamId == team.Id
                 where trw.DateId >= latestUpdateDateId
@@ -331,36 +348,78 @@ namespace Tayra.Services
                         new TeamStatsDTO.TeamMetricDTO
                         {
                             Id = MetricTypes.OImpact,
+                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
+                            {
+                                Id = x.Key ,
+                                Averages = x.Value.Impact,
+                                TotalAverage = x.Value.Impact.Sum() / 4f
+                            }).ToArray(),
                             WeeklyAverages = r.Select(x => x.OImpactAverageTotal).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.Speed,
+                            Id = MetricTypes.Speed,  
+                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
+                            {
+                                Id = x.Key ,
+                                Averages = x.Value.Speed,
+                                TotalAverage = x.Value.Speed.Sum() / 4f
+                            }).ToArray(),
                             WeeklyAverages = r.Select(x => x.SpeedAverageTotal).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.Power,
+                            Id = MetricTypes.Power,  
+                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
+                            {
+                                Id = x.Key ,
+                                Averages = x.Value.Power,
+                                TotalAverage = x.Value.Power.Sum() / 4f
+                            }).ToArray(),
                             WeeklyAverages = r.Select(x => x.PowerAverageTotal).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
                             Id = MetricTypes.Heat,
+                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
+                            {
+                                Id = x.Key ,
+                                Averages = x.Value.Heat,
+                                TotalAverage = x.Value.Heat.Sum() / 4f
+                            }).ToArray(),
                             WeeklyAverages = r.Select(x => x.HeatAverageTotal).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
                             Id = MetricTypes.Complexity,
+                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
+                            {
+                                Id = x.Key ,
+                                Averages = x.Value.Complexity,
+                                TotalAverage = x.Value.Complexity.Sum() / 4f
+                            }).ToArray(),
                             WeeklyAverages = r.Select(x => x.ComplexityAverage).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.Assist,
+                            Id = MetricTypes.Assist, 
+                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
+                            {
+                                Id = x.Key ,
+                                Averages = x.Value.Assists,
+                                TotalAverage = x.Value.Assists.Sum() / 4f
+                            }).ToArray(),
                             WeeklyAverages = r.Select(x => x.AssistsAverage).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
                             Id = MetricTypes.TaskCompletion,
+                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
+                            {
+                                Id = x.Key ,
+                                Averages = x.Value.TaskCompletion,
+                                TotalAverage = x.Value.TaskCompletion.Sum() / 4f
+                            }).ToArray(),
                             WeeklyAverages = r.Select(x => x.TasksCompletedAverage).ToArray()
                         }
                     }).ToArray()

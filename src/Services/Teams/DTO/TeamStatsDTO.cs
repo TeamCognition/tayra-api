@@ -11,7 +11,16 @@ namespace Tayra.Services
         public class TeamMetricDTO
         {
             public MetricTypes Id {get; set;}
+
+            public OtherTeamsAveragesDTO[] TeamsAverages { get; set; }
             public float[] WeeklyAverages {get; set;}
+            
+            public class OtherTeamsAveragesDTO
+            {
+                public int Id { get; set; }
+                public float[] Averages { get; set; }
+                public float? TotalAverage { get; set; }
+            } 
         }
     }
 }
