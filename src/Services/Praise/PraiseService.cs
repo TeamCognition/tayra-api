@@ -84,7 +84,14 @@ namespace Tayra.Services
         
         public GridData<PraiseSearchGridDTO> SearchPraises(PraiseGridParams gridParams)
         {
-            var query = from pp in DbContext.ProfilePraises
+            IQueryable<ProfilePraise> scope;
+
+            if (gridParams.ProfileId.HasValue)
+                scope = DbContext.ProfilePraises.Where(x => x.ProfileId == gridParams.ProfileId);
+            else
+                scope = DbContext.ProfilePraises;
+            
+            var query = from pp in scope
                         select new PraiseSearchGridDTO
                         {
                             PraiserUsername = DbContext.Profiles.Where(x => x.Id == pp.PraiserProfileId).Select(x => x.Username).FirstOrDefault(),
@@ -99,11 +106,13 @@ namespace Tayra.Services
 
             return gridData;
         }
-        
-        public GridData<PraiseSearchProfilesDTO> SearchProfiles(PraiseGridParams gridParams)
+
+        public GridData<PraiseSearchProfilesDTO> SearchProfiles(PraiseProfileSearchGridParams gridParams)
         {
-            
-            IQueryable<PraiseSearchProfilesDTO> query = from p in DbContext.Profiles
+
+            var query = from p in DbContext.Profiles
+                where p.Username.Contains(gridParams.UsernameQuery) ||(p.FirstName + p.LastName).Contains(gridParams.NameQuery)
+
                 select new PraiseSearchProfilesDTO
                 {
                     ProfileId = p.Id,
@@ -116,6 +125,7 @@ namespace Tayra.Services
 
             return gridData;
         }
+
         #endregion
     }
 }

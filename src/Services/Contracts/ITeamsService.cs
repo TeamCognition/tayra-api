@@ -17,5 +17,6 @@ namespace Tayra.Services
         void Update(int teamId, TeamUpdateDTO dto);
         void Archive(int profileId, string teamKey);
         TeamStatsDTO GetTeamStatsData(string teamKey);
+        TeamPulseDTO GetTeamPulse(string teamKey);
     }
 }

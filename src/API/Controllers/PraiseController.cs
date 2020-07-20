@@ -40,7 +40,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost("searchProfiles")]
-        public ActionResult<GridData<PraiseSearchProfilesDTO>> SearchProfiles([FromBody] PraiseGridParams gridParams)
+        public ActionResult<GridData<PraiseSearchProfilesDTO>> SearchProfiles([FromBody] PraiseProfileSearchGridParams gridParams)
         {
             return PraiseService.SearchProfiles(gridParams);
         }

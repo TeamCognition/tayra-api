@@ -6,6 +6,6 @@ namespace Tayra.Services
     {
         void PraiseProfile(int profileId, PraiseProfileDTO dto);
         GridData<PraiseSearchGridDTO> SearchPraises(PraiseGridParams gridParams);
-        GridData<PraiseSearchProfilesDTO> SearchProfiles(PraiseGridParams gridParams);
+        GridData<PraiseSearchProfilesDTO> SearchProfiles(PraiseProfileSearchGridParams gridParams);
     }
 }

@@ -96,6 +96,12 @@ namespace Tayra.API.Controllers
         {
             return TeamsService.GetTeamStatsData(teamKey);
         }
+        
+        [HttpGet("{teamKey}/pulse")]
+        public ActionResult<TeamPulseDTO> GetTeamPulse([FromRoute]string teamKey)
+        {
+            return TeamsService.GetTeamPulse(teamKey);
+        }
 
         #endregion
     }

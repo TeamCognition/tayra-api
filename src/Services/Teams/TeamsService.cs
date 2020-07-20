@@ -313,7 +313,7 @@ namespace Tayra.Services
 
         public TeamStatsDTO GetTeamStatsData(string teamKey)
         {
-            var latestUpdateDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-32));
+            var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
 
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
             
@@ -426,6 +426,28 @@ namespace Tayra.Services
                 }).FirstOrDefault();
         }
 
+        public TeamPulseDTO GetTeamPulse(string teamKey)
+        {
+            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
+            
+            team.EnsureNotNull(teamKey);
+
+            var teamMembers = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId)
+                .ToArray();
+
+            var yesterdayDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-1));
+            
+            return (from t in DbContext.Tasks
+                where teamMembers.Contains(t.AssigneeProfileId.Value)
+                where t.Status == TaskStatuses.InProgress || (t.Status == TaskStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)
+                group t by 1 into g
+                select new TeamPulseDTO
+                {
+                    InProgress = g.Where(x => x.Status == TaskStatuses.InProgress).Count(),
+                    RecentlyDone = g.Where(x => x.Status == TaskStatuses.Done).Count()
+                }).FirstOrDefault();
+        }
+        
         #endregion
 
         #region Private Methods
