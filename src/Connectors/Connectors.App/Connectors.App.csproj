@@ -30,5 +30,6 @@
     <ProjectReference Include="..\..\DAL\OrganizationModel\OrganizationModel.csproj" />
     <ProjectReference Include="..\..\Services\Services.csproj" />
     <ProjectReference Include="..\..\Common\Common.csproj" />
+    <ProjectReference Include="..\Connectors.GitHub\Connectors.GitHub.csproj" />
   </ItemGroup>
 </Project>

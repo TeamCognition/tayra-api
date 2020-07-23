@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Tayra.Connectors.App.Helpers;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
+using Tayra.Connectors.GitHub;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.App
@@ -36,6 +37,7 @@ namespace Tayra.Connectors.App
 
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
+            services.AddTransient<IOAuthConnector, GitHubConnector>();
             services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
             services.AddScoped<ITenantProvider, ShardTenantProvider>();
 

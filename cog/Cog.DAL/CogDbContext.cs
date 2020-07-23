@@ -43,15 +43,15 @@ namespace Cog.DAL
 
         #endregion
 
-        public CogDbContext(DbContextOptions options) : this(null, options)
+        public CogDbContext() : this(null)
         {
         }
 
-        public CogDbContext(IHttpContextAccessor httpContext, DbContextOptions options) : this(null, httpContext, options)
+        public CogDbContext(IHttpContextAccessor httpContext) : this(null, httpContext)
         {
         }
 
-        public CogDbContext(TenantDTO tenant, IHttpContextAccessor httpContext, DbContextOptions options) : base(options)
+        public CogDbContext(TenantDTO tenant, IHttpContextAccessor httpContext)
         {
             CurrentTenant = tenant;
             Instantiated = DateTime.UtcNow;

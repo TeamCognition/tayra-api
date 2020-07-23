@@ -23,14 +23,11 @@ namespace Tayra.Models.Organizations
         /// to intialize a new shard. 
         /// </summary>
         protected internal OrganizationDbContext(string connectionString)
-            : base(ConfigureDbContextOptions(connectionString))
         {
-        }
-        protected internal OrganizationDbContext(DbContextOptions<OrganizationDbContext> options) : base(options)
-        {//for tests
+            DirectConnectionString = connectionString;
         }
 
-
+        
         // C'tor for data dependent routing. This call will open a validated connection routed to the proper
         // shard by the shard map manager. Note that the base class c'tor call will fail for an open connection
         // if migrations need to be done and SQL credentials are used. This is the reason for the 
@@ -40,12 +37,15 @@ namespace Tayra.Models.Organizations
         // the regular application calls with a tenant id.
         /// </summary>
         public OrganizationDbContext(IHttpContextAccessor httpContext, ITenantProvider tenantProvider, IShardMapProvider shardMapProvider)
-            : base(tenantProvider.GetTenant(), httpContext, CreateDDRConnection(shardMapProvider.ShardMap, tenantProvider.GetTenant().ShardingKey, shardMapProvider.TemplateConnectionString))
+            : base(tenantProvider.GetTenant(), httpContext)
         {
+            ShardMapProvider = shardMapProvider;
             this.Database.Migrate();
         }
 
-
+        public string DirectConnectionString { get; set; }
+        protected IShardMapProvider ShardMapProvider { get; set; }
+        
         #endregion
 
         #region Db Sets
@@ -299,7 +299,7 @@ namespace Tayra.Models.Organizations
 
                 //remove alternatePrimaryKey
                 if(pk.Count() > 1 || pk[0].Name != "Id")
-                entityType.RemoveKey(pk);
+                    entityType.RemoveKey(pk);
 
                 var idxs = entityType.GetIndexes().Where(x => x.Properties.Count() > 1 || x.Properties[0] != orgId).ToArray();
                 foreach (var idx in idxs)
@@ -317,9 +317,33 @@ namespace Tayra.Models.Organizations
             base.OnModelCreating(modelBuilder);
         }
 
-        public override int SaveChanges()
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            return base.SaveChanges();
+            if (!string.IsNullOrEmpty(DirectConnectionString))
+            {
+                optionsBuilder.UseSqlServer(DirectConnectionString);
+            }
+            else
+            {
+                SqlConnection sqlConn = null;
+                try
+                {
+                    // Ask shard map to broker a validated connection for the given key
+                    sqlConn = ShardMapProvider.ShardMap.OpenConnectionForKey(CurrentTenant.ShardingKey, ShardMapProvider.TemplateConnectionString);
+                    sqlConn.Close(); //this lets ef core handle connection instead of manual
+                    
+                    optionsBuilder.UseSqlServer(sqlConn);
+                
+                    optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>(); //TODO: this goes to CogDB as well?
+                }
+                catch (Exception e)
+                {
+                    if(sqlConn != null)
+                        sqlConn?.Close();
+                    throw new CogSecurityException(e.Message, "OrganizationDbcontext.CreateDDRConnection");
+                }
+            }
+            base.OnConfiguring(optionsBuilder);
         }
 
         #endregion
@@ -358,6 +382,7 @@ namespace Tayra.Models.Organizations
             {
                 // Ask shard map to broker a validated connection for the given key
                 SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
+                
 
                 //// Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
                 //SqlCommand cmd = sqlConn.CreateCommand();
