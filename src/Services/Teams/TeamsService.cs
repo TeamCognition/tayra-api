@@ -326,13 +326,13 @@ namespace Tayra.Services
                     .Where(x => otherTeams.Contains(x.TeamId) && x.DateId >= latestUpdateDateId)
                     .ToLookup(x => x.TeamId).ToDictionary(x => x.Key, x => new 
                     {
-                        Impact = x.Select(r => r.OImpactAverageTotal).ToArray(),
-                        Speed = x.Select(r => r.SpeedAverageTotal).ToArray(),
-                        Power = x.Select(r => r.PowerAverageTotal).ToArray(),
+                        Impact = x.Select(r => r.OImpactAverage).ToArray(),
+                        Speed = x.Select(r => r.SpeedAverage).ToArray(),
+                        Power = x.Select(r => r.PowerAverage).ToArray(),
                         Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
-                        Assists = x.Select(r => r.AssistsAverage).ToArray(),
-                        TaskCompletion = x.Select(r => r.TasksCompletedAverage).ToArray(),
-                        Complexity = x.Select(r => r.ComplexityAverage).ToArray(),
+                        Assists = x.Select(r => (float) r.AssistsChange).ToArray(),
+                        TaskCompletion = x.Select(r => (float) r.TasksCompletedChange).ToArray(),
+                        Complexity = x.Select(r => (float) r.ComplexityChange).ToArray(),
                     });
             
             return (from trw in DbContext.TeamReportsWeekly
@@ -398,7 +398,7 @@ namespace Tayra.Services
                                 Averages = x.Value.Complexity,
                                 TotalAverage = x.Value.Complexity.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.ComplexityAverage).ToArray()
+                            WeeklyAverages = r.Select(x => (float) x.ComplexityChange).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
@@ -409,7 +409,7 @@ namespace Tayra.Services
                                 Averages = x.Value.Assists,
                                 TotalAverage = x.Value.Assists.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.AssistsAverage).ToArray()
+                            WeeklyAverages = r.Select(x => (float) x.AssistsChange).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
@@ -420,7 +420,7 @@ namespace Tayra.Services
                                 Averages = x.Value.TaskCompletion,
                                 TotalAverage = x.Value.TaskCompletion.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.TasksCompletedAverage).ToArray()
+                            WeeklyAverages = r.Select(x => (float) x.TasksCompletedChange).ToArray()
                         }
                     }).ToArray()
                 }).FirstOrDefault();

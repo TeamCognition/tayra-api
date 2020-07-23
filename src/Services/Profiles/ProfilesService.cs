@@ -80,6 +80,10 @@ using Tayra.Models.Organizations;
         public GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams)
         {
             IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
+
+            if (gridParams.IncludeAdmins) scope.Where(x => x.Role == ProfileRoles.Admin);
+            if (gridParams.IncludeManagers) scope.Where(x => x.Role == ProfileRoles.Manager);
+            
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
 
@@ -465,13 +469,13 @@ using Tayra.Models.Organizations;
                     .Where(x => segments.Contains(x.SegmentId) && x.DateId >= latestUpdateDateId)
                     .ToLookup(x => x.SegmentId).ToDictionary(x => x.Key, x => new 
                     {
-                        Impact = x.Select(r => r.OImpactAverageTotal).ToArray(),
-                        Speed = x.Select(r => r.SpeedAverageTotal).ToArray(),
-                        Power = x.Select(r => r.PowerAverageTotal).ToArray(),
+                        Impact = x.Select(r => r.OImpactAverage).ToArray(),
+                        Speed = x.Select(r => r.SpeedAverage).ToArray(),
+                        Power = x.Select(r => r.PowerAverage).ToArray(),
                         Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
-                        Assists = x.Select(r => r.AssistsAverage).ToArray(),
-                        TaskCompletion = x.Select(r => r.TasksCompletedAverage).ToArray(),
-                        Complexity = x.Select(r => r.ComplexityAverage).ToArray(),
+                        Assists = x.Select(r => (float) r.AssistsChange).ToArray(),
+                        TaskCompletion = x.Select(r => (float) r.TasksCompletedChange).ToArray(),
+                        Complexity = x.Select(r => (float) r.ComplexityChange).ToArray(),
                     });
             
             var teams = from pa in DbContext.ProfileAssignments
@@ -483,13 +487,13 @@ using Tayra.Models.Organizations;
                     .Where(x => teams.Contains(x.TeamId) && x.DateId >= latestUpdateDateId)
                     .ToLookup(x => x.TeamId).ToDictionary(x => x.Key, x => new 
                     {
-                        Impact = x.Select(r => r.OImpactAverageTotal).ToArray(),
-                        Speed = x.Select(r => r.SpeedAverageTotal).ToArray(),
-                        Power = x.Select(r => r.PowerAverageTotal).ToArray(),
+                        Impact = x.Select(r => r.OImpactAverage).ToArray(),
+                        Speed = x.Select(r => r.SpeedAverage).ToArray(),
+                        Power = x.Select(r => r.PowerAverage).ToArray(),
                         Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
-                        Assists = x.Select(r => r.AssistsAverage).ToArray(),
-                        TaskCompletion = x.Select(r => r.TasksCompletedAverage).ToArray(),
-                        Complexity = x.Select(r => r.ComplexityAverage).ToArray(),
+                        Assists = x.Select(r => (float) r.AssistsChange).ToArray(),
+                        TaskCompletion = x.Select(r => (float) r.TasksCompletedChange).ToArray(),
+                        Complexity = x.Select(r => (float) r.ComplexityChange).ToArray(),
                     });
             
             return (from prw in DbContext.ProfileReportsWeekly
@@ -516,7 +520,7 @@ using Tayra.Models.Organizations;
                                 Averages = x.Value.Impact,
                                 TotalAverage = x.Value.Impact.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.OImpactTotalAverage).ToArray()
+                            WeeklyAverages = r.Select(x => x.OImpactAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
@@ -533,7 +537,7 @@ using Tayra.Models.Organizations;
                                 Averages = x.Value.Speed,
                                 TotalAverage = x.Value.Speed.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.SpeedTotalAverage).ToArray()
+                            WeeklyAverages = r.Select(x => x.SpeedAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
@@ -550,7 +554,7 @@ using Tayra.Models.Organizations;
                                 Averages = x.Value.Power,
                                 TotalAverage = x.Value.Power.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.PowerTotalAverage).ToArray()
+                            WeeklyAverages = r.Select(x => x.PowerAverage).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
@@ -575,7 +579,7 @@ using Tayra.Models.Organizations;
                             SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
-                                Averages = x.Value.Complexity,
+                                Averages =  x.Value.Complexity,
                                 TotalAverage = x.Value.Complexity.Sum() / 4f
                             }).ToArray(),
                             TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
@@ -584,7 +588,7 @@ using Tayra.Models.Organizations;
                                 Averages = x.Value.Complexity,
                                 TotalAverage = x.Value.Complexity.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.ComplexityTotalAverage).ToArray()
+                            WeeklyAverages = r.Select(x => (float) x.ComplexityChange).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
@@ -601,7 +605,7 @@ using Tayra.Models.Organizations;
                                 Averages = x.Value.Assists,
                                 TotalAverage = x.Value.Assists.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.AssistsTotalAverage).ToArray()
+                            WeeklyAverages = r.Select(x => (float) x.AssistsChange).ToArray()
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
@@ -618,7 +622,7 @@ using Tayra.Models.Organizations;
                                 Averages = x.Value.TaskCompletion,
                                 TotalAverage = x.Value.TaskCompletion.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.TasksCompletedTotalAverage).ToArray()
+                            WeeklyAverages = r.Select(x => (float) x.TasksCompletedChange).ToArray()
                         }
                     }).ToArray()
                 }).FirstOrDefault();

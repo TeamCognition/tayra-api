@@ -39,7 +39,7 @@ namespace Cog.Core
                 case DateRanges.Last4Week:
                 {
                     var fourWeeksAgo = today.Subtract(TimeSpan.FromDays(7 * 4));
-                    var start = fourWeeksAgo.Add(TimeSpan.FromDays(8 - (int)fourWeeksAgo.DayOfWeek));
+                    var start = fourWeeksAgo.Add(TimeSpan.FromDays(7 - (int)fourWeeksAgo.DayOfWeek));
                     var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
                     return new DateRange(start, end);
                 }

@@ -97,7 +97,7 @@ namespace Tayra.Services
                             PraiserUsername = DbContext.Profiles.Where(x => x.Id == pp.PraiserProfileId).Select(x => x.Username).FirstOrDefault(),
                             RecieverUsername = pp.Profile.Username,
                             RecieverAvatar = pp.Profile.Avatar,
-                            DateId = pp.DateId,
+                            Created = pp.Created,
                             Type = pp.Type,
                             Message = pp.Message
                         };
