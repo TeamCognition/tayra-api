@@ -36,22 +36,22 @@ namespace Tayra.API.Controllers
             // var o = Resolve<IOrganizationsService>();
             // o.Create(new OrganizationCreateDTO
             // {
-            //     Key = "test4.tayra.io",
-            //     Name = "test4",
+            //     Key = "ankora.tayra.io",
+            //     Name = "Ankora",
             //     Timezone = "Central Europe Standard Time",
             //     DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
-            //     DatabaseName = "test4",
+            //     DatabaseName = "tayra-tenant_ankora",
             //     TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
             // });
 
-            IdentitiesService.CreateInvitation(0, "test5.tayra.io", new IdentityInviteDTO
-            {
-                EmailAddress = "androvana@gmail.com",
-                FirstName = "Vedran",
-                LastName = "Admin",
-                Role = ProfileRoles.Admin
-            });
-            DbContext.SaveChanges();
+            // IdentitiesService.CreateInvitation(0, "ankora.tayra.io", new IdentityInviteDTO
+            // {
+            //     EmailAddress = "nermin.hadzic@ankorainc.com",
+            //     FirstName = "Nermin",
+            //     LastName = "Admin",
+            //     Role = ProfileRoles.Admin
+            // });
+            // DbContext.SaveChanges();
 
             //IdentitiesService.InternalCreateWithProfile(dto);
             //DbContext.SaveChanges();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +13,7 @@ namespace Tayra.Connectors.GitHub
 {
     public class GitHubConnector : BaseOAuthConnector
     {
-        private const string AUTH_URL = "https://github.com/apps/tayra12/installations/new/permissions";
+        private const string AUTH_URL = "https://github.com/apps/tayra12/installations/new";
 
         public GitHubConnector(ILogger logger, OrganizationDbContext dataContext) : base(logger, dataContext)
         {
@@ -22,13 +23,13 @@ namespace Tayra.Connectors.GitHub
         {
         }
 
-        public override IntegrationType Type { get; } = IntegrationType.ATJ;
+        public override IntegrationType Type { get; } = IntegrationType.GH;
 
         #region Public Methods
 
         public override string GetAuthUrl(string userState)
         {
-            return $"{AUTH_URL}&state={GetCallbackUrl(userState)}";
+            return $"{AUTH_URL}?state={GetCallbackUrl(userState)}";
         }
 
         public override Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState)
@@ -51,6 +52,18 @@ namespace Tayra.Connectors.GitHub
                 {
                     throw new CogSecurityException($"profileId: {profileId} tried to integrate {Type} before segment integration");
                 }
+
+                return new Integration
+                {
+                    Fields = new List<IntegrationField>
+                    {
+                        new IntegrationField
+                        {
+                            Key = "ha",
+                            Value = tokenData.AccessToken
+                        }
+                    }
+                };
 
                 //if (loggedInUser != null)
                 //{

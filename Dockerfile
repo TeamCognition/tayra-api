@@ -35,5 +35,5 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
 COPY --from=0 /app/src/API/out ./  
 RUN mkdir -p wwwroot
-EXPOSE 80
+EXPOSE 80 443
 ENTRYPOINT ["dotnet", "Tayra.API.dll"]

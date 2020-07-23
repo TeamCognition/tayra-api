@@ -74,14 +74,11 @@ namespace Tayra.Services.TaskConverters
                 UpdateBasicTaskData();
             }
         }
-        public bool IsEligableForExtraData()
-        {
-            return Data.AssigneeProfileId.HasValue && IsCompleted();
-        }
+        
         public void FillExtraDataIfCompleted()
         {
             EnsureBasicDataIsFilled();
-            if (IsEligableForExtraData())
+            if (IsCompleted())
             {
                 Data.AutoTimeSpentInMinutes = GetAutoTimeSpentInMinutes();
                 FillEffortScore();
@@ -93,7 +90,7 @@ namespace Tayra.Services.TaskConverters
             if (assistantService != null)
             {
                 EnsureBasicDataIsFilled();
-                if (IsEligableForExtraData())
+                if (Data.AssigneeProfileId.HasValue && IsCompleted())
                 {
                     var aps = DbContext.ActionPoints.Where(x =>
                             x.ProfileId == Data.AssigneeProfileId.Value &&
@@ -115,7 +112,7 @@ namespace Tayra.Services.TaskConverters
         public void AddNecessaryTokensIfPossible(ITokensService tokensService)
         {
             EnsureBasicDataIsFilled();
-            if (IsEligableForExtraData())
+            if (Data.AssigneeProfileId.HasValue && IsCompleted())
             {
                 if (EffortScoreDiff > 0)
                 {
