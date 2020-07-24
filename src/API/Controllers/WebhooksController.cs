@@ -62,6 +62,50 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
+        public interface IABC
+        {
+            string T { get; set; }
+            void Process();
+        }
+
+        public class A : IABC
+        {
+            public string T { get; set; }
+            public int botic { get; set; }
+
+            public void Process()
+            {
+                T = "from A";
+            }
+        }
+        
+        public class B : IABC
+        {public string T { get; set; }
+            public int haris { get; set; }
+            public void Process(){T = "from B";}
+        }
+        
+        [HttpPost("gh")]
+        [AllowAnonymous]
+        public ActionResult GithubWebhook([FromBody] JObject jObject)
+        {
+            var x = jObject.ToObject<IABC>();
+            x.Process();
+            //SaveWebhookEventLog(jObject);
+            // WebhookEvent we = jObject.ToObject<WebhookEvent>();
+            //
+            // TaskConverterJira taskConverter = new TaskConverterJira(
+            //     DbContext,
+            //     ProfilesService,
+            //     we);
+            // if (TaskHelpers.DoStandardStuff(taskConverter, TasksService, TokensService, LogsService, AssistantService))
+            // {
+            //     DbContext.SaveChanges();
+            // }
+
+            return Ok(x);
+        }
+        
         #endregion
     }
 }
