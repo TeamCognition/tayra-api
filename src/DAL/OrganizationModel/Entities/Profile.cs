@@ -31,8 +31,7 @@ namespace Tayra.Models.Organizations
 
         public DateTime? BornOn { get; set; }
         public DateTime? EmployedOn { get; set; }
-
-        public bool IsStatisticActivated { get; set; } = true;
+        
         public string AssistantSummary { get; set; }
         
         public int IdentityId { get; set; }

@@ -314,7 +314,7 @@ using Tayra.Models.Organizations;
                                   Role = p.Role,
                                   Avatar = p.Avatar,
                                   Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Id = x.Segment.Id, Key = x.Segment.Key, Name = x.Segment.Name}).ToArray(),
-                                  Teams = p.Assignments.Select(x => new ProfileViewDTO.TeamDTO { Id = x.Team.Id, Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
+                                  Teams = p.Assignments.Where(x => x.TeamId.HasValue).Select(x => new ProfileViewDTO.TeamDTO { Id = x.Team.Id, Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
                                   Praises = p.Praises.GroupBy(x => x.Type).Select(x => new ProfileViewDTO.PraiseDTO{Type = x.Key, Count = x.Count()}).ToArray(),
                                   AssistantSummary = p.AssistantSummary,
                               }).FirstOrDefault();
