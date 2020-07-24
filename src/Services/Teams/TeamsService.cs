@@ -354,7 +354,7 @@ namespace Tayra.Services
                                 Averages = x.Value.Impact,
                                 TotalAverage = x.Value.Impact.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.OImpactAverageTotal).ToArray()
+                            WeeklyAverages = r.Select(x => x.OImpactAverage).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
@@ -365,7 +365,7 @@ namespace Tayra.Services
                                 Averages = x.Value.Speed,
                                 TotalAverage = x.Value.Speed.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.SpeedAverageTotal).ToArray()
+                            WeeklyAverages = r.Select(x => x.SpeedAverage).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
@@ -376,7 +376,7 @@ namespace Tayra.Services
                                 Averages = x.Value.Power,
                                 TotalAverage = x.Value.Power.Sum() / 4f
                             }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.PowerAverageTotal).ToArray()
+                            WeeklyAverages = r.Select(x => x.PowerAverage).ToArray()
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {

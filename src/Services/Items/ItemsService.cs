@@ -69,8 +69,11 @@ namespace Tayra.Services
 
             IQueryable<Item> scope = DbContext.Items;
 
+            if (!string.IsNullOrEmpty(gridParams.ItemNameQuery))
+                scope = scope.Where(x => x.Name.Contains(gridParams.ItemNameQuery));
+            
             var query = from i in scope
-                        select new ItemGridDTO
+                select new ItemGridDTO
                         {
                             ItemId = i.Id,
                             Name = i.Name,
