@@ -11,7 +11,7 @@ namespace Tayra.Models.Organizations
             var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
             optionsBuilder.UseSqlServer(new SqlConnection());
 
-            return new OrganizationDbContext("");
+            return new OrganizationDbContext("/");
         }
     }
 
@@ -19,7 +19,7 @@ namespace Tayra.Models.Organizations
     {
         public static OrganizationDbContext CreateDbContext(DbContextOptions<OrganizationDbContext> options)
         {
-            return new OrganizationDbContext("");
+            return new OrganizationDbContext("/");
         }
     }
 }
