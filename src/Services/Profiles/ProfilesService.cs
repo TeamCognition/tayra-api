@@ -344,7 +344,7 @@ using Tayra.Models.Organizations;
             profileDto.Title = activeItems.Title;
             profileDto.Border = activeItems.Border;     
 
-            profileDto.Pulse = GetProfilePulseDTO(profileId);
+            profileDto.Pulse = GetProfilePulseDTO(profileDto.ProfileId);
             
             return profileDto;
         }

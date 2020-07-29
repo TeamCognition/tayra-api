@@ -25,6 +25,8 @@ namespace Tayra.Models.Organizations {
 
         public ProfileRoles Role { get; set; }
 
+        public bool IsAnalyticsEnabled { get; set; }
+
         [MaxLength (100)]
         public string JobPosition { get; set; }
 

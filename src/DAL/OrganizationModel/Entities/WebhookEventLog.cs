@@ -1,5 +1,6 @@
 ﻿using System;
 using Cog.DAL;
+using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
@@ -8,6 +9,8 @@ namespace Tayra.Models.Organizations
         public int Id { get; set; }
 
         public string Data { get; set; }
+
+        public IntegrationType IntegrationType { get; set; }
 
         #region ITimeStampedEntity
 

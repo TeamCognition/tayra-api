@@ -1,19 +1,22 @@
-﻿using RestSharp;
-using Tayra.Connectors.Common;
+﻿using GraphQL;
+using GraphQL.Client.Abstractions;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
+using RestSharp;
 
 namespace Tayra.Connectors.GitHub
 {
     public static class GitHubService
     {
         #region Constants
+
         public const string CLEINT_ID = "Iv1.8aa19d523bcef4dd";
         public const string CLIENT_SECRET = "24bbd04c4a071a1298f1dd96b547d3054ef4534a";
 
         private const string BASE_AUTH_URL = "https://github.com/login/oauth";
         private const string ACCESS_TOKEN_URL = "/access_token";
 
-        private const string BASE_URL = "https://api.github.com";
-        private const string GET_CURRENT_USER = "user";
+        private const string GRAPHQL_URL = "https://api.github.com/graphql";
 
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
         public static IRestResponse<TokenResponse> GetAccessToken(string authorizationCode, string redirectUrl)
@@ -46,15 +49,27 @@ namespace Tayra.Connectors.GitHub
             return client.Execute<TokenResponse>(request);
         }
 
-        public static IRestResponse<GitHubUser> GetLoggedInUser(string tokenType, string accessToken)
+        public static UserType GetLoggedInUser(string tokenType, string accessToken)
         {
-            var request = new RestRequest(GET_CURRENT_USER, Method.GET);
-            request.AddHeader("Authorization", $"{tokenType} {accessToken}");
+            using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
+            graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {accessToken}");
 
-            var client = new RestClient(BASE_URL)
-                .UseSerializer(() => new JsonNetSerializer());
+            var viewerRequest =
+                new GraphQLRequest
+                {
+                    Query = @"
+                {
+                    viewer {
+                    id
+                    isSiteAdmin
+                    login
+                    }
+                }"
+                };
 
-            return client.Execute<GitHubUser>(request);
+
+            return graphQLClient.SendQueryAsync(viewerRequest, () => new {Viewer = new UserType()}).GetAwaiter()
+                .GetResult()?.Data?.Viewer;
         }
 
         #endregion

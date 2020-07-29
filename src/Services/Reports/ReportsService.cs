@@ -269,6 +269,7 @@ namespace Tayra.Services
 
             var tasks = (from trd in DbContext.Tasks
                          where trd.LastModifiedDateId >= reportParams.From && trd.LastModifiedDateId <= reportParams.To
+                         where trd.Status == TaskStatuses.Done
                          where trd.TeamId == teamId
                          select new
                          {

@@ -44,7 +44,7 @@ namespace Tayra.Connectors.GitHub
                 }
 
                 var tokenData = GitHubService.GetAccessToken(code, GetCallbackUrl(userState))?.Data;
-                var loggedInUser = GitHubService.GetLoggedInUser(tokenData.TokenType, tokenData.AccessToken)?.Data;
+                var loggedInUser = GitHubService.GetLoggedInUser(tokenData.TokenType, tokenData.AccessToken);
 
                 var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == profileId && x.Type == Type);
                 var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == segmentId && x.ProfileId == null && x.Type == Type);
@@ -53,50 +53,38 @@ namespace Tayra.Connectors.GitHub
                     throw new CogSecurityException($"profileId: {profileId} tried to integrate {Type} before segment integration");
                 }
 
-                return new Integration
+                if (loggedInUser != null)
                 {
-                    Fields = new List<IntegrationField>
+                    var profileFields = new Dictionary<string, string>
                     {
-                        new IntegrationField
-                        {
-                            Key = "ha",
-                            Value = tokenData.AccessToken
-                        }
-                    }
-                };
+                        [Constants.PROFILE_EXTERNAL_ID] = loggedInUser.Login
+                    };
+                
+                    CreateProfileIntegration(profileId, segmentId, profileFields, profileIntegration);
+                }
+                
+                if (profileRole != ProfileRoles.Member && tokenData != null)
+                {
+                    var segmentFields = new Dictionary<string, string>
+                    {
+                        [Constants.ACCESS_TOKEN] = tokenData.AccessToken,
+                        [Constants.ACCESS_TOKEN_TYPE] = tokenData.TokenType,
+                        [Constants.ACCESS_EXPIRATION] = tokenData.ExpirationDate,
+                        [Constants.REFRESH_TOKEN] = tokenData.RefreshToken,
+                        [Constants.SCOPE] = tokenData.Scope,
+                    };
+                
+                    segmentIntegration = CreateSegmentIntegration(segmentId, segmentFields, segmentIntegration);
+                }
 
-                //if (loggedInUser != null)
-                //{
-                //    var profileFields = new Dictionary<string, string>
-                //    {
-                //        [Constants.PROFILE_EXTERNAL_ID] = loggedInUser.AccountId
-                //    };
+                var unlinkedGitCommits = OrganizationContext.GitCommits.Where(x => x.AuthorProfileId == null && x.AuthorExternalId == loggedInUser.Id);
+                foreach (var commit in unlinkedGitCommits)
+                {
+                    commit.AuthorProfileId = profileId;
+                }
 
-                //    CreateProfileIntegration(profileId, segmentId, profileFields, profileIntegration);
-                //}
-
-                //if (profileRole != ProfileRoles.Member && tokenData != null && accResData != null)
-                //{
-                //    var segmentFields = new Dictionary<string, string>
-                //    {
-                //        [Constants.ACCESS_TOKEN] = tokenData.AccessToken,
-                //        [Constants.ACCESS_TOKEN_TYPE] = tokenData.TokenType,
-                //        [Constants.ACCESS_EXPIRATION] = tokenData.ExpirationDate,
-                //        [Constants.REFRESH_TOKEN] = tokenData.RefreshToken,
-                //        [Constants.SCOPE] = tokenData.Scope,
-                //    };
-
-                //    segmentIntegration = CreateSegmentIntegration(segmentId, segmentFields, segmentIntegration);
-                //}
-
-                //var unlinkedTasks = OrganizationContext.Tasks.Where(x => x.AssigneeProfileId == null && x.AssigneeExternalId == loggedInUser.AccountId);
-                //foreach (var ut in unlinkedTasks)
-                //{
-                //    ut.AssigneeProfileId = profileId;
-                //}
-
-                //OrganizationContext.SaveChanges();
-                //return segmentIntegration;
+                OrganizationContext.SaveChanges();
+                return segmentIntegration;
             }
             return null;
         }

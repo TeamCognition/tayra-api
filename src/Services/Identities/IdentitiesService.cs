@@ -148,7 +148,8 @@ namespace Tayra.Services
                 Username = dto.Username,
                 JobPosition = dto.JobPosition,
                 Role = invitation.Role,
-                IdentityId = identity.Id
+                IdentityId = identity.Id,
+                IsAnalyticsEnabled = invitation.Role == ProfileRoles.Member
             }).Entity;
 
             DbContext.Add(new LogDevice
