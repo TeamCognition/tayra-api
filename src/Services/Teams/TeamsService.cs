@@ -183,18 +183,18 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public GridData<TeamMembersGridDTO> GetTeamMembersGridData(TeamMembersGridParams gridParams)
+        public GridData<TeamProfilesGridDTO> GetTeamProfilesGridData(TeamProfilesGridParams gridParams)
         {
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == gridParams.TeamKey);
 
             team.EnsureNotNull(gridParams.TeamKey);
 
             var scope = DbContext.ProfileAssignments
-                .Where(x => x.TeamId == team.Id && x.Profile.Role == ProfileRoles.Member); //role check is maybe unnecessary
+                .Where(x => x.TeamId == team.Id);
 
-            IQueryable<TeamMembersGridDTO> query = from t in scope
+            IQueryable<TeamProfilesGridDTO> query = from t in scope
                                                    let ws = t.Profile.StatsWeekly.OrderByDescending(x => x.DateId).Where(x => x.SegmentId == team.SegmentId)
-                                                   select new TeamMembersGridDTO
+                                                   select new TeamProfilesGridDTO
                                                    {
                                                        ProfileId = t.ProfileId,
                                                        Name = t.Profile.FirstName + " " + t.Profile.LastName,
@@ -206,73 +206,9 @@ namespace Tayra.Services
                                                        MemberFrom = t.Created
                                                    };
 
-            GridData<TeamMembersGridDTO> gridData = query.GetGridData(gridParams);
+            GridData<TeamProfilesGridDTO> gridData = query.GetGridData(gridParams);
 
             return gridData;
-        }
-
-        public TeamImpactPieChartDTO GetImpactPieChart(int teamId)
-        {
-            var lastDateId = DbContext.ProfileReportsWeekly.OrderByDescending(x => x.DateId).Select(x => x.DateId).FirstOrDefault();
-
-            if (lastDateId == 0)
-                return null;
-
-            var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
-
-            var pr = (from prw in DbContext.ProfileReportsWeekly
-                      where profileIds.Contains(prw.ProfileId)
-                      && prw.DateId == lastDateId
-                      group prw by prw.ProfileId into g
-                      select new
-                      {
-                          Username = g.First().Profile.Username,
-                          FirstName = g.First().Profile.FirstName,
-                          LastName = g.First().Profile.LastName,
-                          OImpact = g.Sum(x => x.OImpactAverage)
-                      }).ToList();
-
-            if (pr == null || !pr.Any())
-            {
-                return null;
-            }
-
-            var impactSum = pr.Sum(x => x.OImpact);
-
-            return new TeamImpactPieChartDTO
-            {
-                Profiles = pr.Select(x => new TeamImpactPieChartDTO.ProfilesDTO
-                {
-                    Username = x.Username,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    ImpactPercentage = x.OImpact / impactSum * 100
-                }).ToArray()
-            };
-        }
-
-        public TeamImpactLineChartDTO GetImpactLineChart(int teamId)
-        {
-            var wr = (from trw in DbContext.TeamReportsWeekly
-                      where trw.TeamId == teamId
-                      orderby trw.DateId descending
-                      select new
-                      {
-                          DateId = trw.DateId,
-                          OImpact = trw.OImpactAverage
-                      }).Take(30).ToList();
-
-            if (wr == null || !wr.Any())
-            {
-                return null;
-            }
-
-            return new TeamImpactLineChartDTO
-            {
-                StartDateId = wr.Last().DateId,
-                EndDateId = wr.First().DateId,
-                Averages = wr.Select(x => x.OImpact).Reverse().ToArray()
-            };
         }
 
         public void Create(int segmentId, TeamCreateDTO dto)
@@ -310,7 +246,7 @@ namespace Tayra.Services
                 DbContext.Remove(m);
             }
         }
-
+        
         public TeamStatsDTO GetTeamStatsData(string teamKey)
         {
             var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
