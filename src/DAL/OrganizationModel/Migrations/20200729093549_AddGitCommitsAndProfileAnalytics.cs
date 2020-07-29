@@ -30,8 +30,8 @@ namespace Tayra.Models.Organizations.Migrations
                     SHA = table.Column<string>(nullable: true),
                     ExternalUrl = table.Column<string>(nullable: true),
                     Message = table.Column<string>(nullable: true),
-                    AuthorExternalId = table.Column<string>(nullable: true),
-                    AuthorProfileId = table.Column<int>(nullable: false),
+                    AuthorExternalId = table.Column<string>(nullable: false),
+                    AuthorProfileId = table.Column<int>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: true)
                 },

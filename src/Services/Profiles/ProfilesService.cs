@@ -449,7 +449,13 @@ using Tayra.Models.Organizations;
                             Disenchanted = g.SelectMany(x => x.ActivityChart.ItemActivityData?.Disenchanted ?? new string[0]).ToArray(),
                             GiftsReceived = g.SelectMany(x => x.ActivityChart.ItemActivityData?.GiftsReceived ?? new string[0]).ToArray(),
                             GiftsSent = g.SelectMany(x => x.ActivityChart.ItemActivityData?.GiftsSent ?? new string[0]).ToArray(),
-                        }
+                        },
+                        GitCommitData = g.SelectMany(x => x.ActivityChart?.GitCommitData?.Select(c => 
+                        new ProfileActivityChartDTO.GitCommitDTO 
+                        {
+                            Message = c?.Message ?? string.Empty,
+                            ExternalUrl = c?.ExternalUrl ?? string.Empty
+                        })).ToArray()
                     }).ToArray();
         }
         

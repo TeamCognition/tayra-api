@@ -229,9 +229,9 @@ namespace Tayra.SyncServices.Tayra
                                      TotalValue = total.Sum(x => x.Item.Price)
                                  }).ToList();
 
-                var quests = (from cc in organizationDb.QuestCompletions
-                    where profileIds.Contains(cc.ProfileId)
-                    group cc by cc.ProfileId
+                var quests = (from qc in organizationDb.QuestCompletions
+                    where profileIds.Contains(qc.ProfileId)
+                    group qc by qc.ProfileId
                     into total
                     let change = total.Where(x => x.Created.Date == fromDay.Date)
                     select new
@@ -240,6 +240,16 @@ namespace Tayra.SyncServices.Tayra
 
                         Count = change.Count(),
                         CountTotal = total.Count()
+                    }).ToList();
+                
+                var gitCommitsToday = (from gc in organizationDb.GitCommits
+                    where profileIds.Contains(gc.AuthorProfileId.Value)
+                    where gc.Created.Date == fromDay.Date
+                    select new
+                    {
+                        ProfileId = gc.AuthorProfileId,
+                        Message = gc.Message,
+                        ExternalUrl = gc.ExternalUrl
                     }).ToList();
 
                 foreach (var p in profiles)
@@ -255,6 +265,7 @@ namespace Tayra.SyncServices.Tayra
                     var iGiftR = giftsReceived.FirstOrDefault(x => x.ProfileId == p.Id);
                     var inv = inventory.FirstOrDefault(x => x.ProfileId == p.Id);
                     var q = quests.FirstOrDefault(x => x.ProfileId == p.Id);
+                    var gcommits = gitCommitsToday.Where(x => x.ProfileId == p.Id).ToArray();
                     var iterationCount = 1;
 
                     var activityChart = new ProfileActivityChartDTO
@@ -276,7 +287,13 @@ namespace Tayra.SyncServices.Tayra
                             GiftsReceived = iGiftR?.Gifts ?? new string[0],
                             Bought = sp?.Names ?? new string[0],
                             Disenchanted = iDissed?.Names ?? new string[0]
-                        }
+                        },
+                        GitCommitData = gcommits.Select(x => 
+                            new ProfileActivityChartDTO.GitCommitDTO
+                            {
+                                Message = x.Message,
+                                ExternalUrl = x.ExternalUrl
+                            }).ToArray()
                     };
 
                     reportsToInsert.Add(new ProfileReportDaily

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Tayra.Common;
@@ -31,17 +32,24 @@ namespace Tayra.Connectors.App.Controllers
         public IActionResult Connect(IntegrationType type)
         {
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-            return Redirect(connector.GetAuthUrl("test"));
+            return Redirect(connector.GetAuthUrl(
+                Cipher.Encrypt(string.Join('|', "devtenant.tayra.local", "1", 1, 1, "home")).Base64UrlEncode()));
         }
 
         [HttpGet, Route("external/callback/{type?}")]
         public IActionResult Callback(IntegrationType type, [FromQuery]string state)
         {
+            var stateData = Cipher.Decrypt(state.Base64UrlDecode()).Split('|');
+            Request.QueryString = Request.QueryString.Add("tenant", stateData[0]);
+            var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try
             {
-                var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-                var account = connector.Authenticate(1, ProfileRoles.Admin, 1, "test");
-
+                var account = connector.Authenticate(
+                        profileId: int.Parse(stateData[1]),
+                        profileRole: Enum.Parse<ProfileRoles>(stateData[2]),
+                        segmentId: int.Parse(stateData[3]),
+                        userState: state);
+                
                 TempData["Account"] = JsonConvert.SerializeObject(account, new JsonSerializerSettings
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore

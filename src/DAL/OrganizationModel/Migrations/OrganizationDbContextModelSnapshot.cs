@@ -433,7 +433,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<string>("AuthorExternalId");
 
-                    b.Property<int>("AuthorProfileId");
+                    b.Property<int?>("AuthorProfileId");
 
                     b.Property<DateTime>("Created");
 

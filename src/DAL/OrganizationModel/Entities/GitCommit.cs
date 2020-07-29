@@ -15,7 +15,7 @@ namespace Tayra.Models.Organizations
 
         public string AuthorExternalId { get; set; }
 
-        public int AuthorProfileId { get; set; }
+        public int? AuthorProfileId { get; set; }
         public Profile AuthorProfile { get; set; }
 
         #region ITimeStampedEntity

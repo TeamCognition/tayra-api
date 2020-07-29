@@ -8,6 +8,8 @@
         public ItemActivityDTO ItemActivityData { get; set; }
         //public QuestDTO QuestsData { get; set; }
 
+        public GitCommitDTO[] GitCommitData { get; set; }
+
         public class AssistsDTO
         {
             public string[] EndorsedBy { get; set; }
@@ -33,6 +35,12 @@
             public string[] CommittedTo { get; set; }
             public string[] GoalsCompleted { get; set; }
             public string[] Completed { get; set; }
+        }
+
+        public class GitCommitDTO
+        {
+            public string Message { get; set; }
+            public string ExternalUrl { get; set; }
         }
     }
 }
