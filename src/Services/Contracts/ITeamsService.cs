@@ -10,9 +10,7 @@ namespace Tayra.Services
         TeamRawScoreDTO GetTeamRawScoreDTO(string teamKey);
         TeamSwarmPlotDTO GetTeamSwarmPloteDTO(string teamKey);
         GridData<TeamViewGridDTO> GetViewGridData(int[] teamIds, TeamViewGridParams gridParams);
-        GridData<TeamMembersGridDTO> GetTeamMembersGridData(TeamMembersGridParams gridParams);
-        TeamImpactPieChartDTO GetImpactPieChart(int teamId);
-        TeamImpactLineChartDTO GetImpactLineChart(int teamId);
+        GridData<TeamProfilesGridDTO> GetTeamProfilesGridData(TeamProfilesGridParams gridParams);
         void Create(int segmentId, TeamCreateDTO dto);
         void Update(int teamId, TeamUpdateDTO dto);
         void Archive(int profileId, string teamKey);

@@ -2,7 +2,7 @@
 
 namespace Tayra.Services
 {
-    public class TeamMembersGridParams : GridParams
+    public class TeamProfilesGridParams : GridParams
     {
         public string TeamKey { get; set; }
     }
