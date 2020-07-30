@@ -450,12 +450,13 @@ using Tayra.Models.Organizations;
                             GiftsReceived = g.SelectMany(x => x.ActivityChart.ItemActivityData?.GiftsReceived ?? new string[0]).ToArray(),
                             GiftsSent = g.SelectMany(x => x.ActivityChart.ItemActivityData?.GiftsSent ?? new string[0]).ToArray(),
                         },
-                        GitCommitData = g.SelectMany(x => x.ActivityChart?.GitCommitData?.Select(c => 
+                        GitCommitData = g.Any(x => x.ActivityChart.GitCommitData != null) ?g.SelectMany(x => x.ActivityChart?.GitCommitData?.Select(c => 
                         new ProfileActivityChartDTO.GitCommitDTO 
                         {
                             Message = c?.Message ?? string.Empty,
                             ExternalUrl = c?.ExternalUrl ?? string.Empty
-                        })).ToArray()
+                        }))?.ToArray()
+                            : new ProfileActivityChartDTO.GitCommitDTO[]{}
                     }).ToArray();
         }
         
