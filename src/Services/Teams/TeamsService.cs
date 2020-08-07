@@ -57,7 +57,7 @@ namespace Tayra.Services
                     ItemsBought = r.ItemsBoughtTotal,
                     QuestsCompleted = r.QuestsCompletedTotal,
                     DaysOnTayra = EF.Functions.DateDiffDay(team.Created, DateTime.UtcNow)
-                }).FirstOrDefault();
+                }).LastOrDefault();
         }
         
         public TeamSwarmPlotDTO GetTeamSwarmPloteDTO(string teamKey)
