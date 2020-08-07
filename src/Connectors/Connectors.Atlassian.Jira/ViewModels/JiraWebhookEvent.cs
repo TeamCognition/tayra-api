@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Tayra.Connectors.Atlassian.Jira
 {
-    public class WebhookEvent
+    public class JiraWebhookEvent
     {
         [JsonProperty("timestamp")]
         public long Timestamp { get; set; }

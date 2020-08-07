@@ -56,6 +56,20 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
+        public class GithubSettingsViewDTO
+        {
+            public string ExternalConfigurationUrl { get; set; }
+        }
+        
+        [HttpGet, Route("settings/gh")]
+        public ActionResult<GithubSettingsViewDTO> GetGitHubSettings()
+        {
+            return Ok(new GithubSettingsViewDTO
+            {
+                ExternalConfigurationUrl = "https://github.com/settings/installations/10738281"
+            });
+        }
+
         #endregion
     }
 }
