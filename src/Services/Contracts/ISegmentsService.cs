@@ -11,8 +11,8 @@ namespace Tayra.Services
         GridData<SegmentMemberGridDTO> GetSegmentMembersGridData(string segmentKey, SegmentMemberGridParams gridParams);
         GridData<SegmentTeamGridDTO> GetSegmentTeamsGridData(string segmentKey, SegmentTeamGridParams gridParams);
         SegmentViewDTO GetSegmnetViewDTO(string segmentKey);
-        SegmentImpactPieChartDTO GetImpactPieChart(int segmentId);
-        SegmentImpactLineChartDTO GetImpactLineChart(int segmentId);
+        SegmentAverageMetricsDTO GetSegmentAverageMetrics(string segmentKey);
+        SegmentRankChartDTO GetSegmentRankChart(string segmentKey);
         void Create(int profileId, ProfileRoles role, SegmentCreateDTO dto);
         void Update(int segmentId, SegmentCreateDTO dto);
         void AddMember(SegmentMemberAddRemoveDTO dto);
