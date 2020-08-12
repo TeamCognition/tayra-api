@@ -85,23 +85,26 @@ namespace Tayra.API.Controllers
                     Message = commit.Message,
                     ExternalUrl = commit.Url
                 });
-                
-                var logData = new LogCreateDTO
+
+                if (authorProfile != null)
                 {
-                    Event = LogEvents.CodeCommitted,
-                    Data = new Dictionary<string, string>
+                    var logData = new LogCreateDTO
                     {
-                        { "timestamp", now.ToString() },
-                        { "committedOn", commit.Timestamp.ToString() },
-                        { "externalUrl", commit.Url },
-                        { "externalAuthorUsername", commit.Author.Username },
-                        { "sha", commit.Id },
-                        { "message", commit.Message },
-                        { "profileUsername", authorProfile.Username },
-                    },
-                    ProfileId = authorProfile.Id
-                };
-                logsService.LogEvent(logData);
+                        Event = LogEvents.CodeCommitted,
+                        Data = new Dictionary<string, string>
+                        {
+                            {"timestamp", now.ToString()},
+                            {"committedAt", commit.Timestamp.ToString()},
+                            {"externalUrl", commit.Url},
+                            {"externalAuthorUsername", commit.Author.Username},
+                            {"sha", commit.Id},
+                            {"message", commit.Message},
+                            {"profileUsername", authorProfile.Username},
+                        },
+                        ProfileId = authorProfile.Id
+                    };
+                    logsService.LogEvent(logData);
+                }
             }
             
             DbContext.SaveChanges();
