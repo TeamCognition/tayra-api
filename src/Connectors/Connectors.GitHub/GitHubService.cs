@@ -3,6 +3,7 @@ using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using RestSharp;
+using Tayra.Connectors.Common;
 
 namespace Tayra.Connectors.GitHub
 {
@@ -17,9 +18,15 @@ namespace Tayra.Connectors.GitHub
         private const string ACCESS_TOKEN_URL = "/access_token";
 
         private const string GRAPHQL_URL = "https://api.github.com/graphql";
+        private const string BASE_REST_URL = "https://api.github.com";
 
+        //List app installations accessible to the user access token
+        private const string GET_USER_INSTALLATIONS = "/user/installations";
+        private const string GET_INSTALLATION_TOKEN = "/app/installations/{0}/access_tokens";
+        private const string GET_INSTALLATION_REPOSITORIES = "/installation/repositories";
+        
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
-        public static IRestResponse<TokenResponse> GetAccessToken(string authorizationCode, string redirectUrl)
+        public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, string redirectUrl)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
             request.AddParameter("client_id", CLEINT_ID);
@@ -34,6 +41,21 @@ namespace Tayra.Connectors.GitHub
             return client.Execute<TokenResponse>(request);
         }
 
+        //docs.github.com/en/rest/reference/apps#create-an-installation-access-token-for-an-app
+        public static IRestResponse<InstallationTokenResponse> GetInstallationAccessToken(string installationId, string githubAppId, string rsaPrivateKey)
+        {
+            var appJwt = Utils.CreateGithubAppJwt(githubAppId, rsaPrivateKey);
+            
+            var request = new RestRequest(string.Format(GET_INSTALLATION_TOKEN, installationId), Method.POST);
+            request.AddHeader("Authorization", $"Bearer {appJwt}");
+            request.AddHeader("Accept", "application/vnd.github.machine-man-preview+json");
+
+            request.RequestFormat = DataFormat.Json;
+
+            var client = new RestClient(BASE_REST_URL);
+            return client.Execute<InstallationTokenResponse>(request);
+        }
+        
         //developer.github.com/apps/building-github-apps/refreshing-user-to-server-access-tokens/
         public static IRestResponse<TokenResponse> RefreshAccessToken(string refreshToken)
         {
@@ -72,6 +94,28 @@ namespace Tayra.Connectors.GitHub
                 .GetResult()?.Data?.Viewer;
         }
 
+        public static IRestResponse<UserInstallationsResponse> GetUserInstallations(string tokenType, string accessToken)
+        {
+            var request = new RestRequest(GET_USER_INSTALLATIONS, Method.GET);
+            request.AddHeader("Authorization", $"{tokenType} {accessToken}");
+
+            var client = new RestClient(BASE_REST_URL)
+                .UseSerializer(() => new JsonNetSerializer());
+
+            return client.Execute<UserInstallationsResponse>(request);
+        }
+            
+        public static IRestResponse<GetRepositoriesResponse> GetInstallationRepositories(string installationToken)
+        {
+            var request = new RestRequest(GET_INSTALLATION_REPOSITORIES, Method.GET);
+            request.AddHeader("Authorization", $"Bearer {installationToken}");
+
+            var client = new RestClient(BASE_REST_URL)
+                .UseSerializer(() => new JsonNetSerializer());
+
+            return client.Execute<GetRepositoriesResponse>(request);
+        }
+        
         #endregion
     }
 }

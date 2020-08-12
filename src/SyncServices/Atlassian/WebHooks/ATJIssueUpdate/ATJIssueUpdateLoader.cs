@@ -54,7 +54,7 @@ namespace Tayra.SyncServices
         public static void IssueUpdate(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, JObject requestBody)
         {
             SaveWebhookEventLog(organizationDb, requestBody);
-            WebhookEvent we = requestBody.ToObject<WebhookEvent>();
+            JiraWebhookEvent we = requestBody.ToObject<JiraWebhookEvent>();
 
             var fields = we.JiraIssue.Fields;
             var jiraProjectId = fields.Project.Id;

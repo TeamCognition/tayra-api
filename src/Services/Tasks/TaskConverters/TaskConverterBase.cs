@@ -14,12 +14,14 @@ namespace Tayra.Services.TaskConverters
         NORMAL,
         BULK
     }
+    
     public abstract class TaskConverterBase
     {
         protected TaskConverterMode Mode;
         protected OrganizationDbContext DbContext;
         protected ProfileAssignment CachedProfileAssignment;
         protected int? IntegrationIdCache;
+        private IntegrationField[] _integrationFields;
         
         public TaskAddOrUpdateDTO Data { get; protected set; }
         protected IProfilesService ProfilesService;
@@ -240,5 +242,18 @@ namespace Tayra.Services.TaskConverters
 
         protected abstract string GetIssueStatusName();
         protected abstract string GetIssueUrl();
+
+        protected IntegrationField[] GetIntegrationFields()
+        {
+            if (_integrationFields == null)
+            {
+                _integrationFields = DbContext
+                    .IntegrationFields
+                    .OrderByDescending(x => x.Created)
+                    .ToArray();
+            }
+
+            return _integrationFields;
+        }
     }
 }

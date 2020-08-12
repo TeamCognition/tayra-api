@@ -10,7 +10,7 @@
 
         Competition = 3000,
 
-        Issue = 4000,
+        Issue = 4000, //task
         IssueStatusChange = 4001,
         StatusChangeToCompleted = 4002,
 
@@ -24,6 +24,9 @@
 
         Quest = 7000,
         QuestCompleted = 7001,
-        QuestGoalCompleted = 7002
+        QuestGoalCompleted = 7002,
+        
+        CodeCommit = 8000,
+        CodeCommitted = 8001
     }
 }

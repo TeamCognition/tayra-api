@@ -49,7 +49,7 @@ namespace Tayra.API.Controllers
         public ActionResult JiraIssueUpdate([FromBody] JObject jObject)
         {
             SaveWebhookEventLog(jObject, IntegrationType.ATJ);
-            WebhookEvent we = jObject.ToObject<WebhookEvent>();
+            JiraWebhookEvent we = jObject.ToObject<JiraWebhookEvent>();
 
             TaskConverterJira taskConverter = new TaskConverterJira(
                 DbContext,
@@ -65,26 +65,48 @@ namespace Tayra.API.Controllers
         
         [HttpPost("gh")]
         [AllowAnonymous]
-        public ActionResult GithubWebhook([FromBody] JObject jObject)
+        public ActionResult GithubWebhook([FromBody] JObject jObject, [FromServices] ILogsService logsService)
         {
             SaveWebhookEventLog(jObject, IntegrationType.GH);
             PushWebhookPayload payload = jObject.ToObject<PushWebhookPayload>();
 
+            var now = DateTime.UtcNow;
             foreach (var commit in payload.Commits)
             {
                 if(!commit.Distinct)
                     continue;
 
+                var authorProfile = ProfilesService.GetMemberByExternalId(commit.Author.Username, IntegrationType.GH);
                 DbContext.Add(new GitCommit
                 {
                     SHA = commit.Id,
-                    AuthorProfile = ProfilesService.GetMemberByExternalId(commit.Author.Username, IntegrationType.GH),
+                    AuthorProfile = authorProfile,
                     AuthorExternalId = commit.Author.Username,
                     Message = commit.Message,
                     ExternalUrl = commit.Url
                 });
-            }
 
+                if (authorProfile != null)
+                {
+                    var logData = new LogCreateDTO
+                    {
+                        Event = LogEvents.CodeCommitted,
+                        Data = new Dictionary<string, string>
+                        {
+                            {"timestamp", now.ToString()},
+                            {"committedAt", commit.Timestamp.ToString()},
+                            {"externalUrl", commit.Url},
+                            {"externalAuthorUsername", commit.Author.Username},
+                            {"sha", commit.Id},
+                            {"message", commit.Message},
+                            {"profileUsername", authorProfile.Username},
+                        },
+                        ProfileId = authorProfile.Id
+                    };
+                    logsService.LogEvent(logData);
+                }
+            }
+            
             DbContext.SaveChanges();
             return Ok();
         }

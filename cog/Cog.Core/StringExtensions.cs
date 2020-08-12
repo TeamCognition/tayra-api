@@ -50,6 +50,14 @@ namespace Cog.Core
             throw new ArgumentOutOfRangeException(value, $"{value} is not a boolean value.");
         }
 
+        /// <summary>
+        /// Converts string to Byte array
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static byte[] ToByteArray(this string value) =>
+            Convert.FromBase64String(value);
+        
         public static string RemoveAllWhitespaces(this string input)
         {
             if (input == null)

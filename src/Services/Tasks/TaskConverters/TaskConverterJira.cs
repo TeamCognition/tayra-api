@@ -11,11 +11,10 @@ namespace Tayra.Services.TaskConverters
 {
     public class TaskConverterJira : TaskConverterBase
     {
-        protected WebhookEvent We;
-        protected IntegrationField RewardStatusCache;
+        protected JiraWebhookEvent We;
         public TaskConverterJira(OrganizationDbContext dbContext,
                                  IProfilesService profilesService,
-                                 WebhookEvent we,
+                                 JiraWebhookEvent we,
                                  TaskConverterMode mode = TaskConverterMode.NORMAL)
                                  : base(dbContext, profilesService)
         {
@@ -28,10 +27,10 @@ namespace Tayra.Services.TaskConverters
                                  TaskConverterMode mode = TaskConverterMode.NORMAL)
                                  : base(dbContext, profilesService)
         {
-            Init(new WebhookEvent {JiraIssue = jiraIssue}, mode);
+            Init(new JiraWebhookEvent {JiraIssue = jiraIssue}, mode);
         }
 
-        private void Init(WebhookEvent we, TaskConverterMode mode)
+        private void Init(JiraWebhookEvent we, TaskConverterMode mode)
         {
             We = we;
             Mode = mode;
@@ -119,14 +118,7 @@ namespace Tayra.Services.TaskConverters
 
         protected IntegrationField GetRewardStatus()
         {
-            if (RewardStatusCache == null)
-            {
-                RewardStatusCache = DbContext
-                    .IntegrationFields
-                    .OrderByDescending(x => x.Created)
-                    .FirstOrDefault(x => x.Key == ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + GetExternalProjectId());
-            }
-            return RewardStatusCache;
+            return GetIntegrationFields().FirstOrDefault(x => x.Key == ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + GetExternalProjectId());
         }
 
         protected override bool IsCompleted()
@@ -212,8 +204,8 @@ namespace Tayra.Services.TaskConverters
 
         protected override string GetIssueUrl()
         {
-            var jiraBaseUrl = We.JiraIssue.Self.Substring(0, We.JiraIssue.Self.IndexOf('/', 10)); //TODO: is 10 ok for all integration types?
-            return jiraBaseUrl + "/browse/" + GetExternalId();
+            var jiraSiteName = GetIntegrationFields().FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME);
+            return $"https://{jiraSiteName}.atlassian.net/browse/{GetExternalId()}";
         }
 
         protected override int? GetTimeSpentInMinutes()

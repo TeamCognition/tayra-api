@@ -88,6 +88,7 @@ namespace Tayra.Models.Organizations
         public DbSet<ProfilePraise> ProfilePraises { get; set; }
         public DbSet<ProfileReportDaily> ProfileReportsDaily { get; set; }
         public DbSet<ProfileReportWeekly> ProfileReportsWeekly { get; set; }
+        public DbSet<Repository> Repositories { get; set; }
         public DbSet<Segment> Segments { get; set; }
         public DbSet<SegmentArea> SegmentAreas { get; set; }
         public DbSet<SegmentReportDaily> SegmentReportsDaily { get; set; }
@@ -231,7 +232,7 @@ namespace Tayra.Models.Organizations
             {
                 entity.HasKey(x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId });
             });
-
+            
             modelBuilder.Entity<Segment>().HasIndex(nameof(Segment.Key), ArchivedAtProp).IsUnique();
             modelBuilder.Entity<SegmentArea>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });

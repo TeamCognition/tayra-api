@@ -366,7 +366,7 @@ using Tayra.Models.Organizations;
                     ItemsBought = r.ItemsBoughtTotal,
                     QuestsCompleted = r.QuestsCompletedTotal,
                     DaysOnTayra = EF.Functions.DateDiffDay(profile.Created, DateTime.UtcNow)
-                }).FirstOrDefault();
+                }).LastOrDefault();
         }
 
         public void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto)
