@@ -10,11 +10,8 @@ namespace Tayra.Connectors.GitHub
     public static class GitHubService
     {
         #region Constants
-
-        public const string OAUTH_APP_CLIENT_ID = "Iv1.8aa19d523bcef4dd";
-        public const string OAUTH_APP_CLIENT_SECRET = "24bbd04c4a071a1298f1dd96b547d3054ef4534a";
         
-        public const string CLEINT_ID = "Iv1.8aa19d523bcef4dd";
+        public const string CLIENT_ID = "Iv1.8aa19d523bcef4dd";
         public const string CLIENT_SECRET = "24bbd04c4a071a1298f1dd96b547d3054ef4534a";
 
         private const string BASE_AUTH_URL = "https://github.com/login/oauth";
@@ -29,11 +26,11 @@ namespace Tayra.Connectors.GitHub
         private const string GET_INSTALLATION_REPOSITORIES = "/installation/repositories";
         
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
-        public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, bool isSegmentAuth, string redirectUrl)
+        public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, string redirectUrl)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", isSegmentAuth ? CLEINT_ID : OAUTH_APP_CLIENT_ID);
-            request.AddParameter("client_secret", isSegmentAuth ? CLIENT_SECRET : OAUTH_APP_CLIENT_SECRET);
+            request.AddParameter("client_id", CLIENT_ID);
+            request.AddParameter("client_secret", CLIENT_SECRET);
             request.AddParameter("code", authorizationCode);
             request.AddParameter("redirect_uri", redirectUrl);
             //request.AddParameter("state", The unguessable random string you provided in Step 1.);
@@ -60,11 +57,11 @@ namespace Tayra.Connectors.GitHub
         }
         
         //developer.github.com/apps/building-github-apps/refreshing-user-to-server-access-tokens/
-        public static IRestResponse<TokenResponse> RefreshAccessToken(string refreshToken, bool isSegmentAuth)
+        public static IRestResponse<TokenResponse> RefreshAccessToken(string refreshToken)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", isSegmentAuth ? CLEINT_ID : OAUTH_APP_CLIENT_ID);
-            request.AddParameter("client_secret", isSegmentAuth ? CLIENT_SECRET : OAUTH_APP_CLIENT_SECRET);
+            request.AddParameter("client_id", CLIENT_ID);
+            request.AddParameter("client_secret", CLIENT_SECRET);
             request.AddParameter("refresh_token", refreshToken);
             request.AddParameter("grant_type", "refresh_token");
 

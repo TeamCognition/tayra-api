@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Cog.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Tayra.API.Helpers;
@@ -32,28 +29,23 @@ namespace Tayra.API.Controllers
 
         #region Public Methods
 
-        // [HttpGet, Route("callback/{type?}")]
-        // public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
-        // {
-        //     var stateData = Cipher.Decrypt(state.Base64UrlDecode()).Split('|');
-        //     Request.QueryString = Request.QueryString.Add("tenant", stateData[0]);
-        //     var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-        //     try
-        //     {
-        //         connector.Authenticate(
-        //             profileId: int.Parse(stateData[1]),
-        //             profileRole: Enum.Parse<ProfileRoles>(stateData[2]),
-        //             segmentId: int.Parse(stateData[3]),
-        //             isSegmentAuth: bool.Parse(stateData[4]),
-        //             userState: state);
-        //     }
-        //     catch
-        //     {
-        //         return Redirect(connector.GetAuthDoneUrl(stateData[5], false));
-        //     }
-        //
-        //     return Redirect(connector.GetAuthDoneUrl(stateData[5], true));
-        // }
+        [HttpGet, Route("callback/{type?}")]
+        public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
+        {
+            var oauthState = new OAuthState(state);
+            Request.QueryString = Request.QueryString.Add("tenant", oauthState.TenantKey);
+            var connector = ConnectorResolver.Get<IOAuthConnector>(type);
+            try
+            {
+                connector.Authenticate(oauthState);
+            }
+            catch
+            {
+                return Redirect(connector.GetAuthDoneUrl(oauthState.ReturnPath, false));
+            }
+        
+            return Redirect(connector.GetAuthDoneUrl(oauthState.ReturnPath, true));
+        }
 
         public class TryForFreeFormDTO
         {
