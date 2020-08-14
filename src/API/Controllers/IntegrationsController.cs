@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.API.Helpers;
@@ -33,7 +32,7 @@ namespace Tayra.API.Controllers
         #region Public Methods
 
         [HttpGet, Route("connect/{type?}")]
-        public IActionResult Connect([FromRoute] IntegrationType type, [FromQuery] string returnPath)
+        public IActionResult Connect([FromRoute] IntegrationType type, [FromQuery] string returnPath, [FromQuery] bool isSegmentAuth)
         {   
             if(string.IsNullOrEmpty(returnPath))
             {
@@ -42,7 +41,7 @@ namespace Tayra.API.Controllers
             
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             return Redirect(connector.GetAuthUrl(
-                Cipher.Encrypt(string.Join('|', TenantProvider.GetTenant().Key, CurrentUser.ProfileId, CurrentUser.Role, CurrentSegment.Id, returnPath)).Base64UrlEncode()));
+                new OAuthState(TenantProvider.GetTenant().Key, CurrentUser.ProfileId, CurrentSegment.Id, isSegmentAuth, returnPath)));
         }
 
         [HttpGet, Route("settings/atj")]

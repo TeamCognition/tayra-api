@@ -32,27 +32,28 @@ namespace Tayra.API.Controllers
 
         #region Public Methods
 
-        [HttpGet, Route("callback/{type?}")]
-        public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
-        {
-            var stateData = Cipher.Decrypt(state.Base64UrlDecode()).Split('|');
-            Request.QueryString = Request.QueryString.Add("tenant", stateData[0]);
-            var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-            try
-            {
-                connector.Authenticate(
-                    profileId: int.Parse(stateData[1]),
-                    profileRole: Enum.Parse<ProfileRoles>(stateData[2]),
-                    segmentId: int.Parse(stateData[3]),
-                    userState: state);
-            }
-            catch
-            {
-                return Redirect(connector.GetAuthDoneUrl(stateData[4], false));
-            }
-
-            return Redirect(connector.GetAuthDoneUrl(stateData[4], true));
-        }
+        // [HttpGet, Route("callback/{type?}")]
+        // public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
+        // {
+        //     var stateData = Cipher.Decrypt(state.Base64UrlDecode()).Split('|');
+        //     Request.QueryString = Request.QueryString.Add("tenant", stateData[0]);
+        //     var connector = ConnectorResolver.Get<IOAuthConnector>(type);
+        //     try
+        //     {
+        //         connector.Authenticate(
+        //             profileId: int.Parse(stateData[1]),
+        //             profileRole: Enum.Parse<ProfileRoles>(stateData[2]),
+        //             segmentId: int.Parse(stateData[3]),
+        //             isSegmentAuth: bool.Parse(stateData[4]),
+        //             userState: state);
+        //     }
+        //     catch
+        //     {
+        //         return Redirect(connector.GetAuthDoneUrl(stateData[5], false));
+        //     }
+        //
+        //     return Redirect(connector.GetAuthDoneUrl(stateData[5], true));
+        // }
 
         public class TryForFreeFormDTO
         {
@@ -163,6 +164,22 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
+        public class TestClass
+        {
+            public string State { get; private set; }
+
+            public TestClass(string state)
+            {
+                State = state;
+            }
+        }
+        
+        [HttpPost, Route("test")]
+        public IActionResult CompanySignup([FromQuery] TestClass dto)
+        {
+            return Ok(dto);
+        }
+        
         #endregion
     }
 }

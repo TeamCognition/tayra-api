@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Tayra.Common;
@@ -28,27 +27,25 @@ namespace Tayra.Connectors.App.Controllers
             return View();
         }
 
+        private bool isSegmentAuth = true;
+        
         [HttpGet, Route("connect/{type?}")]
         public IActionResult Connect(IntegrationType type)
         {
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-            return Redirect(connector.GetAuthUrl(
-                Cipher.Encrypt(string.Join('|', "devtenant.tayra.local", "1", 1, 1, "home")).Base64UrlEncode()));
+            return Redirect(connector.GetAuthUrl(new OAuthState("devtenant.tayra.local", 1, 1, isSegmentAuth, "home")));
         }
 
         [HttpGet, Route("external/callback/{type?}")]
         public IActionResult Callback(IntegrationType type, [FromQuery]string state)
         {
-            var stateData = Cipher.Decrypt(state.Base64UrlDecode()).Split('|');
-            Request.QueryString = Request.QueryString.Add("tenant", stateData[0]);
+            var oAuthState = new OAuthState(state);
+            Request.QueryString = Request.QueryString.Add("tenant", oAuthState.TenantKey);
+            
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try
             {
-                var account = connector.Authenticate(
-                        profileId: int.Parse(stateData[1]),
-                        profileRole: Enum.Parse<ProfileRoles>(stateData[2]),
-                        segmentId: int.Parse(stateData[3]),
-                        userState: state);
+                var account = connector.Authenticate(oAuthState);
                 
                 TempData["Account"] = JsonConvert.SerializeObject(account, new JsonSerializerSettings
                 {

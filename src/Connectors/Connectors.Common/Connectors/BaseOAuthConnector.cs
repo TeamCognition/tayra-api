@@ -22,9 +22,9 @@ namespace Tayra.Connectors.Common
 
         #region Public Methods
 
-        public abstract string GetAuthUrl(string userState);
+        public abstract string GetAuthUrl(OAuthState state);
 
-        public abstract Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState);
+        public abstract Integration Authenticate(OAuthState state);
 
         public virtual  Integration RefreshToken(int integrationId)
         {

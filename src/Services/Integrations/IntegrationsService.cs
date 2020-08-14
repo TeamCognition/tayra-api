@@ -69,7 +69,7 @@ namespace Tayra.Services
 
             foreach(var i in integrations.Where(x => x.ExternalId == null).ToArray())
             {
-                if (integrations.Any(x => x.SegmentId == i.SegmentId && x.ExternalId != null))
+                if (integrations.Any(x => x.SegmentId == i.SegmentId && x.Type == i.Type && x.ExternalId != null))
                     integrations.Remove(i);
             }
             return integrations;
