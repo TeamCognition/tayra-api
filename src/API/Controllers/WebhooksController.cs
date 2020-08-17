@@ -74,9 +74,15 @@ namespace Tayra.API.Controllers
                 return Ok("skipped");
             }
             
-            SaveWebhookEventLog(jObject, IntegrationType.GH);
             PushWebhookPayload payload = jObject.ToObject<PushWebhookPayload>();
 
+            if (!DbContext.Repositories.Any(x => x.ExternalId == payload.Repository.Id))
+            {
+                return Ok("skipped - repo not active");
+            }
+
+            SaveWebhookEventLog(jObject, IntegrationType.GH);
+            
             var now = DateTime.UtcNow;
             foreach (var commit in payload.Commits)
             {

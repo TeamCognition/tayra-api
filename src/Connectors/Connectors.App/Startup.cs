@@ -39,7 +39,7 @@ namespace Tayra.Connectors.App
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
             services.AddTransient<IOAuthConnector, GitHubConnector>();
             services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
-            services.AddScoped<ITenantProvider, ShardTenantProvider>();
+            services.AddScoped<ITenantProvider, FakeTenantProvider>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -47,7 +47,10 @@ namespace Tayra.Connectors.App
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddMvc().AddMvcOptions(x => x.EnableEndpointRouting = false);
+            services.AddMvc().AddMvcOptions(x =>
+            {
+                x.EnableEndpointRouting = false;
+            });
             services.Configure<RouteOptions>(op => op.LowercaseUrls = true);
         }
 

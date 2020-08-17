@@ -76,13 +76,8 @@ namespace Tayra.Connectors.GitHub
 
                     var repositories = GitHubService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
 
-                    AddOrUpdateAllByIntegration(installationId, repositories.Select(x => new RepositoryAddOrUpdate
-                    {    
-                        Name = x.Name,
-                        ExternalId = x.Id,
-                        ExternalUrl = x.Url,
-                        NameWithOwner = x.FullName
-                    }).ToArray());
+                    AddOrUpdateRepositoriesByIntegration(installationId, repositories);
+                    AddOrUpdateWebhooks(installationId, installationToken, repositories);
                     
                     var segmentFields = new Dictionary<string, string>
                     {
@@ -111,7 +106,7 @@ namespace Tayra.Connectors.GitHub
 
         #region Private Methods
 
-        private void AddOrUpdateAllByIntegration(string installationId, RepositoryAddOrUpdate[] dto) //RepositoryAddOrUpdate
+        private void AddOrUpdateRepositoriesByIntegration(string installationId, GetRepositoriesResponse.Repository[] dto) //RepositoryAddOrUpdate
         {
             var repos = OrganizationContext.Repositories.Where(x => x.IntegrationInstallationId == installationId).ToArray();
 
@@ -130,14 +125,32 @@ namespace Tayra.Connectors.GitHub
                         ExternalId = r.ExternalId,
                         ExternalUrl = r.ExternalUrl
                     };
-                
+                    
                     OrganizationContext.Add(repo);
                 }
                 
-                repo.TeamId = r.TeamId;
                 repo.Name = r.Name;
-                repo.NameWithOwner = r.NameWithOwner;
-                repo.PrimaryLanguage = r.PrimaryLanguage;
+                repo.NameWithOwner = r.FullName;
+            }
+        }
+        
+        private void AddOrUpdateWebhooks(string installationId, string installationToken, GetRepositoriesResponse.Repository[] dto)
+        {
+            var repos = OrganizationContext.Repositories.Where(x => x.IntegrationInstallationId == installationId).ToArray();
+
+            var dtoIds = dto.Select(x => x.ExternalId);
+            var idsToRemove = repos.Where(x => !dtoIds.Contains(x.ExternalId));
+
+            foreach (var r in dto)
+            {
+                var repo = repos.FirstOrDefault(x => x.ExternalId == r.ExternalId);
+                
+                if(repo == null)
+                {
+                    GitHubService.CreateRepositoryWebhook(installationToken, r.Owner.Login, r.Name, Tenant.Key);
+                }
+                
+                //update here if needed
             }
         }
         

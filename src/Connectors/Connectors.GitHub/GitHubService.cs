@@ -24,6 +24,7 @@ namespace Tayra.Connectors.GitHub
         private const string GET_USER_INSTALLATIONS = "/user/installations";
         private const string GET_INSTALLATION_TOKEN = "/app/installations/{0}/access_tokens";
         private const string GET_INSTALLATION_REPOSITORIES = "/installation/repositories";
+        private const string CREATE_REPOSITORY_WEBHOOK = "/repos/{0}/{1}/hooks";
         
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
         public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, string redirectUrl)
@@ -114,6 +115,19 @@ namespace Tayra.Connectors.GitHub
                 .UseSerializer(() => new JsonNetSerializer());
 
             return client.Execute<GetRepositoriesResponse>(request);
+        }
+        
+        public static IRestResponse CreateRepositoryWebhook(string installationToken, string owner, string repo, string tenantKey)
+        {
+            var request = new RestRequest(string.Format(CREATE_REPOSITORY_WEBHOOK, owner, repo), Method.POST);
+            request.AddHeader("Authorization", $"Bearer {installationToken}");
+            request.AddHeader("Accept", "application/vnd.github.v3+json");
+            request.AddJsonBody(new {config = new { url = $"https://api.tayra.io/webhooks/gh?tenant={tenantKey}", content_type = "json"}});
+
+            var client = new RestClient(BASE_REST_URL)
+                .UseSerializer(() => new JsonNetSerializer());
+
+            return client.Execute(request);
         }
         
         #endregion
