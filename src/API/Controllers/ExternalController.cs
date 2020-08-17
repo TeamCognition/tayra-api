@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
@@ -163,6 +164,35 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
+        [HttpPost("landingForm")]
+
+        public IActionResult LandingForm([FromBody] JObject jObject)
+        { 
+            try
+            {
+                MailerService.SendEmail("haris.botic96@gmail.com",
+                    "almir.mulalic.am@gmail.com",
+                    "New Company Signup",
+                    JsonConvert.SerializeObject(jObject));
+
+                _catalogContext.LandingPageContacts.Add(new LandingPageContact
+                {
+                    Name = "Name",
+                    EmailAddress = "Email Address",
+                    PhoneNumber = "Phone Number",
+                    Message = JsonConvert.SerializeObject(jObject)
+                });
+
+                _catalogContext.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+            
+            return Ok();
+        }
+        
         #endregion
     }
 }
