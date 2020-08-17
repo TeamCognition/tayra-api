@@ -13,7 +13,7 @@ namespace Tayra.Connectors.GitHub
         public class Repository
         {
             [JsonProperty("id")]
-            public string Id { get; set; }
+            public string ExternalId { get; set; }
 
             [JsonProperty("name")]
             public string Name { get; set; }
@@ -22,7 +22,18 @@ namespace Tayra.Connectors.GitHub
             public string FullName { get; set; }
             
             [JsonProperty("url")]
-            public string Url { get; set; }
+            public string ExternalUrl { get; set; }
+            
+            [JsonProperty("owner")]
+            public OwnerDTO Owner { get; set; }
+        }
+
+        public class OwnerDTO
+        {
+            [JsonProperty("login")]
+            public string Login { get; set; }
+            [JsonProperty("id")]
+            public string Id { get; set; }
         }
     }
 }

@@ -10,8 +10,8 @@ namespace Tayra.Connectors.GitHub
     public static class GitHubService
     {
         #region Constants
-
-        public const string CLEINT_ID = "Iv1.8aa19d523bcef4dd";
+        
+        public const string CLIENT_ID = "Iv1.8aa19d523bcef4dd";
         public const string CLIENT_SECRET = "24bbd04c4a071a1298f1dd96b547d3054ef4534a";
 
         private const string BASE_AUTH_URL = "https://github.com/login/oauth";
@@ -24,12 +24,13 @@ namespace Tayra.Connectors.GitHub
         private const string GET_USER_INSTALLATIONS = "/user/installations";
         private const string GET_INSTALLATION_TOKEN = "/app/installations/{0}/access_tokens";
         private const string GET_INSTALLATION_REPOSITORIES = "/installation/repositories";
+        private const string CREATE_REPOSITORY_WEBHOOK = "/repos/{0}/{1}/hooks";
         
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
         public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, string redirectUrl)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", CLEINT_ID);
+            request.AddParameter("client_id", CLIENT_ID);
             request.AddParameter("client_secret", CLIENT_SECRET);
             request.AddParameter("code", authorizationCode);
             request.AddParameter("redirect_uri", redirectUrl);
@@ -60,7 +61,7 @@ namespace Tayra.Connectors.GitHub
         public static IRestResponse<TokenResponse> RefreshAccessToken(string refreshToken)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", CLEINT_ID);
+            request.AddParameter("client_id", CLIENT_ID);
             request.AddParameter("client_secret", CLIENT_SECRET);
             request.AddParameter("refresh_token", refreshToken);
             request.AddParameter("grant_type", "refresh_token");
@@ -114,6 +115,19 @@ namespace Tayra.Connectors.GitHub
                 .UseSerializer(() => new JsonNetSerializer());
 
             return client.Execute<GetRepositoriesResponse>(request);
+        }
+        
+        public static IRestResponse CreateRepositoryWebhook(string installationToken, string owner, string repo, string tenantKey)
+        {
+            var request = new RestRequest(string.Format(CREATE_REPOSITORY_WEBHOOK, owner, repo), Method.POST);
+            request.AddHeader("Authorization", $"Bearer {installationToken}");
+            request.AddHeader("Accept", "application/vnd.github.v3+json");
+            request.AddJsonBody(new {config = new { url = $"https://api.tayra.io/webhooks/gh?tenant={tenantKey}", content_type = "json"}});
+
+            var client = new RestClient(BASE_REST_URL)
+                .UseSerializer(() => new JsonNetSerializer());
+
+            return client.Execute(request);
         }
         
         #endregion

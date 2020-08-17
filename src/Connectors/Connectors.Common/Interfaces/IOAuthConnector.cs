@@ -5,11 +5,11 @@ namespace Tayra.Connectors.Common
 {
     public interface IOAuthConnector : IConnector
     {
-        string GetAuthUrl(string userState);
+        string GetAuthUrl(OAuthState state);
 
         string GetAuthDoneUrl(string returnPath, bool isSuccessful);
 
-        Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState);
+        Integration Authenticate(OAuthState state);
 
         Integration RefreshToken(int segmentId);
     }

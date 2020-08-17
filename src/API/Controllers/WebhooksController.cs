@@ -5,6 +5,7 @@ using Cog.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tayra.Common;
@@ -67,9 +68,21 @@ namespace Tayra.API.Controllers
         [AllowAnonymous]
         public ActionResult GithubWebhook([FromBody] JObject jObject, [FromServices] ILogsService logsService)
         {
-            SaveWebhookEventLog(jObject, IntegrationType.GH);
+            Request.Headers.TryGetValue("X-GitHub-Event", out StringValues ghEvent);
+            if (ghEvent.ToString() != "push")
+            {
+                return Ok("skipped");
+            }
+            
             PushWebhookPayload payload = jObject.ToObject<PushWebhookPayload>();
 
+            if (!DbContext.Repositories.Any(x => x.ExternalId == payload.Repository.Id))
+            {
+                return Ok("skipped - repo not active");
+            }
+
+            SaveWebhookEventLog(jObject, IntegrationType.GH);
+            
             var now = DateTime.UtcNow;
             foreach (var commit in payload.Commits)
             {
@@ -85,26 +98,27 @@ namespace Tayra.API.Controllers
                     Message = commit.Message,
                     ExternalUrl = commit.Url
                 });
-
+                
+                var logData = new LogCreateDTO
+                {
+                    Event = LogEvents.CodeCommitted,
+                    Data = new Dictionary<string, string>
+                    {
+                        {"timestamp", now.ToString()},
+                        {"committedAt", commit.Timestamp.ToString()},
+                        {"externalUrl", commit.Url},
+                        {"externalAuthorUsername", commit.Author.Username},
+                        {"sha", commit.Id},
+                        {"message", commit.Message},
+                    }
+                };
+                
                 if (authorProfile != null)
                 {
-                    var logData = new LogCreateDTO
-                    {
-                        Event = LogEvents.CodeCommitted,
-                        Data = new Dictionary<string, string>
-                        {
-                            {"timestamp", now.ToString()},
-                            {"committedAt", commit.Timestamp.ToString()},
-                            {"externalUrl", commit.Url},
-                            {"externalAuthorUsername", commit.Author.Username},
-                            {"sha", commit.Id},
-                            {"message", commit.Message},
-                            {"profileUsername", authorProfile.Username},
-                        },
-                        ProfileId = authorProfile.Id
-                    };
-                    logsService.LogEvent(logData);
+                    logData.Data.Add("profileUsername", authorProfile.Username);
+                    logData.ProfileId = authorProfile.Id;
                 }
+                logsService.LogEvent(logData);
             }
             
             DbContext.SaveChanges();

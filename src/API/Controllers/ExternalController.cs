@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Cog.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -36,23 +33,19 @@ namespace Tayra.API.Controllers
         [HttpGet, Route("callback/{type?}")]
         public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
         {
-            var stateData = Cipher.Decrypt(state.Base64UrlDecode()).Split('|');
-            Request.QueryString = Request.QueryString.Add("tenant", stateData[0]);
+            var oauthState = new OAuthState(state);
+            Request.QueryString = Request.QueryString.Add("tenant", oauthState.TenantKey);
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try
             {
-                connector.Authenticate(
-                    profileId: int.Parse(stateData[1]),
-                    profileRole: Enum.Parse<ProfileRoles>(stateData[2]),
-                    segmentId: int.Parse(stateData[3]),
-                    userState: state);
+                connector.Authenticate(oauthState);
             }
             catch
             {
-                return Redirect(connector.GetAuthDoneUrl(stateData[4], false));
+                return Redirect(connector.GetAuthDoneUrl(oauthState.ReturnPath, false));
             }
-
-            return Redirect(connector.GetAuthDoneUrl(stateData[4], true));
+        
+            return Redirect(connector.GetAuthDoneUrl(oauthState.ReturnPath, true));
         }
 
         public class TryForFreeFormDTO
@@ -171,7 +164,7 @@ namespace Tayra.API.Controllers
             try
             {
                 MailerService.SendEmail("haris.botic96@gmail.com",
-                    "almir.mulalic.am@gmail.com",
+                    "haris@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));
 
