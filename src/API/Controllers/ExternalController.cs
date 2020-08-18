@@ -88,79 +88,18 @@ namespace Tayra.API.Controllers
             public string PhoneNumber { get; set; }
             public string Message { get; set; }
         }
-
-        [HttpPost, Route("contactUs")]
-        public ActionResult ContactUs([FromBody] ContactFormDTO dto)
-        {
-            try
-            {
-                MailerService.SendEmail("haris.botic96@gmail.com",
-                            "haris@tayra.io",
-                            "New Contact (Landing Page Contact Form)",
-                            JsonConvert.SerializeObject(dto));
-
-                _catalogContext.LandingPageContacts.Add(new LandingPageContact
-                {
-                    Name = dto.Name,
-                    EmailAddress = dto.Email,
-                    PhoneNumber = dto.PhoneNumber,
-                    Message = dto.Message
-                });
-
-                _catalogContext.SaveChanges();
-            }
-            catch (Exception)
-            {
-                throw new Exception();
-            }
-
-            return Ok();
-        }
-
-        public class CompanySignupDTO
-        {
-            public string Name { get; set; }
-            public string Location { get; set; }
-            public string ContactPerson { get; set; }
-            public string PhoneNumber { get; set; }
-            public string EmailAddress { get; set; }
-            public string Industry { get; set; }
-            public int EmployeesCount { get; set; }
-            public string Website { get; set; }
-        }
-
-        [HttpPost, Route("companySignup")]
-        public IActionResult CompanySignup([FromBody] CompanySignupDTO dto)
-        {
-            try
-            {
-                MailerService.SendEmail("haris.botic96@gmail.com",
-                            "haris@tayra.io",
-                            "New Company Signup",
-                            JsonConvert.SerializeObject(dto));
-
-                _catalogContext.LandingPageContacts.Add(new LandingPageContact
-                {
-                    Name = dto.Name,
-                    EmailAddress = dto.EmailAddress,
-                    PhoneNumber = dto.PhoneNumber,
-                    Message = JsonConvert.SerializeObject(dto)
-                });
-
-                _catalogContext.SaveChanges();
-            }
-            catch (Exception)
-            {
-                throw new Exception();
-            }
-
-            return Ok();
-        }
-
+        
         [HttpPost("landingForm")]
 
         public IActionResult LandingForm([FromBody] JObject jObject)
-        { 
+        {
+            string name = "unknown";
+            string email = "unknown";
+            string contact = "unknown";
+            if (jObject.TryGetValue("name", out var nameToken)) name = nameToken.ToString();
+            if (jObject.TryGetValue("email", out var emailToken)) name = emailToken.ToString();
+            if (jObject.TryGetValue("contact", out var contactToken)) name = contactToken.ToString();
+            
             try
             {
                 MailerService.SendEmail("haris.botic96@gmail.com",
@@ -170,9 +109,9 @@ namespace Tayra.API.Controllers
 
                 _catalogContext.LandingPageContacts.Add(new LandingPageContact
                 {
-                    Name = "Name",
-                    EmailAddress = "Email Address",
-                    PhoneNumber = "Phone Number",
+                    Name = name,
+                    EmailAddress = email,
+                    PhoneNumber = contact,
                     Message = JsonConvert.SerializeObject(jObject)
                 });
 

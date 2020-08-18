@@ -74,7 +74,7 @@ namespace Tayra.API.Controllers
         [HttpGet, Route("settings/gh")]
         public ActionResult<GithubSettingsViewDTO> GetGitHubSettings()
         {
-            var integrationId = DbContext.Integrations.Where(x => x.Type == IntegrationType.GH && x.SegmentId == CurrentSegment.Id).Select(x => x.Id).FirstOrDefault();
+            var integrationId = DbContext.Integrations.Where(x => x.Type == IntegrationType.GH && x.SegmentId == CurrentSegment.Id && x.ProfileId == null).Select(x => x.Id).FirstOrDefault();
             var installationId = DbContext.IntegrationFields.Where(x => x.IntegrationId == integrationId && x.Key == GHConstants.GH_INSTALLATION_ID)
                 .Select(x => x.Value).FirstOrDefault();
 
