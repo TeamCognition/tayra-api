@@ -38,16 +38,29 @@ namespace Tayra.Connectors.GitHub
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
         
-        public static string FindTayraAppInstallation(UserInstallationsResponse.Installation[] installations, string githubAppId)
+        public static UserInstallationsResponse.Installation FindTayraAppInstallation(UserInstallationsResponse.Installation[] installations, string githubAppId)
         {
-            var installation = installations.FirstOrDefault(x => x.AppId == githubAppId);
+            var installation = installations.LastOrDefault(x => x.AppId == githubAppId);
 
             if (installation == null)
             {
                 throw new ApplicationException("Github app Installation not found");
             }
             
-            return installation.Id;
+            return installation;
+        }
+        
+        public static string GetInstallationOrganizationName(string userToken, long organizationId)
+        {
+            var orgs = GitHubService.GetOrganizations(userToken, organizationId)?.Data;
+
+            var org = orgs.LastOrDefault(x => x.Id == organizationId);
+            if (org == null)
+            {
+                throw new ApplicationException("Organization by id not found");
+            }
+            
+            return org.Login;
         }
     }
 }

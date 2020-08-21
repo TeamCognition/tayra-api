@@ -40,7 +40,7 @@ namespace Tayra.Services.TaskConverters
         {
             if (Mode == TaskConverterMode.NORMAL)
             {
-                var jiraConnector = new AtlassianJiraConnector(null, DbContext);
+                var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
                 var issueChangelogs = jiraConnector.GetIssueChangelog(GetRewardStatus().IntegrationId, GetExternalId(), "status");
                 //maybe not needed anymore
                 if (issueChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(We.Timestamp))
@@ -135,7 +135,7 @@ namespace Tayra.Services.TaskConverters
             if (Mode == TaskConverterMode.TEST)
                 return null;
             
-            var jiraConnector = new AtlassianJiraConnector(null, DbContext);
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
             int? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
             if (!integrationId.HasValue)
             {

@@ -12,6 +12,8 @@ using Tayra.Connectors.App.Helpers;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
+using Tayra.DAL;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.App
@@ -30,6 +32,7 @@ namespace Tayra.Connectors.App
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ILogger, Models.DebugLogger>();
 
+            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
             services.AddDbContext<OrganizationDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("org-mop")));
             services.AddDbContext<ATJiraDataContext>(

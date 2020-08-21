@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Connectors.App.Helpers;
 using Tayra.Connectors.Common;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.App.Controllers
@@ -37,12 +39,20 @@ namespace Tayra.Connectors.App.Controllers
         }
 
         [HttpGet, Route("external/callback/{type?}")]
-        public IActionResult Callback(IntegrationType type, [FromQuery]string state)
+        public IActionResult Callback([FromServices] CatalogDbContext catalogContext, IntegrationType type, [FromQuery]string state, [FromQuery]string setup_action, [FromQuery]string installation_id)
         {
+            var connector = ConnectorResolver.Get<IOAuthConnector>(type);
+            if (setup_action == "update" && string.IsNullOrEmpty(state))
+            {
+                var ti = catalogContext.TenantIntegrations.Include(x => x.Tenant).FirstOrDefault(x => x.InstallationId == installation_id);
+                Request.QueryString = Request.QueryString.Add("tenant", ti.Tenant.Key);
+                connector.UpdateAuthentication(installation_id);
+                
+                return Redirect($"https://{ti.Tenant.Key}/login");
+            }
             var oAuthState = new OAuthState(state);
             Request.QueryString = Request.QueryString.Add("tenant", oAuthState.TenantKey);
             
-            var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try
             {
                 var account = connector.Authenticate(oAuthState);

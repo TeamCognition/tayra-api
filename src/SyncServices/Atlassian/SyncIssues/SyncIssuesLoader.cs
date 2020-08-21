@@ -62,7 +62,7 @@ namespace Tayra.SyncServices
                 throw new ApplicationException("param jiraProjectId not provided");
             }
             
-            var jiraConnector = new AtlassianJiraConnector(null, organizationDb);
+            var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null);
 
             int? integrationId = IntegrationHelpers.GetIntegrationId(organizationDb, jiraProjectId, IntegrationType.ATJ);
             if (!integrationId.HasValue)
@@ -96,7 +96,7 @@ namespace Tayra.SyncServices
                 throw new ApplicationException($"Jira project with Id: {jiraProjectId} is not connected to any tayra segments");
             }
 
-            var jiraConnector = new AtlassianJiraConnector(null, organizationDb);
+            var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null);
 
             var tasks = jiraConnector.GetBulkIssuesWithChangelog(rewardStatusField.IntegrationId, "status", jiraProjectId);
             var profilesService = new ProfilesService(null, null, null, organizationDb);

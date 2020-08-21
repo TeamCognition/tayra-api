@@ -2,6 +2,7 @@
 using System.Linq;
 using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
@@ -75,9 +76,14 @@ namespace Tayra.API.Controllers
         public ActionResult<GithubSettingsViewDTO> GetGitHubSettings()
         {
             var integrationId = DbContext.Integrations.Where(x => x.Type == IntegrationType.GH && x.SegmentId == CurrentSegment.Id && x.ProfileId == null).Select(x => x.Id).FirstOrDefault();
-            var installationId = DbContext.IntegrationFields.Where(x => x.IntegrationId == integrationId && x.Key == GHConstants.GH_INSTALLATION_ID)
-                .Select(x => x.Value).FirstOrDefault();
-
+            var fields = DbContext.IntegrationFields.Where(x => x.IntegrationId == integrationId).ToArray();
+            var installationId = fields.FirstOrDefault(x => x.Key == GHConstants.GH_INSTALLATION_ID)?.Value;
+            var targetType = fields.FirstOrDefault(x => x.Key == GHConstants.GH_INSTALLATION_TARGET_TYPE)?.Value;
+            var targetName = fields.FirstOrDefault(x => x.Key == GHConstants.GH_INSTALLATION_TARGET_NAME)?.Value;
+            var externalConfigUrl = targetType == "Organization"
+                ? $"https://github.com/organizations/{targetName}/settings/installations/{installationId}"
+                : $"https://github.com/settings/installations/{installationId}";
+            
             var repos = DbContext.Repositories.Where(x => x.IntegrationInstallationId == installationId).ToArray();
             
             return Ok(new GithubSettingsViewDTO
@@ -89,7 +95,7 @@ namespace Tayra.API.Controllers
                     ExternalUrl = x.ExternalUrl,
                     TeamId = x.TeamId
                 }).ToArray(),
-                ExternalConfigurationUrl = $"https://github.com/settings/installations/{installationId}"
+                ExternalConfigurationUrl = externalConfigUrl
             });
         }
 

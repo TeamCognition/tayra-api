@@ -11,6 +11,8 @@ namespace Tayra.Connectors.Common
 
         Integration Authenticate(OAuthState state);
 
+        void UpdateAuthentication(string installationId);
+
         Integration RefreshToken(int segmentId);
     }
 }

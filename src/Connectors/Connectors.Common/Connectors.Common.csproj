@@ -12,6 +12,7 @@
   </ItemGroup>
     
   <ItemGroup>
+    <ProjectReference Include="..\..\DAL\CatalogModel\CatalogModel.csproj" />
     <ProjectReference Include="..\..\DAL\OrganizationModel\OrganizationModel.csproj" />
     <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\..\..\cog\Cog.DAL\Cog.DAL.csproj" />

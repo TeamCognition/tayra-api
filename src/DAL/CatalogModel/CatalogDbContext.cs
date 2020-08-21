@@ -33,6 +33,7 @@ namespace Tayra.Models.Catalog
         public DbSet<IdentityEmail> IdentityEmails { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<TenantIdentity> TenantIdentities { get; set; }
+        public DbSet<TenantIntegration> TenantIntegrations { get; set; }
 
         public DbSet<LandingPageContact> LandingPageContacts { get; set; }
         public DbSet<LandingPageTry> LandingPageTry { get; set; }
@@ -79,6 +80,12 @@ namespace Tayra.Models.Catalog
                 entity.HasKey(x => new { x.TenantId, x.IdentityId});
             });
 
+            modelBuilder.Entity<TenantIntegration>(entity =>
+            {
+                entity.HasKey(x => new { x.TenantId, x.Type, x.SegmentId });
+                entity.HasIndex(x => new { x.InstallationId });
+            });
+            
             Seed(modelBuilder);
 
             base.OnModelCreating(modelBuilder);

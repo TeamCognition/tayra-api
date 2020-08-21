@@ -105,7 +105,7 @@ namespace Tayra.Services
                 throw new ApplicationException("No Jira integration associated with segment " + segmentId);
             }
 
-            var jiraConnector = new AtlassianJiraConnector(null, DbContext);
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
 
             var allProjects = jiraConnector.GetProjects(integration.Id);
             foreach (var x in allProjects)

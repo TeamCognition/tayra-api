@@ -71,7 +71,7 @@ namespace Tayra.SyncServices
                 throw new ApplicationException($"Jira project with Id: {jiraProjectId} is not connected to any tayra segments");
             }
 
-            var jiraConnector = new AtlassianJiraConnector(null, organizationDb);
+            var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null);
             var statusChangelogs = jiraConnector.GetIssueChangelog(rewardStatusField.IntegrationId, we.JiraIssue.Key, "status");
 
             if (statusChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(we.Timestamp))

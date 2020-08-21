@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Tayra.Common;
 using Tayra.Connectors.Common;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.Atlassian.Jira
@@ -17,11 +18,11 @@ namespace Tayra.Connectors.Atlassian.Jira
         private const string AUDIENCE = "api.atlassian.com";
         private const string SCOPE = "read%3Ajira-user%20read%3Ajira-work%20offline_access";
 
-        public AtlassianJiraConnector(ILogger logger, OrganizationDbContext dataContext) : base(logger, dataContext)
+        public AtlassianJiraConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, dataContext, catalogDbContext)
         {
         }
 
-        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext) : base(logger, httpContext, tenantProvider, dataContext)
+        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
         {
         }
 
@@ -63,7 +64,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [Constants.PROFILE_EXTERNAL_ID] = loggedInUser.AccountId
                     };
 
-                    CreateProfileIntegration(state.ProfileId, state.SegmentId, profileFields, profileIntegration);
+                    CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId:null, profileFields, profileIntegration);
                 }
 
                 if (state.IsSegmentAuth && tokenData != null && accResData != null)
@@ -79,7 +80,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [ATConstants.AT_SITE_NAME] = accResData.Name
                     };
 
-                    segmentIntegration = CreateSegmentIntegration(state.SegmentId, segmentFields, segmentIntegration);
+                    segmentIntegration = CreateSegmentIntegration(state.SegmentId, installationId: null, segmentFields, segmentIntegration);
                 }
 
                 var unlinkedTasks = OrganizationContext.Tasks.Where(x => (x.AssigneeProfileId == null || x.TeamId == null) && x.AssigneeExternalId == loggedInUser.AccountId);
@@ -98,6 +99,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return null;
         }
 
+        public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
         public override Integration RefreshToken(int integrationId)
         {
             var account = OrganizationContext

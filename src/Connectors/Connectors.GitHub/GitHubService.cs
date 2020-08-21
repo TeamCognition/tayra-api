@@ -1,4 +1,5 @@
-﻿using GraphQL;
+﻿using System.Collections.Generic;
+using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
@@ -25,6 +26,7 @@ namespace Tayra.Connectors.GitHub
         private const string GET_INSTALLATION_TOKEN = "/app/installations/{0}/access_tokens";
         private const string GET_INSTALLATION_REPOSITORIES = "/installation/repositories";
         private const string CREATE_REPOSITORY_WEBHOOK = "/repos/{0}/{1}/hooks";
+        private const string GET_LIST_ORGANIZATIONS = "/organizations";
         
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
         public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, string redirectUrl)
@@ -128,6 +130,19 @@ namespace Tayra.Connectors.GitHub
                 .UseSerializer(() => new JsonNetSerializer());
 
             return client.Execute(request);
+        }
+        
+        public static IRestResponse<List<GetOrganizationsResponse>> GetOrganizations(string userToken, long orgId)
+        {
+            var request = new RestRequest(GET_LIST_ORGANIZATIONS, Method.GET);
+            request.AddHeader("Authorization", $"Bearer {userToken}");
+            request.AddHeader("Accept", "application/vnd.github.v3+json");
+            request.AddQueryParameter("since", (orgId-1).ToString());
+            
+            var client = new RestClient(BASE_REST_URL)
+                .UseSerializer(() => new JsonNetSerializer());
+
+            return client.Execute<List<GetOrganizationsResponse>>(request);
         }
         
         #endregion

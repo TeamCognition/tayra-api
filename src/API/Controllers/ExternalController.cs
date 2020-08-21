@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tayra.API.Helpers;
@@ -8,6 +11,7 @@ using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Mailer;
 using Tayra.Models.Catalog;
+using Tayra.Models.Organizations;
 
 namespace Tayra.API.Controllers
 {
@@ -31,11 +35,21 @@ namespace Tayra.API.Controllers
         #region Public Methods
 
         [HttpGet, Route("callback/{type?}")]
-        public IActionResult AuthenticateCallback(IntegrationType type, [FromQuery]string state)
+        public IActionResult AuthenticateCallback([FromServices]CatalogDbContext catalogContext, IntegrationType type, [FromQuery]string state, [FromQuery]string setup_action, [FromQuery]string installation_id)
         {
+            IOAuthConnector connector = null;
+            if (setup_action == "update" && string.IsNullOrEmpty(state))
+            {
+                var ti = catalogContext.TenantIntegrations.Include(x => x.Tenant).FirstOrDefault(x => x.InstallationId == installation_id);
+                Request.QueryString = Request.QueryString.Add("tenant", ti.Tenant.Key);
+                connector = ConnectorResolver.Get<IOAuthConnector>(type);
+                connector.UpdateAuthentication(installation_id);
+                
+                return Redirect($"https://{ti.Tenant.Key}/segments");
+            }
             var oauthState = new OAuthState(state);
             Request.QueryString = Request.QueryString.Add("tenant", oauthState.TenantKey);
-            var connector = ConnectorResolver.Get<IOAuthConnector>(type);
+            connector = ConnectorResolver.Get<IOAuthConnector>(type);
             try
             {
                 connector.Authenticate(oauthState);
