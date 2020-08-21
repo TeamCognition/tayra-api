@@ -88,8 +88,7 @@ namespace Tayra.Connectors.Common
                     var x = CatalogContext.TenantIntegrations.FirstOrDefault(x =>
                         x.Type == oldIntegration.Type && x.SegmentId == oldIntegration.SegmentId && x.TenantId ==
                         TenantUtilities.ConvertShardingKeyToTenantId(Tenant.ShardingKey));
-                    if(x != null)
-                    CatalogContext.TenantIntegrations.Remove(x);
+                    if(x != null) CatalogContext.TenantIntegrations.Remove(x);
                 }
             }
 
@@ -101,7 +100,7 @@ namespace Tayra.Connectors.Common
                     var eId = OrganizationContext.ProfileExternalIds.FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == Type);
                     if (eId != null)
                     {
-                        var someoneElsesI = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.ProfileId == eId.ProfileId);
+                        var someoneElsesI = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.ProfileId == eId.ProfileId && x.Type == Type);
                         if(someoneElsesI != null)
                         {
                             someoneElsesI.Fields.ToList().ForEach(x => OrganizationContext.Remove(x));
