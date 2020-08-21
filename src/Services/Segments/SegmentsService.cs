@@ -169,7 +169,7 @@ namespace Tayra.Services
                         },
                         new SegmentAverageMetricsDTO.SegmentMetricDTO
                         {
-                            Id = MetricTypes.TaskCompletion,
+                            Id = MetricTypes.WorkUnitsCompleted,
                             Averages = r.Select(x => (float) x.TasksCompletedChange).ToArray()
                         }
                     }
@@ -246,7 +246,7 @@ namespace Tayra.Services
                         },
                         new SegmentRankChartDTO.RankChartMetricDTO
                         {
-                            Id = MetricTypes.TaskCompletion,
+                            Id = MetricTypes.WorkUnitsCompleted,
                             MemberValues = r.OrderByDescending(x => x.TasksCompletedChange).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
                             {
                                 ProfileId = x.ProfileId,

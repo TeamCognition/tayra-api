@@ -20,9 +20,12 @@ namespace Tayra.Common
         Assist = 5,
 
         [Description("Completion")]
-        TaskCompletion = 6,
+        WorkUnitsCompleted = 6,
         
         [Description("Heat")]
-        Heat = 7
+        Heat = 7,
+        
+        [Description("Errors")]
+        Errors = 7,
     }
 }

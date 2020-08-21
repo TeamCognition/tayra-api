@@ -144,7 +144,7 @@ namespace Tayra.Services
                     },
                     new TeamSwarmPlotDTO.DataDTO
                     {
-                        MetricType = MetricTypes.TaskCompletion,
+                        MetricType = MetricTypes.WorkUnitsCompleted,
                         Averages = teamStats.Select(x => x.Completion).ToArray(),
                         ProfileStats = profileStats.ToLookup(x => x.ProfileId)
                             .ToDictionary(x => x.Key, x => x.Select(s => s.Completion).ToArray())
@@ -349,7 +349,7 @@ namespace Tayra.Services
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.TaskCompletion,
+                            Id = MetricTypes.WorkUnitsCompleted,
                             TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
                             {
                                 Id = x.Key ,

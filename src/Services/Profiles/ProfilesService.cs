@@ -613,7 +613,7 @@ using Tayra.Models.Organizations;
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
-                            Id = MetricTypes.TaskCompletion,
+                            Id = MetricTypes.WorkUnitsCompleted,
                             SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,

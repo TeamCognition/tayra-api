@@ -338,7 +338,7 @@ namespace Tayra.Services
                     new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.Power, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.Power }).ToArray() },
                     new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.Complexity, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.Complexity }).ToArray() },
                     new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.Assist, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.Assists }).ToArray() },
-                    new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.TaskCompletion, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.TasksCompleted }).ToArray() }
+                    new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.WorkUnitsCompleted, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.TasksCompleted }).ToArray() }
                 }
             };
         }
@@ -365,7 +365,7 @@ namespace Tayra.Services
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Power, Average = pr.Average(x => x.PowerAverage) },
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Complexity, Average = pr.Average(x => x.ComplexityChange) },
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Assist, Average = pr.Average(x => x.AssistsChange) },
-                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.TaskCompletion, Average = pr.Average(x => x.TasksCompletedChange) },
+                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.WorkUnitsCompleted, Average = pr.Average(x => x.TasksCompletedChange) },
                           },
                           HeatTrend = pr.Select(x => x.Heat).Take(8).ToArray()
                       }).ToArray();
