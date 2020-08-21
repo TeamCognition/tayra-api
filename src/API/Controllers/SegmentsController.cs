@@ -57,6 +57,12 @@ namespace Tayra.API.Controllers
             return SegmentsService.GetSegmentAverageMetrics(segmentKey);
         }
         
+        [HttpGet("{segmentKey}/rawScore")]
+        public ActionResult<SegmentRawScoreDTO> GetSegmentRowScore([FromRoute] string segmentKey)
+        {
+            return SegmentsService.GetSegmentRawScore(segmentKey);
+        }
+        
         [HttpGet("{segmentKey}/rankChart")]
         public ActionResult<SegmentRankChartDTO> GetSegmentRankChart([FromRoute] string segmentKey)
         {
