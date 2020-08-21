@@ -11,6 +11,7 @@ using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.SyncServices.Common;
+using Tayra.SyncServices.Metrics;
 
 namespace Tayra.SyncServices.Tayra
 {
@@ -85,7 +86,7 @@ namespace Tayra.SyncServices.Tayra
                                  {
                                      ProfileId = total.Key,
 
-                                     EffortScore = change.Sum(x => x.EffortScore),
+                                     EffortScore = new EffortMetric(change.Sum(x => x.EffortScore) ?? 0f),
                                      EffortScoreTotal = total.Sum(x => x.EffortScore),
 
                                      Complexity = change.Sum(x => x.Complexity),
