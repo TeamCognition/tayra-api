@@ -124,6 +124,26 @@ namespace Tayra.Services
             return segmentDTO;
         }
 
+        public SegmentRawScoreDTO GetSegmentRawScore(string segmentKey)
+        {
+            var segment = DbContext.Segments.FirstOrDefault(x => x.Key == segmentKey);
+            segment.EnsureNotNull(segmentKey);
+
+            return (from r in DbContext.SegmentReportsDaily
+                where r.SegmentId == segment.Id 
+                select new SegmentRawScoreDTO
+                {
+                    TasksCompleted = r.TasksCompletedTotal,
+                    AssistsGained = r.AssistsTotal,
+                    TimeWorked =  r.TasksCompletionTimeTotal,
+                    TokensEarned =  r.CompanyTokensEarnedTotal,
+                    TokensSpent =  r.CompanyTokensSpentTotal,
+                    ItemsBought = r.ItemsBoughtTotal,
+                    QuestsCompleted = 0,
+                    DaysOnTayra = EF.Functions.DateDiffDay(segment.Created, DateTime.UtcNow)
+                }).LastOrDefault();
+        }
+        
         public SegmentAverageMetricsDTO GetSegmentAverageMetrics(string segmentKey)
         {
             var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
