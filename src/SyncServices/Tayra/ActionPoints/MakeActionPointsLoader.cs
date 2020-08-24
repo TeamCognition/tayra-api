@@ -130,7 +130,7 @@ namespace Tayra.SyncServices.Tayra
             }
 
             var aps = organizationDb.ActionPoints.Where(x => x.ConcludedOn == null).ToArray();
-            var profiles = organizationDb.Profiles.Select(x => new { x.Id, x.Created }).ToArray();
+            var profiles = organizationDb.Profiles.Where(x => x.Role == ProfileRoles.Member).Select(x => new { x.Id, x.Created }).ToArray();
             var segments = organizationDb.Segments.Select(x => new { x.Id, x.Created, x.Members }).ToArray();
             foreach (var s in segments)
             {

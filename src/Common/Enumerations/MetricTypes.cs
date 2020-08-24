@@ -4,28 +4,19 @@ namespace Tayra.Common
 {
     public enum MetricTypes
     {
-        [Description("Impact")]
         OImpact = 1,
-
-        [Description("Speed")]
         Speed = 2,
-
-        [Description("Power")]
         Power = 3,
-
-        [Description("Complexity")]
         Complexity = 4,
-
-        [Description("Assists")]
         Assist = 5,
-
-        [Description("Completion")]
         WorkUnitsCompleted = 6,
-        
-        [Description("Heat")]
         Heat = 7,
-        
-        [Description("Errors")]
-        Errors = 7,
+        Errors = 8,
+        TokensEarned = 9,
+        TokensSpent = 10,
+        PraisesGiven = 11,
+        PraisesReceived = 12,
+        Effort = 13,
+        Saves = 14
     }
 }

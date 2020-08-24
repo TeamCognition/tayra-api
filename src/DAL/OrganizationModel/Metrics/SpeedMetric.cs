@@ -1,10 +1,10 @@
 using Tayra.Common;
 
-namespace Tayra.SyncServices.Metrics
+namespace Tayra.Models.Organizations
 {
     public class SpeedMetric : Metric
     {
-        public SpeedMetric() : base(MetricTypes.Speed)
+        public SpeedMetric() : base(MetricTypes.Speed, 0)
         {
             
         }

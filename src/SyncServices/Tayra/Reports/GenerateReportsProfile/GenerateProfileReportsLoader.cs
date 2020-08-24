@@ -86,7 +86,7 @@ namespace Tayra.SyncServices.Tayra
                                  {
                                      ProfileId = total.Key,
 
-                                     EffortScore = new EffortMetric(change.Sum(x => x.EffortScore) ?? 0f),
+                                     EffortScore = change.Sum(x => x.EffortScore),
                                      EffortScoreTotal = total.Sum(x => x.EffortScore),
 
                                      Complexity = change.Sum(x => x.Complexity),
