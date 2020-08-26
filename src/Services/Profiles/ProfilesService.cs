@@ -13,9 +13,9 @@ using Tayra.Common;
 using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
- using DateRanges = Cog.Core.DateRanges;
+using DateRanges = Cog.Core.DateRanges;
 
- namespace Tayra.Services
+namespace Tayra.Services
 {
     public class ProfilesService : BaseService<OrganizationDbContext>, IProfilesService
     {
@@ -80,7 +80,7 @@ using Tayra.Models.Organizations;
         public GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams)
         {
             IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
-            
+
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
 
@@ -139,7 +139,7 @@ using Tayra.Models.Organizations;
                 if (!string.IsNullOrEmpty(gridParams.NameQuery))
                     scope = scope.Where(byName);
             }
-   
+
             var query = from p in scope
                         from title in DbContext.ProfileInventoryItems.Where(x => p.Id == x.ProfileId
                              && x.IsActive == true && x.ItemType == ItemTypes.TayraTitle).DefaultIfEmpty()
@@ -176,7 +176,7 @@ using Tayra.Models.Organizations;
                                 Type = x.Type,
                                 IntegratedOn = x.Created
                             }).DistinctBy(x => x.Type).ToArray()
-                        }; 
+                        };
 
             GridData<ProfileSummaryGridDTO> gridData = query.GetGridData(gridParams);
 
@@ -310,27 +310,27 @@ using Tayra.Models.Organizations;
                                   Username = p.Username,
                                   Role = p.Role,
                                   Avatar = p.Avatar,
-                                  Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Id = x.Segment.Id, Key = x.Segment.Key, Name = x.Segment.Name}).ToArray(),
+                                  Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Id = x.Segment.Id, Key = x.Segment.Key, Name = x.Segment.Name }).ToArray(),
                                   Teams = p.Assignments.Where(x => x.TeamId.HasValue).Select(x => new ProfileViewDTO.TeamDTO { Id = x.Team.Id, Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
-                                  Praises = p.Praises.GroupBy(x => x.Type).Select(x => new ProfileViewDTO.PraiseDTO{Type = x.Key, Count = x.Count()}).ToArray(),
+                                  Praises = p.Praises.GroupBy(x => x.Type).Select(x => new ProfileViewDTO.PraiseDTO { Type = x.Key, Count = x.Count() }).ToArray(),
                                   AssistantSummary = p.AssistantSummary,
                               }).FirstOrDefault();
 
             profileDto.EnsureNotNull();
 
-            var tokens = (from tt in DbContext.TokenTransactions 
-                where !tt.ClaimRequired || tt.ClaimedAt.HasValue
-                where tt.ProfileId == profileDto.ProfileId 
-                group tt by tt.Token.Type into g 
-                select new ProfileViewDTO.TokenDTO
-                {
-                    Type = g.Key,
-                    Value = g.Sum(x => x.Value)
-                }).ToArray();
-            
+            var tokens = (from tt in DbContext.TokenTransactions
+                          where !tt.ClaimRequired || tt.ClaimedAt.HasValue
+                          where tt.ProfileId == profileDto.ProfileId
+                          group tt by tt.Token.Type into g
+                          select new ProfileViewDTO.TokenDTO
+                          {
+                              Type = g.Key,
+                              Value = g.Sum(x => x.Value)
+                          }).ToArray();
+
             profileDto.CompanyTokens = Math.Round(tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Value).FirstOrDefault(), 2);
-            profileDto.Experience = Convert.ToInt32(tokens.Where(x => x.Type == TokenType.Experience).Select(x => x.Value).FirstOrDefault()); 
-            
+            profileDto.Experience = Convert.ToInt32(tokens.Where(x => x.Type == TokenType.Experience).Select(x => x.Value).FirstOrDefault());
+
             if (profileId != profileDto.ProfileId)
             {
                 profileDto.LastUppedAt = (from u in DbContext.ProfilePraises
@@ -342,31 +342,31 @@ using Tayra.Models.Organizations;
             var activeItems = GetProfileActiveItems(DbContext, profileDto.ProfileId);
             profileDto.Badges = activeItems.Badges;
             profileDto.Title = activeItems.Title;
-            profileDto.Border = activeItems.Border;     
+            profileDto.Border = activeItems.Border;
 
             profileDto.Pulse = GetProfilePulseDTO(profileDto.ProfileId);
-            
+
             return profileDto;
         }
-        
+
         public ProfileRawScoreDTO GetProfileRawScoreDTO(string username)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Username == username);
             profile.EnsureNotNull(username);
 
             return (from r in DbContext.ProfileReportsDaily
-                where r.ProfileId == profile.Id
-                select new ProfileRawScoreDTO
-                {
-                    TasksCompleted = r.TasksCompletedTotal,
-                    AssistsGained = r.AssistsTotal,
-                    TimeWorked =  r.TasksCompletionTimeTotal,
-                    TokensEarned =  r.CompanyTokensEarnedTotal,
-                    TokensSpent =  r.CompanyTokensSpentTotal,
-                    ItemsBought = r.ItemsBoughtTotal,
-                    QuestsCompleted = r.QuestsCompletedTotal,
-                    DaysOnTayra = EF.Functions.DateDiffDay(profile.Created, DateTime.UtcNow)
-                }).LastOrDefault();
+                    where r.ProfileId == profile.Id
+                    select new ProfileRawScoreDTO
+                    {
+                        TasksCompleted = r.TasksCompletedTotal,
+                        AssistsGained = r.AssistsTotal,
+                        TimeWorked = r.TasksCompletionTimeTotal,
+                        TokensEarned = r.CompanyTokensEarnedTotal,
+                        TokensSpent = r.CompanyTokensSpentTotal,
+                        ItemsBought = r.ItemsBoughtTotal,
+                        QuestsCompleted = r.QuestsCompletedTotal,
+                        DaysOnTayra = EF.Functions.DateDiffDay(profile.Created, DateTime.UtcNow)
+                    }).LastOrDefault();
         }
 
         public void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto)
@@ -450,68 +450,68 @@ using Tayra.Models.Organizations;
                             GiftsReceived = g.SelectMany(x => x.ActivityChart.ItemActivityData?.GiftsReceived ?? new string[0]).ToArray(),
                             GiftsSent = g.SelectMany(x => x.ActivityChart.ItemActivityData?.GiftsSent ?? new string[0]).ToArray(),
                         },
-                        GitCommitData = g.Any(x => x.ActivityChart.GitCommitData != null) ?g.SelectMany(x => x.ActivityChart?.GitCommitData?.Select(c => 
-                        new ProfileActivityChartDTO.GitCommitDTO 
-                        {
-                            Message = c?.Message ?? string.Empty,
-                            ExternalUrl = c?.ExternalUrl ?? string.Empty
-                        }))?.ToArray()
-                            : new ProfileActivityChartDTO.GitCommitDTO[]{}
+                        GitCommitData = g.Any(x => x.ActivityChart.GitCommitData != null) ? g.SelectMany(x => x.ActivityChart?.GitCommitData?.Select(c =>
+                         new ProfileActivityChartDTO.GitCommitDTO
+                         {
+                             Message = c?.Message ?? string.Empty,
+                             ExternalUrl = c?.ExternalUrl ?? string.Empty
+                         }))?.ToArray()
+                            : new ProfileActivityChartDTO.GitCommitDTO[] { }
                     }).ToArray();
         }
-        
+
         public ProfileStatsDTO GetProfileStatsData(int profileId)
         {
             var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
-            
+
             var segments = from pa in DbContext.ProfileAssignments
-                where pa.ProfileId == profileId
-                select pa.SegmentId;
+                           where pa.ProfileId == profileId
+                           select pa.SegmentId;
 
             var segmentsStats =
                 DbContext.SegmentReportsWeekly
                     .Where(x => segments.Contains(x.SegmentId) && x.DateId >= latestUpdateDateId)
-                    .ToLookup(x => x.SegmentId).ToDictionary(x => x.Key, x => new 
+                    .ToLookup(x => x.SegmentId).ToDictionary(x => x.Key, x => new
                     {
                         Impact = x.Select(r => r.OImpactAverage).ToArray(),
                         Speed = x.Select(r => r.SpeedAverage).ToArray(),
                         Power = x.Select(r => r.PowerAverage).ToArray(),
                         Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
-                        Assists = x.Select(r => (float) r.AssistsChange).ToArray(),
-                        TaskCompletion = x.Select(r => (float) r.TasksCompletedChange).ToArray(),
-                        Complexity = x.Select(r => (float) r.ComplexityChange).ToArray(),
+                        Assists = x.Select(r => (float)r.AssistsChange).ToArray(),
+                        TaskCompletion = x.Select(r => (float)r.TasksCompletedChange).ToArray(),
+                        Complexity = x.Select(r => (float)r.ComplexityChange).ToArray(),
                     });
-            
+
             var teams = from pa in DbContext.ProfileAssignments
-                where pa.ProfileId == profileId 
-                select pa.TeamId;
+                        where pa.ProfileId == profileId
+                        select pa.TeamId;
 
             var teamsStats =
                 DbContext.TeamReportsWeekly
                     .Where(x => teams.Contains(x.TeamId) && x.DateId >= latestUpdateDateId)
-                    .ToLookup(x => x.TeamId).ToDictionary(x => x.Key, x => new 
+                    .ToLookup(x => x.TeamId).ToDictionary(x => x.Key, x => new
                     {
                         Impact = x.Select(r => r.OImpactAverage).ToArray(),
                         Speed = x.Select(r => r.SpeedAverage).ToArray(),
                         Power = x.Select(r => r.PowerAverage).ToArray(),
                         Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
-                        Assists = x.Select(r => (float) r.AssistsChange).ToArray(),
-                        TaskCompletion = x.Select(r => (float) r.TasksCompletedChange).ToArray(),
-                        Complexity = x.Select(r => (float) r.ComplexityChange).ToArray(),
+                        Assists = x.Select(r => (float)r.AssistsChange).ToArray(),
+                        TaskCompletion = x.Select(r => (float)r.TasksCompletedChange).ToArray(),
+                        Complexity = x.Select(r => (float)r.ComplexityChange).ToArray(),
                     });
-            
+
             return (from prw in DbContext.ProfileReportsWeekly
-                where prw.ProfileId == profileId
-                where prw.DateId >= latestUpdateDateId
-                group prw by 1 into r
-                select new ProfileStatsDTO
-                {
-                    LatestUpdateDateId = latestUpdateDateId,
-                    Metrics = (new ProfileStatsDTO.ProfileMetricDTO[]
+                    where prw.ProfileId == profileId
+                    where prw.DateId >= latestUpdateDateId
+                    group prw by 1 into r
+                    select new ProfileStatsDTO
                     {
+                        LatestUpdateDateId = latestUpdateDateId,
+                        Metrics = (new ProfileStatsDTO.ProfileMetricDTO[]
+                        {
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
-                            Id = MetricTypes.OImpact,
+                            Id = MetricTypes.Impact,
                             SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
@@ -613,7 +613,7 @@ using Tayra.Models.Organizations;
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
-                            Id = MetricTypes.TaskCompletion,
+                            Id = MetricTypes.WorkUnitsCompleted,
                             SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,
@@ -628,10 +628,10 @@ using Tayra.Models.Organizations;
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => (float) x.TasksCompletedChange).ToArray()
                         }
-                    }).ToArray()
-                }).FirstOrDefault();
+                        }).ToArray()
+                    }).FirstOrDefault();
         }
-        
+
         #endregion
 
         #region Static methods
@@ -670,18 +670,18 @@ using Tayra.Models.Organizations;
         {
             var yesterdayDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-1));
             var tasks = (from t in DbContext.Tasks
-                        where t.AssigneeProfileId == profileId
-                        where t.Status == TaskStatuses.InProgress || (t.Status == TaskStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)
-                        select new
-                        {
-                            DTO = new ProfileViewDTO.PulseDTO.Task
-                            {
-                                Status = t.Status,
-                                Summary = t.Summary,
-                                ExternalUrl = t.ExternalUrl    
-                            },
-                            LastModifiedDateId = t.LastModifiedDateId
-                        }).ToArray();
+                         where t.AssigneeProfileId == profileId
+                         where t.Status == TaskStatuses.InProgress || (t.Status == TaskStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)
+                         select new
+                         {
+                             DTO = new ProfileViewDTO.PulseDTO.Task
+                             {
+                                 Status = t.Status,
+                                 Summary = t.Summary,
+                                 ExternalUrl = t.ExternalUrl
+                             },
+                             LastModifiedDateId = t.LastModifiedDateId
+                         }).ToArray();
 
             return new ProfileViewDTO.PulseDTO
             {
@@ -689,7 +689,7 @@ using Tayra.Models.Organizations;
                 RecentlyDone = tasks.Select(x => x.DTO).Where(x => x.Status == TaskStatuses.Done).ToArray()
             };
         }
-        
+
         #endregion
     }
 }
