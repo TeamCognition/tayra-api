@@ -69,7 +69,7 @@ namespace Tayra.Services
 
             foreach(var i in integrations.Where(x => x.ExternalId == null).ToArray())
             {
-                if (integrations.Any(x => x.SegmentId == i.SegmentId && x.ExternalId != null))
+                if (integrations.Any(x => x.SegmentId == i.SegmentId && x.Type == i.Type && x.ExternalId != null))
                     integrations.Remove(i);
             }
             return integrations;
@@ -105,7 +105,7 @@ namespace Tayra.Services
                 throw new ApplicationException("No Jira integration associated with segment " + segmentId);
             }
 
-            var jiraConnector = new AtlassianJiraConnector(null, DbContext);
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
 
             var allProjects = jiraConnector.GetProjects(integration.Id);
             foreach (var x in allProjects)

@@ -9,7 +9,8 @@ namespace Tayra.Services
     { 
         public string RecieverUsername { get; set; }
         public string PraiserUsername { get; set; }
-        public int DateId { get; set; }
+        public string RecieverAvatar { get; set; }
+        public DateTime Created { get; set; }
         public PraiseTypes Type { get; set; }
         public string Message { get; set; }
 

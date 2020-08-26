@@ -5,11 +5,13 @@ using Cog.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
+using Tayra.Connectors.GitHub.WebhookPayloads;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.TaskConverters;
@@ -37,9 +39,9 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        private void SaveWebhookEventLog(JObject jObject)
+        private void SaveWebhookEventLog(JObject jObject, IntegrationType integrationType)
         {
-            DbContext.WebhookEventLogs.Add(new WebhookEventLog { Data = jObject.ToString(Formatting.None) });
+            DbContext.WebhookEventLogs.Add(new WebhookEventLog { IntegrationType = integrationType, Data = jObject.ToString(Formatting.None) });
             DbContext.SaveChanges();
         }
 
@@ -47,8 +49,8 @@ namespace Tayra.API.Controllers
         [AllowAnonymous]
         public ActionResult JiraIssueUpdate([FromBody] JObject jObject)
         {
-            SaveWebhookEventLog(jObject);
-            WebhookEvent we = jObject.ToObject<WebhookEvent>();
+            SaveWebhookEventLog(jObject, IntegrationType.ATJ);
+            JiraWebhookEvent we = jObject.ToObject<JiraWebhookEvent>();
 
             TaskConverterJira taskConverter = new TaskConverterJira(
                 DbContext,
@@ -61,7 +63,68 @@ namespace Tayra.API.Controllers
 
             return Ok();
         }
+        
+        [HttpPost("gh")]
+        [AllowAnonymous]
+        public ActionResult GithubWebhook([FromBody] JObject jObject, [FromServices] ILogsService logsService)
+        {
+            Request.Headers.TryGetValue("X-GitHub-Event", out StringValues ghEvent);
+            if (ghEvent.ToString() != "push")
+            {
+                return Ok("skipped");
+            }
+            
+            PushWebhookPayload payload = jObject.ToObject<PushWebhookPayload>();
 
+            if (!DbContext.Repositories.Any(x => x.ExternalId == payload.Repository.Id))
+            {
+                return Ok("skipped - repo not active");
+            }
+
+            SaveWebhookEventLog(jObject, IntegrationType.GH);
+            
+            var now = DateTime.UtcNow;
+            foreach (var commit in payload.Commits)
+            {
+                if(!commit.Distinct)
+                    continue;
+
+                var authorProfile = ProfilesService.GetMemberByExternalId(commit.Author.Username, IntegrationType.GH);
+                DbContext.Add(new GitCommit
+                {
+                    SHA = commit.Id,
+                    AuthorProfile = authorProfile,
+                    AuthorExternalId = commit.Author.Username,
+                    Message = commit.Message,
+                    ExternalUrl = commit.Url
+                });
+                
+                var logData = new LogCreateDTO
+                {
+                    Event = LogEvents.CodeCommitted,
+                    Data = new Dictionary<string, string>
+                    {
+                        {"timestamp", now.ToString()},
+                        {"committedAt", commit.Timestamp.ToString()},
+                        {"externalUrl", commit.Url},
+                        {"externalAuthorUsername", commit.Author.Username},
+                        {"sha", commit.Id},
+                        {"message", commit.Message},
+                    }
+                };
+                
+                if (authorProfile != null)
+                {
+                    logData.Data.Add("profileUsername", authorProfile.Username);
+                    logData.ProfileId = authorProfile.Id;
+                }
+                logsService.LogEvent(logData);
+            }
+            
+            DbContext.SaveChanges();
+            return Ok();
+        }
+        
         #endregion
     }
 }

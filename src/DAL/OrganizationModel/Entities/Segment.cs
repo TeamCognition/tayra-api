@@ -29,6 +29,8 @@ namespace Tayra.Models.Organizations
         public string DataWarehouse { get; set; }
 
         public bool IsReportingUnlocked { get; set; }
+        
+        public string AssistantSummary { get; set; }
 
         public virtual ICollection<Team> Teams { get; set; }
         public virtual ICollection<Quest> Quests { get; set; }

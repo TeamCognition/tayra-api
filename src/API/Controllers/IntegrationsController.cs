@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
 using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
+using Tayra.Connectors.GitHub;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -30,7 +33,7 @@ namespace Tayra.API.Controllers
         #region Public Methods
 
         [HttpGet, Route("connect/{type?}")]
-        public IActionResult Connect([FromRoute] IntegrationType type, [FromQuery] string returnPath)
+        public IActionResult Connect([FromRoute] IntegrationType type, [FromQuery] string returnPath, [FromQuery] bool isSegmentAuth)
         {   
             if(string.IsNullOrEmpty(returnPath))
             {
@@ -39,7 +42,7 @@ namespace Tayra.API.Controllers
             
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             return Redirect(connector.GetAuthUrl(
-                Cipher.Encrypt(string.Join('|', TenantProvider.GetTenant().Key, CurrentUser.ProfileId, CurrentUser.Role, CurrentSegment.Id, returnPath)).Base64UrlEncode()));
+                new OAuthState(TenantProvider.GetTenant().Key, CurrentUser.ProfileId, CurrentSegment.Id, isSegmentAuth, returnPath)));
         }
 
         [HttpGet, Route("settings/atj")]
@@ -54,6 +57,46 @@ namespace Tayra.API.Controllers
             IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantKey, dto);
             DbContext.SaveChanges();
             return Ok();
+        }
+
+        public class GithubSettingsViewDTO
+        {
+            public string ExternalConfigurationUrl { get; set; }
+            public Repository[] Repositories { get; set; }
+            public class Repository
+            {
+                public string ExternalUrl { get; set; }
+                public string Name { get; set; }
+                public string NameWithOwner { get; set; }
+                public int? TeamId { get; set; }
+            }
+        }
+        
+        [HttpGet, Route("settings/gh")]
+        public ActionResult<GithubSettingsViewDTO> GetGitHubSettings()
+        {
+            var integrationId = DbContext.Integrations.Where(x => x.Type == IntegrationType.GH && x.SegmentId == CurrentSegment.Id && x.ProfileId == null).Select(x => x.Id).FirstOrDefault();
+            var fields = DbContext.IntegrationFields.Where(x => x.IntegrationId == integrationId).ToArray();
+            var installationId = fields.FirstOrDefault(x => x.Key == GHConstants.GH_INSTALLATION_ID)?.Value;
+            var targetType = fields.FirstOrDefault(x => x.Key == GHConstants.GH_INSTALLATION_TARGET_TYPE)?.Value;
+            var targetName = fields.FirstOrDefault(x => x.Key == GHConstants.GH_INSTALLATION_TARGET_NAME)?.Value;
+            var externalConfigUrl = targetType == "Organization"
+                ? $"https://github.com/organizations/{targetName}/settings/installations/{installationId}"
+                : $"https://github.com/settings/installations/{installationId}";
+            
+            var repos = DbContext.Repositories.Where(x => x.IntegrationInstallationId == installationId).ToArray();
+            
+            return Ok(new GithubSettingsViewDTO
+            {
+                Repositories = repos.Select(x => new GithubSettingsViewDTO.Repository
+                {
+                    Name = x.Name,
+                    NameWithOwner = x.NameWithOwner,
+                    ExternalUrl = x.ExternalUrl,
+                    TeamId = x.TeamId
+                }).ToArray(),
+                ExternalConfigurationUrl = externalConfigUrl
+            });
         }
 
         #endregion

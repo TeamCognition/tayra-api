@@ -1,0 +1,45 @@
+@model Tayra.Models.Organizations.Integration;
+
+@{
+    ViewData["Title"] = Model.Type;
+}
+
+<div class="card">
+    <h5 class="card-header">@Model.Type</h5>
+    <div class="card-body">
+        <h5>Account Information</h5>
+        <ul>
+            @foreach (var field in Model.Fields)
+            {
+                <li><b>@field.Key</b>: @field.Value</li>
+            }
+        </ul>
+        @if (ViewBag.Error != null)
+        {
+            <div class="text-danger">@ViewBag.Error</div>
+        }
+
+        @if (ViewBag.Accounts != null)
+        {
+            <p>
+                <h5>Pages</h5>
+                @if (ViewBag.RefreshToken.Count == 0)
+                {
+                    <div class="text-info">There is no pages/accounts connected to this account.</div>
+                }
+                <ol>
+                    @foreach (var acc in ViewBag.Accounts)
+                    {
+                        <li>
+                            <ul>
+                                <li><b>ID</b>: @acc.Id</li>
+                                <li><b>Name</b>: @acc.Name</li>
+                                <li><b>Category</b>: @acc.Category</li>
+                            </ul>
+                        </li>
+                    }
+                </ol>
+            </p>
+        }
+    </div>
+</div>

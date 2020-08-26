@@ -236,7 +236,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 TaskConverterJira taskConverter = new TaskConverterJira(
                     organizationDb,
                     ProfilesService,
-                    new WebhookEvent
+                    new JiraWebhookEvent
                     {
                         JiraIssue = new JiraIssue
                         {

@@ -4,33 +4,36 @@ using System.ComponentModel.DataAnnotations;
 using Cog.DAL;
 using Tayra.Common;
 
-namespace Tayra.Models.Organizations
-{
-    public class Profile : IAuditedEntity, IArchivableEntity
-    {
+namespace Tayra.Models.Organizations {
+    public class Profile : IAuditedEntity, IArchivableEntity {
         public int Id { get; set; }
 
-        [MaxLength(50)]
+        [MaxLength (50)]
         public string FirstName { get; set; }
-        [MaxLength(50)]
+
+        [MaxLength (50)]
         public string LastName { get; set; }
 
         /// <summary>
         /// unique
         /// </summary>
-        [MaxLength(20)]
+        [MaxLength (20)]
         public string Username { get; set; }
 
-        [MaxLength(2000)]
+        [MaxLength (2000)]
         public string Avatar { get; set; }
 
         public ProfileRoles Role { get; set; }
 
-        [MaxLength(100)]
+        public bool IsAnalyticsEnabled { get; set; }
+
+        [MaxLength (100)]
         public string JobPosition { get; set; }
 
         public DateTime? BornOn { get; set; }
         public DateTime? EmployedOn { get; set; }
+
+        public string AssistantSummary { get; set; }
 
         public int IdentityId { get; set; }
 

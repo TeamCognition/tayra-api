@@ -33,29 +33,22 @@ namespace Tayra.API.Controllers
             return Ok(TeamsService.GetTeamRawScoreDTO(teamKey));
         }
         
+        [HttpGet("{teamKey}/swarmPlot")]
+        public ActionResult<TeamSwarmPlotDTO> GetTeamSwarmPlot([FromRoute]string teamKey)
+        {
+            return Ok(TeamsService.GetTeamSwarmPloteDTO(teamKey));
+        }
+        
         [HttpPost("search")]
         public ActionResult<GridData<TeamViewGridDTO>> Search([FromBody] TeamViewGridParams gridParams)
         {
             return TeamsService.GetViewGridData(CurrentUser.SegmentsIds, gridParams);
         }
 
-        [HttpPost("searchMembers")]
-        public ActionResult<GridData<TeamMembersGridDTO>> GetTeamMembers([FromBody] TeamMembersGridParams gridParams)
+        [HttpPost("searchProfiles")]
+        public ActionResult<GridData<TeamProfilesGridDTO>> GetTeamProfiles([FromBody] TeamProfilesGridParams gridParams)
         {
-            return TeamsService.GetTeamMembersGridData(gridParams);
-        }
-        
-        [HttpGet("chart/pieimpact")]
-        public ActionResult<TeamImpactPieChartDTO> GetTeamImpactPieChart([FromQuery] int teamId)
-        {     
-            return TeamsService.GetImpactPieChart(teamId);
-        }
-
-
-        [HttpGet("chart/lineimpact")]
-        public ActionResult<TeamImpactLineChartDTO> GetTeamImpactLineChart([FromQuery] int teamId)
-        {
-            return TeamsService.GetImpactLineChart(teamId);
+            return TeamsService.GetTeamProfilesGridData(gridParams);
         }
 
         [HttpPost("create")]
@@ -83,6 +76,18 @@ namespace Tayra.API.Controllers
             OrganizationContext.SaveChanges();
 
             return Ok();
+        }
+        
+        [HttpGet("{teamKey}/statsWidget")]
+        public ActionResult<TeamStatsDTO> GetTeamStatsData([FromRoute]string teamKey)
+        {
+            return TeamsService.GetTeamStatsData(teamKey);
+        }
+        
+        [HttpGet("{teamKey}/pulse")]
+        public ActionResult<TeamPulseDTO> GetTeamPulse([FromRoute]string teamKey)
+        {
+            return TeamsService.GetTeamPulse(teamKey);
         }
 
         #endregion

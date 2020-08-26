@@ -14,12 +14,14 @@ namespace Tayra.Services.TaskConverters
         NORMAL,
         BULK
     }
+    
     public abstract class TaskConverterBase
     {
         protected TaskConverterMode Mode;
         protected OrganizationDbContext DbContext;
         protected ProfileAssignment CachedProfileAssignment;
         protected int? IntegrationIdCache;
+        private IntegrationField[] _integrationFields;
         
         public TaskAddOrUpdateDTO Data { get; protected set; }
         protected IProfilesService ProfilesService;
@@ -74,14 +76,11 @@ namespace Tayra.Services.TaskConverters
                 UpdateBasicTaskData();
             }
         }
-        public bool IsEligableForExtraData()
-        {
-            return Data.AssigneeProfileId.HasValue && IsCompleted();
-        }
+        
         public void FillExtraDataIfCompleted()
         {
             EnsureBasicDataIsFilled();
-            if (IsEligableForExtraData())
+            if (IsCompleted())
             {
                 Data.AutoTimeSpentInMinutes = GetAutoTimeSpentInMinutes();
                 FillEffortScore();
@@ -93,7 +92,7 @@ namespace Tayra.Services.TaskConverters
             if (assistantService != null)
             {
                 EnsureBasicDataIsFilled();
-                if (IsEligableForExtraData())
+                if (Data.AssigneeProfileId.HasValue && IsCompleted())
                 {
                     var aps = DbContext.ActionPoints.Where(x =>
                             x.ProfileId == Data.AssigneeProfileId.Value &&
@@ -115,7 +114,7 @@ namespace Tayra.Services.TaskConverters
         public void AddNecessaryTokensIfPossible(ITokensService tokensService)
         {
             EnsureBasicDataIsFilled();
-            if (IsEligableForExtraData())
+            if (Data.AssigneeProfileId.HasValue && IsCompleted())
             {
                 if (EffortScoreDiff > 0)
                 {
@@ -243,5 +242,18 @@ namespace Tayra.Services.TaskConverters
 
         protected abstract string GetIssueStatusName();
         protected abstract string GetIssueUrl();
+
+        protected IntegrationField[] GetIntegrationFields()
+        {
+            if (_integrationFields == null)
+            {
+                _integrationFields = DbContext
+                    .IntegrationFields
+                    .OrderByDescending(x => x.Created)
+                    .ToArray();
+            }
+
+            return _integrationFields;
+        }
     }
 }

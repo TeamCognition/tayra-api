@@ -15,7 +15,7 @@ namespace Tayra.API.Controllers
 
         public IdentitiesController(ITenantProvider tenantProvider, OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            TenantProvider = tenantProvider;
+            TenantProvider = tenantProvider; 
             DbContext = dbContext;
         }
 
@@ -33,21 +33,21 @@ namespace Tayra.API.Controllers
         [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {
-            //var o = Resolve<IOrganizationsService>();
-            //o.Create(new OrganizationCreateDTO
-            //{
-            //    Key = "mop.tayra.io",
-            //    Name = "Ministry of Programming",
-            //    Timezone = "Central Europe Standard Time",
-            //    DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
-            //    DatabaseName = "tayra-tenant_mop",
-            //    TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
-            //});
-
-            // IdentitiesService.CreateInvitation(0, "demo.tayra.io", new IdentityInviteDTO
+            // var o = Resolve<IOrganizationsService>();
+            // o.Create(new OrganizationCreateDTO
             // {
-            //     EmailAddress = "haris+95@tayra.io",
-            //     FirstName = "Bota",
+            //     Key = "ankora.tayra.io",
+            //     Name = "Ankora",
+            //     Timezone = "Central Europe Standard Time",
+            //     DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
+            //     DatabaseName = "tayra-tenant_ankora",
+            //     TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
+            // });
+
+            // IdentitiesService.CreateInvitation(0, "ankora.tayra.io", new IdentityInviteDTO
+            // {
+            //     EmailAddress = "nermin.hadzic@ankorainc.com",
+            //     FirstName = "Nermin",
             //     LastName = "Admin",
             //     Role = ProfileRoles.Admin
             // });

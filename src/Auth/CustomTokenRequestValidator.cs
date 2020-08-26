@@ -68,7 +68,8 @@ namespace Tayra.Auth
                                LastName = p.LastName,
                                Username = p.Username,
                                Role = p.Role,
-                               Avatar = p.Avatar
+                               Avatar = p.Avatar,
+                               IsAnalyticsEnabled = p.IsAnalyticsEnabled
                            }).FirstOrDefault();
 
             (IQueryable<Segment> qs, IQueryable<Team> qt) = ProfileService.GetSegmentAndTeamQueries(dbContext, cache.ProfileId, cache.Role);

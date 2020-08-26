@@ -12,28 +12,7 @@ namespace Tayra.Connectors.GitHub
         [DeserializeAs(Name = "token_type")]
         public string TokenType { get; set; }
 
-        [DeserializeAs(Name = "refresh_token")]
-        public string RefreshToken { get; set; }
-
         [DeserializeAs(Name = "scope")]
         public string Scope { get; set; }
-
-        [DeserializeAs(Name = "expires_in")]
-        public string ExpiresIn { get; set; }
-
-        [DeserializeAs(Name = "refresh_token_expires_in")]
-        public string RefreshTokenExpiresIn { get; set; }
-
-        public string ExpirationDate
-        {
-            get
-            {
-                if (long.TryParse(ExpiresIn, out var seconds))
-                {
-                    return DateTime.UtcNow.AddSeconds(seconds).ToString(DateHelper2.DATE_TIME_FORMAT);
-                }
-                return null;
-            }
-        }
     }
 }

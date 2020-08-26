@@ -12,6 +12,7 @@ namespace Tayra.Auth
         public string Username { get; set; }
         public string Avatar { get; set; }
         public ProfileRoles Role { get; set; }
+        public bool IsAnalyticsEnabled { get; set; }
 
         public IList<ItemActiveDTO> Badges { get; set; }
         public ItemActiveDTO Title { get; set; }

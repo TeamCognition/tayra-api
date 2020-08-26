@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 using Tayra.Common;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.Common
@@ -15,18 +16,17 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext)
+        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : this(logger, dataContext, catalogDbContext)
         {
-            Logger = logger;
             HttpContext = httpContext?.HttpContext;
             Tenant = tenantProvider.GetTenant();
-            OrganizationContext = dataContext;
         }
 
-        protected BaseConnector(ILogger logger, OrganizationDbContext dataContext)
+        protected BaseConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext)
         {
             Logger = logger;
             OrganizationContext = dataContext;
+            CatalogContext = catalogDbContext;
         }
         
         #endregion
@@ -40,6 +40,7 @@ namespace Tayra.Connectors.Common
         protected HttpContext HttpContext { get; }
         protected TenantDTO Tenant { get; }
         protected OrganizationDbContext OrganizationContext { get; }
+        protected CatalogDbContext CatalogContext { get; }
 
         #endregion
 
@@ -71,17 +72,25 @@ namespace Tayra.Connectors.Common
             //}
         }
 
-        protected Integration CreateSegmentIntegration(int segmentId, Dictionary<string, string> fields, Integration oldIntegration = null)
+        protected Integration CreateSegmentIntegration(int segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
-            return CreateProfileIntegration(null, segmentId, fields, oldIntegration);
+            return CreateProfileIntegration(null, segmentId, installationId, fields, oldIntegration);
         }
 
-        protected Integration CreateProfileIntegration(int? profileId, int segmentId, Dictionary<string, string> fields, Integration oldIntegration = null)
+        protected Integration CreateProfileIntegration(int? profileId, int segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
             if (oldIntegration != null)
             {
                 oldIntegration.Fields.ToList().ForEach(x => OrganizationContext.Remove(x));
                 OrganizationContext.Remove(oldIntegration);
+                if (oldIntegration.ProfileId == null)
+                {
+                    var x = CatalogContext.TenantIntegrations.FirstOrDefault(x =>
+                        x.Type == oldIntegration.Type && x.SegmentId == oldIntegration.SegmentId && x.TenantId ==
+                        TenantUtilities.ConvertShardingKeyToTenantId(Tenant.ShardingKey));
+                    if(x != null)
+                    CatalogContext.TenantIntegrations.Remove(x);
+                }
             }
 
             if(profileId != null)
@@ -109,6 +118,18 @@ namespace Tayra.Connectors.Common
                         ExternalId = externalId
                     });
                 }
+            }
+
+            if (profileId == null)
+            {
+                CatalogContext.TenantIntegrations.Add(new TenantIntegration
+                {
+                    TenantId = TenantUtilities.ConvertShardingKeyToTenantId(Tenant.ShardingKey),
+                    Type = Type,
+                    SegmentId = segmentId,
+                    InstallationId = installationId,
+                    Created = DateTime.UtcNow
+                });
             }
 
             return OrganizationContext.Integrations.Add(new Integration

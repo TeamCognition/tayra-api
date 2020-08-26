@@ -151,6 +151,26 @@ namespace Tayra.Models.Catalog.Migrations
                     b.ToTable("TenantIdentities");
                 });
 
+            modelBuilder.Entity("Tayra.Models.Catalog.TenantIntegration", b =>
+                {
+                    b.Property<byte[]>("TenantId");
+
+                    b.Property<int>("Type");
+
+                    b.Property<int>("SegmentId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("InstallationId")
+                        .HasMaxLength(125);
+
+                    b.HasKey("TenantId", "Type", "SegmentId");
+
+                    b.HasIndex("InstallationId");
+
+                    b.ToTable("TenantIntegrations");
+                });
+
             modelBuilder.Entity("Tayra.Models.Catalog.IdentityEmail", b =>
                 {
                     b.HasOne("Tayra.Models.Catalog.Identity", "Identity")
@@ -166,6 +186,14 @@ namespace Tayra.Models.Catalog.Migrations
                         .HasForeignKey("IdentityId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Tayra.Models.Catalog.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Catalog.TenantIntegration", b =>
+                {
                     b.HasOne("Tayra.Models.Catalog.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")

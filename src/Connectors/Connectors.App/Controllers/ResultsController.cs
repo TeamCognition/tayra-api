@@ -7,6 +7,7 @@ using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
 using Tayra.Models.Organizations;
 using Tayra.Common;
+using Tayra.Connectors.GitHub;
 
 namespace Tayra.Connectors.App.Controllers
 {
@@ -37,10 +38,19 @@ namespace Tayra.Connectors.App.Controllers
             return View(model);
         }
 
-//        public IActionResult GH()
-//        {
-//            var model = JsonConvert.DeserializeObject<Integration>(TempData["Account"] as string);
-//            return View(model);
-//        }
+        public IActionResult GH()
+        {
+            var connector = (GitHubConnector)ConnectorResolver.Get<IOAuthConnector>(IntegrationType.GH);
+            var model = JsonConvert.DeserializeObject<Integration>(TempData["Account"] as string);
+            try
+            {
+                ViewBag.RefreshToken = connector.RefreshToken(model.Id);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Error = e.Message;
+            }
+            return View(model);
+        }
     }
 }

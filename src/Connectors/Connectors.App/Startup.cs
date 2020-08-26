@@ -11,6 +11,9 @@ using Microsoft.Extensions.Logging;
 using Tayra.Connectors.App.Helpers;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
+using Tayra.Connectors.GitHub;
+using Tayra.DAL;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.App
@@ -29,6 +32,7 @@ namespace Tayra.Connectors.App
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ILogger, Models.DebugLogger>();
 
+            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
             services.AddDbContext<OrganizationDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("org-mop")));
             services.AddDbContext<ATJiraDataContext>(
@@ -36,8 +40,9 @@ namespace Tayra.Connectors.App
 
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
+            services.AddTransient<IOAuthConnector, GitHubConnector>();
             services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
-            services.AddScoped<ITenantProvider, ShardTenantProvider>();
+            services.AddScoped<ITenantProvider, FakeTenantProvider>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -45,7 +50,10 @@ namespace Tayra.Connectors.App
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddMvc().AddMvcOptions(x => x.EnableEndpointRouting = false);
+            services.AddMvc().AddMvcOptions(x =>
+            {
+                x.EnableEndpointRouting = false;
+            });
             services.Configure<RouteOptions>(op => op.LowercaseUrls = true);
         }
 

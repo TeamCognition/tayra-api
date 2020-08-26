@@ -136,6 +136,12 @@ namespace Tayra.API.Controllers
             return ProfilesService.GetProfileActivityChart(profileId);
         }
 
+        [HttpGet("statsWidget/{profileId:int}")]
+        public ActionResult<ProfileStatsDTO> GetProfileStatsData(int profileId)
+        {
+            return ProfilesService.GetProfileStatsData(profileId);
+        }
+
         #endregion
     }
 }

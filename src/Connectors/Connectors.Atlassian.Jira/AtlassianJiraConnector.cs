@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Tayra.Common;
 using Tayra.Connectors.Common;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.Atlassian.Jira
@@ -17,11 +18,11 @@ namespace Tayra.Connectors.Atlassian.Jira
         private const string AUDIENCE = "api.atlassian.com";
         private const string SCOPE = "read%3Ajira-user%20read%3Ajira-work%20offline_access";
 
-        public AtlassianJiraConnector(ILogger logger, OrganizationDbContext dataContext) : base(logger, dataContext)
+        public AtlassianJiraConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, dataContext, catalogDbContext)
         {
         }
 
-        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext) : base(logger, httpContext, tenantProvider, dataContext)
+        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
         {
         }
 
@@ -29,12 +30,12 @@ namespace Tayra.Connectors.Atlassian.Jira
 
         #region Public Methods
 
-        public override string GetAuthUrl(string userState)
+        public override string GetAuthUrl(OAuthState state)
         {
-            return $"{AUTH_URL}?audience={AUDIENCE}&client_id={AtlassianJiraService.APP_ID}&state={userState}&scope={SCOPE}&redirect_uri={GetCallbackUrl(userState)}&response_type=code&prompt=consent";
+            return $"{AUTH_URL}?audience={AUDIENCE}&client_id={AtlassianJiraService.APP_ID}&state={state}&scope={SCOPE}&redirect_uri={GetCallbackUrl(state.ToString())}&response_type=code&prompt=consent";
         }
 
-        public override Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState)
+        public override Integration Authenticate(OAuthState state)
         {
             if (HttpContext?.Request != null)
             {
@@ -45,15 +46,15 @@ namespace Tayra.Connectors.Atlassian.Jira
                     throw new ApplicationException(errorDescription);
                 }
 
-                var tokenData = AtlassianJiraService.GetAccessToken(code, GetCallbackUrl(userState))?.Data;
+                var tokenData = AtlassianJiraService.GetAccessToken(code, GetCallbackUrl(state.ToString()))?.Data;
                 var accResData = AtlassianJiraService.GetAccessibleResources(tokenData.TokenType, tokenData.AccessToken)?.Data?.FirstOrDefault();
                 var loggedInUser = AtlassianJiraService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
 
-                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == profileId && x.Type == Type);
-                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == segmentId && x.ProfileId == null && x.Type == Type);
-                if (segmentIntegration == null && profileRole == ProfileRoles.Member)
+                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
+                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
+                if (segmentIntegration == null && !state.IsSegmentAuth)
                 {
-                    throw new CogSecurityException($"profileId: {profileId} tried to integrate {Type} before segment integration");
+                    throw new CogSecurityException($"profileId: {state.ProfileId} tried to integrate {Type} before segment integration");
                 }
 
                 if (loggedInUser != null)
@@ -63,10 +64,10 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [Constants.PROFILE_EXTERNAL_ID] = loggedInUser.AccountId
                     };
 
-                    CreateProfileIntegration(profileId, segmentId, profileFields, profileIntegration);
+                    CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId:null, profileFields, profileIntegration);
                 }
 
-                if (profileRole != ProfileRoles.Member && tokenData != null && accResData != null)
+                if (state.IsSegmentAuth && tokenData != null && accResData != null)
                 {
                     var segmentFields = new Dictionary<string, string>
                     {
@@ -79,13 +80,17 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [ATConstants.AT_SITE_NAME] = accResData.Name
                     };
 
-                    segmentIntegration = CreateSegmentIntegration(segmentId, segmentFields, segmentIntegration);
+                    segmentIntegration = CreateSegmentIntegration(state.SegmentId, installationId: null, segmentFields, segmentIntegration);
                 }
 
-                var unlinkedTasks = OrganizationContext.Tasks.Where(x => x.AssigneeProfileId == null && x.AssigneeExternalId == loggedInUser.AccountId);
+                var unlinkedTasks = OrganizationContext.Tasks.Where(x => (x.AssigneeProfileId == null || x.TeamId == null) && x.AssigneeExternalId == loggedInUser.AccountId);
+                var profileAssignment =
+                    OrganizationContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == state.ProfileId);
                 foreach (var ut in unlinkedTasks)
                 {
-                    ut.AssigneeProfileId = profileId;
+                    ut.AssigneeProfileId = state.ProfileId;
+                    ut.TeamId = profileAssignment?.TeamId;
+                    ut.SegmentId = profileAssignment?.SegmentId;
                 }
 
                 OrganizationContext.SaveChanges();
@@ -94,6 +99,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return null;
         }
 
+        public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
         public override Integration RefreshToken(int integrationId)
         {
             var account = OrganizationContext

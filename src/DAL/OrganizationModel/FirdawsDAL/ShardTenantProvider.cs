@@ -26,6 +26,7 @@ namespace Tayra.Models.Organizations
             else
             {
                 throw new ApplicationException("No way to identify the tenant");
+                //_key = "test5.tayra.io";
             }
         
             //if(accessor.HttpContext.Request.Headers.TryGetValue("Origin", out StringValues origin))

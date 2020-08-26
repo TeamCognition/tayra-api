@@ -4,6 +4,9 @@ namespace Cog.Core
 {
     public enum DateRanges
     {
+        [Description("Custom")]
+        Custom = 0,
+        
         [Description("Yesterday")]
         Yesterday = 1,
 
@@ -16,10 +19,10 @@ namespace Cog.Core
         [Description("Last Week")]
         LastWeek = 4,
 
+        [Description("Last Week")]
+        Last4Week = 5,
+        
         [Description("Last Month")]
-        LastMonth = 5,
-
-        [Description("Custom")]
-        Custom = 6
+        LastMonth = 6,
     }
 }

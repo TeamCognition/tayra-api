@@ -9,6 +9,7 @@ using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Tayra.Models.Organizations
 {
@@ -22,14 +23,11 @@ namespace Tayra.Models.Organizations
         /// to intialize a new shard. 
         /// </summary>
         protected internal OrganizationDbContext(string connectionString)
-            : base(ConfigureDbContextOptions(connectionString))
         {
-        }
-        protected internal OrganizationDbContext(DbContextOptions<OrganizationDbContext> options) : base(options)
-        {//for tests
+            DirectConnectionString = connectionString;
         }
 
-
+        
         // C'tor for data dependent routing. This call will open a validated connection routed to the proper
         // shard by the shard map manager. Note that the base class c'tor call will fail for an open connection
         // if migrations need to be done and SQL credentials are used. This is the reason for the 
@@ -39,12 +37,15 @@ namespace Tayra.Models.Organizations
         // the regular application calls with a tenant id.
         /// </summary>
         public OrganizationDbContext(IHttpContextAccessor httpContext, ITenantProvider tenantProvider, IShardMapProvider shardMapProvider)
-            : base(tenantProvider.GetTenant(), httpContext, CreateDDRConnection(shardMapProvider.ShardMap, tenantProvider.GetTenant().ShardingKey, shardMapProvider.TemplateConnectionString))
+            : base(tenantProvider.GetTenant(), httpContext)
         {
+            ShardMapProvider = shardMapProvider;
             this.Database.Migrate();
         }
 
-
+        public string DirectConnectionString { get; set; }
+        protected IShardMapProvider ShardMapProvider { get; set; }
+        
         #endregion
 
         #region Db Sets
@@ -64,6 +65,7 @@ namespace Tayra.Models.Organizations
         public DbSet<Competition> Competitions { get; set; }
         public DbSet<CompetitionLog> CompetitionLogs { get; set; }
         //public DbSet<Date> Dates { get; set; }
+        public DbSet<GitCommit> GitCommits { get; set; }
         public DbSet<Integration> Integrations { get; set; }
         public DbSet<IntegrationField> IntegrationFields { get; set; }
         public DbSet<CompetitionReward> CompetitionRewards { get; set; }
@@ -83,9 +85,11 @@ namespace Tayra.Models.Organizations
         public DbSet<ProfileExternalId> ProfileExternalIds { get; set; }
         public DbSet<ProfileInventoryItem> ProfileInventoryItems { get; set; }
         public DbSet<ProfileLog> ProfileLogs { get; set; }
+        public DbSet<ProfileMetrics> ProfileMetrics { get; set; }
         public DbSet<ProfilePraise> ProfilePraises { get; set; }
         public DbSet<ProfileReportDaily> ProfileReportsDaily { get; set; }
         public DbSet<ProfileReportWeekly> ProfileReportsWeekly { get; set; }
+        public DbSet<Repository> Repositories { get; set; }
         public DbSet<Segment> Segments { get; set; }
         public DbSet<SegmentArea> SegmentAreas { get; set; }
         public DbSet<SegmentReportDaily> SegmentReportsDaily { get; set; }
@@ -115,14 +119,14 @@ namespace Tayra.Models.Organizations
         #endregion
 
         #region Protected Methods
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {   //IArchivableEntity
                 if (typeof(IArchivableEntity).IsAssignableFrom(entityType.ClrType))
                 {
-                    entityType.AddProperty(ArchivedAtProp, typeof(long?));
+                    entityType.AddProperty(ArchivedAtProp, typeof(long));
                 }
             }
 
@@ -218,6 +222,11 @@ namespace Tayra.Models.Organizations
                 entity.HasIndex(x => new { x.ProfileId, x.Event });
             });
 
+            modelBuilder.Entity<ProfileMetrics>(entity =>
+            {
+                entity.HasKey(x => new { x.ProfileId, x.SegmentId, x.Type, x.DateId });
+            });
+            
             modelBuilder.Entity<ProfilePraise>().HasKey(x => new { x.DateId, x.ProfileId, x.PraiserProfileId });
 
             modelBuilder.Entity<ProfileReportDaily>(entity =>
@@ -229,7 +238,7 @@ namespace Tayra.Models.Organizations
             {
                 entity.HasKey(x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId });
             });
-
+            
             modelBuilder.Entity<Segment>().HasIndex(nameof(Segment.Key), ArchivedAtProp).IsUnique();
             modelBuilder.Entity<SegmentArea>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
@@ -298,12 +307,13 @@ namespace Tayra.Models.Organizations
 
                 //remove alternatePrimaryKey
                 if(pk.Count() > 1 || pk[0].Name != "Id")
-                entityType.RemoveKey(pk);
+                    entityType.RemoveKey(pk);
 
                 var idxs = entityType.GetIndexes().Where(x => x.Properties.Count() > 1 || x.Properties[0] != orgId).ToArray();
                 foreach (var idx in idxs)
                 {
-                    entityType.AddIndex(idx.Properties.Append(orgId).ToArray());
+                    var newIndex = entityType.AddIndex(idx.Properties.Append(orgId).ToArray());
+                    newIndex.IsUnique = idx.IsUnique;
                     entityType.RemoveIndex(idx.Properties);
                 }
                
@@ -315,9 +325,33 @@ namespace Tayra.Models.Organizations
             base.OnModelCreating(modelBuilder);
         }
 
-        public override int SaveChanges()
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            return base.SaveChanges();
+            if (!string.IsNullOrEmpty(DirectConnectionString))
+            {
+                optionsBuilder.UseSqlServer(DirectConnectionString);
+            }
+            else
+            {
+                SqlConnection sqlConn = null;
+                try
+                {
+                    // Ask shard map to broker a validated connection for the given key
+                    sqlConn = ShardMapProvider.ShardMap.OpenConnectionForKey(CurrentTenant.ShardingKey, ShardMapProvider.TemplateConnectionString);
+                    sqlConn.Close(); //this lets ef core handle connection instead of manual
+                    
+                    optionsBuilder.UseSqlServer(sqlConn);
+                
+                    optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>(); //TODO: this goes to CogDB as well?
+                }
+                catch (Exception e)
+                {
+                    if(sqlConn != null)
+                        sqlConn?.Close();
+                    throw new CogSecurityException(e.Message, "OrganizationDbcontext.CreateDDRConnection");
+                }
+            }
+            base.OnConfiguring(optionsBuilder);
         }
 
         #endregion
@@ -333,7 +367,7 @@ namespace Tayra.Models.Organizations
             if (typeof(IArchivableEntity).IsAssignableFrom(typeof(T)))
             {
                 builder.Entity<T>().HasQueryFilter(e =>
-                    EF.Property<long?>(e, ArchivedAtProp) == null &&
+                    EF.Property<long>(e, ArchivedAtProp) == 0 &&
                     EF.Property<int>(e, TenantIdFK) == CurrentTenant.ShardingKey);
             }
             else
@@ -356,6 +390,7 @@ namespace Tayra.Models.Organizations
             {
                 // Ask shard map to broker a validated connection for the given key
                 SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
+                
 
                 //// Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
                 //SqlCommand cmd = sqlConn.CreateCommand();

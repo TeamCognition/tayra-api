@@ -82,14 +82,22 @@ namespace Tayra.Services
             LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
         }
         
-        public GridData<PraiseSearchGridDTO> SearchPraises(PraiseSearchGridParams gridParams)
+        public GridData<PraiseSearchGridDTO> SearchPraises(PraiseGridParams gridParams)
         {
-            var query = from pp in DbContext.ProfilePraises
+            IQueryable<ProfilePraise> scope;
+
+            if (gridParams.ProfileId.HasValue)
+                scope = DbContext.ProfilePraises.Where(x => x.ProfileId == gridParams.ProfileId);
+            else
+                scope = DbContext.ProfilePraises;
+            
+            var query = from pp in scope
                         select new PraiseSearchGridDTO
                         {
                             PraiserUsername = DbContext.Profiles.Where(x => x.Id == pp.PraiserProfileId).Select(x => x.Username).FirstOrDefault(),
                             RecieverUsername = pp.Profile.Username,
-                            DateId = pp.DateId,
+                            RecieverAvatar = pp.Profile.Avatar,
+                            Created = pp.Created,
                             Type = pp.Type,
                             Message = pp.Message
                         };
@@ -99,7 +107,25 @@ namespace Tayra.Services
             return gridData;
         }
 
-        #endregion
+        public GridData<PraiseSearchProfilesDTO> SearchProfiles(PraiseProfileSearchGridParams gridParams)
+        {
 
+            var query = from p in DbContext.Profiles
+                where p.Username.Contains(gridParams.UsernameQuery) ||(p.FirstName + p.LastName).Contains(gridParams.NameQuery)
+
+                select new PraiseSearchProfilesDTO
+                {
+                    ProfileId = p.Id,
+                    Name = p.FirstName + " " + p.LastName,
+                    Username = p.Username,
+                    Avatar = p.Avatar
+                };
+
+            GridData<PraiseSearchProfilesDTO> gridData = query.GetGridData(gridParams);
+
+            return gridData;
+        }
+
+        #endregion
     }
 }

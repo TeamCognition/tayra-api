@@ -117,6 +117,22 @@ namespace Tayra.Connectors.Atlassian.Jira
             //[JsonProperty("progress")]
             //public IssueProgress Progress { get; set; }
 
+            public ParentIssue Parent { get; set; }
+            
+            public class ParentIssue {
+                [JsonProperty("id")]
+                public string Id { get; set; } 
+                
+                [JsonProperty("key")]
+                public string Key { get; set; } 
+                
+                [JsonProperty("self")]
+                public string Self { get; set; }
+                
+                [JsonProperty("fields")]
+                public IssueFields Fields { get; set; }
+            }
+            
             public class IssueProgress
             {
                 [JsonProperty("progress")]

@@ -58,13 +58,13 @@ namespace Tayra.SyncServices.Tayra
             var dateId3ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 3));
             var dateId4ago = DateHelper2.ToDateId(fromDay.AddDays(-iterationDays * 4));
 
-            var impactBoundaryLow = 10 * 0.27;//2.7
-            var heatBoundaryLow = 45 * 0.27; //12.15
-            var speedBoundaryLow = 2.25 * 0.27; //0.60
+            var impactBoundaryLow = 3.5;
+            var heatBoundaryLow = 15;
+            var speedBoundaryLow = 1.5;
 
-            var impactBoundaryHigh = 10 / 1.27;//7.87
-            var heatBoundaryHigh = 45 / 1.27; //35.4
-            var speedBoundaryHigh = 2.25 / 1.27; //1.77
+            var impactBoundaryHigh = 11.5;
+            var heatBoundaryHigh = 30;
+            var speedBoundaryHigh = 6;
 
 
             var taskStats = (from t in organizationDb.Tasks
@@ -130,7 +130,7 @@ namespace Tayra.SyncServices.Tayra
             }
 
             var aps = organizationDb.ActionPoints.Where(x => x.ConcludedOn == null).ToArray();
-            var profiles = organizationDb.Profiles.Select(x => new { x.Id, x.Created }).ToArray();
+            var profiles = organizationDb.Profiles.Where(x => x.Role == ProfileRoles.Member).Select(x => new { x.Id, x.Created }).ToArray();
             var segments = organizationDb.Segments.Select(x => new { x.Id, x.Created, x.Members }).ToArray();
             foreach (var s in segments)
             {

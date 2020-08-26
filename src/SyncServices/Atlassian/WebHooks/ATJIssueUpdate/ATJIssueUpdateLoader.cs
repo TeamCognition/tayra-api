@@ -54,7 +54,7 @@ namespace Tayra.SyncServices
         public static void IssueUpdate(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, JObject requestBody)
         {
             SaveWebhookEventLog(organizationDb, requestBody);
-            WebhookEvent we = requestBody.ToObject<WebhookEvent>();
+            JiraWebhookEvent we = requestBody.ToObject<JiraWebhookEvent>();
 
             var fields = we.JiraIssue.Fields;
             var jiraProjectId = fields.Project.Id;
@@ -71,7 +71,7 @@ namespace Tayra.SyncServices
                 throw new ApplicationException($"Jira project with Id: {jiraProjectId} is not connected to any tayra segments");
             }
 
-            var jiraConnector = new AtlassianJiraConnector(null, organizationDb);
+            var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null);
             var statusChangelogs = jiraConnector.GetIssueChangelog(rewardStatusField.IntegrationId, we.JiraIssue.Key, "status");
 
             if (statusChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(we.Timestamp))

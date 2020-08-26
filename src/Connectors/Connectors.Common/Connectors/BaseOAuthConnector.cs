@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Tayra.Common;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.Common
@@ -10,11 +11,11 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseOAuthConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext) : base(logger, httpContext, tenantProvider, dataContext)
+        protected BaseOAuthConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
         {
         }
 
-        protected BaseOAuthConnector(ILogger logger, OrganizationDbContext dataContext) : base(logger, dataContext)
+        protected BaseOAuthConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, dataContext, catalogDbContext)
         {
         }
 
@@ -22,9 +23,10 @@ namespace Tayra.Connectors.Common
 
         #region Public Methods
 
-        public abstract string GetAuthUrl(string userState);
+        public abstract string GetAuthUrl(OAuthState state);
 
-        public abstract Integration Authenticate(int profileId, ProfileRoles profileRole, int segmentId, string userState);
+        public abstract Integration Authenticate(OAuthState state);
+        public abstract void UpdateAuthentication(string installationId);
 
         public virtual  Integration RefreshToken(int integrationId)
         {
