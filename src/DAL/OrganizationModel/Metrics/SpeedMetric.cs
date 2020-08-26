@@ -4,9 +4,9 @@ namespace Tayra.Models.Organizations
 {
     public class SpeedMetric : Metric
     {
-        public SpeedMetric() : base(MetricTypes.Speed, 0)
+        public SpeedMetric(int dateId) : base(MetricTypes.Speed, dateId)
         {
-            
+            Value = 5f;
         }
     }
 }

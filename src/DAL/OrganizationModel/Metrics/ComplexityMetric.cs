@@ -6,7 +6,7 @@ namespace Tayra.Models.Organizations
 {
     public class ComplexityMetric : Metric
     {
-        public ComplexityMetric(IEnumerable<Task> tasks) : base(MetricTypes.Complexity)
+        public ComplexityMetric(IEnumerable<Task> tasks,int dateId): base(MetricTypes.Complexity, dateId)
         {
             Value = tasks.Sum(x => x.Complexity);
         }

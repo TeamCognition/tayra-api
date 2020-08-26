@@ -511,7 +511,7 @@ using Tayra.Models.Organizations;
                     {
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
-                            Id = MetricTypes.OImpact,
+                            Id = MetricTypes.Impact,
                             SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {
                                 Id = x.Key,

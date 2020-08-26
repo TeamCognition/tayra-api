@@ -4,7 +4,7 @@ namespace Tayra.Common
 {
     public enum MetricTypes
     {
-        OImpact = 1,
+        Impact = 1,
         Speed = 2,
         Power = 3,
         Complexity = 4,
@@ -17,6 +17,24 @@ namespace Tayra.Common
         PraisesGiven = 11,
         PraisesReceived = 12,
         Effort = 13,
-        Saves = 14
+        Saves = 14,
+        TimeWorked = 15,
+        TimeWorkedLogged = 16,
+        ItemsInInventory = 17,
+        InventoryValue = 18,
+        ItemsBought = 19,
+        GiftsSent = 20,
+        GiftsReceived = 21,
+        ItemsDisenchanted = 22,
+        Commits = 23,
+        
+        
+        
+        
+        
+        WorkflowAssists = 100,
+        WorkflowDelivery = 101,
+        WorkflowItemActivity = 102,
+        WorkflowGitCommits = 103
     }
 }

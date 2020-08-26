@@ -11,7 +11,6 @@ using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.SyncServices.Common;
-using Tayra.SyncServices.Metrics;
 
 namespace Tayra.SyncServices.Tayra
 {

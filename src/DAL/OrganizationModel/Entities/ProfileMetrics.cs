@@ -6,14 +6,14 @@ namespace Tayra.Models.Organizations
 {
     public class ProfileMetrics: ITimeStampedEntity
     {
-        public int ProfileId { get; set; }
+        public int ProfileId { get; private set; }
         public Profile Profile { get; set; }
         
-        public int SegmentId { get; set; }
+        public int SegmentId { get; private set; }
         public Segment Segment { get; set; }
-        public int DateId { get; set; }
+        public int DateId { get; private set; }
         
-        public MetricTypes Type { get; set; }
+        public MetricTypes Type { get; private set; }
         
         public float Value { get; set; }
 
@@ -22,6 +22,7 @@ namespace Tayra.Models.Organizations
         public ProfileMetrics(int profileId, int segmentId, Metric metric)
         {
             ProfileId = profileId;
+            SegmentId = segmentId;
             DateId = metric.DateId;
             Type = metric.Type;
             Value = metric.Value;

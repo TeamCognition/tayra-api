@@ -97,7 +97,7 @@ namespace Tayra.Services
                 {
                     new ReportOverviewDTO.MetricDTO
                     {
-                        Id = MetricTypes.OImpact,
+                        Id = MetricTypes.Impact,
                         MaxValue = 30,
                         AverageValue = avg?.OImpactAverage ?? 0
                     },
@@ -125,7 +125,7 @@ namespace Tayra.Services
                           {
                               new ReportOverviewDTO.NodeDTO.MetricDTO
                               {
-                                  Id = MetricTypes.OImpact,
+                                  Id = MetricTypes.Impact,
                                   Value = r.Average(a => a.OImpactAverage)
                               },
                               new ReportOverviewDTO.NodeDTO.MetricDTO
@@ -333,7 +333,7 @@ namespace Tayra.Services
             {
                 Metrics = new[]
                 {
-                    new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.OImpact, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.OImpact }).ToArray() },
+                    new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.Impact, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.OImpact }).ToArray() },
                     new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.Speed, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.Speed }).ToArray() },
                     new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.Power, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.Power }).ToArray() },
                     new ReportStatisticsSegmentMetricsDTO.MetricDTO { MetricId = MetricTypes.Complexity, Data = wr.Select(x => new ReportStatisticsSegmentMetricsDTO.MetricDTO.DataDTO { DateId = x.DateId, Average = x.Complexity }).ToArray() },
@@ -360,7 +360,7 @@ namespace Tayra.Services
                           Avatar = pr.FirstOrDefault().Profile.Avatar,
                           Metrics = new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO[]
                           {
-                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.OImpact, Average = pr.Average(x => x.OImpactAverage) },
+                              new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Impact, Average = pr.Average(x => x.OImpactAverage) },
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Speed, Average = pr.Average(x => x.SpeedTotalAverage) },
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Power, Average = pr.Average(x => x.PowerAverage) },
                               new ReportStatisticsTeamMetricsDTO.MemberDTO.MetricDTO { Id = MetricTypes.Complexity, Average = pr.Average(x => x.ComplexityChange) },

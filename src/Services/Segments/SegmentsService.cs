@@ -139,7 +139,7 @@ namespace Tayra.Services
                     {
                         new SegmentAverageMetricsDTO.SegmentMetricDTO
                         {
-                            Id = MetricTypes.OImpact,
+                            Id = MetricTypes.Impact,
                             Averages = r.Select(x => x.OImpactAverage).ToArray()
                         },
                         new SegmentAverageMetricsDTO.SegmentMetricDTO
@@ -192,7 +192,7 @@ namespace Tayra.Services
                     {
                         new SegmentRankChartDTO.RankChartMetricDTO
                         {
-                            Id = MetricTypes.OImpact,
+                            Id = MetricTypes.Impact,
                             MemberValues = r.OrderByDescending(x => x.OImpactAverage).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
                             {
                                 ProfileId = x.ProfileId,

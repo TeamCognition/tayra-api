@@ -4,9 +4,9 @@ namespace Tayra.Models.Organizations
 {
     public class AssistMetric : Metric
     {
-        public AssistMetric(float value): base(MetricTypes.Assist, value)
+        public AssistMetric(PraisesReceivedMetric praisesReceivedMetric, int dateId): base(MetricTypes.Assist, dateId)
         {
-            
+            Value = praisesReceivedMetric.Value;
         }
     }
 }

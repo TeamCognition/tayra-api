@@ -109,7 +109,7 @@ namespace Tayra.Services
                 {
                     new TeamSwarmPlotDTO.DataDTO
                     {
-                        MetricType = MetricTypes.OImpact,
+                        MetricType = MetricTypes.Impact,
                         Averages = teamStats.Select(x => x.Impact).ToArray(),
                         ProfileStats = profileStats.ToLookup(x => x.ProfileId)
                             .ToDictionary(x => x.Key, x => x.Select(s => s.Impact).ToArray())
@@ -283,7 +283,7 @@ namespace Tayra.Services
                     {
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.OImpact,
+                            Id = MetricTypes.Impact,
                             TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
                             {
                                 Id = x.Key ,
