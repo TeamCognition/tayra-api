@@ -4,12 +4,12 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfileMetrics: ITimeStampedEntity
+    public class ProfileMetric: ITimeStampedEntity
     {
         public int ProfileId { get; private set; }
         public Profile Profile { get; set; }
         
-        public int SegmentId { get; private set; }
+        public int? SegmentId { get; private set; }
         public Segment Segment { get; set; }
         public int DateId { get; private set; }
         
@@ -17,9 +17,9 @@ namespace Tayra.Models.Organizations
         
         public float Value { get; set; }
 
-        private ProfileMetrics(){}
+        protected ProfileMetric(){}
 
-        public ProfileMetrics(int profileId, int segmentId, Metric metric)
+        public ProfileMetric(int profileId, int? segmentId, Metric metric)
         {
             ProfileId = profileId;
             SegmentId = segmentId;

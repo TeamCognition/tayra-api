@@ -48,9 +48,9 @@ namespace Tayra.SyncServices.Tayra
 
         #region Private Methods
 
-        public static List<ProfileMetrics> GenerateProfileReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, params int[] segmentIds)
+        public static List<ProfileMetric> GenerateProfileReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, params int[] segmentIds)
         {
-            var metricsToInsert = new List<ProfileMetrics>();
+            var metricsToInsert = new List<ProfileMetric<Metric>>();
 
             if(segmentIds.Length > 0)
             {
@@ -146,7 +146,7 @@ namespace Tayra.SyncServices.Tayra
                     where profileIds.Contains(gc.AuthorProfileId.Value)
                     where gc.Created.Date == fromDay.Date
                     select gc).ToArray();
-
+                
                 foreach (var p in profiles)
                 {
                     var ts = tasks.Where(x => x.AssigneeProfileId == p.Id);
@@ -161,29 +161,34 @@ namespace Tayra.SyncServices.Tayra
                     var commits = gitCommitsToday.Where(x => x.AuthorProfileId == p.Id);
 
                     var prm = new PraisesReceivedMetric(praises, p.Id, dateId);
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, prm));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new EffortMetric(ts, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new ComplexityMetric(ts, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new ErrorsMetric(ts, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new SavesMetric(ts, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new TimeWorkedMetric(ts, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new TimeWorkedLoggedMetric(ts, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new WorkUnitsCompletedMetric(ts, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new TokensEarnedMetric(t, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new TokensSpentMetric(t, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new PraisesGivenMetric(praises, p.Id, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new AssistMetric(prm, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new ItemsInInventoryMetric(inv, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new InventoryValueMetric(inv, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new ItemsBoughtMetric(sp, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new GiftsSentMetric(iGiftS, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new GiftsReceivedMetric(iGiftR, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new ItemsDisenchantedMetric(iDissed, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new CommitsMetric(commits, dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new ImpactMetric(dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new SpeedMetric(dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new PowerMetric(dateId)));
-                    metricsToInsert.Add(new ProfileMetrics(p.Id, segmentId, new HeatMetric(dateId)));
+                    
+                    metricsToInsert.Add(new ProfileMetric(p.Id, null, prm));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, null, new AssistMetric(prm)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, null, new PraisesGivenMetric(praises, p.Id, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new EffortMetric(ts, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new ComplexityMetric(ts, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new ErrorsMetric(ts, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new SavesMetric(ts, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new TimeWorkedMetric(ts, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new TimeWorkedLoggedMetric(ts, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new WorkUnitsCompletedMetric(ts, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, null, new TokensEarnedMetric(t, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, null, new TokensSpentMetric(t, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, null, new ItemsInInventoryMetric(inv, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, null, new InventoryValueMetric(inv, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new ItemsBoughtMetric(sp, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new GiftsSentMetric(iGiftS, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new GiftsReceivedMetric(iGiftR, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new ItemsDisenchantedMetric(iDissed, dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new CommitsMetric(commits, dateId)));
+                    
+                    
+                    // var zz = AssistMetric.Create()
+                    //
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new ImpactMetric(dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new SpeedMetric(dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new PowerMetric(dateId)));
+                    metricsToInsert.Add(new ProfileMetric(p.Id, segmentId, new HeatMetric(dateId)));
 
                 }
 
