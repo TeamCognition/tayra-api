@@ -9,6 +9,7 @@ using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
+using DateRanges = Tayra.Common.DateRanges;
 
 namespace Tayra.SyncServices.Tayra
 {
@@ -69,6 +70,7 @@ namespace Tayra.SyncServices.Tayra
                 throw new ApplicationException("COMPANY TOKEN NOT FOUND");
 
             var dateId = DateHelper2.ToDateId(fromDay);
+            var fourWeekPeriod = DateHelper.FindPeriod(DateRanges.Last28Days);
             foreach (var segmentId in segmentIds)
             {
                 var profiles = organizationDb.ProfileAssignments.Where(x => x.SegmentId == segmentId).Select(x => new { Id = x.ProfileId, x.Profile.Role }).DistinctBy(x => x.Id).ToArray();
