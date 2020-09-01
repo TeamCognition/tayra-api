@@ -19,6 +19,7 @@ namespace Tayra.Services
         GridData<ProfileCommittedQuestsGridDTO> GetCommittedQuestsGridDTO(ProfileCommittedQuestsGridParams gridParams);
         ProfileUpdateDTO GetUpdateProfileData(int profileId);
         void UpdateProfile(int profileId, ProfileUpdateDTO dto);
+        void TogglePersonalAnalytics(int profileId);
         ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId);
         ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition);
         ProfileRawScoreDTO GetProfileRawScoreDTO(string username);

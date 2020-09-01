@@ -23,6 +23,7 @@ using Tayra.Imager;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
+using Tayra.Services.Analytics;
 
 namespace Tayra.API
 {
@@ -57,6 +58,7 @@ namespace Tayra.API
             services.AddTransient<IProfilesService, ProfilesService>();
             services.AddTransient<ISegmentsService, SegmentsService>();
             services.AddTransient<IShopItemsService, ShopItemsService>();
+            services.AddTransient<IAnalyticsService, AnalyticsService>();
             services.AddTransient<IAssistantService, AssistantService>();
             services.AddTransient<IIdentitiesService, IdentitiesService>();
             services.AddTransient<IInventoriesService, InventoryService>();

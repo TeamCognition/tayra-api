@@ -92,6 +92,14 @@ namespace Tayra.API.Controllers
             DbContext.SaveChanges();
             return Ok();
         }
+        
+        [HttpPut("togglePersonalAnalytics")]
+        public IActionResult TogglePersonalAnalytics()
+        {
+            ProfilesService.TogglePersonalAnalytics(CurrentUser.ProfileId);
+            DbContext.SaveChanges();
+            return Ok();
+        }
 
         [HttpGet("radarChart/{profileId}")]
         public ActionResult<ProfileRadarChartDTO> GetRadarChart([FromRoute] int profileId)

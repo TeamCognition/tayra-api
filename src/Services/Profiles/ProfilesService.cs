@@ -247,37 +247,50 @@ using Tayra.Models.Organizations;
             profile.EmployedOn = dto.EmployedOn;
             profile.Username = dto.Username;
         }
+        
+        public void TogglePersonalAnalytics(int profileId)
+        {
+            var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);
+
+            profile.EnsureNotNull(profileId);
+
+            profile.IsAnalyticsEnabled = !profile.IsAnalyticsEnabled;
+        }
 
         public ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId)
         {
             var prd = (from r in DbContext.ProfileReportsWeekly
-                       where r.ProfileId == profileId
-                       group r by r.DateId into g
-                       orderby g.Key descending
-                       select new
-                       {
-                           DateId = g.Key,
-                           Assists = g.Sum(x => x.AssistsChange),
-                           TasksCompleted = g.Sum(x => x.TasksCompletedChange),
-                           Complexity = g.Sum(x => x.ComplexityChange)
-                       }).Take(4).ToArray();
+                where r.ProfileId == profileId
+                group r by r.DateId
+                into g
+                orderby g.Key descending
+                select new
+                {
+                    DateId = g.Key,
+                    Assists = g.Sum(x => x.AssistsChange),
+                    TasksCompleted = g.Sum(x => x.TasksCompletedChange),
+                    Complexity = g.Sum(x => x.ComplexityChange)
+                }).Take(4).ToArray();
 
             var tm = DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == profileId && x.TeamId.HasValue);
 
-            var trw = new { AssistsAverage = 0d, TasksCompletedAverage = 0d, ComplexityAverage = 0d };
+            var trw = new {AssistsAverage = 0d, TasksCompletedAverage = 0d, ComplexityAverage = 0d};
             if (tm != null)
             {
                 trw = (from r in DbContext.TeamReportsWeekly
-                       where r.TeamId == tm.TeamId
-                       group r by 1 into g
-                       select new
-                       {
-                           AssistsAverage = g.Average(x => x.AssistsChange),
-                           TasksCompletedAverage = g.Average(x => x.TasksCompletedChange),
-                           ComplexityAverage = g.Average(x => x.ComplexityChange)
-                       }).FirstOrDefault();
+                    where r.TeamId == tm.TeamId
+                    group r by 1
+                    into g
+                    select new
+                    {
+                        AssistsAverage = g.Average(x => x.AssistsChange),
+                        TasksCompletedAverage = g.Average(x => x.TasksCompletedChange),
+                        ComplexityAverage = g.Average(x => x.ComplexityChange)
+                    }).FirstOrDefault();
 
-            };
+            }
+
+            ;
 
             if (!prd.Any()) //Average throws exception if count is 0
                 prd = null;
@@ -298,7 +311,6 @@ using Tayra.Models.Organizations;
                 TeamTasksCompletedAverage = Math.Round(trw?.TasksCompletedAverage ?? 0f, 2),
             };
         }
-
         public ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition)
         {
             var profileDto = (from p in DbContext.Profiles.Where(condition)
