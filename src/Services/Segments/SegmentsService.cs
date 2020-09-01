@@ -63,15 +63,15 @@ namespace Tayra.Services
             segment.EnsureNotNull(segmentKey);
 
             IQueryable<SegmentMemberGridDTO> query = from s in DbContext.ProfileAssignments.Where(x => x.SegmentId == segment.Id)
-                                                   select new SegmentMemberGridDTO
-                                                   {
-                                                       ProfileId = s.Profile.Id,
-                                                       Name = s.Profile.FirstName + " " + s.Profile.LastName,
-                                                       Username = s.Profile.Username,
-                                                       Role = s.Profile.Role,
-                                                       Avatar = s.Profile.Avatar,
-                                                       MemberFrom = s.Created
-                                                   };
+                                                     select new SegmentMemberGridDTO
+                                                     {
+                                                         ProfileId = s.Profile.Id,
+                                                         Name = s.Profile.FirstName + " " + s.Profile.LastName,
+                                                         Username = s.Profile.Username,
+                                                         Role = s.Profile.Role,
+                                                         Avatar = s.Profile.Avatar,
+                                                         MemberFrom = s.Created
+                                                     };
 
             GridData<SegmentMemberGridDTO> gridData = query.GetGridData(gridParams);
 
@@ -87,14 +87,14 @@ namespace Tayra.Services
             segment.EnsureNotNull(segmentKey);
 
             IQueryable<SegmentTeamGridDTO> query = from t in DbContext.TeamsScopeOfSegment(segment.Id)
-                                                    select new SegmentTeamGridDTO
-                                                    {
-                                                        Name = t.Name,
-                                                        Key = t.Key,
-                                                        AvatarColor = t.AvatarColor,
-                                                        MembersCount = t.Members.Count(),
-                                                        Created = t.Created
-                                                    };
+                                                   select new SegmentTeamGridDTO
+                                                   {
+                                                       Name = t.Name,
+                                                       Key = t.Key,
+                                                       AvatarColor = t.AvatarColor,
+                                                       MembersCount = t.Members.Count(),
+                                                       Created = t.Created
+                                                   };
 
             GridData<SegmentTeamGridDTO> gridData = query.GetGridData(gridParams);
 
@@ -103,21 +103,21 @@ namespace Tayra.Services
 
         public SegmentViewDTO GetSegmnetViewDTO(string segmentKey)
         {
-            var segmentDTO =  (from s in DbContext.Segments
-                                where s.Key == segmentKey
-                                select new SegmentViewDTO
-                                {
-                                    SegmentId = s.Id,
-                                    Name = s.Name,
-                                    Key = s.Key,
-                                    Avatar = s.Avatar,
-                                    AssistantSummary = s.AssistantSummary,
-                                    TokensEarned = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensEarnedTotal).FirstOrDefault(), 2),
-                                    TokensSpent = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensSpentTotal).FirstOrDefault(), 2),
-                                    QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),
-                                    QuestsCompleted = s.Quests.Count(x => x.Status == QuestStatuses.Ended),
-                                    ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
-                                }).FirstOrDefault();
+            var segmentDTO = (from s in DbContext.Segments
+                              where s.Key == segmentKey
+                              select new SegmentViewDTO
+                              {
+                                  SegmentId = s.Id,
+                                  Name = s.Name,
+                                  Key = s.Key,
+                                  Avatar = s.Avatar,
+                                  AssistantSummary = s.AssistantSummary,
+                                  TokensEarned = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensEarnedTotal).FirstOrDefault(), 2),
+                                  TokensSpent = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensSpentTotal).FirstOrDefault(), 2),
+                                  QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),
+                                  QuestsCompleted = s.Quests.Count(x => x.Status == QuestStatuses.Ended),
+                                  ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
+                              }).FirstOrDefault();
 
             segmentDTO.EnsureNotNull(segmentKey);
 
@@ -130,36 +130,36 @@ namespace Tayra.Services
             segment.EnsureNotNull(segmentKey);
 
             return (from r in DbContext.SegmentReportsDaily
-                where r.SegmentId == segment.Id 
-                select new SegmentRawScoreDTO
-                {
-                    TasksCompleted = r.TasksCompletedTotal,
-                    AssistsGained = r.AssistsTotal,
-                    TimeWorked =  r.TasksCompletionTimeTotal,
-                    TokensEarned =  r.CompanyTokensEarnedTotal,
-                    TokensSpent =  r.CompanyTokensSpentTotal,
-                    ItemsBought = r.ItemsBoughtTotal,
-                    QuestsCompleted = 0,
-                    DaysOnTayra = EF.Functions.DateDiffDay(segment.Created, DateTime.UtcNow)
-                }).LastOrDefault();
+                    where r.SegmentId == segment.Id
+                    select new SegmentRawScoreDTO
+                    {
+                        TasksCompleted = r.TasksCompletedTotal,
+                        AssistsGained = r.AssistsTotal,
+                        TimeWorked = r.TasksCompletionTimeTotal,
+                        TokensEarned = r.CompanyTokensEarnedTotal,
+                        TokensSpent = r.CompanyTokensSpentTotal,
+                        ItemsBought = r.ItemsBoughtTotal,
+                        QuestsCompleted = 0,
+                        DaysOnTayra = EF.Functions.DateDiffDay(segment.Created, DateTime.UtcNow)
+                    }).LastOrDefault();
         }
-        
+
         public SegmentAverageMetricsDTO GetSegmentAverageMetrics(string segmentKey)
         {
             var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
 
             return (from srw in DbContext.SegmentReportsWeekly
-                where srw.Segment.Key == segmentKey && srw.DateId >= latestUpdateDateId
-                group srw by 1
+                    where srw.Segment.Key == segmentKey && srw.DateId >= latestUpdateDateId
+                    group srw by 1
                 into r
-                select new SegmentAverageMetricsDTO
-                {
-                    LatestUpdateDateId = latestUpdateDateId,
-                    Metrics = new SegmentAverageMetricsDTO.SegmentMetricDTO[]
+                    select new SegmentAverageMetricsDTO
                     {
+                        LatestUpdateDateId = latestUpdateDateId,
+                        Metrics = new SegmentAverageMetricsDTO.SegmentMetricDTO[]
+                        {
                         new SegmentAverageMetricsDTO.SegmentMetricDTO
                         {
-                            Id = MetricTypes.OImpact,
+                            Id = MetricTypes.Impact,
                             Averages = r.Select(x => x.OImpactAverage).ToArray()
                         },
                         new SegmentAverageMetricsDTO.SegmentMetricDTO
@@ -189,11 +189,11 @@ namespace Tayra.Services
                         },
                         new SegmentAverageMetricsDTO.SegmentMetricDTO
                         {
-                            Id = MetricTypes.TaskCompletion,
+                            Id = MetricTypes.WorkUnitsCompleted,
                             Averages = r.Select(x => (float) x.TasksCompletedChange).ToArray()
                         }
-                    }
-                }).FirstOrDefault();
+                        }
+                    }).FirstOrDefault();
         }
 
         public SegmentRankChartDTO GetSegmentRankChart(string segmentKey)
@@ -201,18 +201,18 @@ namespace Tayra.Services
             var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
 
             var segmentMembers = DbContext.ProfileAssignments.Where(x => x.Segment.Key == segmentKey).Select(x => x.ProfileId).ToArray();
-            
+
             return (from prw in DbContext.ProfileReportsWeekly
-                where segmentMembers.Contains(prw.ProfileId) && prw.DateId == latestUpdateDateId
-                group prw by 1
+                    where segmentMembers.Contains(prw.ProfileId) && prw.DateId == latestUpdateDateId
+                    group prw by 1
                 into r
-                select new SegmentRankChartDTO
-                {
-                    Metrics = new SegmentRankChartDTO.RankChartMetricDTO[]
+                    select new SegmentRankChartDTO
                     {
+                        Metrics = new SegmentRankChartDTO.RankChartMetricDTO[]
+                        {
                         new SegmentRankChartDTO.RankChartMetricDTO
                         {
-                            Id = MetricTypes.OImpact,
+                            Id = MetricTypes.Impact,
                             MemberValues = r.OrderByDescending(x => x.OImpactAverage).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
                             {
                                 ProfileId = x.ProfileId,
@@ -266,23 +266,23 @@ namespace Tayra.Services
                         },
                         new SegmentRankChartDTO.RankChartMetricDTO
                         {
-                            Id = MetricTypes.TaskCompletion,
+                            Id = MetricTypes.WorkUnitsCompleted,
                             MemberValues = r.OrderByDescending(x => x.TasksCompletedChange).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
                             {
                                 ProfileId = x.ProfileId,
                                 Value = x.TasksCompletedChange
                             }).ToArray()
                         },
-                    }
-                }).FirstOrDefault();
+                        }
+                    }).FirstOrDefault();
         }
-        
-        public void AddMember(SegmentMemberAddRemoveDTO dto) 
+
+        public void AddMember(SegmentMemberAddRemoveDTO dto)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId);
             profile.EnsureNotNull(dto.ProfileId);
 
-            if(!SegmentRules.CanAddProfileToSegment(profile.Role, dto.TeamId))
+            if (!SegmentRules.CanAddProfileToSegment(profile.Role, dto.TeamId))
             {
                 throw new ApplicationException("If you are adding a member you must provide a teamId");
             }
@@ -316,7 +316,7 @@ namespace Tayra.Services
                 TeamId = dto.TeamId
             });
         }
-        
+
         public void RemoveMember(SegmentMemberAddRemoveDTO dto)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId);
@@ -334,7 +334,7 @@ namespace Tayra.Services
             }
             else if (dto.SegmentId.HasValue)
             {
-                if(profile.Role != ProfileRoles.Manager)
+                if (profile.Role != ProfileRoles.Manager)
                     throw new ApplicationException("only managers can be in segment without a team");
 
                 var segment = DbContext.Segments.FirstOrDefault(x => x.Id == dto.SegmentId);
@@ -366,10 +366,10 @@ namespace Tayra.Services
             {
                 Segment = segment,
                 Name = "Unassigned",
-                Key = null                
+                Key = null
             }).Entity;
-            
-            if(role != ProfileRoles.Admin)
+
+            if (role != ProfileRoles.Admin)
             {
                 DbContext.Add(new ProfileAssignment
                 {
@@ -417,7 +417,7 @@ namespace Tayra.Services
 
             DbContext.Remove(segment);
 
-            foreach(var t in segment.Teams) //is this needed?
+            foreach (var t in segment.Teams) //is this needed?
             {
                 DbContext.Remove(t);
             }

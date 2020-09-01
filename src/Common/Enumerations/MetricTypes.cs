@@ -1,28 +1,29 @@
-﻿using System.ComponentModel;
-
-namespace Tayra.Common
+﻿namespace Tayra.Common
 {
     public enum MetricTypes
     {
-        [Description("Impact")]
-        OImpact = 1,
-
-        [Description("Speed")]
+        Impact = 1,
         Speed = 2,
-
-        [Description("Power")]
         Power = 3,
-
-        [Description("Complexity")]
         Complexity = 4,
-
-        [Description("Assists")]
         Assist = 5,
-
-        [Description("Completion")]
-        TaskCompletion = 6,
-        
-        [Description("Heat")]
-        Heat = 7
+        WorkUnitsCompleted = 6,
+        Heat = 7,
+        Errors = 8,
+        TokensEarned = 9,
+        TokensSpent = 10,
+        PraisesGiven = 11,
+        PraisesReceived = 12,
+        Effort = 13,
+        Saves = 14,
+        TimeWorked = 15,
+        TimeWorkedLogged = 16,
+        ItemsInInventory = 17,
+        InventoryValue = 18,
+        ItemsBought = 19,
+        GiftsSent = 20,
+        GiftsReceived = 21,
+        ItemsDisenchanted = 22,
+        Commits = 23
     }
 }

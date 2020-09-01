@@ -28,7 +28,7 @@ namespace Tayra.Connectors.Common
             OrganizationContext = dataContext;
             CatalogContext = catalogDbContext;
         }
-        
+
         #endregion
 
         #region Properties
@@ -88,12 +88,12 @@ namespace Tayra.Connectors.Common
                     var x = CatalogContext.TenantIntegrations.FirstOrDefault(x =>
                         x.Type == oldIntegration.Type && x.SegmentId == oldIntegration.SegmentId && x.TenantId ==
                         TenantUtilities.ConvertShardingKeyToTenantId(Tenant.ShardingKey));
-                    if(x != null)
-                    CatalogContext.TenantIntegrations.Remove(x);
+
+                    if (x != null) CatalogContext.TenantIntegrations.Remove(x);
                 }
             }
 
-            if(profileId != null)
+            if (profileId != null)
             {
                 var externalId = fields.GetValueOrDefault(Constants.PROFILE_EXTERNAL_ID);
                 if (!string.IsNullOrEmpty(externalId))
@@ -101,8 +101,8 @@ namespace Tayra.Connectors.Common
                     var eId = OrganizationContext.ProfileExternalIds.FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == Type);
                     if (eId != null)
                     {
-                        var someoneElsesI = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.ProfileId == eId.ProfileId);
-                        if(someoneElsesI != null)
+                        var someoneElsesI = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.ProfileId == eId.ProfileId && x.Type == Type);
+                        if (someoneElsesI != null)
                         {
                             someoneElsesI.Fields.ToList().ForEach(x => OrganizationContext.Remove(x));
                             OrganizationContext.Remove(someoneElsesI);
