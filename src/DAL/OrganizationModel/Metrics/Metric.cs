@@ -6,11 +6,11 @@ namespace Tayra.Models.Organizations
 {
     public abstract class Metric
     {
-        public MetricTypes Type { get; }
+        public MetricType Type { get; }
         public int DateId { get; }
         public float Value { get; protected set; }
 
-        protected Metric(MetricTypes type, int dateId)
+        protected Metric(MetricType type, int dateId)
         {
             this.Type = type;
             this.DateId = dateId;

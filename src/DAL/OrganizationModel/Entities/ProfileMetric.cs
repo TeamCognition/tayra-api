@@ -13,21 +13,29 @@ namespace Tayra.Models.Organizations
         public Segment Segment { get; set; }
         public int DateId { get; private set; }
         
-        public MetricTypes Type { get; private set; }
+        public MetricType Type { get; private set; }
         
         public float Value { get; set; }
 
         protected ProfileMetric(){}
 
-        public ProfileMetric(int profileId, int? segmentId, Metric metric)
+        public ProfileMetric(int profileId, Metric metric)
         {
             ProfileId = profileId;
-            SegmentId = segmentId;
             DateId = metric.DateId;
             Type = metric.Type;
             Value = metric.Value;
         }
 
+        public ProfileMetric(int profileId, SegmentMetric metric)
+        {
+            ProfileId = profileId;
+            SegmentId = metric.SegmentId;
+            DateId = metric.DateId;
+            Type = metric.Type;
+            Value = metric.Value;
+        }
+        
         #region ITimeStampedEntity
 
         public DateTime Created { get; set; }

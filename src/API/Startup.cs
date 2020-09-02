@@ -57,6 +57,7 @@ namespace Tayra.API
             services.AddTransient<IProfilesService, ProfilesService>();
             services.AddTransient<ISegmentsService, SegmentsService>();
             services.AddTransient<IShopItemsService, ShopItemsService>();
+            services.AddTransient<IAnalyticsService, AnalyticsService>();
             services.AddTransient<IAssistantService, AssistantService>();
             services.AddTransient<IIdentitiesService, IdentitiesService>();
             services.AddTransient<IInventoriesService, InventoryService>();

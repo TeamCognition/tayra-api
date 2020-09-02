@@ -22,6 +22,10 @@
     <ProjectReference Include="..\..\cog\Cog.DAL\Cog.DAL.csproj" />
     <ProjectReference Include="..\..\cog\Cog.Core\Cog.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Analytics\DTO" />
+  </ItemGroup>
   
   <ProjectExtensions>
     <MonoDevelop>

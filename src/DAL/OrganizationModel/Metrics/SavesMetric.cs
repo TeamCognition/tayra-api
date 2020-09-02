@@ -4,9 +4,9 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class SavesMetric : Metric
+    public class SavesMetric : SegmentMetric
     {
-        public SavesMetric(IEnumerable<Task> tasks, int dateId): base(MetricTypes.Saves, dateId)
+        public SavesMetric(IEnumerable<Task> tasks, int dateId, int segmentId): base(MetricType.Saves, dateId, segmentId)
         {
             Value = tasks.Count(x => x.IsProductionBugFixing && x.BugSeverity > 3);
         }

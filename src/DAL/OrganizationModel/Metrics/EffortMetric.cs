@@ -4,9 +4,9 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class EffortMetric : Metric
+    public class EffortMetric : SegmentMetric
     {
-        public EffortMetric(IEnumerable<Task> tasks, int dateId): base(MetricTypes.Effort, dateId)
+        public EffortMetric(IEnumerable<Task> tasks, int dateId, int segmentId): base(MetricType.Effort, dateId, segmentId)
         {
             Value = tasks.Sum(x => x.EffortScore) ?? 0f;
         }

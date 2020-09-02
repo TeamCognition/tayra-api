@@ -30,12 +30,6 @@ namespace Tayra.API.Controllers
             return LookupsService.GetFromEnum<TokenType>();
         }
 
-        [HttpGet, Route(nameof(LookupTypes.ExperienceRanks))]
-        public IEnumerable<LookupDTO> GetExperienceRanks()
-        {
-            return LookupsService.GetFromEnum<ExperienceRanks>();
-        }
-
         [HttpGet, Route(nameof(LookupTypes.CompetitionStatuses))]
         public IEnumerable<LookupDTO> GetCompetitionStatuses()
         {
@@ -99,7 +93,6 @@ namespace Tayra.API.Controllers
                     : (type == LookupTypes.TokenTypes) ? GetTokenTypes()
                     : (type == LookupTypes.ItemRarities) ? GetItemRarities()
                     : (type == LookupTypes.ProfileRoles) ? GetProfileRoles()
-                    : (type == LookupTypes.ExperienceRanks) ? GetExperienceRanks()
                     : (type == LookupTypes.CompetitionStatuses) ? GetCompetitionStatuses()
                     : (type == LookupTypes.ShopPurchaseStatuses) ? GetShopPurchaseStatuses()
                     : (type == LookupTypes.PraiseTypes) ? GetPraiseTypes()
