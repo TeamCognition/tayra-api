@@ -574,23 +574,6 @@ namespace Tayra.Services
                         },
                         new ProfileStatsDTO.ProfileMetricDTO
                         {
-                            Id = MetricTypes.Heat,
-                            SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
-                            {
-                                Id = x.Key,
-                                Averages = x.Value.Heat,
-                                TotalAverage = x.Value.Heat.Sum() / 4f
-                            }).ToArray(),
-                            TeamsAverages = teamsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.Heat,
-                                TotalAverage = x.Value.Heat.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.Heat).ToArray()
-                        },
-                        new ProfileStatsDTO.ProfileMetricDTO
-                        {
                             Id = MetricTypes.Complexity,
                             SegmentsAverages = segmentsStats.Select(x => new ProfileStatsDTO.ProfileMetricDTO.AssignmentAveragesDTO
                             {

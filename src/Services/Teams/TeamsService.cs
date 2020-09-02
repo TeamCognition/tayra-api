@@ -316,17 +316,6 @@ namespace Tayra.Services
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.Heat,
-                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.Heat,
-                                TotalAverage = x.Value.Heat.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.HeatAverageTotal).ToArray()
-                        },
-                        new TeamStatsDTO.TeamMetricDTO
-                        {
                             Id = MetricTypes.Complexity,
                             TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
                             {
