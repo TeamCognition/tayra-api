@@ -28,6 +28,7 @@ namespace Tayra.Services
         void UpdateNotificationSettings(int profileId, ProfileNotificationSettingsDTO dto);
         ProfileActivityChartDTO[] GetProfileActivityChart(int profileId);
         ProfileStatsDTO GetProfileStatsData(int profileIdS);
+        ProfileHeatStreamDTO GetProfileHeatStream(int profileId);
     }
 
 }

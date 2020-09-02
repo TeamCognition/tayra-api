@@ -644,6 +644,24 @@ namespace Tayra.Services
                     }).FirstOrDefault();
         }
 
+        public ProfileHeatStreamDTO GetProfileHeatStream(int profileId)
+        {
+            var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last8Week).FromId;
+
+            return (from prw in DbContext.ProfileReportsWeekly
+                where prw.ProfileId == profileId
+                where prw.DateId >= latestUpdateDateId
+                group prw by 1 into r
+                select new ProfileHeatStreamDTO
+                {
+                    LatestUpdateDateId = latestUpdateDateId,
+                    Nodes = r.Select(h => new ProfileHeatStreamDTO.HeatWeekNode
+                    {
+                        DateId = h.DateId,
+                        Value = h.Heat
+                    }).ToArray()
+                }).FirstOrDefault();
+        }
         #endregion
 
         #region Static methods

@@ -19,10 +19,13 @@ namespace Cog.Core
         [Description("Last Week")]
         LastWeek = 4,
 
-        [Description("Last Week")]
+        [Description("Last 4 Week")]
         Last4Week = 5,
-        
+
         [Description("Last Month")]
         LastMonth = 6,
+        
+        [Description("Last 8 Week")]
+        Last8Week = 7
     }
 }

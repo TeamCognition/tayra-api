@@ -43,6 +43,13 @@ namespace Cog.Core
                     var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
                     return new DateRange(start, end);
                 }
+                case DateRanges.Last8Week:
+                {
+                    var eightWeeksAgo = today.Subtract(TimeSpan.FromDays(7 * 8));
+                    var start = eightWeeksAgo.Add(TimeSpan.FromDays(7 - (int)eightWeeksAgo.DayOfWeek));
+                    var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
+                    return new DateRange(start, end);
+                }
                 default:
                 {
                     return new DateRange(yesterday, yesterday);

@@ -149,6 +149,12 @@ namespace Tayra.API.Controllers
         {
             return ProfilesService.GetProfileStatsData(profileId);
         }
+        
+        [HttpGet("heatStream/{profileId:int}")]
+        public ActionResult<ProfileHeatStreamDTO> GetProfileHeatStream(int profileId)
+        {
+            return ProfilesService.GetProfileHeatStream(profileId);
+        }
 
         #endregion
     }
