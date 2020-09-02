@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Ardalis.SmartEnum;
 using Cog.Core;
@@ -92,25 +91,25 @@ namespace Tayra.Common
         public MetricType Type { get; set; }
         public float Value { get; set; }
         public DatePeriod Period { get; set; }
-        public BreakdownMetricDto[] BreakdownMetrics { get; set; }
+        public IterationBreakdownDto[] IterationsBreakdown { get; set; }
         
-        public class BreakdownMetricDto
+        public class IterationBreakdownDto
         {
-            public MetricType Type { get; set; }
-            public IterationPeriodDto[] Periods { get; set; }
+            public DatePeriod Period { get; set; }
+            public BreakdownMetricDto[] Metrics { get; set; }
 
-            public BreakdownMetricDto(MetricType type, DatePeriod period, MetricRaw[] raws)
+            public IterationBreakdownDto(MetricType[] types, DatePeriod iterationPeriod, MetricRaw[] raws)
             {
-                Type = type;
-                Periods = period.SplitToIterations().Select(p => new IterationPeriodDto
+                Period = iterationPeriod;
+                Metrics = types.Select(t => new BreakdownMetricDto()
                 {
-                    IterationPeriod = p.ToString(),
-                    Value = type.Calc(raws.Where(r => r.DateId >= p.FromId && r.DateId <= p.ToId).ToArray())
+                    Type = t,
+                    Value = t.Calc(raws, iterationPeriod)
                 }).ToArray();
             }
-            public class IterationPeriodDto
+            public class BreakdownMetricDto
             {
-                public string IterationPeriod { get; set; }
+                public MetricType Type { get; set; }
                 public float Value { get; set; }   
             }
         }
@@ -118,16 +117,16 @@ namespace Tayra.Common
         public MetricDto(MetricType metricType, DatePeriod period, MetricRaw[] raws)
         {
             this.Type = metricType;
-            this.Value = metricType.Calc(raws);
+            this.Value = metricType.Calc(raws, period);
             this.Period = period;
-            this.BreakdownMetrics = metricType.BuildingMetrics.Select(bType => new BreakdownMetricDto(bType, period, raws)).ToArray();
+            this.IterationsBreakdown = period.SplitToIterations().Select(i => new IterationBreakdownDto(metricType.BuildingMetrics, i, raws)).ToArray();
         }
     }
     
     public abstract class MetricType : SmartEnum<MetricType>
     {
         public static readonly MetricType Complexity = new PureType("Complexity", 4);
-        public static readonly MetricType TasksCompleted = new PureType("TasksCompleted", 5); //WorkUnitsCompleted
+        public static readonly MetricType TasksCompleted = new PureType("TasksCompleted", 6); //WorkUnitsCompleted
         public static readonly MetricType Assists = new PureType("Assists", 5);
         public static readonly MetricType TokensEarned = new PureType("Tokens Earned", 9);
         public static readonly MetricType TokensSpent = new PureType("Tokens Spent", 10);
@@ -146,15 +145,16 @@ namespace Tayra.Common
         public static readonly MetricType ItemsDisenchanted = new PureType("Items Disenchanted", 22);
         public static readonly MetricType Commits = new PureType("Commits", 23);
         
+        public static readonly MetricType Speed = new SpeedType("Speed", 2);
+        public static readonly MetricType Power = new PowerType("Power", 3);
         public static readonly MetricType Impact = new ImpactType("Impact", 1);
 
         private MetricType(string name, int value) : base(name, value)
         {
         }
 
-        public abstract bool ShouldDivideWithIterationCount { get; }
         public abstract MetricType[] BuildingMetrics { get; }
-        public abstract float Calc(MetricRaw[] buildingMetrics);
+        public abstract float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod);
 
         static float SumRawMetricByType(MetricRaw[] metrics, MetricType type) =>
             metrics.Where(x => x.Type == type.Value).Sum(raw => raw.Value);
@@ -166,9 +166,11 @@ namespace Tayra.Common
             {
             }
 
-            public override bool ShouldDivideWithIterationCount => false;
-            public override MetricType[] BuildingMetrics => new MetricType[]{};
-            public override float Calc(MetricRaw[] buildingMetrics) => SumRawMetricByType(buildingMetrics, MetricType.FromValue(Value));
+            public override MetricType[] BuildingMetrics => new MetricType[]{this};
+            public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
+            {
+                return SumRawMetricByType(buildingMetrics, this);
+            }
         }
         
         private sealed class ImpactType: MetricType
@@ -177,14 +179,44 @@ namespace Tayra.Common
             {
             }
 
-            public override bool ShouldDivideWithIterationCount => true;
             public override MetricType[] BuildingMetrics => new[] {Complexity, TasksCompleted, Assists};
-            public override float Calc(MetricRaw[] buildingMetrics)
+            public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
             {
-                var complexity = SumRawMetricByType(buildingMetrics, Complexity);
-                var tasksCompleted = SumRawMetricByType(buildingMetrics, TasksCompleted);
-                var assists = SumRawMetricByType(buildingMetrics, Assists);
-                return complexity + tasksCompleted + assists;
+                var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
+                var complexity = SumRawMetricByType(metricsInPeriod, Complexity);
+                var tasksCompleted = SumRawMetricByType(metricsInPeriod, TasksCompleted);
+                var assists = SumRawMetricByType(metricsInPeriod, Assists);
+                return (complexity + tasksCompleted + assists) / datePeriod.SplitToIterations().Count();
+            }
+        }
+        
+        private sealed class SpeedType: MetricType
+        {
+            public SpeedType(string name, int value) : base(name, value)
+            {
+            }
+
+            public override MetricType[] BuildingMetrics => new[] {TasksCompleted};
+            public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
+            {
+                var tasksCompleted = SumRawMetricByType(buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray(), TasksCompleted);
+                return tasksCompleted / datePeriod.SplitToIterations().Count();
+            }
+        }
+        
+        private sealed class PowerType: MetricType
+        {
+            public PowerType(string name, int value) : base(name, value)
+            {
+            }
+
+            public override MetricType[] BuildingMetrics => new[] {Complexity, TasksCompleted};
+            public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
+            {
+                var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
+                var complexity = SumRawMetricByType(metricsInPeriod, Complexity);
+                var tasksCompleted = SumRawMetricByType(metricsInPeriod, TasksCompleted);
+                return complexity / tasksCompleted;
             }
         }
     }

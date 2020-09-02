@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
@@ -224,6 +225,10 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileMetric>(entity =>
             {
+                entity.Property(p => p.Type)
+                    .HasConversion(
+                        p => p.Value,
+                        p => MetricType.FromValue(p));
                 entity.HasKey(x => new { x.ProfileId, x.SegmentId, x.Type, x.DateId });
             });
             
@@ -296,6 +301,9 @@ namespace Tayra.Models.Organizations
             var orgPKey = orgEntity.FindPrimaryKey();
             foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
             {
+                if(entityType.FindPrimaryKey() == null)
+                    continue;
+                
                 //OrganizationId
                 var id = entityType.FindPrimaryKey().Properties.FirstOrDefault(x => x.Name == "Id");
                 if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;

@@ -4,6 +4,6 @@ namespace Tayra.Services
 {
     public interface IAnalyticsService
     {
-        MetricDto[] GetAnalytics(int profileId, int fromId, int toId);
+        MetricDto[] GetAnalyticsWithBreakdown(int profileId, int fromId, int toId);
     }
 }

@@ -20,7 +20,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public MetricDto[] GetAnalytics(int profileId, int fromId, int toId)
+        public MetricDto[] GetAnalyticsWithBreakdown(int profileId, int fromId, int toId)
         {
             var metrics = (from m in DbContext.ProfileMetrics
                 where m.DateId >= fromId && m.DateId <= toId

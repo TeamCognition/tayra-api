@@ -23,9 +23,10 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpGet("")]
-        public IActionResult GetActionPointOverview()
+        public IActionResult GetAnalyticsWithBreakdown()
         {
-            return Ok(AnalyticsService.GetAnalytics(2, 20200801, 20200901));
+            var rez = AnalyticsService.GetAnalyticsWithBreakdown(3, 20200801, 20200901);
+            return Ok(new {Makina = "masina sammm"});
         }
 
         #endregion
