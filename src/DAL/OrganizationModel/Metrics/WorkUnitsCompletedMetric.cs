@@ -6,11 +6,11 @@ namespace Tayra.Models.Organizations
 {
     public class WorkUnitsCompletedMetric : SegmentMetric
     {
-        public WorkUnitsCompletedMetric(IEnumerable<Task> tasks, int dateId, int segmentId): base(MetricType.TasksCompleted, dateId, segmentId)
+        public WorkUnitsCompletedMetric(IEnumerable<Task> tasks, int dateId, int segmentId) : base(MetricType.TasksCompleted, dateId, segmentId)
         {
             Value = tasks.Count(x => x.Status == TaskStatuses.Done);
         }
-        
+
         public static WorkUnitsCompletedMetric[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
         {
             return tasks

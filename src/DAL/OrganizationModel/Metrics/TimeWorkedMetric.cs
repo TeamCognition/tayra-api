@@ -6,11 +6,11 @@ namespace Tayra.Models.Organizations
 {
     public class TimeWorkedMetric : SegmentMetric
     {
-        public TimeWorkedMetric(IEnumerable<Task> tasks, int dateId, int segmentId): base(MetricType.TimeWorked, dateId, segmentId)
+        public TimeWorkedMetric(IEnumerable<Task> tasks, int dateId, int segmentId) : base(MetricType.TimeWorked, dateId, segmentId)
         {
             Value = tasks.Sum(x => x.TimeSpentInMinutes ?? x.AutoTimeSpentInMinutes) ?? 0f;
         }
-        
+
         public static TimeWorkedMetric[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
         {
             return tasks

@@ -6,7 +6,7 @@ namespace Tayra.Models.Organizations
 {
     public class InventoryValueMetric : Metric
     {
-        public InventoryValueMetric(IEnumerable<ProfileInventoryItem> items, int dateId): base(MetricType.InventoryValue, dateId)
+        public InventoryValueMetric(IEnumerable<ProfileInventoryItem> items, int dateId) : base(MetricType.InventoryValue, dateId)
         {
             Value = items.Sum(x => x.Item.Price);
         }

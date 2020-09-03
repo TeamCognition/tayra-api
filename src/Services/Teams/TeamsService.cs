@@ -24,19 +24,19 @@ namespace Tayra.Services
         public TeamViewDTO GetTeamViewDTO(string teamKey)
         {
             var teamDto = (from t in DbContext.Teams
-                where t.Key == teamKey
-                select new TeamViewDTO
-                {
-                    TeamId = t.Id,
-                    TeamKey = t.Key,
-                    Name = t.Name,
-                    AvatarColor = t.AvatarColor,
-                    AssistantSummary = t.AssistantSummary,
-                    Created = t.Created,
-                }).FirstOrDefault();
+                           where t.Key == teamKey
+                           select new TeamViewDTO
+                           {
+                               TeamId = t.Id,
+                               TeamKey = t.Key,
+                               Name = t.Name,
+                               AvatarColor = t.AvatarColor,
+                               AssistantSummary = t.AssistantSummary,
+                               Created = t.Created,
+                           }).FirstOrDefault();
 
             teamDto.EnsureNotNull(teamKey);
-            
+
             return teamDto;
         }
 
@@ -46,61 +46,61 @@ namespace Tayra.Services
             team.EnsureNotNull(teamKey);
 
             return (from r in DbContext.TeamReportsDaily
-                where r.TeamId == team.Id
-                select new TeamRawScoreDTO
-                {
-                    TasksCompleted = r.TasksCompletedTotal,
-                    AssistsGained = r.AssistsTotal,
-                    TimeWorked =  r.TasksCompletionTimeTotal,
-                    TokensEarned =  r.CompanyTokensEarnedTotal,
-                    TokensSpent =  r.CompanyTokensSpentTotal,
-                    ItemsBought = r.ItemsBoughtTotal,
-                    QuestsCompleted = r.QuestsCompletedTotal,
-                    DaysOnTayra = EF.Functions.DateDiffDay(team.Created, DateTime.UtcNow)
-                }).LastOrDefault();
+                    where r.TeamId == team.Id
+                    select new TeamRawScoreDTO
+                    {
+                        TasksCompleted = r.TasksCompletedTotal,
+                        AssistsGained = r.AssistsTotal,
+                        TimeWorked = r.TasksCompletionTimeTotal,
+                        TokensEarned = r.CompanyTokensEarnedTotal,
+                        TokensSpent = r.CompanyTokensSpentTotal,
+                        ItemsBought = r.ItemsBoughtTotal,
+                        QuestsCompleted = r.QuestsCompletedTotal,
+                        DaysOnTayra = EF.Functions.DateDiffDay(team.Created, DateTime.UtcNow)
+                    }).LastOrDefault();
         }
-        
+
         public TeamSwarmPlotDTO GetTeamSwarmPloteDTO(string teamKey)
         {
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
             team.EnsureNotNull(teamKey);
-            
+
             var teamStats = (from r in DbContext.TeamReportsWeekly
-                where r.TeamId == team.Id
-                orderby r.DateId descending
-                select new
-                {
-                    DateId = r.DateId,
-                    Impact = r.OImpactAverage,
-                    Speed = r.SpeedAverage,
-                    Power = r.PowerAverage,
-                    Assists = r.AssistsChange,
-                    Completion = r.ComplexityAverage,
-                    Complexity = r.ComplexityAverage
-                }).Take(4).ToArray();
+                             where r.TeamId == team.Id
+                             orderby r.DateId descending
+                             select new
+                             {
+                                 DateId = r.DateId,
+                                 Impact = r.OImpactAverage,
+                                 Speed = r.SpeedAverage,
+                                 Power = r.PowerAverage,
+                                 Assists = r.AssistsChange,
+                                 Completion = r.ComplexityAverage,
+                                 Complexity = r.ComplexityAverage
+                             }).Take(4).ToArray();
 
             if (teamStats.Length == 0)
                 return null;
 
             var p = DateHelper.FindPeriod(DateRanges.Last4Week);
-            
+
             var teamProfiles = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId).ToArray();
 
             var profileStats = (from r in DbContext.ProfileReportsWeekly
-                where teamProfiles.Contains(r.ProfileId)
-                where r.DateId >= p.FromId
-                orderby r.DateId descending 
-                select new
-                {
-                    ProfileId = r.ProfileId,
-                    Impact = r.OImpactAverage,
-                    Speed = r.SpeedAverage,
-                    Heat = r.Heat,
-                    Power = r.PowerAverage,
-                    Assists = r.AssistsTotalAverage,
-                    Completion = r.ComplexityTotalAverage,
-                    Complexity = r.ComplexityTotalAverage
-                }).ToArray();
+                                where teamProfiles.Contains(r.ProfileId)
+                                where r.DateId >= p.FromId
+                                orderby r.DateId descending
+                                select new
+                                {
+                                    ProfileId = r.ProfileId,
+                                    Impact = r.OImpactAverage,
+                                    Speed = r.SpeedAverage,
+                                    Heat = r.Heat,
+                                    Power = r.PowerAverage,
+                                    Assists = r.AssistsTotalAverage,
+                                    Completion = r.ComplexityTotalAverage,
+                                    Complexity = r.ComplexityTotalAverage
+                                }).ToArray();
 
             return new TeamSwarmPlotDTO
             {
@@ -193,18 +193,18 @@ namespace Tayra.Services
                 .Where(x => x.TeamId == team.Id);
 
             IQueryable<TeamProfilesGridDTO> query = from t in scope
-                                                   let ws = t.Profile.StatsWeekly.OrderByDescending(x => x.DateId).Where(x => x.SegmentId == team.SegmentId)
-                                                   select new TeamProfilesGridDTO
-                                                   {
-                                                       ProfileId = t.ProfileId,
-                                                       Name = t.Profile.FirstName + " " + t.Profile.LastName,
-                                                       Username = t.Profile.Username,
-                                                       Avatar = t.Profile.Avatar,
-                                                       Speed = Math.Round(ws.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
-                                                       Power = Math.Round(ws.Select(x => x.PowerAverage).FirstOrDefault(), 2),
-                                                       Impact = Math.Round(ws.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
-                                                       MemberFrom = t.Created
-                                                   };
+                                                    let ws = t.Profile.StatsWeekly.OrderByDescending(x => x.DateId).Where(x => x.SegmentId == team.SegmentId)
+                                                    select new TeamProfilesGridDTO
+                                                    {
+                                                        ProfileId = t.ProfileId,
+                                                        Name = t.Profile.FirstName + " " + t.Profile.LastName,
+                                                        Username = t.Profile.Username,
+                                                        Avatar = t.Profile.Avatar,
+                                                        Speed = Math.Round(ws.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
+                                                        Power = Math.Round(ws.Select(x => x.PowerAverage).FirstOrDefault(), 2),
+                                                        Impact = Math.Round(ws.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
+                                                        MemberFrom = t.Created
+                                                    };
 
             GridData<TeamProfilesGridDTO> gridData = query.GetGridData(gridParams);
 
@@ -246,41 +246,41 @@ namespace Tayra.Services
                 DbContext.Remove(m);
             }
         }
-        
+
         public TeamStatsDTO GetTeamStatsData(string teamKey)
         {
             var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
 
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
-            
+
             team.EnsureNotNull(teamKey);
-            
+
             var otherTeams = DbContext.Teams.Where(x => x.Key != teamKey).Select(x => x.Id).ToArray();
 
             var otherTeamsStats =
                 DbContext.TeamReportsWeekly
                     .Where(x => otherTeams.Contains(x.TeamId) && x.DateId >= latestUpdateDateId)
-                    .ToLookup(x => x.TeamId).ToDictionary(x => x.Key, x => new 
+                    .ToLookup(x => x.TeamId).ToDictionary(x => x.Key, x => new
                     {
                         Impact = x.Select(r => r.OImpactAverage).ToArray(),
                         Speed = x.Select(r => r.SpeedAverage).ToArray(),
                         Power = x.Select(r => r.PowerAverage).ToArray(),
                         Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
-                        Assists = x.Select(r => (float) r.AssistsChange).ToArray(),
-                        TaskCompletion = x.Select(r => (float) r.TasksCompletedChange).ToArray(),
-                        Complexity = x.Select(r => (float) r.ComplexityChange).ToArray(),
+                        Assists = x.Select(r => (float)r.AssistsChange).ToArray(),
+                        TaskCompletion = x.Select(r => (float)r.TasksCompletedChange).ToArray(),
+                        Complexity = x.Select(r => (float)r.ComplexityChange).ToArray(),
                     });
-            
+
             return (from trw in DbContext.TeamReportsWeekly
-                where trw.TeamId == team.Id
-                where trw.DateId >= latestUpdateDateId
-                group trw by 1
+                    where trw.TeamId == team.Id
+                    where trw.DateId >= latestUpdateDateId
+                    group trw by 1
                 into r
-                select new TeamStatsDTO
-                {
-                    LatestUpdateDateId = latestUpdateDateId,
-                    Metrics = (new TeamStatsDTO.TeamMetricDTO[]
+                    select new TeamStatsDTO
                     {
+                        LatestUpdateDateId = latestUpdateDateId,
+                        Metrics = (new TeamStatsDTO.TeamMetricDTO[]
+                        {
                         new TeamStatsDTO.TeamMetricDTO
                         {
                             Id = MetricTypes.Impact,
@@ -294,7 +294,7 @@ namespace Tayra.Services
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.Speed,  
+                            Id = MetricTypes.Speed,
                             TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
                             {
                                 Id = x.Key ,
@@ -305,7 +305,7 @@ namespace Tayra.Services
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.Power,  
+                            Id = MetricTypes.Power,
                             TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
                             {
                                 Id = x.Key ,
@@ -338,7 +338,7 @@ namespace Tayra.Services
                         },
                         new TeamStatsDTO.TeamMetricDTO
                         {
-                            Id = MetricTypes.Assist, 
+                            Id = MetricTypes.Assist,
                             TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
                             {
                                 Id = x.Key ,
@@ -358,32 +358,32 @@ namespace Tayra.Services
                             }).ToArray(),
                             WeeklyAverages = r.Select(x => (float) x.TasksCompletedChange).ToArray()
                         }
-                    }).ToArray()
-                }).FirstOrDefault();
+                        }).ToArray()
+                    }).FirstOrDefault();
         }
 
         public TeamPulseDTO GetTeamPulse(string teamKey)
         {
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
-            
+
             team.EnsureNotNull(teamKey);
 
             var teamMembers = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId)
                 .ToArray();
 
             var yesterdayDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-1));
-            
+
             return (from t in DbContext.Tasks
-                where teamMembers.Contains(t.AssigneeProfileId.Value)
-                where t.Status == TaskStatuses.InProgress || (t.Status == TaskStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)
-                group t by 1 into g
-                select new TeamPulseDTO
-                {
-                    InProgress = g.Where(x => x.Status == TaskStatuses.InProgress).Count(),
-                    RecentlyDone = g.Where(x => x.Status == TaskStatuses.Done).Count()
-                }).FirstOrDefault();
+                    where teamMembers.Contains(t.AssigneeProfileId.Value)
+                    where t.Status == TaskStatuses.InProgress || (t.Status == TaskStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)
+                    group t by 1 into g
+                    select new TeamPulseDTO
+                    {
+                        InProgress = g.Where(x => x.Status == TaskStatuses.InProgress).Count(),
+                        RecentlyDone = g.Where(x => x.Status == TaskStatuses.Done).Count()
+                    }).FirstOrDefault();
         }
-        
+
         #endregion
 
         #region Private Methods

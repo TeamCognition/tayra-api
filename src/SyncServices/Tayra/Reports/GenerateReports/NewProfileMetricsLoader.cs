@@ -110,16 +110,16 @@ namespace Tayra.SyncServices.Tayra
                                  where sp.LastModifiedDateId == dateId
                                  select sp).ToArray();
 
-            var inventory = (from pinv in organizationDb.ProfileInventoryItems.Include(x => x.Item) 
-                where profileIds.Contains(pinv.ProfileId)
-                where pinv.Created.Date == fromDay.Date
-                select pinv).ToArray();
-            
+            var inventory = (from pinv in organizationDb.ProfileInventoryItems.Include(x => x.Item)
+                             where profileIds.Contains(pinv.ProfileId)
+                             where pinv.Created.Date == fromDay.Date
+                             select pinv).ToArray();
+
             var gitCommitsToday = (from gc in organizationDb.GitCommits
-                where profileIds.Contains(gc.AuthorProfileId.Value)
-                where gc.Created.Date == fromDay.Date
-                select gc).ToArray();
-            
+                                   where profileIds.Contains(gc.AuthorProfileId.Value)
+                                   where gc.Created.Date == fromDay.Date
+                                   select gc).ToArray();
+
             foreach (var p in profiles)
             {
                 var ts = tasks.Where(x => x.AssigneeProfileId == p.Id);
@@ -133,7 +133,7 @@ namespace Tayra.SyncServices.Tayra
                 var commits = gitCommitsToday.Where(x => x.AuthorProfileId == p.Id);
 
                 var prm = new PraisesReceivedMetric(praises, p.Id, dateId);
-                
+
                 metricsToInsert.Add(new ProfileMetric(p.Id, prm));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new AssistMetric(prm)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new PraisesGivenMetric(praises, p.Id, dateId)));
@@ -146,7 +146,7 @@ namespace Tayra.SyncServices.Tayra
                 metricsToInsert.Add(new ProfileMetric(p.Id, new GiftsReceivedMetric(iGiftR, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new ItemsDisenchantedMetric(iDissed, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new CommitsMetric(commits, dateId)));
-                
+
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, EffortMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ComplexityMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ErrorsMetric.CreateForEverySegment(ts, dateId)));
@@ -166,13 +166,13 @@ namespace Tayra.SyncServices.Tayra
             }
 
             organizationDb.ProfileMetrics.AddRange(metricsToInsert);
-            
+
             organizationDb.SaveChanges();
 
             logService.Log<GenerateProfileReportsLoader>($"{metricsToInsert.Count} new profile metrics saved to database.");
             return metricsToInsert;
         }
-        
+
         #endregion
     }
 }

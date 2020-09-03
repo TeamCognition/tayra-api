@@ -6,11 +6,11 @@ namespace Tayra.Models.Organizations
 {
     public class ComplexityMetric : SegmentMetric
     {
-        private ComplexityMetric(IEnumerable<Task> tasks, int dateId, int segmentId): base(MetricType.Complexity, dateId, segmentId)
+        private ComplexityMetric(IEnumerable<Task> tasks, int dateId, int segmentId) : base(MetricType.Complexity, dateId, segmentId)
         {
             Value = tasks.Sum(x => x.Complexity);
         }
-        
+
         public static ComplexityMetric[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
         {
             return tasks

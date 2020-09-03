@@ -1,5 +1,3 @@
-using System;
-using Cog.DAL;
 using Tayra.Common;
 
 namespace Tayra.Models.Organizations

@@ -6,9 +6,9 @@ namespace Tayra.Models.Organizations
 {
     public class TokensEarnedMetric : Metric
     {
-        public TokensEarnedMetric(IEnumerable<TokenTransaction> tokenTransactions, int dateId): base(MetricType.TokensEarned, dateId)
+        public TokensEarnedMetric(IEnumerable<TokenTransaction> tokenTransactions, int dateId) : base(MetricType.TokensEarned, dateId)
         {
-            Value = (float) tokenTransactions.Where(x => x.Value > 0).Sum(x => x.Value);
+            Value = (float)tokenTransactions.Where(x => x.Value > 0).Sum(x => x.Value);
         }
     }
 }

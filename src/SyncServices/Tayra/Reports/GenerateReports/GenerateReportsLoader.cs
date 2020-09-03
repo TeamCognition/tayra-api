@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
 using Newtonsoft.Json.Linq;
@@ -28,10 +27,10 @@ namespace Tayra.SyncServices.Tayra
         public override void Execute(DateTime endDate, JObject requestBody, params Tenant[] tenants)
         {
             DateTime date = endDate;
-            if(requestBody.TryGetValue("startDateId", StringComparison.InvariantCultureIgnoreCase, out JToken value))
+            if (requestBody.TryGetValue("startDateId", StringComparison.InvariantCultureIgnoreCase, out JToken value))
             {
                 date = DateHelper2.ParseDate(value.Value<int>());
-                if(date.Date > endDate.Date)
+                if (date.Date > endDate.Date)
                 {
                     date = endDate;
                 }
@@ -48,7 +47,7 @@ namespace Tayra.SyncServices.Tayra
                 LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
-                    if(segmentIds.Length == 0)
+                    if (segmentIds.Length == 0)
                     {
                         segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
                     }

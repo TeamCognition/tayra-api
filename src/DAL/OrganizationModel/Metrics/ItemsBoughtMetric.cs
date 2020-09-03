@@ -6,7 +6,7 @@ namespace Tayra.Models.Organizations
 {
     public class ItemsBoughtMetric : Metric
     {
-        public ItemsBoughtMetric(IEnumerable<ShopPurchase> purchases, int dateId): base(MetricType.ItemsBought, dateId)
+        public ItemsBoughtMetric(IEnumerable<ShopPurchase> purchases, int dateId) : base(MetricType.ItemsBought, dateId)
         {
             Value = purchases.Count();
         }

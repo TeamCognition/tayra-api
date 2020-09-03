@@ -6,11 +6,11 @@ namespace Tayra.Models.Organizations
 {
     public class SavesMetric : SegmentMetric
     {
-        public SavesMetric(IEnumerable<Task> tasks, int dateId, int segmentId): base(MetricType.Saves, dateId, segmentId)
+        public SavesMetric(IEnumerable<Task> tasks, int dateId, int segmentId) : base(MetricType.Saves, dateId, segmentId)
         {
             Value = tasks.Count(x => x.IsProductionBugFixing && x.BugSeverity > 3);
         }
-        
+
         public static SavesMetric[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
         {
             return tasks
