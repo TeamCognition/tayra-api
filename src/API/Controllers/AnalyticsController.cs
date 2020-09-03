@@ -1,6 +1,8 @@
 using System;
+using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Models.Organizations;
+using Tayra.Services;
 
 namespace Tayra.API.Controllers
 {
@@ -23,10 +25,10 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpGet("")]
-        public IActionResult GetAnalyticsWithBreakdown()
+        public ActionResult<AnalyticsMetricDto[]> GetAnalyticsWithBreakdown([FromQuery]int entityId, [FromQuery]string entityType, [FromQuery]string period)
         {
-            var rez = AnalyticsService.GetAnalyticsWithBreakdown(3, 20200801, 20200901);
-            return Ok(new {Makina = "masina sammm"});
+            var datePeriod = new DatePeriod(period);
+            return AnalyticsService.GetAnalyticsWithBreakdown(entityId, entityType, datePeriod);
         }
 
         #endregion

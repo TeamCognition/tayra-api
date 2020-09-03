@@ -10,5 +10,14 @@ namespace Tayra.Models.Organizations
         {
             Value = tasks.Count(x => x.Status == TaskStatuses.Done);
         }
+        
+        public static WorkUnitsCompletedMetric[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
+        {
+            return tasks
+                .Where(x => x.SegmentId.HasValue)
+                .GroupBy(x => x.SegmentId)
+                .Select(s => new WorkUnitsCompletedMetric(s.AsEnumerable(), dateId, s.Key.Value))
+                .ToArray();
+        }
     }
 }

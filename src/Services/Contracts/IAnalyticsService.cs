@@ -1,9 +1,9 @@
-using Tayra.Common;
+using Cog.Core;
 
 namespace Tayra.Services
 {
     public interface IAnalyticsService
     {
-        MetricDto[] GetAnalyticsWithBreakdown(int profileId, int fromId, int toId);
+        AnalyticsMetricDto[] GetAnalyticsWithBreakdown(int entityId, string entityType, DatePeriod period);
     }
 }

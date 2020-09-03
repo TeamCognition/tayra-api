@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Cog.DAL;
 using Tayra.Common;
 
@@ -9,11 +10,12 @@ namespace Tayra.Models.Organizations
         public int ProfileId { get; private set; }
         public Profile Profile { get; set; }
         
-        public int? SegmentId { get; private set; }
-        public Segment Segment { get; set; }
         public int DateId { get; private set; }
         
         public MetricType Type { get; private set; }
+        
+        public int? SegmentId { get; private set; }
+        public Segment Segment { get; set; }
         
         public float Value { get; set; }
 
@@ -34,6 +36,11 @@ namespace Tayra.Models.Organizations
             DateId = metric.DateId;
             Type = metric.Type;
             Value = metric.Value;
+        }
+
+        public static ProfileMetric[] CreateRange(int profileId, SegmentMetric[] metric)
+        {
+            return metric.Select(x => new ProfileMetric(profileId, x)).ToArray();
         }
         
         #region ITimeStampedEntity

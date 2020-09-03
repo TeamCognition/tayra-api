@@ -20,11 +20,11 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public MetricDto[] GetAnalyticsWithBreakdown(int profileId, int fromId, int toId)
+        public AnalyticsMetricDto[] GetAnalyticsWithBreakdown(int entityId, string entityType, DatePeriod period)
         {
             var metrics = (from m in DbContext.ProfileMetrics
-                where m.DateId >= fromId && m.DateId <= toId
-                where m.ProfileId == profileId
+                where m.DateId >= period.FromId && m.DateId <= period.ToId
+                where m.ProfileId == entityId
                 select new MetricRaw
                 {
                     Type = m.Type,
@@ -32,7 +32,7 @@ namespace Tayra.Services
                     DateId = m.DateId
                 }).ToArray();
 
-            return MetricType.List.Select(type => new MetricDto(type, new DatePeriod(fromId, toId), metrics)).ToArray();
+            return MetricType.List.Select(type => new AnalyticsMetricDto(type, period, metrics)).ToArray();
         }
 
         #endregion

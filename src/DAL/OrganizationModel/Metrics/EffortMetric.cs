@@ -10,5 +10,14 @@ namespace Tayra.Models.Organizations
         {
             Value = tasks.Sum(x => x.EffortScore) ?? 0f;
         }
+        
+        public static EffortMetric[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
+        {
+            return tasks
+                .Where(x => x.SegmentId.HasValue)
+                .GroupBy(x => x.SegmentId)
+                .Select(s => new EffortMetric(s.AsEnumerable(), dateId, s.Key.Value))
+                .ToArray();
+        }
     }
 }

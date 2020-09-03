@@ -225,11 +225,11 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileMetric>(entity =>
             {
+                entity.HasKey(x => new { x.ProfileId, x.Type, x.DateId });
                 entity.Property(p => p.Type)
                     .HasConversion(
                         p => p.Value,
                         p => MetricType.FromValue(p));
-                entity.HasKey(x => new { x.ProfileId, x.SegmentId, x.Type, x.DateId });
             });
             
             modelBuilder.Entity<ProfilePraise>().HasKey(x => new { x.DateId, x.ProfileId, x.PraiserProfileId });

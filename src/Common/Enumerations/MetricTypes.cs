@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Ardalis.SmartEnum;
+using Ardalis.SmartEnum.JsonNet;
 using Cog.Core;
+using Newtonsoft.Json;
 
 namespace Tayra.Common
 {
@@ -32,97 +32,15 @@ namespace Tayra.Common
         ItemsDisenchanted = 22,
         Commits = 23,
     }
-
-    public class DatePeriod
-    {
-        public DateTime From { get; }
-
-        public DateTime To { get; }
-
-        public int FromId => DateHelper2.ToDateId(From);
-        public int ToId => DateHelper2.ToDateId(To);
-
-        public DatePeriod(int fromId, int toId)
-        {
-            if (fromId > toId)
-            {
-                throw new ApplicationException("'from' must be smaller than 'to'");
-            }
-
-            From = DateHelper2.ParseDate(fromId);
-            To = DateHelper2.ParseDate(toId);
-        }
-
-        public override string ToString() => $"{DateHelper2.ToDateId(From)}-{DateHelper2.ToDateId(To)}";
-
-        public DatePeriod(DateTime from, DateTime to)
-        {
-            if (from >= to)
-            {
-                throw new ApplicationException("'from' must be smaller than 'to'");
-            }
-            From = from;
-            To = to;
-        }
-        
-        public IEnumerable<DatePeriod> SplitToIterations(int iterationDaysCount = 7)
-        {
-            DateTime iterationFrom = From;
-            DateTime iterationTo;
-            do
-            {
-                var tempTo = iterationFrom.AddDays(iterationDaysCount);
-                iterationTo = tempTo >= To ? To : tempTo;
-                yield return new DatePeriod(iterationFrom, iterationTo);
-                iterationFrom = iterationTo.AddDays(1);
-            } while (iterationTo < To);
-        }
-    }
-
+    
     public class MetricRaw
     {
         public MetricType Type { get; set; }
         public float Value { get; set; }
         public int DateId { get; set; }
     }
-    
-    public class MetricDto
-    {
-        public MetricType Type { get; set; }
-        public float Value { get; set; }
-        public DatePeriod Period { get; set; }
-        public IterationBreakdownDto[] IterationsBreakdown { get; set; }
-        
-        public class IterationBreakdownDto
-        {
-            public DatePeriod Period { get; set; }
-            public BreakdownMetricDto[] Metrics { get; set; }
 
-            public IterationBreakdownDto(MetricType[] types, DatePeriod iterationPeriod, MetricRaw[] raws)
-            {
-                Period = iterationPeriod;
-                Metrics = types.Select(t => new BreakdownMetricDto()
-                {
-                    Type = t,
-                    Value = t.Calc(raws, iterationPeriod)
-                }).ToArray();
-            }
-            public class BreakdownMetricDto
-            {
-                public MetricType Type { get; set; }
-                public float Value { get; set; }   
-            }
-        }
-
-        public MetricDto(MetricType metricType, DatePeriod period, MetricRaw[] raws)
-        {
-            this.Type = metricType;
-            this.Value = metricType.Calc(raws, period);
-            this.Period = period;
-            this.IterationsBreakdown = period.SplitToIterations().Select(i => new IterationBreakdownDto(metricType.BuildingMetrics, i, raws)).ToArray();
-        }
-    }
-    
+    [JsonConverter(typeof(SmartEnumValueConverter<MetricType, int>))]
     public abstract class MetricType : SmartEnum<MetricType>
     {
         public static readonly MetricType Complexity = new PureType("Complexity", 4);

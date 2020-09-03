@@ -10,5 +10,14 @@ namespace Tayra.Models.Organizations
         {
             Value = tasks.Count(x => x.IsProductionBugFixing && x.BugSeverity > 3);
         }
+        
+        public static SavesMetric[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
+        {
+            return tasks
+                .Where(x => x.SegmentId.HasValue)
+                .GroupBy(x => x.SegmentId)
+                .Select(s => new SavesMetric(s.AsEnumerable(), dateId, s.Key.Value))
+                .ToArray();
+        }
     }
 }
