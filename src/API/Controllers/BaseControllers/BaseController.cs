@@ -28,6 +28,7 @@ namespace Tayra.API.Controllers
         private ISegmentsService _segmentsService;
         private IAnalyticsService _analyticsService;
         private IShopItemsService _shopItemsService;
+        private IAnalyticsService _analyticsService;
         private IAssistantService _assistantService;
         private IIdentitiesService _identitiesService;
         private IInventoriesService _inventoriesService;

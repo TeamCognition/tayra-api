@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Cog.Core;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 
@@ -11,36 +9,36 @@ namespace Tayra.Services.Analytics
 {
     public class AnalyticsService : BaseService<OrganizationDbContext>, IAnalyticsService
     {
-        
+
         #region Constructor
 
         public AnalyticsService(OrganizationDbContext dbContext) : base(dbContext)
         {
         }
-        
+
         #endregion
-        
+
         #region Public Methods
 
         public AnalyticsFilterRowDTO GetAnalyticsFilterRows(FilterRowBodyDTO body)
         {
-            
-            List<AnalyticsFilterRowDTO.AnalyticsEntity> rows = new List<AnalyticsFilterRowDTO.AnalyticsEntity>();;
-            
-            foreach(var x in body.Rows)
+
+            List<AnalyticsFilterRowDTO.AnalyticsEntity> rows = new List<AnalyticsFilterRowDTO.AnalyticsEntity>(); ;
+
+            foreach (var x in body.Rows)
             {
                 if (x.Type == "profile")
                 {
                     rows.Add((from prw in DbContext.ProfileReportsWeekly
-                        where prw.ProfileId == x.Id
-                        group prw by prw.DateId into g
-                        select new AnalyticsFilterRowDTO.AnalyticsEntity
-                        {
-                            Id = g.Select(y => y.ProfileId).FirstOrDefault(),
-                            Name = g.Select(y => y.Profile.FirstName + " " + y.Profile.LastName).FirstOrDefault(),
-                            Type = x.Type,
-                            MetricsValues = (new AnalyticsFilterRowDTO.AnalyticsEntity.Metric[]
-                            {
+                              where prw.ProfileId == x.Id
+                              group prw by prw.DateId into g
+                              select new AnalyticsFilterRowDTO.AnalyticsEntity
+                              {
+                                  Id = g.Select(y => y.ProfileId).FirstOrDefault(),
+                                  Name = g.Select(y => y.Profile.FirstName + " " + y.Profile.LastName).FirstOrDefault(),
+                                  Type = x.Type,
+                                  MetricsValues = (new AnalyticsFilterRowDTO.AnalyticsEntity.Metric[]
+                                  {
                                 new AnalyticsFilterRowDTO.AnalyticsEntity.Metric
                                 {
                                     Id = MetricTypes.Assist,
@@ -51,20 +49,21 @@ namespace Tayra.Services.Analytics
                                     Id = MetricTypes.Assist,
                                     Averages = g.Select(m => m.OImpactAverage).FirstOrDefault()
                                 }
-                            })
-                        }).FirstOrDefault());
-                } else if (x.Type == "segment")
+                                  })
+                              }).FirstOrDefault());
+                }
+                else if (x.Type == "segment")
                 {
                     rows.Add((from srw in DbContext.SegmentReportsWeekly
-                        where srw.SegmentId == x.Id
-                        group srw by srw.DateId into g
-                        select new AnalyticsFilterRowDTO.AnalyticsEntity
-                        {
-                            Id = g.Select(y => y.SegmentId).FirstOrDefault(),
-                            Name = g.Select(y => y.Segment.Name).FirstOrDefault(),
-                            Type = x.Type,
-                            MetricsValues = (new AnalyticsFilterRowDTO.AnalyticsEntity.Metric[]
-                            {
+                              where srw.SegmentId == x.Id
+                              group srw by srw.DateId into g
+                              select new AnalyticsFilterRowDTO.AnalyticsEntity
+                              {
+                                  Id = g.Select(y => y.SegmentId).FirstOrDefault(),
+                                  Name = g.Select(y => y.Segment.Name).FirstOrDefault(),
+                                  Type = x.Type,
+                                  MetricsValues = (new AnalyticsFilterRowDTO.AnalyticsEntity.Metric[]
+                                  {
                                 new AnalyticsFilterRowDTO.AnalyticsEntity.Metric
                                 {
                                     Id = MetricTypes.Assist,
@@ -75,20 +74,21 @@ namespace Tayra.Services.Analytics
                                     Id = MetricTypes.Assist,
                                     Averages = g.Select(m => m.OImpactAverage).FirstOrDefault()
                                 }
-                            })
-                        }).FirstOrDefault());
-                } else if (x.Type == "team")
+                                  })
+                              }).FirstOrDefault());
+                }
+                else if (x.Type == "team")
                 {
                     rows.Add((from trw in DbContext.TeamReportsWeekly
-                        where trw.SegmentId == x.Id
-                        group trw by trw.DateId into g
-                        select new AnalyticsFilterRowDTO.AnalyticsEntity
-                        {
-                            Id = g.Select(y => y.SegmentId).FirstOrDefault(),
-                            Name = g.Select(y => y.Team.Name).FirstOrDefault(),
-                            Type = x.Type,
-                            MetricsValues = (new AnalyticsFilterRowDTO.AnalyticsEntity.Metric[]
-                            {
+                              where trw.SegmentId == x.Id
+                              group trw by trw.DateId into g
+                              select new AnalyticsFilterRowDTO.AnalyticsEntity
+                              {
+                                  Id = g.Select(y => y.SegmentId).FirstOrDefault(),
+                                  Name = g.Select(y => y.Team.Name).FirstOrDefault(),
+                                  Type = x.Type,
+                                  MetricsValues = (new AnalyticsFilterRowDTO.AnalyticsEntity.Metric[]
+                                  {
                                 new AnalyticsFilterRowDTO.AnalyticsEntity.Metric
                                 {
                                     Id = MetricTypes.Assist,
@@ -99,10 +99,10 @@ namespace Tayra.Services.Analytics
                                     Id = MetricTypes.Assist,
                                     Averages = g.Select(m => m.OImpactAverage).FirstOrDefault()
                                 }
-                            })
-                        }).FirstOrDefault());
+                                  })
+                              }).FirstOrDefault());
                 }
-                
+
             }
 
             return new AnalyticsFilterRowDTO
@@ -110,7 +110,22 @@ namespace Tayra.Services.Analytics
                 MetricsRows = rows
             };
         }
-        
+
+        public AnalyticsMetricDto[] GetAnalyticsWithBreakdown(int entityId, string entityType, DatePeriod period)
+        {
+            var metrics = (from m in DbContext.ProfileMetrics
+                           where m.DateId >= period.FromId && m.DateId <= period.ToId
+                           where m.ProfileId == entityId
+                           select new MetricRaw
+                           {
+                               Type = m.Type,
+                               Value = m.Value,
+                               DateId = m.DateId
+                           }).ToArray();
+
+            return MetricType.List.Select(type => new AnalyticsMetricDto(type, period, metrics)).ToArray();
+        }
+
         #endregion
     }
 }

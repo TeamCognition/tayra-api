@@ -8,6 +8,10 @@
    <ItemGroup>
      <ProjectReference Include="..\..\cog\Cog.Core\Cog.Core.csproj" />
    </ItemGroup>
+
+   <ItemGroup>
+     <PackageReference Include="Ardalis.SmartEnum.JsonNet" Version="1.0.3" />
+   </ItemGroup>
     
     <ProjectExtensions>
       <MonoDevelop>

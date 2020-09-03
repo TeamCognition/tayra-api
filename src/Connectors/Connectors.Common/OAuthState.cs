@@ -31,7 +31,7 @@ namespace Tayra.Connectors.Common
                 TenantKey = stateProps[3];
                 ReturnPath = stateProps[4];
             }
-            catch (Exception e)
+            catch (Exception _)
             {
                 throw new ApplicationException("could not parse oAuthString");
             }

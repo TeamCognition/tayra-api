@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200903115916_UpdateProfileMetricsTable")]
+    partial class UpdateProfileMetricsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1007,6 +1009,8 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     b.Property<int>("ProfileId");
 
+                    b.Property<int?>("SegmentId");
+
                     b.Property<int>("Type");
 
                     b.Property<int>("DateId");
@@ -1017,11 +1021,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<DateTime?>("LastModified");
 
-                    b.Property<int?>("SegmentId");
-
                     b.Property<float>("Value");
 
-                    b.HasKey("ProfileId", "Type", "DateId", "OrganizationId");
+                    b.HasKey("ProfileId", "SegmentId", "Type", "DateId", "OrganizationId");
 
                     b.HasIndex("OrganizationId");
 

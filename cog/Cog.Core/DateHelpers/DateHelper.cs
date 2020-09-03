@@ -6,37 +6,41 @@ namespace Cog.Core
     {
         public static DateRange FindPeriod(DateRanges range)
         {
-            var today = DateTime.Today;
+            var today = DateTime.UtcNow.Date;
             var yesterday = today.Subtract(TimeSpan.FromDays(1));
             switch (range)
             {
                 case DateRanges.Custom:
-                    {
-                        return null;
-                    }
+                {
+                    return null;
+                }
                 case DateRanges.Last30Days:
-                    {
-                        return new DateRange(today.Subtract(TimeSpan.FromDays(30)), yesterday);
-                    }
+                {
+                    return new DateRange(today.Subtract(TimeSpan.FromDays(30)), yesterday);
+                }
+                case DateRanges.Last28Days:
+                {
+                    return new DateRange(today.Subtract(TimeSpan.FromDays(28)), yesterday);
+                }
                 case DateRanges.Last7Days:
-                    {
-                        return new DateRange(today.Subtract(TimeSpan.FromDays(7)), yesterday);
-                    }
+                {
+                    return new DateRange(today.Subtract(TimeSpan.FromDays(7)), yesterday);
+                }
                 case DateRanges.LastMonth:
-                    {
-                        var aMonthAgo = today.Subtract(TimeSpan.FromDays(30));
-                        var start = new DateTime(aMonthAgo.Year, aMonthAgo.Month, 1);
-                        var end = start.AddMonths(1).Subtract(TimeSpan.FromSeconds(1));
-                        return new DateRange(start, end);
-                    }
+                {
+                    var aMonthAgo = today.Subtract(TimeSpan.FromDays(30));
+                    var start = new DateTime(aMonthAgo.Year, aMonthAgo.Month, 1);
+                    var end = start.AddMonths(1).Subtract(TimeSpan.FromSeconds(1));
+                    return new DateRange(start, end);
+                }
                 case DateRanges.LastWeek:
-                    {
-                        var aWeekAgo = today.Subtract(TimeSpan.FromDays(7));
-                        var start = aWeekAgo.Subtract(TimeSpan.FromDays((int)aWeekAgo.DayOfWeek));
-                        var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
-                        return new DateRange(start, end);
-                    }
-                case DateRanges.Last4Week:
+                {
+                    var aWeekAgo = today.Subtract(TimeSpan.FromDays(7));
+                    var start = aWeekAgo.Subtract(TimeSpan.FromDays((int)aWeekAgo.DayOfWeek));
+                    var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
+                    return new DateRange(start, end);
+                }
+                case DateRanges.Last4Week://probably doesnt work
                 {
                     var fourWeeksAgo = today.Subtract(TimeSpan.FromDays(7 * 4));
                     var start = fourWeeksAgo.Add(TimeSpan.FromDays(7 - (int)fourWeeksAgo.DayOfWeek));

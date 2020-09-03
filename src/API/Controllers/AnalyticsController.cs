@@ -1,4 +1,5 @@
 using System;
+using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -14,7 +15,7 @@ namespace Tayra.API.Controllers
         }
 
         #endregion
-        
+
         #region Properties
 
         protected OrganizationDbContext OrganizationContext;
@@ -22,13 +23,20 @@ namespace Tayra.API.Controllers
         #endregion
 
         #region Action Methods
-        
+
         [HttpPost("filterRows")]
-        public ActionResult<AnalyticsFilterRowDTO> GetAnalyticsFilterRows([FromBody]FilterRowBodyDTO body)
+        public ActionResult<AnalyticsFilterRowDTO> GetAnalyticsFilterRows([FromBody] FilterRowBodyDTO body)
         {
             return Ok(AnalyticsService.GetAnalyticsFilterRows(body));
         }
-        
+
+        [HttpGet("")]
+        public ActionResult<AnalyticsMetricDto[]> GetAnalyticsWithBreakdown([FromQuery] int entityId, [FromQuery] string entityType, [FromQuery] string period)
+        {
+            var datePeriod = new DatePeriod(period);
+            return AnalyticsService.GetAnalyticsWithBreakdown(entityId, entityType, datePeriod);
+        }
+
         #endregion
     }
 }

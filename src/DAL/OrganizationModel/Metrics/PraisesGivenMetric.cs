@@ -5,7 +5,7 @@ namespace Tayra.Models.Organizations
 {
     public class PraisesGivenMetric : Metric
     {
-        public PraisesGivenMetric(ProfilePraise[] praises, int profileId, int dateId) : base(MetricTypes.PraisesGiven, dateId)
+        public PraisesGivenMetric(ProfilePraise[] praises, int profileId, int dateId) : base(MetricType.PraisesGiven, dateId)
         {
             Value = praises.Count(x => x.PraiserProfileId == profileId);
         }

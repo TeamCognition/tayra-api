@@ -6,7 +6,7 @@ namespace Tayra.Models.Organizations
 {
     public class GiftsSentMetric : Metric
     {
-        public GiftsSentMetric(IEnumerable<ItemGift> gifts, int dateId): base(MetricTypes.GiftsSent, dateId)
+        public GiftsSentMetric(IEnumerable<ItemGift> gifts, int dateId) : base(MetricType.GiftsSent, dateId)
         {
             Value = gifts.Count();
         }
