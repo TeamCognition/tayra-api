@@ -14,7 +14,7 @@ namespace Tayra.Connectors.Common
         public OAuthState(string tenantKey, int profileId, int segmentId, bool isSegmentAuth, string returnPath)
         {
             ProfileId = profileId;
-            SegmentId = segmentId;    
+            SegmentId = segmentId;
             IsSegmentAuth = isSegmentAuth;
             ReturnPath = returnPath;
             TenantKey = tenantKey;
@@ -31,7 +31,7 @@ namespace Tayra.Connectors.Common
                 TenantKey = stateProps[3];
                 ReturnPath = stateProps[4];
             }
-            catch (Exception _)
+            catch (Exception)
             {
                 throw new ApplicationException("could not parse oAuthString");
             }
@@ -41,7 +41,7 @@ namespace Tayra.Connectors.Common
             Cipher.Encrypt(JoinProps())
                 .Base64UrlEncode();
 
-        
+
         private const char _separator = '|';
         private string JoinProps() => string.Join(_separator, ProfileId, SegmentId, IsSegmentAuth, TenantKey, ReturnPath);
         private string[] SplitProps(string joined) => joined.Split(_separator);
