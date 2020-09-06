@@ -702,19 +702,19 @@ namespace Tayra.Models.Seeder
                 switch (item.Rarity)
                 {
                     case ItemRarities.Common:
-                        item.Price = 100;
+                        item.Price = 30;
                         break;
 
                     case ItemRarities.Rare:
-                        item.Price = 220;
+                        item.Price = 70;
                         break;
 
                     case ItemRarities.Epic:
-                        item.Price = 550;
+                        item.Price = 120;
                         break;
 
                     case ItemRarities.Legendary:
-                        item.Price = 1800;
+                        item.Price = 250;
                         break;
                 }
 

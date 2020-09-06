@@ -29,7 +29,7 @@ namespace Cog.Core
 
         public DatePeriod(DateTime from, DateTime to)
         {
-            if (from >= to)
+            if (from > to)
             {
                 throw new ApplicationException("'from' must be smaller than 'to'");
             }
@@ -43,7 +43,7 @@ namespace Cog.Core
             var from = DateHelper2.ParseDate(dates[0]);
             var to = DateHelper2.ParseDate(dates[1]);
             
-            if (from >= to)
+            if (from > to)
             {
                 throw new ApplicationException("'from' must be smaller than 'to'");
             }

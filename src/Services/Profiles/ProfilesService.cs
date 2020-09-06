@@ -10,7 +10,9 @@ using MoreLinq;
 using Newtonsoft.Json;
 using RestSharp.Extensions;
 using Tayra.Common;
-using Tayra.Mailer;
+ using Tayra.Connectors.Atlassian;
+ using Tayra.Connectors.Common;
+ using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using DateRanges = Cog.Core.DateRanges;
@@ -58,9 +60,9 @@ namespace Tayra.Services
             return DbContext.Profiles.FirstOrDefault(x => x.IdentityId == ie.IdentityId);
         }
 
-        public Profile GetMemberByExternalId(string externalId, IntegrationType integrationType)
+        public Profile GetProfileByExternalId(string externalId, IntegrationType integrationType)
         {
-            var pe = DbContext.ProfileExternalIds.Include(x => x.Profile).FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType && x.Profile.Role == ProfileRoles.Member);
+            var pe = DbContext.ProfileExternalIds.Include(x => x.Profile).FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType);
 
             //pe.EnsureNotNull(externalId, integrationType);
 
@@ -696,10 +698,30 @@ namespace Tayra.Services
                              LastModifiedDateId = t.LastModifiedDateId
                          }).ToArray();
 
+            string jiraBoardUrl = null;
+            var segmentId = DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == profileId)?.SegmentId;
+            if (segmentId != null)
+            {
+                var sFields = DbContext.Integrations
+                    .Where(x => x.SegmentId == segmentId && x.ProfileId == null && x.Type == IntegrationType.ATJ)
+                    .Select(x => x.Fields).FirstOrDefault();
+
+                var pFields = DbContext.Integrations
+                    .Where(x => x.SegmentId == segmentId && x.ProfileId == profileId && x.Type == IntegrationType.ATJ)
+                    .Select(x => x.Fields).FirstOrDefault();
+                if (sFields != null && pFields != null)
+                {
+                    var jiraSiteName = sFields.FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
+                    var profileExternalId = pFields.FirstOrDefault(x => x.Key == Constants.PROFILE_EXTERNAL_ID)?.Value;
+                    jiraBoardUrl = $"https://{jiraSiteName}.atlassian.net/secure/RapidBoard.jspa?rapidView=6&assignee={profileExternalId}";
+                }
+            }
+
             return new ProfileViewDTO.PulseDTO
             {
                 InProgress = tasks.Select(x => x.DTO).Where(x => x.Status == TaskStatuses.InProgress).ToArray(),
-                RecentlyDone = tasks.Select(x => x.DTO).Where(x => x.Status == TaskStatuses.Done).ToArray()
+                RecentlyDone = tasks.Select(x => x.DTO).Where(x => x.Status == TaskStatuses.Done).ToArray(),
+                JiraBoardUrl = jiraBoardUrl
             };
         }
 

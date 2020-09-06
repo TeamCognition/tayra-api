@@ -4,6 +4,7 @@ using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
+using Tayra.Connectors.Atlassian;
 using Tayra.Models.Organizations;
 using DateRanges = Cog.Core.DateRanges;
 
@@ -362,14 +363,30 @@ namespace Tayra.Services
 
             var yesterdayDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-1));
 
+            string jiraBoardUrl = null;
+            var segmentId = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey)?.SegmentId;
+            if (segmentId != null)
+            {
+                var sFields = DbContext.Integrations
+                    .Where(x => x.SegmentId == segmentId && x.ProfileId == null && x.Type == IntegrationType.ATJ)
+                    .Select(x => x.Fields).FirstOrDefault();
+
+                if (sFields != null)
+                {
+                    var jiraSiteName = sFields.FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
+                    jiraBoardUrl = $"https://{jiraSiteName}.atlassian.net/secure/RapidBoard.jspa?rapidView=6";
+                }
+            }
+            
             return (from t in DbContext.Tasks
                     where teamMembers.Contains(t.AssigneeProfileId.Value)
                     where t.Status == TaskStatuses.InProgress || (t.Status == TaskStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)
                     group t by 1 into g
                     select new TeamPulseDTO
                     {
-                        InProgress = g.Where(x => x.Status == TaskStatuses.InProgress).Count(),
-                        RecentlyDone = g.Where(x => x.Status == TaskStatuses.Done).Count()
+                        InProgress = g.Count(x => x.Status == TaskStatuses.InProgress),
+                        RecentlyDone = g.Count(x => x.Status == TaskStatuses.Done),
+                        JiraBoardUrl = jiraBoardUrl
                     }).FirstOrDefault();
         }
 

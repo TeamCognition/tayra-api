@@ -38,7 +38,7 @@ namespace Tayra.Services.TaskConverters
             BasicTaskDataUpdated = true;
             if (GetAssigneeExternalId() != null)
             {
-                AssigneeProfile = ProfilesService.GetMemberByExternalId(GetAssigneeExternalId(), GetIntegrationType());
+                AssigneeProfile = ProfilesService.GetProfileByExternalId(GetAssigneeExternalId(), GetIntegrationType());
             }
             Data = new TaskAddOrUpdateDTO
             {

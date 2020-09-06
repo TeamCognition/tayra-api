@@ -27,7 +27,7 @@ namespace Tayra.Services.TaskConverters
                                  TaskConverterMode mode = TaskConverterMode.NORMAL)
                                  : base(dbContext, profilesService)
         {
-            Init(new JiraWebhookEvent {JiraIssue = jiraIssue}, mode);
+            Init(new JiraWebhookEvent { JiraIssue = jiraIssue }, mode);
         }
 
         private void Init(JiraWebhookEvent we, TaskConverterMode mode)
@@ -134,7 +134,7 @@ namespace Tayra.Services.TaskConverters
         {
             if (Mode == TaskConverterMode.TEST)
                 return null;
-            
+
             var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
             int? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
             if (!integrationId.HasValue)
@@ -181,7 +181,7 @@ namespace Tayra.Services.TaskConverters
                     enteredRewardStatus = null;
                 }
             }
-                
+
             if (!enteredInProgress.HasValue)
             {
                 if (!enteredRewardStatus.HasValue)
@@ -204,7 +204,7 @@ namespace Tayra.Services.TaskConverters
 
         protected override string GetIssueUrl()
         {
-            var jiraSiteName = GetIntegrationFields().FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME);
+            var jiraSiteName = GetIntegrationFields().FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
             return $"https://{jiraSiteName}.atlassian.net/browse/{GetExternalId()}";
         }
 

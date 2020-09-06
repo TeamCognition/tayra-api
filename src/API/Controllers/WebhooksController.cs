@@ -89,7 +89,7 @@ namespace Tayra.API.Controllers
                 if(!commit.Distinct)
                     continue;
 
-                var authorProfile = ProfilesService.GetMemberByExternalId(commit.Author.Username, IntegrationType.GH);
+                var authorProfile = ProfilesService.GetProfileByExternalId(commit.Author.Username, IntegrationType.GH);
                 DbContext.Add(new GitCommit
                 {
                     SHA = commit.Id,

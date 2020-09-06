@@ -11,7 +11,7 @@ namespace Tayra.Services
         Profile GetByIdentityId(int identityId);
         Profile GetByUsername(string username);
         Profile GetByEmail(string email);
-        Profile GetMemberByExternalId(string externalId, IntegrationType integrationType);
+        Profile GetProfileByExternalId(string externalId, IntegrationType integrationType);
         bool IsUsernameUnique(string username);
         GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams);
         GridData<ProfileSummaryGridDTO> GetGridDataWithSummary(int profileId, ProfileSummaryGridParams gridParams);
