@@ -6,7 +6,10 @@ namespace Tayra.Services
 {
     public interface IAnalyticsService
     {
-        Dictionary<int, AnalyticsMetricDto> GetMetrics(List<MetricType> metricTypes, int entityId, string entityType, DatePeriod period);
-        Dictionary<int, AnalyticsMetricDto> GetAnalyticsWithBreakdown(int entityId, string entityType, DatePeriod period);
+        Dictionary<int, AnalyticsMetricDto> GetMetrics(MetricType[] metricTypes, int entityId, EntityTypes entityType, DatePeriod period);
+
+        Dictionary<int, AnalyticsMetricWithIterationSplitDto> GetMetricsWithIterationSplit(MetricType[] metricsTypes,
+            int entityId, EntityTypes entityType, DatePeriod period);
+        Dictionary<int, AnalyticsMetricWithBreakdownDto> GetMetricsWithBreakdown(int entityId, EntityTypes entityType, DatePeriod period);
     }
 }

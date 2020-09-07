@@ -1,33 +1,36 @@
 using System;
+using System.Linq;
 using Cog.DAL;
 using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfileMetrics : ITimeStampedEntity
+    public class SegmentMetric: ITimeStampedEntity
     {
-        public int ProfileId { get; private set; }
-        public Profile Profile { get; set; }
-
         public int SegmentId { get; private set; }
         public Segment Segment { get; set; }
+        
         public int DateId { get; private set; }
-
+        
         public MetricType Type { get; private set; }
 
         public float Value { get; set; }
 
-        private ProfileMetrics() { }
+        protected SegmentMetric(){}
 
-        public ProfileMetrics(int profileId, int segmentId, Metric metric)
+        public SegmentMetric(int segmentId, ProfileMetric profileMetric)
         {
-            ProfileId = profileId;
             SegmentId = segmentId;
-            DateId = metric.DateId;
-            Type = metric.Type;
-            Value = metric.Value;
+            DateId = profileMetric.DateId;
+            Type = profileMetric.Type;
+            Value = profileMetric.Value;
         }
 
+        // public static SegmentMetric[] CreateRange(int segmentId, Metric[] metric)
+        // {
+        //     return metric.Select(x => new SegmentMetric(segmentId, x)).ToArray();
+        // }
+        
         #region ITimeStampedEntity
 
         public DateTime Created { get; set; }

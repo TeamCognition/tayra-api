@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tayra.Common;
+using Tayra.Models.Organizations;
 
-namespace Tayra.Models.Organizations
+namespace Tayra.SyncServices.Metrics
 {
-    public class ComplexityMetric : SegmentMetric
+    public class ComplexityMetric : MetricWithSegment
     {
         private ComplexityMetric(IEnumerable<Task> tasks, int dateId, int segmentId) : base(MetricType.Complexity, dateId, segmentId)
         {

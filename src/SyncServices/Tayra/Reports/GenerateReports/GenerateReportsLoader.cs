@@ -54,7 +54,8 @@ namespace Tayra.SyncServices.Tayra
 
                     do
                     {
-                        var testing = NewProfileMetricsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService);
+                        var profileMetrics = NewProfileMetricsLoader.GenerateProfileMetrics(organizationDb, date, LogService);
+                        var segmentMetrics = NewSegmentMetricsLoader.GenerateSegmentMetrics(organizationDb, date, LogService);
                         // var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService, segmentIds);
                         // var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService, segmentIds);
                         //

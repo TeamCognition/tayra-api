@@ -93,6 +93,7 @@ namespace Tayra.Models.Organizations
         public DbSet<Repository> Repositories { get; set; }
         public DbSet<Segment> Segments { get; set; }
         public DbSet<SegmentArea> SegmentAreas { get; set; }
+        public DbSet<SegmentMetric> SegmentMetrics { get; set; }
         public DbSet<SegmentReportDaily> SegmentReportsDaily { get; set; }
         public DbSet<SegmentReportWeekly> SegmentReportsWeekly { get; set; }
         public DbSet<Shop> Shops { get; set; }
@@ -247,6 +248,14 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<Segment>().HasIndex(nameof(Segment.Key), ArchivedAtProp).IsUnique();
             modelBuilder.Entity<SegmentArea>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<SegmentMetric>(entity =>
+            {
+                entity.HasKey(x => new { x.SegmentId, x.Type, x.DateId });
+                entity.Property(p => p.Type)
+                    .HasConversion(
+                        p => p.Value,
+                        p => MetricType.FromValue(p));
+            });
             modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
             modelBuilder.Entity<SegmentReportWeekly>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
 

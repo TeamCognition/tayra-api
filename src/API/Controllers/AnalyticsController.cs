@@ -27,18 +27,18 @@ namespace Tayra.API.Controllers
         #region Action Methods
         
         [HttpGet("metrics")]
-        public ActionResult<Dictionary<int, AnalyticsMetricDto>> GetMetrics([FromQuery] List<MetricType> metricTypes, [FromQuery] int entityId, [FromQuery] string entityType, [FromQuery] string period)
+        public ActionResult<Dictionary<int, AnalyticsMetricDto>> GetMetrics([FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
         {
             var datePeriod = new DatePeriod(period);
-            metricTypes = new List<MetricType>() {MetricType.Impact, MetricType.ItemsInInventory};
+            var metricTypes = new MetricType[] {};
             return AnalyticsService.GetMetrics(metricTypes, entityId, entityType, datePeriod);
         }
         
-        [HttpGet("")]
-        public ActionResult<Dictionary<int, AnalyticsMetricDto>> GetAnalyticsWithBreakdown([FromQuery] int entityId, [FromQuery] string entityType, [FromQuery] string period)
+        [HttpGet("metricsWithBreakdown")]
+        public ActionResult<Dictionary<int, AnalyticsMetricWithBreakdownDto>> GetAnalyticsWithBreakdown([FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
         {
             var datePeriod = new DatePeriod(period);
-            return AnalyticsService.GetAnalyticsWithBreakdown(entityId, entityType, datePeriod);
+            return AnalyticsService.GetMetricsWithBreakdown(entityId, entityType, datePeriod);
         }
 
         #endregion

@@ -1,6 +1,4 @@
-using Tayra.Common;
-
-namespace Tayra.Models.Organizations
+namespace Tayra.Common
 {
     public abstract class Metric
     {
@@ -12,6 +10,13 @@ namespace Tayra.Models.Organizations
         {
             this.Type = type;
             this.DateId = dateId;
+        }
+        
+        protected Metric(MetricType type, int dateId, float value)
+        {
+            this.Type = type;
+            this.DateId = dateId;
+            this.Value = value;
         }
     }
 }

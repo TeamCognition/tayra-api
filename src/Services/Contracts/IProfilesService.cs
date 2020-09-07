@@ -20,7 +20,6 @@ namespace Tayra.Services
         ProfileUpdateDTO GetUpdateProfileData(int profileId);
         void UpdateProfile(int profileId, ProfileUpdateDTO dto);
         void TogglePersonalAnalytics(int profileId);
-        ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId);
         ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition);
         ProfileRawScoreDTO GetProfileRawScoreDTO(string username);
         void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto);

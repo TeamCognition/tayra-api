@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tayra.Common;
+using Tayra.Models.Organizations;
 
-namespace Tayra.Models.Organizations
+namespace Tayra.SyncServices.Metrics
 {
-    public class WorkUnitsCompletedMetric : SegmentMetric
+    public class WorkUnitsCompletedMetric : MetricWithSegment
     {
         public WorkUnitsCompletedMetric(IEnumerable<Task> tasks, int dateId, int segmentId) : base(MetricType.TasksCompleted, dateId, segmentId)
         {

@@ -9,6 +9,7 @@ using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.SyncServices.Common;
+using Tayra.SyncServices.Metrics;
 
 namespace Tayra.SyncServices.Tayra
 {
@@ -38,7 +39,7 @@ namespace Tayra.SyncServices.Tayra
                 LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
-                    GenerateProfileReportsDaily(organizationDb, date, LogService);
+                    GenerateProfileMetrics(organizationDb, date, LogService);
                 }
             }
         }
@@ -48,7 +49,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Private Methods
 
-        public static List<ProfileMetric> GenerateProfileReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService)
+        public static List<ProfileMetric> GenerateProfileMetrics(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService)
         {
             var metricsToInsert = new List<ProfileMetric>();
 
@@ -131,16 +132,12 @@ namespace Tayra.SyncServices.Tayra
                 var iGiftR = giftsReceived.Where(x => x.ReceiverId == p.Id);
                 var inv = inventory.Where(x => x.ProfileId == p.Id);
                 var commits = gitCommitsToday.Where(x => x.AuthorProfileId == p.Id);
-
-                var prm = new PraisesReceivedMetric(praises, p.Id, dateId);
-
-                metricsToInsert.Add(new ProfileMetric(p.Id, prm));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new AssistMetric(prm)));
+                
+                metricsToInsert.Add(new ProfileMetric(p.Id, new PraisesReceivedMetric(praises, p.Id, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new PraisesGivenMetric(praises, p.Id, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new TokensEarnedMetric(t, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new TokensSpentMetric(t, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new ItemsInInventoryMetric(inv, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new InventoryValueMetric(inv, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, new InventoryValueChangeMetric(inv, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new ItemsBoughtMetric(sp, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new GiftsSentMetric(iGiftS, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new GiftsReceivedMetric(iGiftR, dateId)));
@@ -149,8 +146,8 @@ namespace Tayra.SyncServices.Tayra
 
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, EffortMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ComplexityMetric.CreateForEverySegment(ts, dateId)));
-                metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ErrorsMetric.CreateForEverySegment(ts, dateId)));
-                metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, SavesMetric.CreateForEverySegment(ts, dateId)));
+                //metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ErrorsMetric.CreateForEverySegment(ts, dateId)));
+                //metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, SavesMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, TimeWorkedMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, TimeWorkedLoggedMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, WorkUnitsCompletedMetric.CreateForEverySegment(ts, dateId)));
@@ -169,7 +166,7 @@ namespace Tayra.SyncServices.Tayra
 
             organizationDb.SaveChanges();
 
-            logService.Log<GenerateProfileReportsLoader>($"{metricsToInsert.Count} new profile metrics saved to database.");
+            logService.Log<NewProfileMetricsLoader>($"{metricsToInsert.Count} new profile metrics saved to database.");
             return metricsToInsert;
         }
 
