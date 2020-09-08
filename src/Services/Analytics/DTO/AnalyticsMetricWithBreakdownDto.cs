@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
@@ -7,12 +8,14 @@ namespace Tayra.Services
 {
     public class AnalyticsMetricWithBreakdownDto
     {
+        public DateTime? LastUpdateAt { get; set; }
         public DatePeriod Period { get; set; }
         public float Value { get; set; }
         public IterationBreakdownDto[] IterationsBreakdown { get; set; }
     
-        public AnalyticsMetricWithBreakdownDto(MetricType metricType, DatePeriod period, MetricRaw[] raws)
+        public AnalyticsMetricWithBreakdownDto(MetricType metricType, DatePeriod period, MetricRaw[] raws, DateTime lastUpdatedAt)
         {
+            this.LastUpdateAt = lastUpdatedAt;
             this.Period = period;
             this.Value = metricType.Calc(raws, period);
             this.IterationsBreakdown = period.SplitToIterations().Select(i => new IterationBreakdownDto(metricType.BuildingMetrics.Append(metricType).ToArray(), i, raws)).ToArray();

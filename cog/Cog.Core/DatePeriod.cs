@@ -34,8 +34,8 @@ namespace Cog.Core
                 throw new ApplicationException("'from' must be smaller than 'to'");
             }
 
-            From = from;
-            To = to;
+            From = from.Date;
+            To = to.Date;
         }
 
         public DatePeriod(string datePeriodString)
@@ -71,7 +71,7 @@ namespace Cog.Core
             do
             {
                 var tempTo = iterationFrom.AddDays(iterationDaysCount - 1);
-                iterationTo = tempTo >= To ? To : tempTo;
+                iterationTo = tempTo >= To ? new DateTime(To.Year, To.Month, To.Day) : tempTo;
                 yield return new DatePeriod(iterationFrom, iterationTo);
                 iterationFrom = iterationTo.AddDays(1);
             } while (iterationTo < To);

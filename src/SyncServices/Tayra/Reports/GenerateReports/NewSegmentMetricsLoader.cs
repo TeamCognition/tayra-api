@@ -51,11 +51,7 @@ namespace Tayra.SyncServices.Tayra
         public static List<SegmentMetric> GenerateSegmentMetrics(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService)
         {
             var metricsToInsert = new List<SegmentMetric>();
-
-            var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
-            if (companyTokenId == 0)
-                throw new ApplicationException("COMPANY TOKEN NOT FOUND");
-
+            
             var dateId = DateHelper2.ToDateId(fromDay);
 
             var segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
@@ -70,13 +66,15 @@ namespace Tayra.SyncServices.Tayra
 
                 metricsToInsert.AddRange(organizationDb.ProfileMetrics
                     .Where(x => x.DateId == dateId && profileIds.Contains(x.ProfileId))
-                    .Select(x => new SegmentMetric(segmentId, x)));
+                    .Where(x => x.SegmentId == null || x.SegmentId == segmentId )
+                    .GroupBy(x => x.Type)
+                    .Select(x => new SegmentMetric(segmentId, dateId, x.Key, x.Sum(v => v.Value))));
             }
 
             var existing = organizationDb.ProfileMetrics.Count(x => x.DateId == dateId);
             if (existing > 0)
             {
-                logService.Log<ProfileReportDaily>($"deleting {existing} records from database");
+                logService.Log<ProfileReportDaily>($"date: ${dateId},  deleting {existing} records from database");
                 //organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}");
                 organizationDb.Database.ExecuteSqlCommand($"delete from SegmentMetrics where {nameof(ProfileReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
                 organizationDb.SaveChanges();
@@ -86,7 +84,7 @@ namespace Tayra.SyncServices.Tayra
 
             organizationDb.SaveChanges();
 
-            logService.Log<NewSegmentMetricsLoader>($"{metricsToInsert.Count} new profile metrics saved to database.");
+            logService.Log<NewSegmentMetricsLoader>($"date: ${dateId}, {metricsToInsert.Count} new segment metrics saved to database.");
             return metricsToInsert;
         }
 

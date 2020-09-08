@@ -93,6 +93,11 @@ namespace Tayra.Services
                 scope = scope.Where(x => !profileIds.Contains(x.Id));
             }
 
+            if (gridParams.AnalyticsEnabledOnly.HasValue)
+            {
+                scope = scope.Where(x => x.IsAnalyticsEnabled);
+            }
+            
             if (!string.IsNullOrEmpty(gridParams.UsernameQuery) && !string.IsNullOrEmpty(gridParams.NameQuery))
                 scope = scope.Chain(ChainType.OR, byUsername, byName);
             else
@@ -321,7 +326,7 @@ namespace Tayra.Services
                 {
                     MetricType.TasksCompleted, MetricType.Assists, MetricType.TimeWorked, MetricType.TokensEarned,
                     MetricType.TokensSpent, MetricType.ItemsBought
-                }, profile.Id, "", new DatePeriod(new DateTime(2020, 06, 01), DateTime.UtcNow));
+                }, profile.Id, EntityTypes.Profile, new DatePeriod(new DateTime(2020, 06, 01), DateTime.UtcNow));
             
             
             return (from r in DbContext.ProfileMetrics
@@ -433,26 +438,25 @@ namespace Tayra.Services
         public ProfileStatsDTO GetProfileStatsData(int profileId)
         {
             var analyticsService = new AnalyticsService(DbContext);
+
+            var metricList = new[]
+            {
+                MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists,
+                MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
+            };
             
             var profileMetrics = analyticsService.GetMetricsWithIterationSplit(
-                new[]
-                {
-                    MetricType.TasksCompleted, MetricType.Assists, MetricType.TimeWorked, MetricType.TokensEarned,
-                    MetricType.TokensSpent, MetricType.ItemsBought
-                }, profileId, EntityTypes.Profile, new DatePeriod(DateTime.UtcNow.AddDays(-28), DateTime.UtcNow));
+                metricList, profileId, EntityTypes.Profile, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
          
             var firstSegmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId)
                 .Select(x => x.SegmentId).FirstOrDefault();
             
             var segmentMetrics = analyticsService.GetMetricsWithIterationSplit(
-                new[]
-                {
-                    MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Complexity,
-                    MetricType.Assists, MetricType.TasksCompleted
-                }, firstSegmentId, EntityTypes.Segment, new DatePeriod(DateTime.UtcNow.AddDays(-28), DateTime.UtcNow));
+                metricList, firstSegmentId, EntityTypes.Segment, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
 
             return new ProfileStatsDTO
             {
+                LastUpdateAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefault(),
                 ProfileMetrics = profileMetrics,
                 AssignmentMetrics = segmentMetrics
             };

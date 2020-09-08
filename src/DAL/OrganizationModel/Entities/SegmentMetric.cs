@@ -18,12 +18,12 @@ namespace Tayra.Models.Organizations
 
         protected SegmentMetric(){}
 
-        public SegmentMetric(int segmentId, ProfileMetric profileMetric)
+        public SegmentMetric(int segmentId, int dateId, MetricType type, float value)
         {
             SegmentId = segmentId;
-            DateId = profileMetric.DateId;
-            Type = profileMetric.Type;
-            Value = profileMetric.Value;
+            DateId = dateId;
+            Type = type;
+            Value = value;
         }
 
         // public static SegmentMetric[] CreateRange(int segmentId, Metric[] metric)

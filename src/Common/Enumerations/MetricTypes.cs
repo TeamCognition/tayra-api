@@ -186,12 +186,14 @@ namespace Tayra.Common
                 var tasksCompletedMatrix = new [] {0, 4, 8, 10, 11};
                 var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
 
-                var commitsCount = RawMetricByType(metricsInPeriod, Commits).Count();
-                var tasksCount = RawMetricByType(metricsInPeriod, TasksCompleted).Count();
+                var commitsScoreSum = SumDailyScores(RawMetricByType(metricsInPeriod, Commits), commitsMatrix);
+                var tasksScoreSum = SumDailyScores(RawMetricByType(metricsInPeriod, TasksCompleted), tasksCompletedMatrix);
                 
                 return
-                    (commitsMatrix[Math.Min(commitsCount, commitsMatrix.Length - 1)]
-                    + tasksCompletedMatrix[Math.Min(tasksCount, tasksCompletedMatrix.Length - 1)]) / (float)datePeriod.IterationsCount;
+                    (commitsScoreSum + tasksScoreSum) / (float)datePeriod.IterationsCount;
+
+                int SumDailyScores(IEnumerable<MetricRaw> raws, int[] matrix) => raws.GroupBy(x => x.DateId)
+                    .Sum(x => matrix[Math.Min(x.Count(), matrix.Length - 1)]);  
             }
         }
     }

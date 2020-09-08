@@ -6,7 +6,8 @@ namespace Tayra.Services
 {   
     public class ProfileStatsDTO
     {
-        public Dictionary<MetricType, AnalyticsMetricWithIterationSplitDto> ProfileMetrics { get; set; }
-        public Dictionary<MetricType, AnalyticsMetricWithIterationSplitDto> AssignmentMetrics { get; set; }
+        public DateTime? LastUpdateAt { get; set; }
+        public Dictionary<int, AnalyticsMetricWithIterationSplitDto> ProfileMetrics { get; set; }
+        public Dictionary<int, AnalyticsMetricWithIterationSplitDto> AssignmentMetrics { get; set; }
     }
 }

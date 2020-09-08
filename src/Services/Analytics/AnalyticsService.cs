@@ -135,9 +135,12 @@ namespace Tayra.Services.Analytics
                         }).ToArray();
                     break;
             }
+
+            var lastUpdatedAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created)
+                .FirstOrDefault();
             
             return metricList.ToDictionary(type => type.Value,
-                type => new AnalyticsMetricWithBreakdownDto(type, period, metrics));
+                type => new AnalyticsMetricWithBreakdownDto(type, period, metrics, lastUpdatedAt));
         }
 
         #endregion
