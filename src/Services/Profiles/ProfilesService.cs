@@ -82,7 +82,12 @@ namespace Tayra.Services
 
         public GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams)
         {
-            IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
+            IQueryable<Profile> scope = DbContext.Profiles;
+
+            if (!gridParams.IncludeSearcher)
+            {
+                scope = DbContext.Profiles.Where(x => x.Id != profileId);
+            } 
 
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
