@@ -120,6 +120,11 @@ namespace Tayra.API.Controllers
                     "haris@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));
+                
+                MailerService.SendEmail("haris.botic96@gmail.com",
+                    "ejub@tayra.io",
+                    "New Company Signup",
+                    JsonConvert.SerializeObject(jObject));
 
                 _catalogContext.LandingPageContacts.Add(new LandingPageContact
                 {

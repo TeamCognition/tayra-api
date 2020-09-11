@@ -44,9 +44,7 @@ namespace Tayra.SyncServices.Tayra
         }
 
         #endregion
-
-        #region Private Methods
-
+        
         public static void MakeActionPoints(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService)
         {
             var reportsToInsert = new List<ActionPoint>();
@@ -219,9 +217,9 @@ namespace Tayra.SyncServices.Tayra
                             isTrue: shopItemsAddedInLast4 == 0,
                             aps);
                         
-                        MakeSegmentAP(organizationDb, ActionPointTypes.QuestsNotCreatedIn4Weeks, s.Id,
-                            isTrue: (questsCreatedInLast4.FirstOrDefault(x => x.SegmentId == s.Id)?.Count ?? 0) == 0,
-                            aps);   
+                        // MakeSegmentAP(organizationDb, ActionPointTypes.QuestsNotCreatedIn4Weeks, s.Id,
+                        //     isTrue: (questsCreatedInLast4.FirstOrDefault(x => x.SegmentId == s.Id)?.Count ?? 0) == 0,
+                        //     aps);   
                     }
                 }
             }
@@ -231,6 +229,8 @@ namespace Tayra.SyncServices.Tayra
             logService.Log<MakeActionPointsLoader>($"{reportsToInsert.Count} new profile reports saved to database.");
         }
 
+        #region Private Methods
+        
         private static void MakeProfileAP(OrganizationDbContext dbContext, ActionPointTypes type, int? segmentId, int profileId, bool isTrue, ActionPoint[] aps, int dateId = 0)
         {
             var ap = aps.FirstOrDefault(x => x.Type == type && x.ProfileId == profileId); //if active ap exists

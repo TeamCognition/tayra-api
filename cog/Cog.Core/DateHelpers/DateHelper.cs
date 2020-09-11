@@ -6,7 +6,7 @@ namespace Cog.Core
     {
         public static DateRange FindPeriod(DateRanges range)
         {
-            var today = DateTime.Today;
+            var today = DateTime.UtcNow.Date;
             var yesterday = today.Subtract(TimeSpan.FromDays(1));
             switch (range)
             {
@@ -17,6 +17,10 @@ namespace Cog.Core
                 case DateRanges.Last30Days:
                     {
                         return new DateRange(today.Subtract(TimeSpan.FromDays(30)), yesterday);
+                    }
+                case DateRanges.Last28Days:
+                    {
+                        return new DateRange(today.Subtract(TimeSpan.FromDays(28)), yesterday);
                     }
                 case DateRanges.Last7Days:
                     {
@@ -36,17 +40,17 @@ namespace Cog.Core
                         var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
                         return new DateRange(start, end);
                     }
-                case DateRanges.Last4Week:
-                {
-                    var fourWeeksAgo = today.Subtract(TimeSpan.FromDays(7 * 4));
-                    var start = fourWeeksAgo.Add(TimeSpan.FromDays(7 - (int)fourWeeksAgo.DayOfWeek));
-                    var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
-                    return new DateRange(start, end);
-                }
+                case DateRanges.Last8Week:
+                    {
+                        var eightWeeksAgo = today.Subtract(TimeSpan.FromDays(7 * 8));
+                        var start = eightWeeksAgo.Add(TimeSpan.FromDays(7 - (int)eightWeeksAgo.DayOfWeek));
+                        var end = start.AddDays(7).Subtract(TimeSpan.FromSeconds(1));
+                        return new DateRange(start, end);
+                    }
                 default:
-                {
-                    return new DateRange(yesterday, yesterday);
-                }
+                    {
+                        return new DateRange(yesterday, yesterday);
+                    }
             }
         }
 

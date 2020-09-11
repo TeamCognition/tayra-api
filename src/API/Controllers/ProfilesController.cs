@@ -92,13 +92,15 @@ namespace Tayra.API.Controllers
             DbContext.SaveChanges();
             return Ok();
         }
-
-        [HttpGet("radarChart/{profileId}")]
-        public ActionResult<ProfileRadarChartDTO> GetRadarChart([FromRoute] int profileId)
+        
+        [HttpPut("togglePersonalAnalytics")]
+        public IActionResult TogglePersonalAnalytics()
         {
-           return Ok(ProfilesService.GetProfileRadarChartDTO(profileId));
+            ProfilesService.TogglePersonalAnalytics(CurrentUser.ProfileId);
+            DbContext.SaveChanges();
+            return Ok();
         }
-
+        
         [AllowAnonymous, HttpGet("isUsernameUnique")]
         public ActionResult<bool> IsUsernameUnique([FromQuery] string username)
         {
@@ -140,6 +142,12 @@ namespace Tayra.API.Controllers
         public ActionResult<ProfileStatsDTO> GetProfileStatsData(int profileId)
         {
             return ProfilesService.GetProfileStatsData(profileId);
+        }
+        
+        [HttpGet("heatStream/{profileId:int}")]
+        public ActionResult<ProfileHeatStreamDTO> GetProfileHeatStream(int profileId)
+        {
+            return ProfilesService.GetProfileHeatStream(profileId);
         }
 
         #endregion

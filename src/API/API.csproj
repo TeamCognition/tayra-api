@@ -41,6 +41,7 @@
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Auth\Auth.csproj" />
     <ProjectReference Include="..\Imager\Imager.csproj" />
+    <ProjectReference Include="..\SyncServices\SyncServices.csproj" />
     <ProjectReference Include="..\..\cog\Cog.DAL\Cog.DAL.csproj" />
     <ProjectReference Include="..\..\cog\Cog.Core\Cog.Core.csproj" />
   </ItemGroup>

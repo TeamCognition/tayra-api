@@ -71,6 +71,10 @@ namespace Tayra.SyncServices
                 throw new ApplicationException($"Jira project with Id: {jiraProjectId} is not connected to any tayra segments");
             }
 
+            var jiraSiteName = organizationDb
+                            .IntegrationFields
+                            .LastOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
+
             var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null);
             var statusChangelogs = jiraConnector.GetIssueChangelog(rewardStatusField.IntegrationId, we.JiraIssue.Key, "status");
 
@@ -85,12 +89,12 @@ namespace Tayra.SyncServices
             var logsService = new LogsService(organizationDb);
             var tokensService = new TokensService(organizationDb);
 
-            var assigneProfile = fields?.Assignee == null ? null : profilesService.GetMemberByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
+            var assigneProfile = fields?.Assignee == null ? null : profilesService.GetProfileByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
             var profileAssignment = assigneProfile == null ? null : organizationDb.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
             var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (int?)null;
 
             var activeCompetitions = assigneProfile == null ? null : competitionService.GetActiveCompetitions(assigneProfile.Id);
-            var jiraBaseUrl = we.JiraIssue.Self.Substring(0, we.JiraIssue.Self.IndexOf('/', 10)); //TODO: is 10 ok for all integration types?
+            var jiraBaseUrl = $"https://{jiraSiteName}.atlassian.net";
             if (assigneProfile == null || fields.Status.Id != rewardStatusField.Value)
             {
                 tasksService.AddOrUpdate(new TaskAddOrUpdateDTO

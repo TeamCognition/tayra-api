@@ -61,6 +61,7 @@ namespace Tayra.Services
         {
             public Task[] InProgress { get; set; }
             public Task[] RecentlyDone { get; set; }
+            public string JiraBoardUrl { get; set; }
             public class Task
             {
                 public TaskStatuses Status { get; set; }

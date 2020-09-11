@@ -3,12 +3,14 @@ using System.Linq;
 using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
 using Tayra.Models.Organizations;
 using Tayra.Services;
+using Tayra.SyncServices;
 
 namespace Tayra.API.Controllers
 {
@@ -55,6 +57,8 @@ namespace Tayra.API.Controllers
         public ActionResult SetJiraSettings([FromBody]JiraSettingsUpdateDTO dto)
         {
             IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantKey, dto);
+            // SyncIssuesLoader.PullIssuesNew(DbContext, DateTime.UtcNow, TasksService, ProfilesService,
+            //     JObject.FromObject(new { tenantKey = CurrentUser.CurrentTenantKey, @params = new { jiraProjectId = dto.ActiveProjects.FirstOrDefault().ProjectId }}));
             DbContext.SaveChanges();
             return Ok();
         }

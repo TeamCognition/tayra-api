@@ -1003,11 +1003,9 @@ namespace Tayra.Models.Organizations.Migrations
                     b.ToTable("ProfileLogs");
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.ProfileMetrics", b =>
+            modelBuilder.Entity("Tayra.Models.Organizations.ProfileMetric", b =>
                 {
                     b.Property<int>("ProfileId");
-
-                    b.Property<int>("SegmentId");
 
                     b.Property<int>("Type");
 
@@ -1019,9 +1017,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<DateTime?>("LastModified");
 
+                    b.Property<int?>("SegmentId");
+
                     b.Property<float>("Value");
 
-                    b.HasKey("ProfileId", "SegmentId", "Type", "DateId", "OrganizationId");
+                    b.HasKey("ProfileId", "Type", "DateId", "OrganizationId");
 
                     b.HasIndex("OrganizationId");
 
@@ -1606,6 +1606,29 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasFilter("[Name] IS NOT NULL");
 
                     b.ToTable("SegmentAreas");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.SegmentMetric", b =>
+                {
+                    b.Property<int>("SegmentId");
+
+                    b.Property<int>("Type");
+
+                    b.Property<int>("DateId");
+
+                    b.Property<int>("OrganizationId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<DateTime?>("LastModified");
+
+                    b.Property<float>("Value");
+
+                    b.HasKey("SegmentId", "Type", "DateId", "OrganizationId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("SegmentMetrics");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportDaily", b =>
@@ -3016,7 +3039,7 @@ namespace Tayra.Models.Organizations.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.ProfileMetrics", b =>
+            modelBuilder.Entity("Tayra.Models.Organizations.ProfileMetric", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Organization")
                         .WithMany()
@@ -3246,6 +3269,20 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.SegmentMetric", b =>
+                {
+                    b.HasOne("Tayra.Models.Organizations.Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
+                        .WithMany()
+                        .HasForeignKey("SegmentId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportDaily", b =>
