@@ -36,8 +36,14 @@ namespace Tayra.Services
             }
 
             task.Summary = dto.Summary;
-            task.LastModifiedDateId = dto.LastModifiedDateId ?? DateHelper2.ToDateId(DateTime.UtcNow);
+            task.LastModifiedDateId = dto.RewardStatusEnteredDateId ?? DateHelper2.ToDateId(DateTime.UtcNow);
             task.Status = TayraPersonalPerformance.MapJiraIssueCategoryToTaskStatus(dto.JiraStatusCategory);
+            if (task.Status == TaskStatuses.Done || task.Status == TaskStatuses.InProgress)
+            {
+                task.Status = dto.RewardStatusEnteredDateId.HasValue
+                    ? TaskStatuses.Done
+                    : TaskStatuses.InProgress;
+            }
             task.Type = dto.Type;
             task.AutoTimeSpentInMinutes = dto.AutoTimeSpentInMinutes;
             task.TimeSpentInMinutes = dto.TimeSpentInMinutes;

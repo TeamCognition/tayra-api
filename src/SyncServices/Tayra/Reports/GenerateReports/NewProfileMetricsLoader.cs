@@ -59,7 +59,7 @@ namespace Tayra.SyncServices.Tayra
 
             var dateId = DateHelper2.ToDateId(fromDay);
 
-            var profiles = organizationDb.Profiles.Where(x => x.Created.Date <= DateHelper2.ParseDate(dateId)).Select(x => new { Id = x.Id, x.Role }).ToArray();
+            var profiles = organizationDb.Profiles.Select(x => new { Id = x.Id, x.Role }).ToArray();
             var profileIds = profiles.Select(x => x.Id);
 
             var tasks = (from t in organizationDb.Tasks
@@ -124,7 +124,7 @@ namespace Tayra.SyncServices.Tayra
             foreach (var p in profiles)
             {
                 var ts = tasks.Where(x => x.AssigneeProfileId == p.Id);
-                var t = tokens.Where(x => x.ProfileId == p.Id);
+                var tt = tokens.Where(x => x.ProfileId == p.Id);
                 var sp = shopPurchases.Where(x => x.ProfileId == p.Id);
                 var iCreated = itemsCreated.FirstOrDefault(x => x.ProfileId == p.Id);
                 var iDissed = itemsDissed.Where(x => x.ProfileId == p.Id);
@@ -135,8 +135,8 @@ namespace Tayra.SyncServices.Tayra
                 
                 metricsToInsert.Add(new ProfileMetric(p.Id, new PraisesReceivedMetric(praises, p.Id, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new PraisesGivenMetric(praises, p.Id, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new TokensEarnedMetric(t, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new TokensSpentMetric(t, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, new TokensEarnedMetric(tt, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, new TokensSpentMetric(tt, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new InventoryValueChangeMetric(inv, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new ItemsBoughtMetric(sp, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new GiftsSentMetric(iGiftS, dateId)));

@@ -461,7 +461,7 @@ namespace Tayra.Services
 
             return new ProfileStatsDTO
             {
-                LastUpdateAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefault(),
+                LastRefreshAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefault(),
                 ProfileMetrics = profileMetrics,
                 AssignmentMetrics = segmentMetrics
             };
@@ -469,21 +469,25 @@ namespace Tayra.Services
 
         public ProfileHeatStreamDTO GetProfileHeatStream(int profileId)
         {
-            var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last8Week).FromId;
+            var analyticsService = new AnalyticsService(DbContext);
 
-            return (from prw in DbContext.ProfileReportsWeekly
-                where prw.ProfileId == profileId
-                where prw.DateId >= latestUpdateDateId
-                group prw by 1 into r
-                select new ProfileHeatStreamDTO
+            var metricList = new[]
+            {
+                MetricType.Heat
+            };
+            
+            var profileMetrics = analyticsService.GetMetricsWithIterationSplit(
+                metricList, profileId, EntityTypes.Profile, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
+
+            return profileMetrics.Select(x => new ProfileHeatStreamDTO
+            {
+                LatestUpdateDateId = DateHelper2.ToDateId(DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefault()),
+                Nodes = x.Value.Iterations.Select(h => new ProfileHeatStreamDTO.HeatWeekNode
                 {
-                    LatestUpdateDateId = latestUpdateDateId,
-                    Nodes = r.Select(h => new ProfileHeatStreamDTO.HeatWeekNode
-                    {
-                        DateId = h.DateId,
-                        Value = h.Heat
-                    }).ToArray()
-                }).FirstOrDefault();
+                    DateId = DateHelper2.ToDateId(h.Period.To),
+                    Value = h.Value
+                }).ToArray()
+            }).FirstOrDefault();
         }
         #endregion
 

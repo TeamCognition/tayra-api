@@ -8,14 +8,14 @@ namespace Tayra.Services
 {
     public class AnalyticsMetricWithBreakdownDto
     {
-        public DateTime? LastUpdateAt { get; set; }
+        public DateTime? LastRefreshAt { get; set; }
         public DatePeriod Period { get; set; }
         public float Value { get; set; }
         public IterationBreakdownDto[] IterationsBreakdown { get; set; }
     
-        public AnalyticsMetricWithBreakdownDto(MetricType metricType, DatePeriod period, MetricRaw[] raws, DateTime lastUpdatedAt)
+        public AnalyticsMetricWithBreakdownDto(MetricType metricType, DatePeriod period, MetricRaw[] raws, DateTime lastRefreshAt)
         {
-            this.LastUpdateAt = lastUpdatedAt;
+            this.LastRefreshAt = lastRefreshAt;
             this.Period = period;
             this.Value = metricType.Calc(raws, period);
             this.IterationsBreakdown = period.SplitToIterations().Select(i => new IterationBreakdownDto(metricType.BuildingMetrics.Append(metricType).ToArray(), i, raws)).ToArray();

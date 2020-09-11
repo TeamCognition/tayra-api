@@ -58,15 +58,12 @@ namespace Tayra.Services.TaskConverters
                 AssigneeProfileId = GetAssigneeProfileId(),
                 ReporterProfileId = GetReporterProfileId(),
                 TeamId = GetTeamId(),
-                SegmentId = GetCurrentSegmentId(),
-                LastModifiedDateId = GetLastModifiedDateId()
+                SegmentId = GetCurrentSegmentId()
             };
         }
 
-        public virtual bool ShouldBeProcessed()
-        {
-            return true;
-        }
+        public virtual bool ShouldBeProcessed() => true;
+        
         protected abstract int? GetTimeSpentInMinutes();
 
         public void EnsureBasicDataIsFilled()
@@ -80,9 +77,11 @@ namespace Tayra.Services.TaskConverters
         public void FillExtraDataIfCompleted()
         {
             EnsureBasicDataIsFilled();
+            (int? rewardStatusEnteredDateId, int? autoTimeSpentInMinutes) = ParseChangelogData();
+            Data.RewardStatusEnteredDateId = rewardStatusEnteredDateId;
             if (IsCompleted())
             {
-                Data.AutoTimeSpentInMinutes = GetAutoTimeSpentInMinutes();
+                Data.AutoTimeSpentInMinutes = autoTimeSpentInMinutes;
                 FillEffortScore();
             }
         }
@@ -113,6 +112,9 @@ namespace Tayra.Services.TaskConverters
 
         public void AddNecessaryTokensIfPossible(ITokensService tokensService)
         {
+            if (tokensService == null)
+                return;
+            
             EnsureBasicDataIsFilled();
             if (Data.AssigneeProfileId.HasValue && IsCompleted())
             {
@@ -126,8 +128,8 @@ namespace Tayra.Services.TaskConverters
         // Intended to be overridable
         protected virtual void DoAddTokens(double effortScoreDiff, ITokensService tokensService)
         {
-            tokensService.CreateTransaction(TokenType.CompanyToken, Data.AssigneeProfileId.Value, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork, DateHelper2.ParseDate(GetLastModifiedDateId().Value));
-            tokensService.CreateTransaction(TokenType.Experience, Data.AssigneeProfileId.Value, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork, DateHelper2.ParseDate(GetLastModifiedDateId().Value));
+            tokensService.CreateTransaction(TokenType.CompanyToken, Data.AssigneeProfileId.Value, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork, DateHelper2.ParseDate(Data.RewardStatusEnteredDateId.Value));
+            tokensService.CreateTransaction(TokenType.Experience, Data.AssigneeProfileId.Value, effortScoreDiff, TransactionReason.JiraIssueCompleted, ClaimBundleTypes.EarnedFromWork, DateHelper2.ParseDate(Data.RewardStatusEnteredDateId.Value));
         }
 
         protected virtual void FillEffortScore()
@@ -143,12 +145,13 @@ namespace Tayra.Services.TaskConverters
                 EffortScoreDiff = Data.TimeSpentInMinutes == null || task?.EffortScore == null ?
                     Data.EffortScore.Value :
                     Math.Max(0, Data.EffortScore.Value - task.EffortScore.Value);
+                if (EffortScoreDiff < 1)
+                    EffortScoreDiff = 0;
             }
         }
 
-        protected abstract int? GetAutoTimeSpentInMinutes();
+        protected abstract (int? rewardStatusEnteredDateId, int? autoTimeSpentInMinutes) ParseChangelogData();
         protected abstract bool IsCompleted();
-        protected abstract int? GetLastModifiedDateId();
 
         protected ProfileAssignment GetProfileAssignment()
         {
@@ -214,7 +217,7 @@ namespace Tayra.Services.TaskConverters
                 if(Mode == TaskConverterMode.TEST)
                 {
                     Random rnd = new Random();
-                    timestamp = DateHelper2.ParseDate(GetLastModifiedDateId().Value).AddHours(rnd.Next(23)).AddMinutes(59).AddSeconds(59);
+                    timestamp = DateHelper2.ParseDate(Data.RewardStatusEnteredDateId.Value).AddHours(rnd.Next(23)).AddMinutes(59).AddSeconds(59);
                 }
                 LogEvents eventType = IsCompleted() ? LogEvents.StatusChangeToCompleted : LogEvents.IssueStatusChange;
                 var logData = new LogCreateDTO

@@ -188,12 +188,11 @@ namespace Tayra.Common
 
                 var commitsScoreSum = SumDailyScores(RawMetricByType(metricsInPeriod, Commits), commitsMatrix);
                 var tasksScoreSum = SumDailyScores(RawMetricByType(metricsInPeriod, TasksCompleted), tasksCompletedMatrix);
-                
-                return
-                    (commitsScoreSum + tasksScoreSum) / (float)datePeriod.IterationsCount;
 
-                int SumDailyScores(IEnumerable<MetricRaw> raws, int[] matrix) => raws.GroupBy(x => x.DateId)
-                    .Sum(x => matrix[Math.Min(x.Count(), matrix.Length - 1)]);  
+                return commitsScoreSum + tasksScoreSum;
+
+                float SumDailyScores(IEnumerable<MetricRaw> raws, int[] matrix) => raws.GroupBy(x => x.DateId)
+                    .Sum(x => matrix[(int) Math.Min(x.Sum(m => m.Value), matrix.Length - 1)]) / (float)datePeriod.DaysCount;  
             }
         }
     }

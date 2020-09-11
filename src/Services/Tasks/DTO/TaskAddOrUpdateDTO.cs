@@ -40,6 +40,6 @@ namespace Tayra.Services
 
         public int? SegmentId { get; set; }
 
-        public int? LastModifiedDateId { get; set; }
+        public int? RewardStatusEnteredDateId { get; set; }
     }
 }

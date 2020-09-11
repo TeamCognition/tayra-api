@@ -65,13 +65,14 @@ namespace Tayra.Services.Analytics
             rawMetrics = rawMetrics.Concat(rawMetrics.SelectMany(x => x.BuildingMetrics)).ToArray();
 
             MetricRaw[] metrics = null;
-
+            
+            int profilesCount = 1;
             switch (entityType)
             {
                 case EntityTypes.Segment:
-                    metrics = (from m in DbContext.ProfileMetrics
+                    metrics = (from m in DbContext.SegmentMetrics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
-                        where m.ProfileId == entityId
+                        where m.SegmentId == entityId
                         where rawMetrics.Contains(m.Type)
                         select new MetricRaw
                         {
@@ -79,6 +80,16 @@ namespace Tayra.Services.Analytics
                             Value = m.Value,
                             DateId = m.DateId
                         }).ToArray();
+                    
+                    profilesCount =  DbContext.ProfileAssignments
+                        .Where(x => x.SegmentId == entityId && x.Profile.IsAnalyticsEnabled/*&& x.Created <= DateHelper2.ParseDate(dateId)*/)
+                        .Select(x => x.ProfileId)
+                        .ToArray()
+                        .Distinct()
+                        .Count();
+
+                    if (profilesCount == 0)
+                        profilesCount = 1;
                     break;
                 default:
                     metrics = (from m in DbContext.ProfileMetrics
@@ -95,7 +106,7 @@ namespace Tayra.Services.Analytics
             }
             
             return metricsTypes.ToDictionary(type => type.Value,
-                type => new AnalyticsMetricWithIterationSplitDto(type, period, metrics));
+                type => new AnalyticsMetricWithIterationSplitDto(type, period, metrics, entityType, profilesCount));
         }
         
         
@@ -136,11 +147,11 @@ namespace Tayra.Services.Analytics
                     break;
             }
 
-            var lastUpdatedAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created)
+            var lastRefreshAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created)
                 .FirstOrDefault();
             
             return metricList.ToDictionary(type => type.Value,
-                type => new AnalyticsMetricWithBreakdownDto(type, period, metrics, lastUpdatedAt));
+                type => new AnalyticsMetricWithBreakdownDto(type, period, metrics, lastRefreshAt));
         }
 
         #endregion

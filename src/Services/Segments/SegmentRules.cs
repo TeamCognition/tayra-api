@@ -6,6 +6,8 @@ namespace Tayra.Services
     {
         public static bool CanAddProfileToSegment(ProfileRoles role, int? teamId)
         {
+            if (teamId.HasValue)
+                return true;
             return role == ProfileRoles.Manager || (role == ProfileRoles.Member && teamId.HasValue && teamId > 0);
         }
 

@@ -59,7 +59,7 @@ namespace Tayra.SyncServices.Tayra
             foreach (var segmentId in segmentIds)
             {
                 var profileIds = organizationDb.ProfileAssignments
-                    .Where(x => x.SegmentId == segmentId && x.Profile.Created.Date <= DateHelper2.ParseDate(dateId))
+                    .Where(x => x.SegmentId == segmentId /*&& x.Created <= DateHelper2.ParseDate(dateId)*/)
                     .Select(x => x.ProfileId)
                     .ToArray()
                     .Distinct();
@@ -71,7 +71,7 @@ namespace Tayra.SyncServices.Tayra
                     .Select(x => new SegmentMetric(segmentId, dateId, x.Key, x.Sum(v => v.Value))));
             }
 
-            var existing = organizationDb.ProfileMetrics.Count(x => x.DateId == dateId);
+            var existing = organizationDb.SegmentMetrics.Count(x => x.DateId == dateId);
             if (existing > 0)
             {
                 logService.Log<ProfileReportDaily>($"date: ${dateId},  deleting {existing} records from database");
