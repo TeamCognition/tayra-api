@@ -8,5 +8,6 @@
         public const string ATJ_PROJECT_ID = "ATJProjectId";
 
         public const string ATJ_REWARD_STATUS_FOR_PROJECT_ = "ATJRewardStatusForProject_";
+        public const string ATJ_KEY_FOR_PROJECT_ = "ATJKeyForProject_";
     }
 }

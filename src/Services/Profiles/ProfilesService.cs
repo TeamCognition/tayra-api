@@ -548,14 +548,11 @@ namespace Tayra.Services
                     .Where(x => x.SegmentId == segmentId && x.ProfileId == null && x.Type == IntegrationType.ATJ)
                     .Select(x => x.Fields).FirstOrDefault();
 
-                var pFields = DbContext.Integrations
-                    .Where(x => x.SegmentId == segmentId && x.ProfileId == profileId && x.Type == IntegrationType.ATJ)
-                    .Select(x => x.Fields).FirstOrDefault();
-                if (sFields != null && pFields != null)
+                if (sFields != null)
                 {
                     var jiraSiteName = sFields.FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
-                    var profileExternalId = pFields.FirstOrDefault(x => x.Key == Constants.PROFILE_EXTERNAL_ID)?.Value;
-                    jiraBoardUrl = $"https://{jiraSiteName}.atlassian.net/secure/RapidBoard.jspa?rapidView=6&assignee={profileExternalId}";
+                    var projectKey = sFields.FirstOrDefault(x => x.Key.StartsWith(ATConstants.ATJ_KEY_FOR_PROJECT_))?.Value;
+                    jiraBoardUrl = $"https://{jiraSiteName}.atlassian.net/browse/{projectKey}";
                 }
             }
 

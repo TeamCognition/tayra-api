@@ -150,16 +150,20 @@ namespace Tayra.Services
 
             fields.ToList().ForEach(x => DbContext.Remove(x));
 
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
+            var allProjects = jiraConnector.GetProjects(integration.Id);
+            
             foreach (var s in dto.ActiveProjects)
             {
-                var projId = s.ProjectId;
+                var project = allProjects.FirstOrDefault(x => x.Id == s.ProjectId);
                 var rewardStatus = s.RewardStatusId;
-                if (projId == null || rewardStatus == null)
+                if (project == null || rewardStatus == null )
                 {
-                    throw new ApplicationException("projectId or rewardStatusId is null"); //use nameOf
+                    throw new ApplicationException("projectId or rewardStatusId is null or invalid"); //use nameOf
                 }
-                integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_PROJECT_ID, Value = projId });
-                integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + projId, Value = rewardStatus });
+                integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_PROJECT_ID, Value = project.Id });
+                integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_KEY_FOR_PROJECT_ + project.Id, Value = project.Key });
+                integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + project.Id, Value = rewardStatus });
             }
 
             DbContext.SaveChanges();
