@@ -11,7 +11,7 @@ namespace Tayra.Services
         Profile GetByIdentityId(int identityId);
         Profile GetByUsername(string username);
         Profile GetByEmail(string email);
-        Profile GetMemberByExternalId(string externalId, IntegrationType integrationType);
+        Profile GetProfileByExternalId(string externalId, IntegrationType integrationType);
         bool IsUsernameUnique(string username);
         GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams);
         GridData<ProfileSummaryGridDTO> GetGridDataWithSummary(int profileId, ProfileSummaryGridParams gridParams);
@@ -20,7 +20,6 @@ namespace Tayra.Services
         ProfileUpdateDTO GetUpdateProfileData(int profileId);
         void UpdateProfile(int profileId, ProfileUpdateDTO dto);
         void TogglePersonalAnalytics(int profileId);
-        ProfileRadarChartDTO GetProfileRadarChartDTO(int profileId);
         ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition);
         ProfileRawScoreDTO GetProfileRawScoreDTO(string username);
         void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto);

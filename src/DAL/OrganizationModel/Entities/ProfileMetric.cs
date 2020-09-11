@@ -29,7 +29,7 @@ namespace Tayra.Models.Organizations
             Value = metric.Value;
         }
 
-        public ProfileMetric(int profileId, SegmentMetric metric)
+        public ProfileMetric(int profileId, MetricWithSegment metric)
         {
             ProfileId = profileId;
             SegmentId = metric.SegmentId;
@@ -38,7 +38,7 @@ namespace Tayra.Models.Organizations
             Value = metric.Value;
         }
 
-        public static ProfileMetric[] CreateRange(int profileId, SegmentMetric[] metric)
+        public static ProfileMetric[] CreateRange(int profileId, MetricWithSegment[] metric)
         {
             return metric.Select(x => new ProfileMetric(profileId, x)).ToArray();
         }

@@ -100,13 +100,7 @@ namespace Tayra.API.Controllers
             DbContext.SaveChanges();
             return Ok();
         }
-
-        [HttpGet("radarChart/{profileId}")]
-        public ActionResult<ProfileRadarChartDTO> GetRadarChart([FromRoute] int profileId)
-        {
-           return Ok(ProfilesService.GetProfileRadarChartDTO(profileId));
-        }
-
+        
         [AllowAnonymous, HttpGet("isUsernameUnique")]
         public ActionResult<bool> IsUsernameUnique([FromQuery] string username)
         {

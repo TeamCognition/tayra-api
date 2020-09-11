@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using Cog.Core;
 using Tayra.Common;
 using Tayra.Models.Organizations;
@@ -20,110 +19,128 @@ namespace Tayra.Services.Analytics
 
         #region Public Methods
 
-        public AnalyticsFilterRowDTO GetAnalyticsFilterRows(FilterRowBodyDTO body)
+        public Dictionary<int, AnalyticsMetricDto> GetMetrics(MetricType[] metricsTypes, int entityId, EntityTypes entityType, DatePeriod period)
         {
+            var rawMetrics = metricsTypes.Concat(metricsTypes.SelectMany(x => x.BuildingMetrics)).ToArray();
+            rawMetrics = rawMetrics.Concat(rawMetrics.SelectMany(x => x.BuildingMetrics)).ToArray();
 
-            List<AnalyticsFilterRowDTO.AnalyticsEntity> rows = new List<AnalyticsFilterRowDTO.AnalyticsEntity>(); ;
+            MetricRaw[] metrics = null;
 
-            foreach (var x in body.Rows)
+            switch (entityType)
             {
-                if (x.Type == "profile")
-                {
-                    rows.Add((from prw in DbContext.ProfileReportsWeekly
-                              where prw.ProfileId == x.Id
-                              group prw by prw.DateId into g
-                              select new AnalyticsFilterRowDTO.AnalyticsEntity
-                              {
-                                  Id = g.Select(y => y.ProfileId).FirstOrDefault(),
-                                  Name = g.Select(y => y.Profile.FirstName + " " + y.Profile.LastName).FirstOrDefault(),
-                                  Type = x.Type,
-                                  MetricsValues = (new AnalyticsFilterRowDTO.AnalyticsEntity.Metric[]
-                                  {
-                                new AnalyticsFilterRowDTO.AnalyticsEntity.Metric
-                                {
-                                    Id = MetricTypes.Assist,
-                                    Averages = g.Select(m => m.OImpactAverage).FirstOrDefault()
-                                },
-                                new AnalyticsFilterRowDTO.AnalyticsEntity.Metric
-                                {
-                                    Id = MetricTypes.Assist,
-                                    Averages = g.Select(m => m.OImpactAverage).FirstOrDefault()
-                                }
-                                  })
-                              }).FirstOrDefault());
-                }
-                else if (x.Type == "segment")
-                {
-                    rows.Add((from srw in DbContext.SegmentReportsWeekly
-                              where srw.SegmentId == x.Id
-                              group srw by srw.DateId into g
-                              select new AnalyticsFilterRowDTO.AnalyticsEntity
-                              {
-                                  Id = g.Select(y => y.SegmentId).FirstOrDefault(),
-                                  Name = g.Select(y => y.Segment.Name).FirstOrDefault(),
-                                  Type = x.Type,
-                                  MetricsValues = (new AnalyticsFilterRowDTO.AnalyticsEntity.Metric[]
-                                  {
-                                new AnalyticsFilterRowDTO.AnalyticsEntity.Metric
-                                {
-                                    Id = MetricTypes.Assist,
-                                    Averages = g.Select(m => m.OImpactAverage).FirstOrDefault()
-                                },
-                                new AnalyticsFilterRowDTO.AnalyticsEntity.Metric
-                                {
-                                    Id = MetricTypes.Assist,
-                                    Averages = g.Select(m => m.OImpactAverage).FirstOrDefault()
-                                }
-                                  })
-                              }).FirstOrDefault());
-                }
-                else if (x.Type == "team")
-                {
-                    rows.Add((from trw in DbContext.TeamReportsWeekly
-                              where trw.SegmentId == x.Id
-                              group trw by trw.DateId into g
-                              select new AnalyticsFilterRowDTO.AnalyticsEntity
-                              {
-                                  Id = g.Select(y => y.SegmentId).FirstOrDefault(),
-                                  Name = g.Select(y => y.Team.Name).FirstOrDefault(),
-                                  Type = x.Type,
-                                  MetricsValues = (new AnalyticsFilterRowDTO.AnalyticsEntity.Metric[]
-                                  {
-                                new AnalyticsFilterRowDTO.AnalyticsEntity.Metric
-                                {
-                                    Id = MetricTypes.Assist,
-                                    Averages = g.Select(m => m.OImpactAverage).FirstOrDefault()
-                                },
-                                new AnalyticsFilterRowDTO.AnalyticsEntity.Metric
-                                {
-                                    Id = MetricTypes.Assist,
-                                    Averages = g.Select(m => m.OImpactAverage).FirstOrDefault()
-                                }
-                                  })
-                              }).FirstOrDefault());
-                }
+                case EntityTypes.Segment:
+                    metrics = (from m in DbContext.ProfileMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where m.ProfileId == entityId
+                        where rawMetrics.Contains(m.Type)
+                        select new MetricRaw
+                        {
+                            Type = m.Type,
+                            Value = m.Value,
+                            DateId = m.DateId
+                        }).ToArray();
+                    break;
+                default:
+                    metrics = (from m in DbContext.ProfileMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where m.ProfileId == entityId
+                        where rawMetrics.Contains(m.Type)
+                        select new MetricRaw
+                        {
+                            Type = m.Type,
+                            Value = m.Value,
+                            DateId = m.DateId
+                        }).ToArray();
+                    break;
+            }
+            
+            return metricsTypes.ToDictionary(type => type.Value,
+                type => new AnalyticsMetricDto(type, period, metrics));
+        }
+        
+        
+        public Dictionary<int, AnalyticsMetricWithIterationSplitDto> GetMetricsWithIterationSplit(MetricType[] metricsTypes, int entityId, EntityTypes entityType, DatePeriod period)
+        {
+            var rawMetrics = metricsTypes.Concat(metricsTypes.SelectMany(x => x.BuildingMetrics)).ToArray();
+            rawMetrics = rawMetrics.Concat(rawMetrics.SelectMany(x => x.BuildingMetrics)).ToArray();
 
+            MetricRaw[] metrics = null;
+
+            switch (entityType)
+            {
+                case EntityTypes.Segment:
+                    metrics = (from m in DbContext.ProfileMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where m.ProfileId == entityId
+                        where rawMetrics.Contains(m.Type)
+                        select new MetricRaw
+                        {
+                            Type = m.Type,
+                            Value = m.Value,
+                            DateId = m.DateId
+                        }).ToArray();
+                    break;
+                default:
+                    metrics = (from m in DbContext.ProfileMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where m.ProfileId == entityId
+                        where rawMetrics.Contains(m.Type)
+                        select new MetricRaw
+                        {
+                            Type = m.Type,
+                            Value = m.Value,
+                            DateId = m.DateId
+                        }).ToArray();
+                    break;
+            }
+            
+            return metricsTypes.ToDictionary(type => type.Value,
+                type => new AnalyticsMetricWithIterationSplitDto(type, period, metrics));
+        }
+        
+        
+        public Dictionary<int, AnalyticsMetricWithBreakdownDto> GetMetricsWithBreakdown(int entityId, EntityTypes entityType, DatePeriod period)
+        {
+            var metricList = new[]
+            {
+                MetricType.Impact, MetricType.Speed, MetricType.Commits, MetricType.CommitRate,
+                MetricType.TasksCompleted, MetricType.Complexity, MetricType.Power, MetricType.TimeWorkedLogged, MetricType.Heat,
+                MetricType.Assists, MetricType.PraisesGiven, MetricType.TokensEarned, MetricType.TokensSpent, MetricType.GiftsReceived, MetricType.GiftsSent 
+            };
+
+            MetricRaw[] metrics = null;
+
+            switch (entityType)
+            {
+                case EntityTypes.Segment:
+                    metrics = (from m in DbContext.ProfileMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where m.ProfileId == entityId
+                        select new MetricRaw
+                        {
+                            Type = m.Type,
+                            Value = m.Value,
+                            DateId = m.DateId
+                        }).ToArray();
+                    break;
+                default:
+                    metrics = (from m in DbContext.ProfileMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where m.ProfileId == entityId
+                        select new MetricRaw
+                        {
+                            Type = m.Type,
+                            Value = m.Value,
+                            DateId = m.DateId
+                        }).ToArray();
+                    break;
             }
 
-            return new AnalyticsFilterRowDTO
-            {
-                MetricsRows = rows
-            };
-        }
-
-        public AnalyticsMetricDto[] GetAnalyticsWithBreakdown(int entityId, string entityType, DatePeriod period)
-        {
-            var metrics = (from m in DbContext.ProfileMetrics
-                           where m.DateId >= period.FromId && m.DateId <= period.ToId
-                           where m.ProfileId == entityId
-                           select new MetricRaw
-                           {
-                               Type = m.Type,
-                               Value = m.Value,
-                               DateId = m.DateId
-                           }).ToArray();
-
-            return MetricType.List.Select(type => new AnalyticsMetricDto(type, period, metrics)).ToArray();
+            var lastUpdatedAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created)
+                .FirstOrDefault();
+            
+            return metricList.ToDictionary(type => type.Value,
+                type => new AnalyticsMetricWithBreakdownDto(type, period, metrics, lastUpdatedAt));
         }
 
         #endregion

@@ -43,7 +43,7 @@ namespace Tayra.SyncServices
                 // LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
-                    PullIssuesNew(organizationDb, date, new TasksService(organizationDb), new ProfilesService(null,null,null,organizationDb), requestBody);
+                    PullIssuesNew(organizationDb, date, new TasksService(organizationDb), new ProfilesService(null, null, null, organizationDb), requestBody);
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace Tayra.SyncServices
             {
                 throw new ApplicationException("param jiraProjectId not provided");
             }
-            
+
             var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null);
 
             int? integrationId = IntegrationHelpers.GetIntegrationId(organizationDb, jiraProjectId, IntegrationType.ATJ);
@@ -108,11 +108,10 @@ namespace Tayra.SyncServices
             {
                 var fields = task.Fields;
 
-                var assigneProfile = fields?.Assignee == null ? null : profilesService.GetMemberByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
+                var assigneProfile = fields?.Assignee == null ? null : profilesService.GetProfileByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
                 var profileAssignment = assigneProfile == null ? null : organizationDb.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
                 var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (int?)null;
 
-                var jiraBaseUrl = task.Self.Substring(0, task.Self.IndexOf('/', 10)); //TODO: is 10 ok for all integration types?
                 if (assigneProfile == null || fields.Status.Id != rewardStatusField.Value)
                 {
                     tasksService.AddOrUpdate(new TaskAddOrUpdateDTO
@@ -227,9 +226,9 @@ namespace Tayra.SyncServices
                     LastModifiedDateId = DateHelper2.ToDateId(fields.StatusCategoryChangeDate)
                 });
             }
-            
+
             organizationDb.SaveChanges();
-         }
+        }
 
         #endregion
     }

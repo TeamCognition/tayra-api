@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -23,18 +25,20 @@ namespace Tayra.API.Controllers
         #endregion
 
         #region Action Methods
-
-        [HttpPost("filterRows")]
-        public ActionResult<AnalyticsFilterRowDTO> GetAnalyticsFilterRows([FromBody] FilterRowBodyDTO body)
-        {
-            return Ok(AnalyticsService.GetAnalyticsFilterRows(body));
-        }
-
-        [HttpGet("")]
-        public ActionResult<AnalyticsMetricDto[]> GetAnalyticsWithBreakdown([FromQuery] int entityId, [FromQuery] string entityType, [FromQuery] string period)
+        
+        [HttpGet("metrics")]
+        public ActionResult<Dictionary<int, AnalyticsMetricDto>> GetMetrics([FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
         {
             var datePeriod = new DatePeriod(period);
-            return AnalyticsService.GetAnalyticsWithBreakdown(entityId, entityType, datePeriod);
+            var metricTypes = new MetricType[] {};
+            return AnalyticsService.GetMetrics(metricTypes, entityId, entityType, datePeriod);
+        }
+        
+        [HttpGet("metricsWithBreakdown")]
+        public ActionResult<Dictionary<int, AnalyticsMetricWithBreakdownDto>> GetAnalyticsWithBreakdown([FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
+        {
+            var datePeriod = new DatePeriod(period);
+            return AnalyticsService.GetMetricsWithBreakdown(entityId, entityType, datePeriod);
         }
 
         #endregion

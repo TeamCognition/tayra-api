@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tayra.Common;
+using Tayra.Models.Organizations;
 
-namespace Tayra.Models.Organizations
+namespace Tayra.SyncServices.Metrics
 {
-    public class EffortMetric : SegmentMetric
+    public class EffortMetric : MetricWithSegment
     {
         public EffortMetric(IEnumerable<Task> tasks, int dateId, int segmentId) : base(MetricType.Effort, dateId, segmentId)
         {
