@@ -59,7 +59,7 @@ namespace Tayra.SyncServices.Tayra
 
             var dateId = DateHelper2.ToDateId(fromDay);
 
-            var profiles = organizationDb.Profiles.Select(x => new { Id = x.Id, x.Role }).ToArray();
+            var profiles = organizationDb.Profiles.Select(x => new { Id = x.Id }).ToArray();
             var profileIds = profiles.Select(x => x.Id);
 
             var tasks = (from t in organizationDb.Tasks
@@ -144,13 +144,13 @@ namespace Tayra.SyncServices.Tayra
                 metricsToInsert.Add(new ProfileMetric(p.Id, new ItemsDisenchantedMetric(iDissed, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, new CommitsMetric(commits, dateId)));
 
+                metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, WorkUnitsCompletedMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, EffortMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ComplexityMetric.CreateForEverySegment(ts, dateId)));
                 //metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ErrorsMetric.CreateForEverySegment(ts, dateId)));
                 //metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, SavesMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, TimeWorkedMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, TimeWorkedLoggedMetric.CreateForEverySegment(ts, dateId)));
-                metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, WorkUnitsCompletedMetric.CreateForEverySegment(ts, dateId)));
             }
 
             var existing = organizationDb.ProfileMetrics.Count(x => x.DateId == dateId);

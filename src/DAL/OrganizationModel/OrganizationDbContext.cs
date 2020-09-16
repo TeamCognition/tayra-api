@@ -214,7 +214,7 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfileInventoryItem>(entity =>
             {
-                entity.HasIndex(x => new { x.ItemId, x.ProfileId, x.IsActive }); //?
+                entity.HasIndex(x => new { x.ItemId, x.ProfileId, x.IsActive });
                 entity.HasIndex(x => new { x.ProfileId, x.IsActive });
             });
 
@@ -301,12 +301,7 @@ namespace Tayra.Models.Organizations
             });
 
             modelBuilder.Ignore<Date>();
-
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
-
+            
             var orgEntity = modelBuilder.Model.FindEntityType(typeof(Organization));
             var orgPKey = orgEntity.FindPrimaryKey();
             foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
@@ -340,6 +335,19 @@ namespace Tayra.Models.Organizations
                 var method = SetGlobalQueryMethod.MakeGenericMethod(clrType);
                 method.Invoke(this, new object[] { modelBuilder });
             }
+            
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+            
+            modelBuilder.Entity<ClaimBundleItem>(entity =>
+            {
+                entity.HasOne(x => x.ProfileInventoryItem)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            
             base.OnModelCreating(modelBuilder);
         }
 

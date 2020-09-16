@@ -1,24 +1,19 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Newtonsoft.Json;
-using RestSharp.Extensions;
 using Tayra.Common;
- using Tayra.Connectors.Atlassian;
- using Tayra.Connectors.Common;
- using Tayra.Mailer;
+using Tayra.Connectors.Atlassian;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
- using Tayra.Services.Analytics;
- using DateRanges = Cog.Core.DateRanges;
+using Tayra.Services.Analytics;
 
-namespace Tayra.Services
+ namespace Tayra.Services
 {
     public class ProfilesService : BaseService<OrganizationDbContext>, IProfilesService
     {

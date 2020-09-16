@@ -59,16 +59,32 @@ namespace Tayra.SyncServices.Tayra
             foreach (var segmentId in segmentIds)
             {
                 var profileIds = organizationDb.ProfileAssignments
-                    .Where(x => x.SegmentId == segmentId /*&& x.Created <= DateHelper2.ParseDate(dateId)*/)
+                    .Where(x => x.SegmentId == segmentId && x.Profile.IsAnalyticsEnabled /*&& x.Created <= DateHelper2.ParseDate(dateId)*/)
                     .Select(x => x.ProfileId)
-                    .ToArray()
-                    .Distinct();
+                    .Distinct()
+                    .ToArray();
 
-                metricsToInsert.AddRange(organizationDb.ProfileMetrics
+                var rawMetrics = organizationDb.ProfileMetrics
                     .Where(x => x.DateId == dateId && profileIds.Contains(x.ProfileId))
-                    .Where(x => x.SegmentId == null || x.SegmentId == segmentId )
-                    .GroupBy(x => x.Type)
-                    .Select(x => new SegmentMetric(segmentId, dateId, x.Key, x.Sum(v => v.Value))));
+                    .Where(x => x.SegmentId == null || x.SegmentId == segmentId)
+                    .Select(x => new MetricRaw
+                    {
+                        Type = x.Type,
+                        Value = x.Value,
+                        DateId = x.DateId
+                    })
+                    .ToArray();
+
+                var segmentMetrics = MetricType.List
+                    .Select(m => new SegmentMetric(segmentId, dateId, m,
+                        m.Calc(rawMetrics, new DatePeriod(dateId, dateId)) / profileIds.Length));
+
+                if (dateId == 20200704)
+                {
+                    segmentMetrics.ForEach(x => Console.WriteLine(x.Value));
+                }
+                
+                metricsToInsert.AddRange(segmentMetrics);
             }
 
             var existing = organizationDb.SegmentMetrics.Count(x => x.DateId == dateId);

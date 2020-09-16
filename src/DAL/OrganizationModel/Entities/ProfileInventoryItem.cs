@@ -21,7 +21,7 @@ namespace Tayra.Models.Organizations
         public string AcquireDetail { get; set; }
 
         #region IClaimableEntity
-
+        
         public bool ClaimRequired { get; set; }
         public DateTime? ClaimedAt { get; set; }
 

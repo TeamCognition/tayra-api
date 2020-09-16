@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
+using Tayra.Services.Analytics;
 
 namespace Tayra.API.Controllers
 {
@@ -39,6 +40,13 @@ namespace Tayra.API.Controllers
         {
             var datePeriod = new DatePeriod(period);
             return AnalyticsService.GetMetricsWithBreakdown(entityId, entityType, datePeriod);
+        }
+        
+        [HttpGet("test")]
+        public IActionResult GetAnalyticsWithBreakdownasd()
+        {
+            new AnalyticsService(OrganizationContext).Haris();
+            return Ok();
         }
 
         #endregion

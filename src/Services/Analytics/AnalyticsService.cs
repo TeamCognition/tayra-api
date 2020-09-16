@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography;
 using Cog.Core;
+using MailChimp.Net.Models;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 
@@ -29,9 +33,9 @@ namespace Tayra.Services.Analytics
             switch (entityType)
             {
                 case EntityTypes.Segment:
-                    metrics = (from m in DbContext.ProfileMetrics
+                    metrics = (from m in DbContext.SegmentMetrics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
-                        where m.ProfileId == entityId
+                        where m.SegmentId == entityId
                         where rawMetrics.Contains(m.Type)
                         select new MetricRaw
                         {
@@ -120,13 +124,13 @@ namespace Tayra.Services.Analytics
             };
 
             MetricRaw[] metrics = null;
-
+            
             switch (entityType)
             {
                 case EntityTypes.Segment:
-                    metrics = (from m in DbContext.ProfileMetrics
+                    metrics = (from m in DbContext.SegmentMetrics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
-                        where m.ProfileId == entityId
+                        where m.SegmentId == entityId
                         select new MetricRaw
                         {
                             Type = m.Type,
@@ -151,7 +155,48 @@ namespace Tayra.Services.Analytics
                 .FirstOrDefault();
             
             return metricList.ToDictionary(type => type.Value,
-                type => new AnalyticsMetricWithBreakdownDto(type, period, metrics, lastRefreshAt));
+                type => new AnalyticsMetricWithBreakdownDto(type, period, metrics, lastRefreshAt, entityType));
+        }
+
+        public class TableColumn<T> where T: class
+        {
+            public string Name { get; set; }
+            public string Type { get; set; }
+            public T[] Values { get; set; }
+            
+            public TableColumn(string name, string type, T[] values)
+            {
+                
+            }
+        }
+
+        public class TaskTableDTO
+        {
+            public HyperLink Name { get; set; }
+            
+        }
+
+        public class HyperLink
+        {
+            public string Name { get; set; }
+            public string Url { get; set; }
+        }
+        
+        public void Haris()
+        {
+            var tasks = DbContext.Tasks.Select(x => new
+            {
+                Priority = x.Priority
+            }).ToArray();
+
+            object oo = tasks;
+            
+            foreach (PropertyInfo prop in oo.GetType().GetProperties())
+            {
+                var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                Console.WriteLine(type.Name);
+            }
+            
         }
 
         #endregion
