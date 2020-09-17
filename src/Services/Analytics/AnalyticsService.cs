@@ -59,7 +59,7 @@ namespace Tayra.Services.Analytics
             }
             
             return metricsTypes.ToDictionary(type => type.Value,
-                type => new AnalyticsMetricDto(type, period, metrics));
+                type => new AnalyticsMetricDto(type, period, metrics, entityType));
         }
         
         
@@ -70,7 +70,6 @@ namespace Tayra.Services.Analytics
 
             MetricRaw[] metrics = null;
             
-            int profilesCount = 1;
             switch (entityType)
             {
                 case EntityTypes.Segment:
@@ -84,16 +83,6 @@ namespace Tayra.Services.Analytics
                             Value = m.Value,
                             DateId = m.DateId
                         }).ToArray();
-                    
-                    profilesCount =  DbContext.ProfileAssignments
-                        .Where(x => x.SegmentId == entityId && x.Profile.IsAnalyticsEnabled/*&& x.Created <= DateHelper2.ParseDate(dateId)*/)
-                        .Select(x => x.ProfileId)
-                        .ToArray()
-                        .Distinct()
-                        .Count();
-
-                    if (profilesCount == 0)
-                        profilesCount = 1;
                     break;
                 default:
                     metrics = (from m in DbContext.ProfileMetrics
@@ -110,7 +99,7 @@ namespace Tayra.Services.Analytics
             }
             
             return metricsTypes.ToDictionary(type => type.Value,
-                type => new AnalyticsMetricWithIterationSplitDto(type, period, metrics, entityType, profilesCount));
+                type => new AnalyticsMetricWithIterationSplitDto(type, period, metrics, entityType));
         }
         
         

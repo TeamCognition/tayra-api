@@ -17,14 +17,7 @@ namespace Tayra.Services
         {
             this.LastRefreshAt = lastRefreshAt;
             this.Period = period;
-            if (entityType == EntityTypes.Profile)
-            {
-                this.Value = metricType.Calc(raws, period);
-            }
-            else
-            {
-                this.Value = raws.Where(x => x.Type == metricType).Sum(x => x.Value);
-            }
+            this.Value = entityType == EntityTypes.Profile ? metricType.Calc(raws, period) : metricType.CalcGroup(raws, period);
             this.IterationsBreakdown = period.SplitToIterations().Select(i => new IterationBreakdownDto(metricType.BuildingMetrics.Append(metricType).ToArray(), i, raws, entityType)).ToArray();
         }
         
@@ -36,14 +29,7 @@ namespace Tayra.Services
             public IterationBreakdownDto(MetricType[] types, DatePeriod iterationPeriod, MetricRaw[] raws, EntityTypes entityType)
             {
                 Period = iterationPeriod;
-                if (entityType == EntityTypes.Profile)
-                {
-                    Metrics = types.ToDictionary(t => t.Value, t => t.Calc(raws, iterationPeriod));
-                }
-                else
-                {
-                    Metrics = types.ToDictionary(t => t.Value, t => raws.Where(x => x.Type == t).Sum(x => x.Value));
-                }
+                Metrics = entityType == EntityTypes.Profile ? types.ToDictionary(t => t.Value, t => t.Calc(raws, iterationPeriod)) : types.ToDictionary(t => t.Value, t => t.CalcGroup(raws, iterationPeriod));
             }
         }
     }

@@ -73,6 +73,7 @@ namespace Tayra.Common
 
         public abstract MetricType[] BuildingMetrics { get; }
         public abstract float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod);
+        public abstract float CalcGroup(MetricRaw[] buildingMetrics, DatePeriod datePeriod);
 
         private static IEnumerable<MetricRaw> RawMetricByType(MetricRaw[] metrics, MetricType type) => metrics.Where(x => x.Type == type.Value);
         private static float SumRawMetricByType(MetricRaw[] metrics, MetricType type) => RawMetricByType(metrics, type).Sum(x => x.Value);
@@ -85,6 +86,7 @@ namespace Tayra.Common
             }
 
             public override MetricType[] BuildingMetrics => Array.Empty<MetricType>();
+            public override float CalcGroup(MetricRaw[] buildingMetrics, DatePeriod datePeriod) => Calc(buildingMetrics, datePeriod);
             public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
             {
                 var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
@@ -99,6 +101,11 @@ namespace Tayra.Common
             }
 
             public override MetricType[] BuildingMetrics => new[] { PraisesReceived };
+            public override float CalcGroup(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
+            {
+                var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
+                return SumRawMetricByType(metricsInPeriod, MetricType.Assists);
+            }
             public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
             {
                 var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
@@ -114,6 +121,11 @@ namespace Tayra.Common
             }
 
             public override MetricType[] BuildingMetrics => new[] { Complexity, TasksCompleted, Assists };
+            public override float CalcGroup(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
+            {
+                var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
+                return SumRawMetricByType(metricsInPeriod, this) / datePeriod.IterationsCount;
+            }
             public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
             {
                 var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
@@ -131,10 +143,14 @@ namespace Tayra.Common
             }
 
             public override MetricType[] BuildingMetrics => new[] { TasksCompleted };
+
+            public override float CalcGroup(MetricRaw[] buildingMetrics, DatePeriod datePeriod) =>
+                Calc(buildingMetrics, datePeriod);
             public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
             {
                 var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
                 var tasksCompleted = SumRawMetricByType(metricsInPeriod, TasksCompleted);
+                
                 return tasksCompleted / datePeriod.IterationsCount;
             }
         }
@@ -146,6 +162,9 @@ namespace Tayra.Common
             }
 
             public override MetricType[] BuildingMetrics => new[] { Complexity, TasksCompleted };
+
+            public override float CalcGroup(MetricRaw[] buildingMetrics, DatePeriod datePeriod) =>
+                Calc(buildingMetrics, datePeriod);
             public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
             {
                 var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
@@ -164,10 +183,20 @@ namespace Tayra.Common
             }
 
             public override MetricType[] BuildingMetrics => new[] { Commits };
+            
+            public override float CalcGroup(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
+            {
+                var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
+                return SumRawMetricByType(metricsInPeriod, this) / datePeriod.WorkingDaysCount;
+            }
             public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
             {
                 var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
                 var daysWithCommits = RawMetricByType(metricsInPeriod, Commits).GroupBy(x => x.DateId).Count(d => d.Sum(c => c.Value) > 0);
+                
+                Console.WriteLine("DAYS WC: " + daysWithCommits + " WD: " + datePeriod.WorkingDaysCount);
+                
+                if (datePeriod.WorkingDaysCount == 0) return daysWithCommits;
                 return (float)daysWithCommits / datePeriod.WorkingDaysCount;
             }
         }
@@ -179,6 +208,12 @@ namespace Tayra.Common
             }
 
             public override MetricType[] BuildingMetrics => new[] { Commits, TasksCompleted };
+
+            public override float CalcGroup(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
+            {
+                var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
+                return SumRawMetricByType(metricsInPeriod, this) / datePeriod.DaysCount;
+            }
 
             public override float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod)
             {

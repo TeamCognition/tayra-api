@@ -10,10 +10,10 @@ namespace Tayra.Services
         public DatePeriod Period { get; set; }
         public float Value { get; set; }
         
-        public AnalyticsMetricDto(MetricType metricType, DatePeriod period, MetricRaw[] raws)
+        public AnalyticsMetricDto(MetricType metricType, DatePeriod period, MetricRaw[] raws, EntityTypes entityType)
         {
             this.Period = period;
-            this.Value = metricType.Calc(raws, period);
+            this.Value = entityType == EntityTypes.Profile ? metricType.Calc(raws, period) : metricType.CalcGroup(raws, period);
         }
     }
 }
