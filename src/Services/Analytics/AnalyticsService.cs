@@ -63,9 +63,9 @@ namespace Tayra.Services.Analytics
         }
         
         
-        public Dictionary<int, AnalyticsMetricWithIterationSplitDto> GetMetricsWithIterationSplit(MetricType[] metricsTypes, int entityId, EntityTypes entityType, DatePeriod period)
+        public Dictionary<int, AnalyticsMetricWithIterationSplitDto> GetMetricsWithIterationSplit(MetricType[] metricTypes, int entityId, EntityTypes entityType, DatePeriod period)
         {
-            var rawMetrics = metricsTypes.Concat(metricsTypes.SelectMany(x => x.BuildingMetrics)).ToArray();
+            var rawMetrics = metricTypes.Concat(metricTypes.SelectMany(x => x.BuildingMetrics)).ToArray();
             rawMetrics = rawMetrics.Concat(rawMetrics.SelectMany(x => x.BuildingMetrics)).ToArray();
 
             MetricRaw[] metrics = null;
@@ -98,7 +98,7 @@ namespace Tayra.Services.Analytics
                     break;
             }
             
-            return metricsTypes.ToDictionary(type => type.Value,
+            return metricTypes.ToDictionary(type => type.Value,
                 type => new AnalyticsMetricWithIterationSplitDto(type, period, metrics, entityType));
         }
         
@@ -147,6 +147,49 @@ namespace Tayra.Services.Analytics
                 type => new AnalyticsMetricWithBreakdownDto(type, period, metrics, lastRefreshAt, entityType));
         }
 
+        
+        public Dictionary<int, AnalyticsMetricsWEntityDto[]> GetMetricsRanks(MetricType[] metricTypes, int[] entityIds, EntityTypes entityType, DatePeriod period)
+        {
+            MetricRawWEntity[] metrics = null;
+        
+            switch (entityType)
+            {
+                case EntityTypes.Segment:
+                    metrics = (from m in DbContext.SegmentMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where entityIds.Contains(m.SegmentId)
+                        select new MetricRawWEntity
+                        {
+                            EntityId = m.SegmentId,
+                            MetricRaw = new MetricRaw
+                            {
+                                Type = m.Type,
+                                Value = m.Value,
+                                DateId = m.DateId
+                            }
+                        }).ToArray();
+                    break;
+                default:
+                    metrics = (from m in DbContext.ProfileMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where entityIds.Contains(m.ProfileId)
+                        select new MetricRawWEntity
+                        {
+                            EntityId = m.ProfileId,
+                            MetricRaw = new MetricRaw
+                            {
+                                Type = m.Type,
+                                Value = m.Value,
+                                DateId = m.DateId
+                            }
+                        }).ToArray();
+                    break;
+            }
+
+            return metricTypes.ToDictionary(type => type.Value,
+                type => entityIds.Select(eId => new AnalyticsMetricsWEntityDto(type, eId, period, metrics, entityType)).OrderByDescending(x => x.Value).ToArray());
+        }
+        
         public class TableColumn<T> where T: class
         {
             public string Name { get; set; }

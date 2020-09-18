@@ -25,6 +25,12 @@ namespace Tayra.Common
         public float Value { get; set; }
         public int DateId { get; set; }
     }
+    
+    public class MetricRawWEntity
+    {
+        public int EntityId { get; set; }
+        public MetricRaw MetricRaw { get; set; }
+    }
 
     [JsonConverter(typeof(SmartEnumValueConverter<MetricType, int>))]
     public abstract class MetricType : SmartEnum<MetricType>
@@ -193,9 +199,7 @@ namespace Tayra.Common
             {
                 var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
                 var daysWithCommits = RawMetricByType(metricsInPeriod, Commits).GroupBy(x => x.DateId).Count(d => d.Sum(c => c.Value) > 0);
-                
-                Console.WriteLine("DAYS WC: " + daysWithCommits + " WD: " + datePeriod.WorkingDaysCount);
-                
+
                 if (datePeriod.WorkingDaysCount == 0) return daysWithCommits;
                 return (float)daysWithCommits / datePeriod.WorkingDaysCount;
             }

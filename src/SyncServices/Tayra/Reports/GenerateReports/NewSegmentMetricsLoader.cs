@@ -70,10 +70,10 @@ namespace Tayra.SyncServices.Tayra
                 var rawMetrics = organizationDb.ProfileMetrics
                     .Where(x => x.DateId == dateId && profileIds.Contains(x.ProfileId))
                     .Where(x => x.SegmentId == null || x.SegmentId == segmentId)
-                    .Select(x => new
+                    .Select(x => new MetricRawWEntity
                     {
-                        ProfileId = x.ProfileId,
-                        RawMetrics = new MetricRaw
+                        EntityId = x.ProfileId,
+                        MetricRaw = new MetricRaw
                         {
                             Type = x.Type,
                             Value = x.Value,
@@ -84,7 +84,7 @@ namespace Tayra.SyncServices.Tayra
 
                 var segmentMetrics = MetricType.List
                         .Select(m => new SegmentMetric(segmentId, dateId, m, profileIds.Sum(x =>
-                                m.Calc(rawMetrics.Where(m => m.ProfileId == x).Select(m => m.RawMetrics).ToArray(),
+                                m.Calc(rawMetrics.Where(m => m.EntityId == x).Select(m => m.MetricRaw).ToArray(),
                                 new DatePeriod(dateId, dateId))/ profileIds.Length)));
 
                 
