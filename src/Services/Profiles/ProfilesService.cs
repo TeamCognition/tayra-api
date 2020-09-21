@@ -321,6 +321,7 @@ using Tayra.Services.Analytics;
             profile.EnsureNotNull(username);
 
             var analyticsService = new AnalyticsService(DbContext);
+            
             var metrics = analyticsService.GetMetrics(
                 new[]
                 {
@@ -462,7 +463,7 @@ using Tayra.Services.Analytics;
             };
         }
 
-        public ProfileHeatStreamDTO GetProfileHeatStream(int profileId)
+        public Dictionary<int,AnalyticsMetricWithIterationSplitDto> GetProfileHeatStream(int profileId)
         {
             var analyticsService = new AnalyticsService(DbContext);
 
@@ -470,19 +471,11 @@ using Tayra.Services.Analytics;
             {
                 MetricType.Heat
             };
-            
-            var profileMetrics = analyticsService.GetMetricsWithIterationSplit(
-                metricList, profileId, EntityTypes.Profile, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
 
-            return profileMetrics.Select(x => new ProfileHeatStreamDTO
-            {
-                LatestUpdateDateId = DateHelper2.ToDateId(DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefault()),
-                Nodes = x.Value.Iterations.Select(h => new ProfileHeatStreamDTO.HeatWeekNode
-                {
-                    DateId = DateHelper2.ToDateId(h.Period.To),
-                    Value = h.Value
-                }).ToArray()
-            }).FirstOrDefault();
+            return analyticsService.GetMetricsWithIterationSplit(
+                metricList, profileId, EntityTypes.Profile,
+                new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
+
         }
         #endregion
 

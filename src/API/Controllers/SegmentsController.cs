@@ -52,7 +52,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("{segmentKey}/averageMetrics")]
-        public ActionResult<SegmentAverageMetricsDTO> GetSegmentAverageMetrics([FromRoute] string segmentKey)
+        public ActionResult<Dictionary<int,AnalyticsMetricWithIterationSplitDto>> GetSegmentAverageMetrics([FromRoute] string segmentKey)
         {
             return SegmentsService.GetSegmentAverageMetrics(segmentKey);
         }
@@ -64,7 +64,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("{segmentKey}/rankChart")]
-        public ActionResult<SegmentRankChartDTO> GetSegmentRankChart([FromRoute] string segmentKey)
+        public Dictionary<int, AnalyticsMetricsWEntityDto[]>  GetSegmentRankChart([FromRoute] string segmentKey)
         {
             return SegmentsService.GetSegmentRankChart(segmentKey);
         }

@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using MoreLinq;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using DateRanges = Cog.Core.DateRanges;
+using Tayra.Services.Analytics;
+
 
 namespace Tayra.Services
 {
@@ -62,7 +64,14 @@ namespace Tayra.Services
 
             segment.EnsureNotNull(segmentKey);
 
-            IQueryable<SegmentMemberGridDTO> query = from s in DbContext.ProfileAssignments.Where(x => x.SegmentId == segment.Id)
+            var scope = DbContext.ProfileAssignments.Where(x => x.SegmentId == segment.Id);
+
+            if (gridParams.AnalyticsEnabledOnly.HasValue)
+            {
+                scope = scope.Where(x => x.Profile.IsAnalyticsEnabled);
+            }
+            
+            IQueryable<SegmentMemberGridDTO> query = from s in scope
                                                      select new SegmentMemberGridDTO
                                                      {
                                                          ProfileId = s.Profile.Id,
@@ -100,30 +109,30 @@ namespace Tayra.Services
 
             return gridData;
         }
-
+        
         public SegmentViewDTO GetSegmnetViewDTO(string segmentKey)
         {
             var segmentDTO = (from s in DbContext.Segments
-                              where s.Key == segmentKey
-                              select new SegmentViewDTO
-                              {
-                                  SegmentId = s.Id,
-                                  Name = s.Name,
-                                  Key = s.Key,
-                                  Avatar = s.Avatar,
-                                  AssistantSummary = s.AssistantSummary,
-                                  TokensEarned = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensEarnedTotal).FirstOrDefault(), 2),
-                                  TokensSpent = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensSpentTotal).FirstOrDefault(), 2),
-                                  QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),
-                                  QuestsCompleted = s.Quests.Count(x => x.Status == QuestStatuses.Ended),
-                                  ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
-                              }).FirstOrDefault();
+                where s.Key == segmentKey
+                select new SegmentViewDTO
+                {
+                    SegmentId = s.Id,
+                    Name = s.Name,
+                    Key = s.Key,
+                    Avatar = s.Avatar,
+                    AssistantSummary = s.AssistantSummary,
+                    TokensEarned = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensEarnedTotal).FirstOrDefault(), 2),
+                    TokensSpent = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensSpentTotal).FirstOrDefault(), 2),
+                    QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),
+                    QuestsCompleted = s.Quests.Count(x => x.Status == QuestStatuses.Ended),
+                    ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
+                }).FirstOrDefault();
 
             segmentDTO.EnsureNotNull(segmentKey);
 
             return segmentDTO;
         }
-
+        
         public SegmentRawScoreDTO GetSegmentRawScore(string segmentKey)
         {
             var segment = DbContext.Segments.FirstOrDefault(x => x.Key == segmentKey);
@@ -144,137 +153,40 @@ namespace Tayra.Services
                     }).LastOrDefault();
         }
 
-        public SegmentAverageMetricsDTO GetSegmentAverageMetrics(string segmentKey)
+        public Dictionary<int,AnalyticsMetricWithIterationSplitDto> GetSegmentAverageMetrics(string segmentKey)
         {
-            var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
+            var segment = DbContext.Segments.FirstOrDefault(x => x.Key == segmentKey);
+            
+            var analyticsService = new AnalyticsService(DbContext);
 
-            return (from srw in DbContext.SegmentReportsWeekly
-                    where srw.Segment.Key == segmentKey && srw.DateId >= latestUpdateDateId
-                    group srw by 1
-                into r
-                    select new SegmentAverageMetricsDTO
-                    {
-                        LatestUpdateDateId = latestUpdateDateId,
-                        Metrics = new SegmentAverageMetricsDTO.SegmentMetricDTO[]
-                        {
-                        new SegmentAverageMetricsDTO.SegmentMetricDTO
-                        {
-                            Id = MetricTypes.Impact,
-                            Averages = r.Select(x => x.OImpactAverage).ToArray()
-                        },
-                        new SegmentAverageMetricsDTO.SegmentMetricDTO
-                        {
-                            Id = MetricTypes.Speed,
-                            Averages = r.Select(x => x.SpeedAverage).ToArray()
-                        },
-                        new SegmentAverageMetricsDTO.SegmentMetricDTO
-                        {
-                            Id = MetricTypes.Power,
-                            Averages = r.Select(x => x.PowerAverage).ToArray()
-                        },
-                        new SegmentAverageMetricsDTO.SegmentMetricDTO
-                        {
-                            Id = MetricTypes.Heat,
-                            Averages = r.Select(x => x.HeatAverageTotal).ToArray()
-                        },
-                        new SegmentAverageMetricsDTO.SegmentMetricDTO
-                        {
-                            Id = MetricTypes.Complexity,
-                            Averages = r.Select(x => (float) x.ComplexityChange).ToArray()
-                        },
-                        new SegmentAverageMetricsDTO.SegmentMetricDTO
-                        {
-                            Id = MetricTypes.Assist,
-                            Averages = r.Select(x => (float) x.AssistsChange).ToArray()
-                        },
-                        new SegmentAverageMetricsDTO.SegmentMetricDTO
-                        {
-                            Id = MetricTypes.WorkUnitsCompleted,
-                            Averages = r.Select(x => (float) x.TasksCompletedChange).ToArray()
-                        }
-                        }
-                    }).FirstOrDefault();
+            var metricList = new[]
+            {
+                MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists,MetricType.Heat, 
+                MetricType.TasksCompleted, MetricType.Complexity
+            };
+            
+            return analyticsService.GetMetricsWithIterationSplit(
+                metricList, segment.Id, EntityTypes.Segment,
+                new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
         }
 
-        public SegmentRankChartDTO GetSegmentRankChart(string segmentKey)
+        public Dictionary<int, AnalyticsMetricsWEntityDto[]>  GetSegmentRankChart(string segmentKey)
         {
-            var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
+            var analyticsService = new AnalyticsService(DbContext);
 
-            var segmentMembers = DbContext.ProfileAssignments.Where(x => x.Segment.Key == segmentKey).Select(x => x.ProfileId).ToArray();
+            var metricList = new[]
+            {
+                MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists, MetricType.Heat,
+                MetricType.TasksCompleted, MetricType.Complexity
+            };
 
-            return (from prw in DbContext.ProfileReportsWeekly
-                    where segmentMembers.Contains(prw.ProfileId) && prw.DateId == latestUpdateDateId
-                    group prw by 1
-                into r
-                    select new SegmentRankChartDTO
-                    {
-                        Metrics = new SegmentRankChartDTO.RankChartMetricDTO[]
-                        {
-                        new SegmentRankChartDTO.RankChartMetricDTO
-                        {
-                            Id = MetricTypes.Impact,
-                            MemberValues = r.OrderByDescending(x => x.OImpactAverage).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
-                            {
-                                ProfileId = x.ProfileId,
-                                Value = x.OImpactAverage
-                            }).ToArray()
-                        },
-                        new SegmentRankChartDTO.RankChartMetricDTO
-                        {
-                            Id = MetricTypes.Speed,
-                            MemberValues = r.OrderByDescending(x => x.SpeedAverage).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
-                            {
-                                ProfileId = x.ProfileId,
-                                Value = x.SpeedAverage
-                            }).ToArray()
-                        },
-                        new SegmentRankChartDTO.RankChartMetricDTO
-                        {
-                            Id = MetricTypes.Power,
-                            MemberValues = r.OrderByDescending(x => x.PowerAverage).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
-                            {
-                                ProfileId = x.ProfileId,
-                                Value = x.PowerAverage
-                            }).ToArray()
-                        },
-                        new SegmentRankChartDTO.RankChartMetricDTO
-                        {
-                            Id = MetricTypes.Heat,
-                            MemberValues = r.OrderByDescending(x => x.Heat).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
-                            {
-                                ProfileId = x.ProfileId,
-                                Value = x.Heat
-                            }).ToArray()
-                        },
-                        new SegmentRankChartDTO.RankChartMetricDTO
-                        {
-                            Id = MetricTypes.Complexity,
-                            MemberValues = r.OrderByDescending(x => x.ComplexityChange).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
-                            {
-                                ProfileId = x.ProfileId,
-                                Value = x.ComplexityChange
-                            }).ToArray()
-                        },
-                        new SegmentRankChartDTO.RankChartMetricDTO
-                        {
-                            Id = MetricTypes.Assist,
-                            MemberValues = r.OrderByDescending(x => x.AssistsChange).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
-                            {
-                                ProfileId = x.ProfileId,
-                                Value = x.AssistsChange
-                            }).ToArray()
-                        },
-                        new SegmentRankChartDTO.RankChartMetricDTO
-                        {
-                            Id = MetricTypes.WorkUnitsCompleted,
-                            MemberValues = r.OrderByDescending(x => x.TasksCompletedChange).Select(x => new SegmentRankChartDTO.RankChartMetricDTO.MemberRankDTO
-                            {
-                                ProfileId = x.ProfileId,
-                                Value = x.TasksCompletedChange
-                            }).ToArray()
-                        },
-                        }
-                    }).FirstOrDefault();
+            var segmentProfiles = DbContext.ProfileAssignments.Where(x => x.Segment.Key == segmentKey && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId)
+                .ToArray();
+            
+            return analyticsService.GetMetricsRanks(
+                metricList, segmentProfiles, EntityTypes.Profile,
+                new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow)
+            );
         }
 
         public void AddMember(SegmentMemberAddRemoveDTO dto)
