@@ -5,6 +5,7 @@ using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
+using MoreLinq.Extensions;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services.Analytics;
@@ -83,7 +84,7 @@ namespace Tayra.Services
 
             GridData<SegmentMemberGridDTO> gridData = query.GetGridData(gridParams);
 
-            gridData.Records = gridData.Records.DistinctBy(x => x.Username).ToList();
+            gridData.Records = MoreEnumerable.DistinctBy(gridData.Records, x => x.Username).ToList();
 
             return gridData;
         }
@@ -180,7 +181,7 @@ namespace Tayra.Services
             };
 
             var segmentProfiles = DbContext.ProfileAssignments.Where(x => x.Segment.Key == segmentKey && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId)
-                .ToArray();
+                .Distinct().ToArray();
             
             return analyticsService.GetMetricsRanks(
                 metricList, segmentProfiles, EntityTypes.Profile,
