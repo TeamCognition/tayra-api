@@ -5,11 +5,12 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.SyncServices.Metrics
 {
-    public class ItemsBoughtMetric : Metric
+    public class ItemsBoughtMetric : PureMetric
     {
-        public ItemsBoughtMetric(IEnumerable<ShopPurchase> purchases, int dateId) : base(MetricType.ItemsBought, dateId)
+        private ItemsBoughtMetric(float value, int dateId) : base(MetricType.ItemsBought, value, dateId)
         {
-            Value = purchases.Count();
+            
         }
+        public static ItemsBoughtMetric Create(IEnumerable<ShopPurchase> purchases, int dateId) => new ItemsBoughtMetric(purchases.Count(), dateId);
     }
 }

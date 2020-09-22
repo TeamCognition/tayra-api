@@ -5,19 +5,20 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.SyncServices.Metrics
 {
-    public class TimeWorkedLoggedMetric : MetricWithSegment
+    public class TimeWorkedLoggedMetric : PureMetricWithSegment
     {
-        public TimeWorkedLoggedMetric(IEnumerable<Task> tasks, int dateId, int segmentId) : base(MetricType.TimeWorkedLogged, dateId, segmentId)
+        private TimeWorkedLoggedMetric(float value, int dateId, int segmentId) : base(MetricType.TimeWorkedLogged, value, dateId, segmentId )
         {
-            Value = tasks.Sum(x => x.TimeSpentInMinutes) ?? 0f;
+            
         }
+        public static TimeWorkedLoggedMetric Create(IEnumerable<Task> tasks, int dateId, int segmentId) => new TimeWorkedLoggedMetric(tasks.Sum(x => x.TimeSpentInMinutes) ?? 0f, dateId, segmentId);
 
         public static TimeWorkedLoggedMetric[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
         {
             return tasks
                 .Where(x => x.SegmentId.HasValue)
                 .GroupBy(x => x.SegmentId)
-                .Select(s => new TimeWorkedLoggedMetric(s.AsEnumerable(), dateId, s.Key.Value))
+                .Select(s => TimeWorkedLoggedMetric.Create(s.AsEnumerable(), dateId, s.Key.Value))
                 .ToArray();
         }
     }

@@ -4,12 +4,12 @@ using Tayra.Common;
 
 namespace Tayra.Services
 {
-    public class AnalyticsMetricsWEntityDto
+    public class MetricsValueWEntity
     {
         public int EntityId { get; set; }
         public float Value { get; set; }
         
-        public AnalyticsMetricsWEntityDto(MetricType metricType, int entityId, DatePeriod period, MetricRawWEntity[] rawsWEntity, EntityTypes entityType)
+        public MetricsValueWEntity(MetricType metricType, int entityId, DatePeriod period, MetricRawWEntity[] rawsWEntity, EntityTypes entityType)
         {
             var raws = rawsWEntity.Where(m => m.EntityId == entityId).Select(x => x.MetricRaw).ToArray();
             this.EntityId = entityId;

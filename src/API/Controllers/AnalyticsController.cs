@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.Analytics;
+using MetricValue = Tayra.Services.MetricValue;
 
 namespace Tayra.API.Controllers
 {
@@ -28,25 +30,31 @@ namespace Tayra.API.Controllers
         #region Action Methods
         
         [HttpGet("metrics")]
-        public ActionResult<Dictionary<int, AnalyticsMetricDto>> GetMetrics([FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
+        public Dictionary<int, MetricValue> GetMetrics([FromQuery] int[] m, [FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
         {
             var datePeriod = new DatePeriod(period);
-            var metricTypes = new MetricType[] {};
-            return AnalyticsService.GetMetrics(metricTypes, entityId, entityType, datePeriod);
+            MetricType[] oMetricTypes = m.Select(x => MetricType.FromValue(x)).ToArray();
+            
+            return AnalyticsService.GetMetrics(oMetricTypes, entityId, entityType, datePeriod);
         }
         
         [HttpGet("metricsWithBreakdown")]
-        public ActionResult<Dictionary<int, AnalyticsMetricWithBreakdownDto>> GetAnalyticsWithBreakdown([FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
+        public Dictionary<int, AnalyticsMetricWithBreakdownDto> GetAnalyticsWithBreakdown([FromQuery] int[] m, [FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
         {
             var datePeriod = new DatePeriod(period);
-            return AnalyticsService.GetMetricsWithBreakdown(entityId, entityType, datePeriod);
+            MetricType[] oMetricTypes = m.Select(x => MetricType.FromValue(x)).ToArray();
+            
+            return AnalyticsService.GetMetricsWithBreakdown(oMetricTypes, entityId, entityType, datePeriod);
         }
-        
-        [HttpGet("test")]
-        public IActionResult GetAnalyticsWithBreakdownasd()
+
+        [HttpGet("rawMetrics")]
+        public AnalyticsService.TableData<MetricValue> GetRawMetrics([FromQuery] int[] m, [FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
         {
-            new AnalyticsService(OrganizationContext).Haris();
-            return Ok();
+            var datePeriod = new DatePeriod(period);
+            MetricType[] oMetricTypes = m.Select(x => MetricType.FromValue(x)).ToArray(); 
+            
+            return new AnalyticsService.TableData<MetricValue>(AnalyticsService.GetMetrics(oMetricTypes, entityId, entityType,
+                datePeriod).Select(x => x.Value).ToArray());
         }
 
         #endregion

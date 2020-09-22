@@ -4,11 +4,12 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.SyncServices.Metrics
 {
-    public class PraisesGivenMetric : Metric
+    public class PraisesGivenMetric : PureMetric
     {
-        public PraisesGivenMetric(ProfilePraise[] praises, int profileId, int dateId) : base(MetricType.PraisesGiven, dateId)
+        private PraisesGivenMetric(float value, int dateId) : base(MetricType.PraisesGiven, value, dateId)
         {
-            Value = praises.Count(x => x.PraiserProfileId == profileId);
+            
         }
+        public static PraisesGivenMetric Create(ProfilePraise[] praises, int profileId, int dateId) => new PraisesGivenMetric(praises.Count(x => x.PraiserProfileId == profileId), dateId);
     }
 }

@@ -21,24 +21,24 @@ namespace Tayra.Models.Organizations
 
         protected ProfileMetric(){}
 
-        public ProfileMetric(int profileId, Metric metric)
+        public ProfileMetric(int profileId, PureMetric pureMetric)
         {
             ProfileId = profileId;
-            DateId = metric.DateId;
-            Type = metric.Type;
-            Value = metric.Value;
+            DateId = pureMetric.DateId;
+            Type = pureMetric.Type;
+            Value = pureMetric.Value;
         }
 
-        public ProfileMetric(int profileId, MetricWithSegment metric)
+        public ProfileMetric(int profileId, PureMetricWithSegment pureMetric)
         {
             ProfileId = profileId;
-            SegmentId = metric.SegmentId;
-            DateId = metric.DateId;
-            Type = metric.Type;
-            Value = metric.Value;
+            SegmentId = pureMetric.SegmentId;
+            DateId = pureMetric.DateId;
+            Type = pureMetric.Type;
+            Value = pureMetric.Value;
         }
 
-        public static ProfileMetric[] CreateRange(int profileId, MetricWithSegment[] metric)
+        public static ProfileMetric[] CreateRange(int profileId, PureMetricWithSegment[] metric)
         {
             return metric.Select(x => new ProfileMetric(profileId, x)).ToArray();
         }

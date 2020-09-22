@@ -6,11 +6,12 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.SyncServices.Metrics
 {
-    public class TokensSpentMetric : Metric
+    public class TokensSpentMetric : PureMetric
     {
-        public TokensSpentMetric(IEnumerable<TokenTransaction> tokenTransactions, int dateId) : base(MetricType.TokensSpent, dateId)
+        private TokensSpentMetric(float value, int dateId) : base(MetricType.TokensSpent, value, dateId)
         {
-            Value = (float)Math.Abs(tokenTransactions.Where(x => x.Value < 0).Sum(x => x.Value));
+            
         }
+        public static TokensSpentMetric Create(IEnumerable<TokenTransaction> tokenTransactions, int dateId) => new TokensSpentMetric((float)Math.Abs(tokenTransactions.Where(x => x.Value < 0).Sum(x => x.Value)), dateId);
     }
 }

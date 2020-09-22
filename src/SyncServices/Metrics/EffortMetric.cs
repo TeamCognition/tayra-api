@@ -5,19 +5,20 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.SyncServices.Metrics
 {
-    public class EffortMetric : MetricWithSegment
+    public class EffortMetric : PureMetricWithSegment
     {
-        public EffortMetric(IEnumerable<Task> tasks, int dateId, int segmentId) : base(MetricType.Effort, dateId, segmentId)
+        private EffortMetric(float value, int dateId, int segmentId) : base(MetricType.Effort, value, dateId, segmentId )
         {
-            Value = tasks.Sum(x => x.EffortScore) ?? 0f;
+            
         }
+        public static EffortMetric Create(IEnumerable<Task> tasks, int dateId, int segmentId) => new EffortMetric(tasks.Sum(x => x.EffortScore) ?? 0f, dateId, segmentId);
 
         public static EffortMetric[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
         {
             return tasks
                 .Where(x => x.SegmentId.HasValue)
                 .GroupBy(x => x.SegmentId)
-                .Select(s => new EffortMetric(s.AsEnumerable(), dateId, s.Key.Value))
+                .Select(s => EffortMetric.Create(s.AsEnumerable(), dateId, s.Key.Value))
                 .ToArray();
         }
     }

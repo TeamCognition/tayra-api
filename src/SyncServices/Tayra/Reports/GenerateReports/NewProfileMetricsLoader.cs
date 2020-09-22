@@ -133,18 +133,18 @@ namespace Tayra.SyncServices.Tayra
                 var inv = inventory.Where(x => x.ProfileId == p.Id);
                 var commits = gitCommitsToday.Where(x => x.AuthorProfileId == p.Id);
                 
-                metricsToInsert.Add(new ProfileMetric(p.Id, new PraisesReceivedMetric(praises, p.Id, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new PraisesGivenMetric(praises, p.Id, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new TokensEarnedMetric(tt, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new TokensSpentMetric(tt, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new InventoryValueChangeMetric(inv, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new ItemsBoughtMetric(sp, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new GiftsSentMetric(iGiftS, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new GiftsReceivedMetric(iGiftR, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new ItemsDisenchantedMetric(iDissed, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, new CommitsMetric(commits, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, PraisesReceivedMetric.Create(praises, p.Id, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, PraisesGivenMetric.Create(praises, p.Id, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, TokensEarnedMetric.Create(tt, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, TokensSpentMetric.Create(tt, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, InventoryValueChangeMetric.Create(inv, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ItemsBoughtMetric.Create(sp, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, GiftsSentMetric.Create(iGiftS, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, GiftsReceivedMetric.Create(iGiftR, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ItemsDisenchantedMetric.Create(iDissed, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, CommitsMetric.Create(commits, dateId)));
 
-                metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, WorkUnitsCompletedMetric.CreateForEverySegment(ts, dateId)));
+                metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, WorkUnitsCompletedPureMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, EffortMetric.CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ComplexityMetric.CreateForEverySegment(ts, dateId)));
                 //metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ErrorsMetric.CreateForEverySegment(ts, dateId)));

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Ardalis.SmartEnum;
 using Ardalis.SmartEnum.JsonNet;
 using Cog.Core;
@@ -19,6 +20,17 @@ namespace Tayra.Common
         Heat = 7
     }
 
+    public enum RawMetricTypes
+    {
+        None = 0,
+        Tasks = 1,
+        Praises = 2,
+        TokenTransactions = 3,
+        Items = 4,
+        Gifts = 5,
+        Commits = 5,
+    }
+    
     public class MetricRaw
     {
         public MetricType Type { get; set; }
@@ -31,7 +43,7 @@ namespace Tayra.Common
         public int EntityId { get; set; }
         public MetricRaw MetricRaw { get; set; }
     }
-
+    
     [JsonConverter(typeof(SmartEnumValueConverter<MetricType, int>))]
     public abstract class MetricType : SmartEnum<MetricType>
     {
@@ -42,25 +54,25 @@ namespace Tayra.Common
         public static readonly MetricType Power = new PowerType("Power", 103);
         public static readonly MetricType Heat = new HeatType("Heat", 104);
         public static readonly MetricType Assists = new AssistsType("Assists", 105);
-        public static readonly MetricType PraisesReceived = new PureType("Praises Received", 106);
-        public static readonly MetricType PraisesGiven = new PureType("Praises Given", 107);
-        public static readonly MetricType TokensEarned = new PureType("Tokens Earned", 108);
-        public static readonly MetricType TokensSpent = new PureType("Tokens Spent", 109);
-        public static readonly MetricType InventoryValueChange = new PureType("Inventory Value Change", 110);
-        public static readonly MetricType ItemsBought = new PureType("Items Bought", 111);
-        public static readonly MetricType ItemsDisenchanted = new PureType("Items Disenchanted", 112);
-        public static readonly MetricType GiftsReceived = new PureType("Gifts Received", 113);
-        public static readonly MetricType GiftsSent = new PureType("Gifts Sent", 114);
+        public static readonly MetricType PraisesReceived = new PureType("Praises Received", 106, RawMetricTypes.Praises);
+        public static readonly MetricType PraisesGiven = new PureType("Praises Given", 107, RawMetricTypes.Praises);
+        public static readonly MetricType TokensEarned = new PureType("Tokens Earned", 108, RawMetricTypes.TokenTransactions);
+        public static readonly MetricType TokensSpent = new PureType("Tokens Spent", 109, RawMetricTypes.TokenTransactions);
+        public static readonly MetricType InventoryValueChange = new PureType("Inventory Value Change", 110, RawMetricTypes.Items);
+        public static readonly MetricType ItemsBought = new PureType("Items Bought", 111, RawMetricTypes.Items);
+        public static readonly MetricType ItemsDisenchanted = new PureType("Items Disenchanted", 112, RawMetricTypes.Items);
+        public static readonly MetricType GiftsReceived = new PureType("Gifts Received", 113, RawMetricTypes.Gifts);
+        public static readonly MetricType GiftsSent = new PureType("Gifts Sent", 114, RawMetricTypes.Gifts);
         
         #endregion
         
         #region Task Metrics
         
-        public static readonly MetricType TasksCompleted = new PureType("Tasks Completed", 201);
-        public static readonly MetricType Complexity = new PureType("Complexity", 202);
-        public static readonly MetricType TimeWorked = new PureType("Time Worked", 203);
-        public static readonly MetricType TimeWorkedLogged = new PureType("Time Worked Logged", 204);
-        public static readonly MetricType Effort = new PureType("Effort", 205);
+        public static readonly MetricType TasksCompleted = new PureType("Tasks Completed", 201, RawMetricTypes.Tasks);
+        public static readonly MetricType Complexity = new PureType("Complexity", 202, RawMetricTypes.Tasks);
+        public static readonly MetricType TimeWorked = new PureType("Time Worked", 203, RawMetricTypes.Tasks);
+        public static readonly MetricType TimeWorkedLogged = new PureType("Time Worked Logged", 204, RawMetricTypes.Tasks);
+        public static readonly MetricType Effort = new PureType("Effort", 205, RawMetricTypes.Tasks);
         //public static readonly MetricType Errors = new PureType("Errors", 206);
         //public static readonly MetricType Saves = new PureType("Saves", 207);
         
@@ -68,7 +80,7 @@ namespace Tayra.Common
 
         #region Git Metrics
         
-        public static readonly MetricType Commits = new PureType("Commits", 301);
+        public static readonly MetricType Commits = new PureType("Commits", 301, RawMetricTypes.Commits);
         public static readonly MetricType CommitRate = new CommitRateType("Commit Rate", 302);
 
         #endregion
@@ -77,6 +89,8 @@ namespace Tayra.Common
         {
         }
 
+        public RawMetricTypes RawMetricType { get; private set; }
+        
         public abstract MetricType[] BuildingMetrics { get; }
         public abstract float Calc(MetricRaw[] buildingMetrics, DatePeriod datePeriod);
         public abstract float CalcGroup(MetricRaw[] buildingMetrics, DatePeriod datePeriod);
@@ -87,8 +101,9 @@ namespace Tayra.Common
 
         private sealed class PureType : MetricType
         {
-            public PureType(string name, int value) : base(name, value)
+            public PureType(string name, int value, RawMetricTypes rawMetricType) : base(name, value)
             {
+                this.RawMetricType = rawMetricType;
             }
 
             public override MetricType[] BuildingMetrics => Array.Empty<MetricType>();

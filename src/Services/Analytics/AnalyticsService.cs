@@ -23,7 +23,7 @@ namespace Tayra.Services.Analytics
 
         #region Public Methods
 
-        public Dictionary<int, AnalyticsMetricDto> GetMetrics(MetricType[] metricsTypes, int entityId, EntityTypes entityType, DatePeriod period)
+        public Dictionary<int, MetricValue> GetMetrics(MetricType[] metricsTypes, int entityId, EntityTypes entityType, DatePeriod period)
         {
             var rawMetrics = metricsTypes.Concat(metricsTypes.SelectMany(x => x.BuildingMetrics)).ToArray();
             rawMetrics = rawMetrics.Concat(rawMetrics.SelectMany(x => x.BuildingMetrics)).ToArray();
@@ -59,7 +59,7 @@ namespace Tayra.Services.Analytics
             }
             
             return metricsTypes.ToDictionary(type => type.Value,
-                type => new AnalyticsMetricDto(type, period, metrics, entityType));
+                type => new MetricValue(type, period, metrics, entityType));
         }
         
         
@@ -101,16 +101,16 @@ namespace Tayra.Services.Analytics
             return metricTypes.ToDictionary(type => type.Value,
                 type => new AnalyticsMetricWithIterationSplitDto(type, period, metrics, entityType));
         }
-        
-        
-        public Dictionary<int, AnalyticsMetricWithBreakdownDto> GetMetricsWithBreakdown(int entityId, EntityTypes entityType, DatePeriod period)
+
+        public Dictionary<int, AnalyticsMetricWithBreakdownDto> GetMetricsWithBreakdown(MetricType[] metricTypes, int entityId, EntityTypes entityType, DatePeriod period)
         {
-            var metricList = new[]
-            {
-                MetricType.Impact, MetricType.Speed, MetricType.Commits, MetricType.CommitRate,
-                MetricType.TasksCompleted, MetricType.Complexity, MetricType.Power, MetricType.TimeWorkedLogged, MetricType.Heat,
-                MetricType.Assists, MetricType.PraisesGiven, MetricType.TokensEarned, MetricType.TokensSpent, MetricType.GiftsReceived, MetricType.GiftsSent 
-            };
+            if(metricTypes.Length == 0)
+                metricTypes = new[]
+                {
+                    MetricType.Impact, MetricType.Speed, MetricType.Commits, MetricType.CommitRate,
+                    MetricType.TasksCompleted, MetricType.Complexity, MetricType.Power, MetricType.TimeWorkedLogged, MetricType.Heat,
+                    MetricType.Assists, MetricType.PraisesGiven, MetricType.TokensEarned, MetricType.TokensSpent, MetricType.GiftsReceived, MetricType.GiftsSent 
+                };
 
             MetricRaw[] metrics = null;
             
@@ -143,12 +143,12 @@ namespace Tayra.Services.Analytics
             var lastRefreshAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created)
                 .FirstOrDefault();
             
-            return metricList.ToDictionary(type => type.Value,
+            return metricTypes.ToDictionary(type => type.Value,
                 type => new AnalyticsMetricWithBreakdownDto(type, period, metrics, lastRefreshAt, entityType));
         }
 
         
-        public Dictionary<int, AnalyticsMetricsWEntityDto[]> GetMetricsRanks(MetricType[] metricTypes, int[] entityIds, EntityTypes entityType, DatePeriod period)
+        public Dictionary<int, MetricsValueWEntity[]> GetMetricsRanks(MetricType[] metricTypes, int[] entityIds, EntityTypes entityType, DatePeriod period)
         {
             MetricRawWEntity[] metrics = null;
         
@@ -187,18 +187,41 @@ namespace Tayra.Services.Analytics
             }
 
             return metricTypes.ToDictionary(type => type.Value,
-                type => entityIds.Select(eId => new AnalyticsMetricsWEntityDto(type, eId, period, metrics, entityType)).OrderByDescending(x => x.Value).ToArray());
+                type => entityIds.Select(eId => new MetricsValueWEntity(type, eId, period, metrics, entityType)).OrderByDescending(x => x.Value).ToArray());
         }
         
-        public class TableColumn<T> where T: class
+        public class TableData<T> where T: class
         {
-            public string Name { get; set; }
-            public string Type { get; set; }
-            public T[] Values { get; set; }
-            
-            public TableColumn(string name, string type, T[] values)
+            public Header[] Headers { get; set; }
+            public T[] Records { get; set; }
+
+            public TableData(T[] records)
             {
+                this.Records = records;
                 
+                Headers = records.FirstOrDefault().GetType().GetProperties().Select(p => 
+                    new Header((Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType).Name, p.Name))
+                    .ToArray();
+            }
+
+            public class Header
+            {
+                public string Type { get; set; }
+                public string Accessor { get; set; }
+
+                public Header(string type, string accessor)
+                {
+                    this.Type = type;
+                    this.Accessor = accessor;
+                }
+            }
+
+            public class Profile
+            {
+                public string Name { get; set; }
+                public string Username { get; set; }
+
+                public override string ToString() => $"{Name}{Username}";
             }
         }
 

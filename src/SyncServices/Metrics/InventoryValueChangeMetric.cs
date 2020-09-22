@@ -5,11 +5,12 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.SyncServices.Metrics
 {
-    public class InventoryValueChangeMetric : Metric
+    public class InventoryValueChangeMetric : PureMetric
     {
-        public InventoryValueChangeMetric(IEnumerable<ProfileInventoryItem> items, int dateId) : base(MetricType.InventoryValueChange, dateId)
+        private InventoryValueChangeMetric(float value, int dateId) : base(MetricType.InventoryValueChange, value, dateId)
         {
-            Value = items.Sum(x => x.Item.Price);
+            
         }
+        public static InventoryValueChangeMetric Create(IEnumerable<ProfileInventoryItem> items, int dateId) => new InventoryValueChangeMetric(items.Sum(x => x.Item.Price), dateId);
     }
 }

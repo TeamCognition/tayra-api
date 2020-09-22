@@ -5,11 +5,12 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.SyncServices.Metrics
 {
-    public class CommitsMetric : Metric
+    public class CommitsMetric : PureMetric
     {
-        public CommitsMetric(IEnumerable<GitCommit> commits, int dateId) : base(MetricType.Commits, dateId)
+        private CommitsMetric(float value, int dateId) : base(MetricType.Commits, value, dateId)
         {
-            Value = commits.Count();
+            
         }
+        public static CommitsMetric Create(IEnumerable<GitCommit> commits, int dateId) => new CommitsMetric(commits.Count(), dateId);
     }
 }
