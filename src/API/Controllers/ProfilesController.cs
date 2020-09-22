@@ -145,7 +145,7 @@ namespace Tayra.API.Controllers
         }
         
         [HttpGet("heatStream/{profileId:int}")]
-        public ActionResult<ProfileHeatStreamDTO> GetProfileHeatStream(int profileId)
+        public ActionResult<Dictionary<int,AnalyticsMetricWithIterationSplitDto>> GetProfileHeatStream(int profileId)
         {
             return ProfilesService.GetProfileHeatStream(profileId);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Cog.Core;
 using Tayra.Common;
@@ -27,7 +28,7 @@ namespace Tayra.Services
         void UpdateNotificationSettings(int profileId, ProfileNotificationSettingsDTO dto);
         ProfileActivityChartDTO[] GetProfileActivityChart(int profileId);
         ProfileStatsDTO GetProfileStatsData(int profileIdS);
-        ProfileHeatStreamDTO GetProfileHeatStream(int profileId);
+        Dictionary<int,AnalyticsMetricWithIterationSplitDto> GetProfileHeatStream(int profileId);
     }
 
 }

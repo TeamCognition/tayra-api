@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
 using Cog.DAL;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Models.Organizations;
+using Tayra.Services.Analytics;
 using DateRanges = Cog.Core.DateRanges;
 
 namespace Tayra.Services
@@ -66,6 +68,17 @@ namespace Tayra.Services
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
             team.EnsureNotNull(teamKey);
 
+            var analyticsService = new AnalyticsService(DbContext);
+
+            var metricList = new[]
+            {
+                MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists, MetricType.Heat,
+                MetricType.TasksCompleted, MetricType.Complexity
+            };
+            
+            var teamProfiless = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId)
+                .ToArray();
+            
             var teamStats = (from r in DbContext.TeamReportsWeekly
                              where r.TeamId == team.Id
                              orderby r.DateId descending
@@ -88,76 +101,28 @@ namespace Tayra.Services
             var teamProfiles = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId).ToArray();
 
             var profileStats = (from r in DbContext.ProfileReportsWeekly
-                                where teamProfiles.Contains(r.ProfileId)
-                                where r.DateId >= p.FromId
-                                orderby r.DateId descending
-                                select new
-                                {
-                                    ProfileId = r.ProfileId,
-                                    Impact = r.OImpactAverage,
-                                    Speed = r.SpeedAverage,
-                                    Heat = r.Heat,
-                                    Power = r.PowerAverage,
-                                    Assists = r.AssistsTotalAverage,
-                                    Completion = r.ComplexityTotalAverage,
-                                    Complexity = r.ComplexityTotalAverage
-                                }).ToArray();
-
+                where teamProfiles.Contains(r.ProfileId)
+                where r.DateId >= p.FromId
+                orderby r.DateId descending
+                select new
+                {
+                    ProfileId = r.ProfileId,
+                    Impact = r.OImpactAverage,
+                    Speed = r.SpeedAverage,
+                    Heat = r.Heat,
+                    Power = r.PowerAverage,
+                    Assists = r.AssistsTotalAverage,
+                    Completion = r.ComplexityTotalAverage,
+                    Complexity = r.ComplexityTotalAverage
+                }).ToArray();
+            
             return new TeamSwarmPlotDTO
             {
                 LastUpdateDateId = teamStats.Select(x => x.DateId).FirstOrDefault(),
-                Metrics = new[]
-                {
-                    new TeamSwarmPlotDTO.DataDTO
-                    {
-                        MetricType = MetricTypes.Impact,
-                        Averages = teamStats.Select(x => x.Impact).ToArray(),
-                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
-                            .ToDictionary(x => x.Key, x => x.Select(s => s.Impact).ToArray())
-                    },
-                    new TeamSwarmPlotDTO.DataDTO
-                    {
-                        MetricType = MetricTypes.Speed,
-                        Averages = teamStats.Select(x => x.Speed).ToArray(),
-                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
-                            .ToDictionary(x => x.Key, x => x.Select(s => s.Speed).ToArray())
-                    },
-                    new TeamSwarmPlotDTO.DataDTO
-                    {
-                        MetricType = MetricTypes.Heat,
-                        Averages = new float[]{},
-                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
-                            .ToDictionary(x => x.Key, x => x.Select(s => s.Heat).ToArray())
-                    },
-                    new TeamSwarmPlotDTO.DataDTO
-                    {
-                        MetricType = MetricTypes.Power,
-                        Averages = teamStats.Select(x => x.Power).ToArray(),
-                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
-                            .ToDictionary(x => x.Key, x => x.Select(s => s.Power).ToArray())
-                    },
-                    new TeamSwarmPlotDTO.DataDTO
-                    {
-                        MetricType = MetricTypes.Assist,
-                        Averages = teamStats.Select(x => (float)x.Assists).ToArray(),
-                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
-                            .ToDictionary(x => x.Key, x => x.Select(s => s.Assists).ToArray())
-                    },
-                    new TeamSwarmPlotDTO.DataDTO
-                    {
-                        MetricType = MetricTypes.WorkUnitsCompleted,
-                        Averages = teamStats.Select(x => x.Completion).ToArray(),
-                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
-                            .ToDictionary(x => x.Key, x => x.Select(s => s.Completion).ToArray())
-                    },
-                    new TeamSwarmPlotDTO.DataDTO
-                    {
-                        MetricType = MetricTypes.Complexity,
-                        Averages = teamStats.Select(x => x.Complexity).ToArray(),
-                        ProfileStats = profileStats.ToLookup(x => x.ProfileId)
-                            .ToDictionary(x => x.Key, x => x.Select(s => s.Complexity).ToArray())
-                    },
-                }
+                ProfileMetrics = analyticsService.GetMetricsRanks(metricList, teamProfiless, EntityTypes.Profile,
+                new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow)),
+                Averages = analyticsService.GetMetrics(metricList, team.Id, EntityTypes.Team,
+                new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow))
             };
         }
 
