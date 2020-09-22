@@ -64,7 +64,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("{segmentKey}/rankChart")]
-        public Dictionary<int, AnalyticsMetricsWEntityDto[]>  GetSegmentRankChart([FromRoute] string segmentKey)
+        public Dictionary<int, MetricsValueWEntity[]>  GetSegmentRankChart([FromRoute] string segmentKey)
         {
             return SegmentsService.GetSegmentRankChart(segmentKey);
         }

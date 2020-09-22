@@ -1,7 +1,6 @@
 using System.Linq;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-using Tayra.Services.Analytics;
 
 namespace Tayra.SyncServices.Metrics
 {

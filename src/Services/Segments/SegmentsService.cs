@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-using DateRanges = Cog.Core.DateRanges;
 using Tayra.Services.Analytics;
 
 
@@ -170,7 +169,7 @@ namespace Tayra.Services
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
         }
 
-        public Dictionary<int, AnalyticsMetricsWEntityDto[]>  GetSegmentRankChart(string segmentKey)
+        public Dictionary<int, MetricsValueWEntity[]>  GetSegmentRankChart(string segmentKey)
         {
             var analyticsService = new AnalyticsService(DbContext);
 
