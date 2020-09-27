@@ -3,6 +3,7 @@ using System.Linq;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
+using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Models.Organizations;

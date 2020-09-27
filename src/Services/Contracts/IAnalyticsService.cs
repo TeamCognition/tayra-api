@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cog.Core;
+using Tayra.Analytics;
 using Tayra.Common;
 
 namespace Tayra.Services

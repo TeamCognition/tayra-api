@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Cog.DAL;
+using Tayra.Analytics;
 using Tayra.Common;
 
 namespace Tayra.Models.Organizations

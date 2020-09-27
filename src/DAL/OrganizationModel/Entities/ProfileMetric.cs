@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Cog.DAL;
-using Tayra.Common;
+using Tayra.Analytics;
 
 namespace Tayra.Models.Organizations
 {
@@ -21,24 +21,24 @@ namespace Tayra.Models.Organizations
 
         protected ProfileMetric(){}
 
-        public ProfileMetric(int profileId, PureMetric pureMetric)
+        public ProfileMetric(int profileId, MetricShard metricShard)
         {
             ProfileId = profileId;
-            DateId = pureMetric.DateId;
-            Type = pureMetric.Type;
-            Value = pureMetric.Value;
+            DateId = metricShard.DateId;
+            Type = metricShard.Type;
+            Value = metricShard.Value;
         }
 
-        public ProfileMetric(int profileId, PureMetricWithSegment pureMetric)
+        public ProfileMetric(int profileId, MetricShardWEntity metricShard)
         {
             ProfileId = profileId;
-            SegmentId = pureMetric.SegmentId;
-            DateId = pureMetric.DateId;
-            Type = pureMetric.Type;
-            Value = pureMetric.Value;
+            SegmentId = metricShard.EntityId;
+            DateId = metricShard.DateId;
+            Type = metricShard.Type;
+            Value = metricShard.Value;
         }
 
-        public static ProfileMetric[] CreateRange(int profileId, PureMetricWithSegment[] metric)
+        public static ProfileMetric[] CreateRange(int profileId, MetricShardWEntity[] metric)
         {
             return metric.Select(x => new ProfileMetric(profileId, x)).ToArray();
         }

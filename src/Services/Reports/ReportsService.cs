@@ -7,6 +7,7 @@ using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 

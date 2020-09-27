@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
+using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -48,12 +49,12 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("rawMetrics")]
-        public AnalyticsService.TableData<MetricValue> GetRawMetrics([FromQuery] int[] m, [FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
+        public TableData<MetricValue> GetRawMetrics([FromQuery] int[] m, [FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
         {
             var datePeriod = new DatePeriod(period);
             MetricType[] oMetricTypes = m.Select(x => MetricType.FromValue(x)).ToArray(); 
             
-            return new AnalyticsService.TableData<MetricValue>(AnalyticsService.GetMetrics(oMetricTypes, entityId, entityType,
+            return new TableData<MetricValue>(AnalyticsService.GetMetrics(oMetricTypes, entityId, entityType,
                 datePeriod).Select(x => x.Value).ToArray());
         }
 

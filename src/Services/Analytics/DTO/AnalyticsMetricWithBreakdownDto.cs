@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
+using Tayra.Analytics;
 using Tayra.Common;
 
 namespace Tayra.Services
@@ -13,7 +14,7 @@ namespace Tayra.Services
         public float Value { get; set; }
         public IterationBreakdownDto[] IterationsBreakdown { get; set; }
     
-        public AnalyticsMetricWithBreakdownDto(MetricType metricType, DatePeriod period, MetricRaw[] raws, DateTime lastRefreshAt, EntityTypes entityType)
+        public AnalyticsMetricWithBreakdownDto(MetricType metricType, DatePeriod period, MetricShard[] raws, DateTime lastRefreshAt, EntityTypes entityType)
         {
             this.LastRefreshAt = lastRefreshAt;
             this.Period = period;
@@ -26,7 +27,7 @@ namespace Tayra.Services
             public DatePeriod Period { get; set; }
             public Dictionary<int, float> Metrics { get; set; }
 
-            public IterationBreakdownDto(MetricType[] types, DatePeriod iterationPeriod, MetricRaw[] raws, EntityTypes entityType)
+            public IterationBreakdownDto(MetricType[] types, DatePeriod iterationPeriod, MetricShard[] raws, EntityTypes entityType)
             {
                 Period = iterationPeriod;
                 Metrics = entityType == EntityTypes.Profile ? types.ToDictionary(t => t.Value, t => t.Calc(raws, iterationPeriod)) : types.ToDictionary(t => t.Value, t => t.CalcGroup(raws, iterationPeriod));

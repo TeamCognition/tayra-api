@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography;
 using Cog.Core;
-using MailChimp.Net.Models;
+using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 
@@ -28,7 +25,7 @@ namespace Tayra.Services.Analytics
             var rawMetrics = metricsTypes.Concat(metricsTypes.SelectMany(x => x.BuildingMetrics)).ToArray();
             rawMetrics = rawMetrics.Concat(rawMetrics.SelectMany(x => x.BuildingMetrics)).ToArray();
 
-            MetricRaw[] metrics = null;
+            MetricShard[] metrics = null;
 
             switch (entityType)
             {
@@ -37,7 +34,7 @@ namespace Tayra.Services.Analytics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
                         where m.SegmentId == entityId
                         where rawMetrics.Contains(m.Type)
-                        select new MetricRaw
+                        select new MetricShard
                         {
                             Type = m.Type,
                             Value = m.Value,
@@ -49,7 +46,7 @@ namespace Tayra.Services.Analytics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
                         where m.ProfileId == entityId
                         where rawMetrics.Contains(m.Type)
-                        select new MetricRaw
+                        select new MetricShard
                         {
                             Type = m.Type,
                             Value = m.Value,
@@ -68,7 +65,7 @@ namespace Tayra.Services.Analytics
             var rawMetrics = metricTypes.Concat(metricTypes.SelectMany(x => x.BuildingMetrics)).ToArray();
             rawMetrics = rawMetrics.Concat(rawMetrics.SelectMany(x => x.BuildingMetrics)).ToArray();
 
-            MetricRaw[] metrics = null;
+            MetricShard[] metrics = null;
             
             switch (entityType)
             {
@@ -77,7 +74,7 @@ namespace Tayra.Services.Analytics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
                         where m.SegmentId == entityId
                         where rawMetrics.Contains(m.Type)
-                        select new MetricRaw
+                        select new MetricShard
                         {
                             Type = m.Type,
                             Value = m.Value,
@@ -89,7 +86,7 @@ namespace Tayra.Services.Analytics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
                         where m.ProfileId == entityId
                         where rawMetrics.Contains(m.Type)
-                        select new MetricRaw
+                        select new MetricShard
                         {
                             Type = m.Type,
                             Value = m.Value,
@@ -105,14 +102,14 @@ namespace Tayra.Services.Analytics
         public Dictionary<int, AnalyticsMetricWithBreakdownDto> GetMetricsWithBreakdown(MetricType[] metricTypes, int entityId, EntityTypes entityType, DatePeriod period)
         {
             if(metricTypes.Length == 0)
-                metricTypes = new[]
+                metricTypes = new MetricType[]
                 {
                     MetricType.Impact, MetricType.Speed, MetricType.Commits, MetricType.CommitRate,
                     MetricType.TasksCompleted, MetricType.Complexity, MetricType.Power, MetricType.TimeWorkedLogged, MetricType.Heat,
                     MetricType.Assists, MetricType.PraisesGiven, MetricType.TokensEarned, MetricType.TokensSpent, MetricType.GiftsReceived, MetricType.GiftsSent 
                 };
 
-            MetricRaw[] metrics = null;
+            MetricShard[] metrics = null;
             
             switch (entityType)
             {
@@ -120,7 +117,7 @@ namespace Tayra.Services.Analytics
                     metrics = (from m in DbContext.SegmentMetrics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
                         where m.SegmentId == entityId
-                        select new MetricRaw
+                        select new MetricShard
                         {
                             Type = m.Type,
                             Value = m.Value,
@@ -131,7 +128,7 @@ namespace Tayra.Services.Analytics
                     metrics = (from m in DbContext.ProfileMetrics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
                         where m.ProfileId == entityId
-                        select new MetricRaw
+                        select new MetricShard
                         {
                             Type = m.Type,
                             Value = m.Value,
@@ -161,7 +158,7 @@ namespace Tayra.Services.Analytics
                         select new MetricRawWEntity
                         {
                             EntityId = m.SegmentId,
-                            MetricRaw = new MetricRaw
+                            MetricShard = new MetricShard
                             {
                                 Type = m.Type,
                                 Value = m.Value,
@@ -176,7 +173,7 @@ namespace Tayra.Services.Analytics
                         select new MetricRawWEntity
                         {
                             EntityId = m.ProfileId,
-                            MetricRaw = new MetricRaw
+                            MetricShard = new MetricShard
                             {
                                 Type = m.Type,
                                 Value = m.Value,
@@ -187,71 +184,7 @@ namespace Tayra.Services.Analytics
             }
 
             return metricTypes.ToDictionary(type => type.Value,
-                type => entityIds.Select(eId => new MetricsValueWEntity(type, eId, period, metrics, entityType)).OrderByDescending(x => x.Value).ToArray());
-        }
-        
-        public class TableData<T> where T: class
-        {
-            public Header[] Headers { get; set; }
-            public T[] Records { get; set; }
-
-            public TableData(T[] records)
-            {
-                this.Records = records;
-                
-                Headers = records.FirstOrDefault().GetType().GetProperties().Select(p => 
-                    new Header((Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType).Name, p.Name))
-                    .ToArray();
-            }
-
-            public class Header
-            {
-                public string Type { get; set; }
-                public string Accessor { get; set; }
-
-                public Header(string type, string accessor)
-                {
-                    this.Type = type;
-                    this.Accessor = accessor;
-                }
-            }
-
-            public class Profile
-            {
-                public string Name { get; set; }
-                public string Username { get; set; }
-
-                public override string ToString() => $"{Name}{Username}";
-            }
-        }
-
-        public class TaskTableDTO
-        {
-            public HyperLink Name { get; set; }
-            
-        }
-
-        public class HyperLink
-        {
-            public string Name { get; set; }
-            public string Url { get; set; }
-        }
-        
-        public void Haris()
-        {
-            var tasks = DbContext.Tasks.Select(x => new
-            {
-                Priority = x.Priority
-            }).ToArray();
-
-            object oo = tasks;
-            
-            foreach (PropertyInfo prop in oo.GetType().GetProperties())
-            {
-                var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                Console.WriteLine(type.Name);
-            }
-            
+                type => entityIds.Select(eId => MetricsValueWEntity.Create(type, eId, period, metrics, entityType)).OrderByDescending(x => x.Value).ToArray());
         }
 
         #endregion

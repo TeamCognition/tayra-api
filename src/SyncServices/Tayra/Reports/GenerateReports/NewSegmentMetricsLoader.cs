@@ -6,6 +6,7 @@ using Cog.Core;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Newtonsoft.Json.Linq;
+using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -73,7 +74,7 @@ namespace Tayra.SyncServices.Tayra
                     .Select(x => new MetricRawWEntity
                     {
                         EntityId = x.ProfileId,
-                        MetricRaw = new MetricRaw
+                        MetricShard = new MetricShard
                         {
                             Type = x.Type,
                             Value = x.Value,
@@ -84,7 +85,7 @@ namespace Tayra.SyncServices.Tayra
 
                 var segmentMetrics = MetricType.List
                         .Select(m => new SegmentMetric(segmentId, dateId, m, profileIds.Sum(x =>
-                                m.Calc(rawMetrics.Where(m => m.EntityId == x).Select(m => m.MetricRaw).ToArray(),
+                                m.Calc(rawMetrics.Where(m => m.EntityId == x).Select(m => m.MetricShard).ToArray(),
                                 new DatePeriod(dateId, dateId))/ profileIds.Length)));
 
                 

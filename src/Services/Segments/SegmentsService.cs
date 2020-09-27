@@ -5,7 +5,7 @@ using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
-using MoreLinq.Extensions;
+using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services.Analytics;
@@ -159,7 +159,7 @@ namespace Tayra.Services
             
             var analyticsService = new AnalyticsService(DbContext);
 
-            var metricList = new[]
+            var metricList = new MetricType[]
             {
                 MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists,MetricType.Heat, 
                 MetricType.TasksCompleted, MetricType.Complexity
@@ -174,7 +174,7 @@ namespace Tayra.Services
         {
             var analyticsService = new AnalyticsService(DbContext);
 
-            var metricList = new[]
+            var metricList = new MetricType[]
             {
                 MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists, MetricType.Heat,
                 MetricType.TasksCompleted, MetricType.Complexity

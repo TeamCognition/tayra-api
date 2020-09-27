@@ -7,6 +7,7 @@ using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Newtonsoft.Json;
+using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Models.Catalog;
@@ -323,7 +324,7 @@ using Tayra.Services.Analytics;
             var analyticsService = new AnalyticsService(DbContext);
             
             var metrics = analyticsService.GetMetrics(
-                new[]
+                new MetricType[]
                 {
                     MetricType.TasksCompleted, MetricType.Assists, MetricType.TimeWorked, MetricType.TokensEarned,
                     MetricType.TokensSpent, MetricType.ItemsBought
@@ -440,7 +441,7 @@ using Tayra.Services.Analytics;
         {
             var analyticsService = new AnalyticsService(DbContext);
 
-            var metricList = new[]
+            var metricList = new MetricType[]
             {
                 MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists,
                 MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
@@ -474,7 +475,7 @@ using Tayra.Services.Analytics;
 
             return analyticsService.GetMetricsWithIterationSplit(
                 metricList, profileId, EntityTypes.Profile,
-                new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
+                new DatePeriod(DateTime.UtcNow.AddDays(-1*(8*7-1)), DateTime.UtcNow));
 
         }
         #endregion
