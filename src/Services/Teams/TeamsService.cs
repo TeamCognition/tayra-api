@@ -74,10 +74,10 @@ namespace Tayra.Services
                 MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists, MetricType.Heat,
                 MetricType.TasksCompleted, MetricType.Complexity
             };
-            
+
             var teamProfiless = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId)
                 .ToArray();
-            
+
             var teamStats = (from r in DbContext.TeamReportsWeekly
                              where r.TeamId == team.Id
                              orderby r.DateId descending
@@ -100,30 +100,31 @@ namespace Tayra.Services
             var teamProfiles = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId).ToArray();
 
             var profileStats = (from r in DbContext.ProfileReportsWeekly
-                where teamProfiles.Contains(r.ProfileId)
-                where r.DateId >= p.FromId
-                orderby r.DateId descending
-                select new
-                {
-                    ProfileId = r.ProfileId,
-                    Impact = r.OImpactAverage,
-                    Speed = r.SpeedAverage,
-                    Heat = r.Heat,
-                    Power = r.PowerAverage,
-                    Assists = r.AssistsTotalAverage,
-                    Completion = r.ComplexityTotalAverage,
-                    Complexity = r.ComplexityTotalAverage
-                }).ToArray();
-            
+                                where teamProfiles.Contains(r.ProfileId)
+                                where r.DateId >= p.FromId
+                                orderby r.DateId descending
+                                select new
+                                {
+                                    ProfileId = r.ProfileId,
+                                    Impact = r.OImpactAverage,
+                                    Speed = r.SpeedAverage,
+                                    Heat = r.Heat,
+                                    Power = r.PowerAverage,
+                                    Assists = r.AssistsTotalAverage,
+                                    Completion = r.ComplexityTotalAverage,
+                                    Complexity = r.ComplexityTotalAverage
+                                }).ToArray();
+
             return new TeamSwarmPlotDTO
             {
                 LastUpdateDateId = teamStats.Select(x => x.DateId).FirstOrDefault(),
+
                 ProfileMetrics = analyticsService.GetMetricsRanks(metricList, teamProfiless, EntityTypes.Profile,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow)),
                 Averages = analyticsService.GetMetrics(metricList, team.Id, EntityTypes.Segment,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow))
             };
-        }    
+        }
         public GridData<TeamViewGridDTO> GetViewGridData(int[] segmentIds, TeamViewGridParams gridParams)
         {
             //this query is garbo
@@ -340,7 +341,7 @@ namespace Tayra.Services
                     jiraBoardUrl = $"https://{jiraSiteName}.atlassian.net/secure/RapidBoard.jspa?rapidView=6";
                 }
             }
-            
+
             return (from t in DbContext.Tasks
                     where teamMembers.Contains(t.AssigneeProfileId.Value)
                     where t.Status == TaskStatuses.InProgress || (t.Status == TaskStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)

@@ -1,14 +1,17 @@
 using System;
+using System.Globalization;
 using System.Linq;
+using Cog.Core;
+using Newtonsoft.Json;
 
 namespace Tayra.Common
 {
-    public class TableData<T> where T: class
+    public partial class TableData
     {
-        public Header[] Headers { get; set; }
-        public T[] Records { get; set; }
+        protected Header[] Headers { get; }
+        private object[] Records { get; }
 
-        public TableData(T[] records)
+        public TableData(object[] records)
         {
             this.Records = records;
                 
@@ -17,36 +20,68 @@ namespace Tayra.Common
                 .ToArray();
         }
 
-        public class Header
+        protected class Header
         {
-            public string Type { get; set; }
-            public string Accessor { get; set; }
+            private string Type { get; }
+            private string Accessor { get; }
 
             public Header(string type, string accessor)
             {
-                this.Type = type;
-                this.Accessor = accessor;
+                this.Type = type.ToLowerFirst();
+                this.Accessor = accessor.ToLowerFirst();
             }
         }
     }
-        
-    public class TableDataProfile
-    {
-        public string Name { get; set; }
-        public string Username { get; set; }
 
-        public TableDataProfile(string name, string username)
+    public partial class TableData
+    {
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        public class Profile
         {
-            this.Name = name;
-            this.Username = username;
-        }
+            private string Name { get; }
+            private string Username { get; }
 
-        public override string ToString() => $"{Name}\0{Username}";
+            public Profile(string name, string username)
+            {
+                this.Name = name;
+                this.Username = username;
+            }
+
+            public override string ToString() => $"{Name}\0{Username}";
+        }
     }
-        
-    public class TableDataHyperLink
+
+    public partial class TableData
     {
-        public string Name { get; set; }
-        public string Url { get; set; }
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        public class ExternalLink
+        {
+            private string Text { get; }
+            private string Url { get; }
+
+            public ExternalLink(string text, string url)
+            {
+                this.Text = text;
+                this.Url = url;
+            }
+
+            public override string ToString() => $"{Text}\0{Url}";
+        }
+    }
+    
+    public partial class TableData
+    {
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        public class TimeInMinutes
+        {
+            private int Minutes { get; }
+
+            public TimeInMinutes(int? minutes)
+            {
+                this.Minutes = minutes ?? 0;
+            }
+
+            public override string ToString() => Minutes.ToString(CultureInfo.InvariantCulture);
+        }
     }
 }

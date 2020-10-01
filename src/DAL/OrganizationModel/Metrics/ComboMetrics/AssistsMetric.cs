@@ -9,11 +9,11 @@ namespace Tayra.Analytics.Metrics
         {
         }
 
-        public override MetricType[] BuildingMetrics => new[] { PraisesReceived };
+        public override MetricType[] BuildingMetrics => new MetricType[] { PraisesReceived };
         public override float CalcGroup(MetricShard[] buildingMetrics, DatePeriod datePeriod)
         {
             var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
-            return SumRawMetricByType(metricsInPeriod, MetricType.Assists);
+            return SumRawMetricByType(metricsInPeriod, this);
         }
         public override float Calc(MetricShard[] buildingMetrics, DatePeriod datePeriod)
         {

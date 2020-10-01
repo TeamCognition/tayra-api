@@ -16,25 +16,26 @@ namespace Tayra.SyncServices.Metrics
         
         public MetricShard Create(ProfilePraise[] praises, int profileId, int dateId) => new MetricShard(praises.Count(x => x.ProfileId == profileId), dateId, this);
 
-        public RawMetric[] GetRawMetrics(OrganizationDbContext db, int profileId, DatePeriod period)
+        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType)
         {
+            var profileIds = GetProfileIds(db, entityId, entityType);
             return (from p in db.ProfilePraises
-                where profileId == p.ProfileId
+                where profileIds.Contains(p.ProfileId)
                 where p.DateId >= period.FromId && p.DateId <= period.ToId
                 join praiser in db.Profiles on p.PraiserProfileId equals praiser.Id
                 select new RawMetric
                 {
-                    Praiser = new TableDataProfile($"{praiser.FirstName} {praiser.LastName}",
+                    Praiser = new TableData.Profile($"{praiser.FirstName} {praiser.LastName}",
                         praiser.Username),
                     Type = p.Type,
                     Date = p.Created,
                     Message = p.Message
-                }).ToArray();
+                }).ToArray<object>();
         }
 
         public class RawMetric
         {
-            public TableDataProfile Praiser { get; set; }
+            public TableData.Profile Praiser { get; set; }
             public PraiseTypes Type { get; set; }
             public DateTime Date { get; set; }
             public string Message { get; set; }

@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Tayra.Analytics;
-using Tayra.Common;
 
 namespace Tayra.Services
 {

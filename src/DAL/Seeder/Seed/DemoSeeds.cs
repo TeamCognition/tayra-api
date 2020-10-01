@@ -105,6 +105,11 @@ namespace Tayra.Models.Seeder.DemoSeeds
 
 
             Console.WriteLine("Seeding Profiles ...");
+            demoData.Profiles.ForEach(x =>
+            {
+                if(x.Role == ProfileRoles.Member)
+                    x.IsAnalyticsEnabled = true;
+            });
             organizationDb.Profiles.AddRange(demoData.Profiles);
             //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
             organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
