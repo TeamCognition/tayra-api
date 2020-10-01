@@ -75,6 +75,15 @@ namespace Tayra.API.Controllers
             DbContext.SaveChanges();
             return Ok();
         }
+        
+        [HttpPost("resendInvitation/{invitationId:int}")]
+        public IActionResult ResendInvitation([FromRoute] int invitationId)
+        {
+            IdentitiesService.ResendInvitation(TenantProvider.GetTenant().Key, invitationId);
+
+            DbContext.SaveChanges();
+            return Ok();
+        }
 
         [HttpPost("searchInvitations")]
         public ActionResult<GridData<IdentityInvitationGridDTO>> SearchInvitation([FromBody] IdentityInvitationGridParams gridParams)

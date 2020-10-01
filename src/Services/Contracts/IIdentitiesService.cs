@@ -10,6 +10,7 @@ namespace Tayra.Services
         Identity GetByEmail(string email);
         void InvitationJoinWithSaveChanges(IdentityJoinDTO dto);
         void CreateInvitation(int profileId, string host, IdentityInviteDTO dto);
+        void ResendInvitation(string host, int invitationId);
         GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams);
         IdentityInvitationViewDTO GetInvitation(string InvitationCode);
         void DeleteInvitation(int invitationId);

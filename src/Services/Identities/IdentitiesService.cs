@@ -221,6 +221,29 @@ namespace Tayra.Services
             DbContext.Add(invitation);
         }
 
+        public void ResendInvitation(string host, int invitationId)
+        {
+            var invitation = DbContext.Invitations.FirstOrDefault(x => x.Id == invitationId);
+            
+            invitation.EnsureNotNull(invitationId);
+
+            if (!invitation.IsActive)
+            {
+                throw new ApplicationException("Invitation already accepted.");
+            }
+
+            var resp = MailerService.SendEmail(invitation.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
+            {
+                throw new ApplicationException(invitation.EmailAddress + " email not sent");
+            }
+
+            invitation.Status = InvitationStatus.Sent;
+            invitation.LastModified = DateTime.Now;
+            
+            CatalogDb.SaveChanges();
+        }
+
         public IdentityInvitationViewDTO GetInvitation(string InvitationCode)
         {
             var invitation = DbContext.Invitations.Where(x => x.Code == Guid.Parse(InvitationCode) && x.IsActive)
