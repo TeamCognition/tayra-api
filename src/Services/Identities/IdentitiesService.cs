@@ -182,18 +182,6 @@ namespace Tayra.Services
                 throw new CogSecurityException("If teamId is sent, you must also send segmentId");
             }
 
-            var invitation = new Invitation
-            {
-                Code = Guid.NewGuid(),
-                EmailAddress = dto.EmailAddress,
-                Role = dto.Role,
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                SegmentId = dto.SegmentId,
-                TeamId = dto.TeamId,
-                Status = InvitationStatus.Sent
-            };
-
             if (!IsEmailAddressUnique(dto.EmailAddress))
             {
                 throw new ApplicationException("Email address already used");
@@ -208,6 +196,23 @@ namespace Tayra.Services
             {
                 throw new EntityNotFoundException<Team>(dto.TeamId);
             }
+            
+            if (DbContext.Invitations.Any(x => x.EmailAddress == dto.EmailAddress))
+            {
+                throw new ApplicationException("Active invitation with this email address already exists");
+            }
+            
+            var invitation = new Invitation
+            {
+                Code = Guid.NewGuid(),
+                EmailAddress = dto.EmailAddress,
+                Role = dto.Role,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                SegmentId = dto.SegmentId,
+                TeamId = dto.TeamId,
+                Status = InvitationStatus.Sent
+            };
 
             //invitation.TeamId = invitation.TeamId ?? DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
             //invitation.TeamId ??= DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
