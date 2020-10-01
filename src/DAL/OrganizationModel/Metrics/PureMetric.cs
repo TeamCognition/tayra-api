@@ -21,6 +21,7 @@ namespace Tayra.Analytics.Metrics
             return SumRawMetricByType(metricsInPeriod, this);
         }
 
+        public abstract Type TypeOfRawMetric { get; }    
         public abstract object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType);
 
         protected int[] GetProfileIds(OrganizationDbContext db, int entityId, EntityTypes entityType)

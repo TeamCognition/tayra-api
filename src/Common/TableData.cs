@@ -8,22 +8,22 @@ namespace Tayra.Common
 {
     public partial class TableData
     {
-        protected Header[] Headers { get; }
-        private object[] Records { get; }
+        public Header[] Headers { get; }
+        public object[] Records { get; }
 
-        public TableData(object[] records)
+        public TableData(Type dataType, object[] records)
         {
             this.Records = records;
-                
-            Headers = records.FirstOrDefault().GetType().GetProperties().Select(p => 
+            
+            Headers = dataType.GetProperties().Select(p => 
                     new Header((Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType).Name, p.Name))
                 .ToArray();
         }
 
-        protected class Header
+        public class Header
         {
-            private string Type { get; }
-            private string Accessor { get; }
+            public string Type { get; }
+            public string Accessor { get; }
 
             public Header(string type, string accessor)
             {

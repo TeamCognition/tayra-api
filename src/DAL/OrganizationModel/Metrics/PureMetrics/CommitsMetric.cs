@@ -33,6 +33,8 @@ namespace Tayra.SyncServices.Metrics
                 }).ToArray<object>();
         }
 
+        public override Type TypeOfRawMetric => typeof(RawMetric);
+
         public class RawMetric
         {
             public TableData.Profile Author { get; set; }

@@ -53,15 +53,10 @@ namespace Tayra.API.Controllers
         [HttpGet("rawMetrics")]
         public TableData GetRawMetrics([FromQuery] int m, [FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] string period)
         {
-            foreach (var mm in MetricType.List)
-            {
-                Console.WriteLine(mm.Name);
-            }
-            
             var datePeriod = new DatePeriod(period);
-            var metricType = PureMetric.FromValue(m) as PureMetric; 
+            var metricType = MetricType.FromValue(m) as PureMetric;
             
-            return new TableData(metricType.GetRawMetrics(OrganizationContext, datePeriod, entityId, entityType));
+            return new TableData(metricType.TypeOfRawMetric, metricType.GetRawMetrics(OrganizationContext, datePeriod, entityId, entityType));
         }
 
         #endregion

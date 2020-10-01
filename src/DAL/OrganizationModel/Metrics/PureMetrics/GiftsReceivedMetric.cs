@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
@@ -31,6 +32,8 @@ namespace Tayra.SyncServices.Metrics
                     Item = i.Item.Name
                 }).ToArray<object>();
         }
+        
+        public override Type TypeOfRawMetric => typeof(RawMetric);
         
         public class RawMetric
         {
