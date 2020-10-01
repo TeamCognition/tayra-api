@@ -111,49 +111,49 @@ namespace Tayra.Services
                 {
                     new TeamSwarmPlotDTO.DataDTO
                     {
-                        MetricType = MetricTypes.Impact,
+                        MetricTypes = MetricTypes.Impact,
                         Averages = teamStats.Select(x => x.Impact).ToArray(),
                         ProfileStats = profileStats.ToLookup(x => x.ProfileId)
                             .ToDictionary(x => x.Key, x => x.Select(s => s.Impact).ToArray())
                     },
                     new TeamSwarmPlotDTO.DataDTO
                     {
-                        MetricType = MetricTypes.Speed,
+                        MetricTypes = MetricTypes.Speed,
                         Averages = teamStats.Select(x => x.Speed).ToArray(),
                         ProfileStats = profileStats.ToLookup(x => x.ProfileId)
                             .ToDictionary(x => x.Key, x => x.Select(s => s.Speed).ToArray())
                     },
                     new TeamSwarmPlotDTO.DataDTO
                     {
-                        MetricType = MetricTypes.Heat,
+                        MetricTypes = MetricTypes.Heat,
                         Averages = new float[]{},
                         ProfileStats = profileStats.ToLookup(x => x.ProfileId)
                             .ToDictionary(x => x.Key, x => x.Select(s => s.Heat).ToArray())
                     },
                     new TeamSwarmPlotDTO.DataDTO
                     {
-                        MetricType = MetricTypes.Power,
+                        MetricTypes = MetricTypes.Power,
                         Averages = teamStats.Select(x => x.Power).ToArray(),
                         ProfileStats = profileStats.ToLookup(x => x.ProfileId)
                             .ToDictionary(x => x.Key, x => x.Select(s => s.Power).ToArray())
                     },
                     new TeamSwarmPlotDTO.DataDTO
                     {
-                        MetricType = MetricTypes.Assist,
+                        MetricTypes = MetricTypes.Assist,
                         Averages = teamStats.Select(x => (float)x.Assists).ToArray(),
                         ProfileStats = profileStats.ToLookup(x => x.ProfileId)
                             .ToDictionary(x => x.Key, x => x.Select(s => s.Assists).ToArray())
                     },
                     new TeamSwarmPlotDTO.DataDTO
                     {
-                        MetricType = MetricTypes.WorkUnitsCompleted,
+                        MetricTypes = MetricTypes.WorkUnitsCompleted,
                         Averages = teamStats.Select(x => x.Completion).ToArray(),
                         ProfileStats = profileStats.ToLookup(x => x.ProfileId)
                             .ToDictionary(x => x.Key, x => x.Select(s => s.Completion).ToArray())
                     },
                     new TeamSwarmPlotDTO.DataDTO
                     {
-                        MetricType = MetricTypes.Complexity,
+                        MetricTypes = MetricTypes.Complexity,
                         Averages = teamStats.Select(x => x.Complexity).ToArray(),
                         ProfileStats = profileStats.ToLookup(x => x.ProfileId)
                             .ToDictionary(x => x.Key, x => x.Select(s => s.Complexity).ToArray())

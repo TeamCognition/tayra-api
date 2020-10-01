@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
 using Cog.Core;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Tayra.Common;
+using Tayra.Models.Organizations;
 
 namespace Tayra.Analytics.Metrics
 {
@@ -16,6 +19,25 @@ namespace Tayra.Analytics.Metrics
         {
             var metricsInPeriod = buildingMetrics.Where(r => r.DateId >= datePeriod.FromId && r.DateId <= datePeriod.ToId).ToArray();
             return SumRawMetricByType(metricsInPeriod, this);
+        }
+
+        public abstract object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType);
+
+        protected int[] GetProfileIds(OrganizationDbContext db, int entityId, EntityTypes entityType)
+        {
+            switch (entityType)
+            {
+                case EntityTypes.Team:
+                    return db.ProfileAssignments.Where(x => x.TeamId == entityId).Select(x => x.ProfileId).Distinct()
+                        .ToArray();
+                case EntityTypes.Segment:
+                    return db.ProfileAssignments.Where(x => x.SegmentId == entityId).Select(x => x.ProfileId).Distinct()
+                        .ToArray();
+                case EntityTypes.Profile:
+                    return new int[] {entityId};
+                
+                default: return new int[] {entityId};
+            }
         }
     }
 }

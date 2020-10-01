@@ -10,7 +10,7 @@ namespace Tayra.Services
         public DataDTO[] Metrics { get; set; }
         public class DataDTO
         {
-            public MetricTypes MetricType { get; set; }
+            public MetricTypes MetricTypes { get; set; }
             public float[] Averages { get; set; }
             public Dictionary<int, float[]> ProfileStats { get; set; }    
         }   	

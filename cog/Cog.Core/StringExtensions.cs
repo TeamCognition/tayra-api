@@ -94,5 +94,16 @@ namespace Cog.Core
             }
             return new string(src, 0, dstIdx);
         }
+
+        public static string ToLowerFirst(this string input)
+        {
+            if (string.IsNullOrEmpty(input)) // || char.IsLower(str, 0))
+            {
+                return input;
+            }
+
+            return char.ToLowerInvariant(input[0]) + input.Substring(1);
+
+        }
     }
 }

@@ -43,7 +43,4 @@
     <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Metrics" />
-  </ItemGroup>
 </Project>
