@@ -33,28 +33,28 @@ namespace Tayra.API.Controllers
         [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {
-            // var o = Resolve<IOrganizationsService>();
-            // o.Create(new OrganizationCreateDTO
-            // {
-            //     Key = "ankora.tayra.io",
-            //     Name = "Ankora",
-            //     Timezone = "Central Europe Standard Time",
-            //     DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
-            //     DatabaseName = "tayra-tenant_ankora",
-            //     TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
-            // });
+             // var o = Resolve<IOrganizationsService>();
+             // o.Create(new OrganizationCreateDTO
+             // {
+             //     Key = "micetribe.tayra.io",
+             //     Name = "MICEtribe",
+             //     Timezone = "Central Europe Standard Time",
+             //     DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
+             //     DatabaseName = "tayra-tenant_micetribe",
+             //     TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
+             // });
 
-            // IdentitiesService.CreateInvitation(0, "ankora.tayra.io", new IdentityInviteDTO
+            // IdentitiesService.CreateInvitation(0, "micetribe.tayra.io", new IdentityInviteDTO
             // {
-            //     EmailAddress = "nermin.hadzic@ankorainc.com",
-            //     FirstName = "Nermin",
+            //     EmailAddress = "info@contactless.io",
+            //     FirstName = "Ahmed",
             //     LastName = "Admin",
             //     Role = ProfileRoles.Admin
             // });
             // DbContext.SaveChanges();
-
-            //IdentitiesService.InternalCreateWithProfile(dto);
-            //DbContext.SaveChanges();
+            //
+            // IdentitiesService.InternalCreateWithProfile(dto);
+            // DbContext.SaveChanges();
 
             return Ok();
         }

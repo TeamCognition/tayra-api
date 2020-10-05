@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using Cog.Core;
 using Newtonsoft.Json;
 
@@ -8,27 +9,25 @@ namespace Tayra.Common
 {
     public partial class TableData
     {
-        public Header[] Headers { get; }
+        public Column[] Columns { get; }
+        
         public object[] Records { get; }
-
+        
         public TableData(Type dataType, object[] records)
         {
             this.Records = records;
-            
-            Headers = dataType.GetProperties().Select(p => 
-                    new Header((Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType).Name, p.Name))
-                .ToArray();
+            Columns = dataType.GetProperties().Select(p => new Column(p)).ToArray();
         }
 
-        public class Header
+        public class Column
         {
             public string Type { get; }
             public string Accessor { get; }
 
-            public Header(string type, string accessor)
+            internal Column(PropertyInfo p)
             {
-                this.Type = type.ToLowerFirst();
-                this.Accessor = accessor.ToLowerFirst();
+                this.Type = (Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType).Name.ToLowerFirst();
+                this.Accessor =  p.Name.ToLowerFirst();
             }
         }
     }

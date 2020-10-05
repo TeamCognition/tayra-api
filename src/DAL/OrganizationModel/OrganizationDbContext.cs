@@ -107,6 +107,7 @@ namespace Tayra.Models.Organizations
         public DbSet<TaskLog> TaskLogs { get; set; }
         public DbSet<TaskSync> TaskSyncs { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamMetric> TeamMetrics { get; set; }
         public DbSet<TeamReportDaily> TeamReportsDaily { get; set; }
         public DbSet<TeamReportWeekly> TeamReportsWeekly { get; set; }
         public DbSet<Token> Tokens { get; set; }
@@ -291,6 +292,15 @@ namespace Tayra.Models.Organizations
                 entity.HasIndex(nameof(Team.SegmentId), nameof(Team.Key), ArchivedAtProp).IsUnique();
             });
 
+            modelBuilder.Entity<TeamMetric>(entity =>
+            {
+                entity.HasKey(x => new { x.TeamId, x.Type, x.DateId });
+                entity.Property(p => p.Type)
+                    .HasConversion(
+                        p => p.Value,
+                        p => MetricType.FromValue(p));
+            });
+            
             modelBuilder.Entity<TeamReportDaily>(entity =>
             {
                 entity.HasKey(x => new { x.DateId, x.TeamId, x.TaskCategoryId });

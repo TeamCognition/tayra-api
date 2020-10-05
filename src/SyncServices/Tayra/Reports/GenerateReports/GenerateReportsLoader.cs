@@ -56,11 +56,12 @@ namespace Tayra.SyncServices.Tayra
                     {
                         var profileMetrics = NewProfileMetricsLoader.GenerateProfileMetrics(organizationDb, date, LogService);
                         var segmentMetrics = NewSegmentMetricsLoader.GenerateSegmentMetrics(organizationDb, date, LogService);
+                        var teamMetrics = NewTeamMetricsLoader.GenerateTeamMetrics(organizationDb, date, LogService);
                         
-                        var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService, segmentIds);
-                        var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService, segmentIds);
+                         var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService, segmentIds);
+                         var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService, segmentIds);
                         
-                        GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, date, LogService, profileDailyReports, segmentIds);
+                         GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, date, LogService, profileDailyReports, segmentIds);
                         GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports, segmentIds);
                         
                         GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports, segmentIds);
@@ -69,7 +70,7 @@ namespace Tayra.SyncServices.Tayra
                         date = date.AddDays(1);
                     } while (date <= endDate);
 
-                    //MakeActionPointsLoader.MakeActionPoints(organizationDb, date, LogService);
+                    MakeActionPointsLoader.MakeActionPoints(organizationDb, date, LogService);
                 }
             }
         }

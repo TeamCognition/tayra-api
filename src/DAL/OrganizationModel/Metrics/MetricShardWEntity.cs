@@ -1,12 +1,9 @@
 namespace Tayra.Analytics
 {
-    public class MetricShardWEntity //MetricValueShard
+    public class MetricShardWEntity : MetricShard//MetricValueShard
     {
         public int EntityId { get; set; }
-        public MetricType Type { get; set; }
-        public float Value { get; set; }
-        public int DateId { get; set; }
-
+        
         public MetricShardWEntity()
         {
         }

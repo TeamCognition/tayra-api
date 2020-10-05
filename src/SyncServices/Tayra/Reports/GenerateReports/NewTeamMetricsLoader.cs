@@ -1,22 +1,17 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
 using Microsoft.EntityFrameworkCore;
-using MoreLinq;
 using Newtonsoft.Json.Linq;
 using Tayra.Analytics;
-using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
-using Tayra.Services;
 using Tayra.SyncServices.Common;
-using Tayra.SyncServices.Metrics;
 
 namespace Tayra.SyncServices.Tayra
 {
-    public class NewSegmentMetricsLoader : BaseLoader
+    public class NewTeamMetricsLoader : BaseLoader
     {
         #region Private Variables
 
@@ -26,7 +21,7 @@ namespace Tayra.SyncServices.Tayra
 
         #region Constructor
 
-        public NewSegmentMetricsLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public NewTeamMetricsLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
             _shardMapProvider = shardMapProvider;
         }
@@ -41,7 +36,7 @@ namespace Tayra.SyncServices.Tayra
                 LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
-                    GenerateSegmentMetrics(organizationDb, date, LogService);
+                    GenerateTeamMetrics(organizationDb, date, LogService);
                 }
             }
         }
@@ -50,19 +45,20 @@ namespace Tayra.SyncServices.Tayra
 
         #region Private Methods
 
-        public static List<SegmentMetric> GenerateSegmentMetrics(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService)
+        public static List<TeamMetric> GenerateTeamMetrics(OrganizationDbContext organizationDb, DateTime fromDay,
+            LogService logService)
         {
-            var metricsToInsert = new List<SegmentMetric>();
-            
+            var metricsToInsert = new List<TeamMetric>();
+
             var dateId = DateHelper2.ToDateId(fromDay);
 
-            var segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
+            var teams = organizationDb.Teams.Where(x => x.Key != null).Select(x => new { x.Id, x.SegmentId }).ToArray();
 
-            foreach (var segmentId in segmentIds)
+            foreach (var team in teams)
             {
                 var profileIds = organizationDb.ProfileAssignments
                     .Where(
-                        x => x.SegmentId == segmentId &&
+                        x => x.TeamId.Value == team.Id &&
                              x.Profile.IsAnalyticsEnabled /*&& x.Created <= DateHelper2.ParseDate(dateId)*/)
                     .Select(x => x.ProfileId)
                     .Distinct()
@@ -70,40 +66,40 @@ namespace Tayra.SyncServices.Tayra
 
                 var rawMetrics = organizationDb.ProfileMetrics
                     .Where(x => x.DateId == dateId && profileIds.Contains(x.ProfileId))
-                    .Where(x => x.SegmentId == null || x.SegmentId == segmentId)
+                    .Where(x => x.SegmentId == null || x.SegmentId == team.SegmentId)
                     .Select(x => new MetricShardWEntity
                     {
                         EntityId = x.ProfileId,
                         Type = x.Type,
                         Value = x.Value,
                         DateId = x.DateId
-                        })
+                    })
                     .ToArray();
 
-                var segmentMetrics = MetricType.List
-                        .Select(m => new SegmentMetric(segmentId, dateId, m, profileIds.Sum(x =>
+                var teamMetrics = MetricType.List
+                        .Select(m => new TeamMetric(team.Id, dateId, m, profileIds.Sum(x =>
                                 m.Calc(rawMetrics.Where(m => m.EntityId == x).ToArray(),
                                 new DatePeriod(dateId, dateId))/ profileIds.Length)));
 
                 
                 
-                metricsToInsert.AddRange(segmentMetrics);
+                metricsToInsert.AddRange(teamMetrics);
             }
 
-            var existing = organizationDb.SegmentMetrics.Count(x => x.DateId == dateId);
+            var existing = organizationDb.TeamMetrics.Count(x => x.DateId == dateId);
             if (existing > 0)
             {
-                logService.Log<ProfileReportDaily>($"date: ${dateId},  deleting {existing} records from database");
+                logService.Log<TeamMetric>($"date: ${dateId},  deleting {existing} records from database");
                 //organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}");
-                organizationDb.Database.ExecuteSqlCommand($"delete from SegmentMetrics where {nameof(ProfileReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                organizationDb.Database.ExecuteSqlCommand($"delete from TeamMetrics where {nameof(TeamMetric.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
                 organizationDb.SaveChanges();
             }
 
-            organizationDb.SegmentMetrics.AddRange(metricsToInsert);
+            organizationDb.TeamMetrics.AddRange(metricsToInsert);
 
             organizationDb.SaveChanges();
 
-            logService.Log<NewSegmentMetricsLoader>($"date: ${dateId}, {metricsToInsert.Count} new segment metrics saved to database.");
+            logService.Log<NewTeamMetricsLoader>($"date: ${dateId}, {metricsToInsert.Count} new team metrics saved to database.");
             return metricsToInsert;
         }
 
