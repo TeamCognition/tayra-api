@@ -83,4 +83,20 @@ namespace Tayra.Common
             public override string ToString() => Minutes.ToString(CultureInfo.InvariantCulture);
         }
     }
+    
+    public partial class TableData
+    {
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        public class MetricValue
+        {
+            public int MetricTypeId { get; }
+            public float Value { get; }
+            public MetricValue(int metricTypeId, float value)
+            {
+                this.MetricTypeId = metricTypeId;
+                this.Value = value;
+            }
+            public override string ToString() => $"{MetricTypeId}\0{Value}";
+        }
+    }
 }

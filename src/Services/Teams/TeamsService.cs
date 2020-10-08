@@ -106,7 +106,7 @@ namespace Tayra.Services
                                 select new
                                 {
                                     ProfileId = r.ProfileId,
-                                    Impact = r.OImpactAverage,
+                                    Impact = r.OImpactAverage,    
                                     Speed = r.SpeedAverage,
                                     Heat = r.Heat,
                                     Power = r.PowerAverage,
@@ -121,7 +121,7 @@ namespace Tayra.Services
 
                 ProfileMetrics = analyticsService.GetMetricsRanks(metricList, teamProfiless, EntityTypes.Profile,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow)),
-                Averages = analyticsService.GetMetrics(metricList, team.Id, EntityTypes.Segment,
+                Averages = analyticsService.GetMetrics(metricList, team.Id, EntityTypes.Team,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow))
             };
         }
@@ -212,108 +212,31 @@ namespace Tayra.Services
             }
         }
 
-        public TeamStatsDTO GetTeamStatsData(string teamKey)
+        public TeamStatsDTO GetTeamStatsData(int teamId)
         {
-            var latestUpdateDateId = DateHelper.FindPeriod(DateRanges.Last4Week).FromId;
 
-            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
+            var analyticsService = new AnalyticsService(DbContext);
 
-            team.EnsureNotNull(teamKey);
+            var metricList = new MetricType[]
+            {
+                MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists,
+                MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
+            };
+            
+            var teamMetrics = analyticsService.GetMetricsWithIterationSplit(
+                metricList, teamId, EntityTypes.Team, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
 
-            var otherTeams = DbContext.Teams.Where(x => x.Key != teamKey).Select(x => x.Id).ToArray();
+            var teamsSegmentId = DbContext.Teams.FirstOrDefault(x => x.Id == teamId).SegmentId;
 
-            var otherTeamsStats =
-                DbContext.TeamReportsWeekly
-                    .Where(x => otherTeams.Contains(x.TeamId) && x.DateId >= latestUpdateDateId)
-                    .ToLookup(x => x.TeamId).ToDictionary(x => x.Key, x => new
-                    {
-                        Impact = x.Select(r => r.OImpactAverage).ToArray(),
-                        Speed = x.Select(r => r.SpeedAverage).ToArray(),
-                        Power = x.Select(r => r.PowerAverage).ToArray(),
-                        Heat = x.Select(r => r.HeatAverageTotal).ToArray(),
-                        Assists = x.Select(r => (float)r.AssistsChange).ToArray(),
-                        TaskCompletion = x.Select(r => (float)r.TasksCompletedChange).ToArray(),
-                        Complexity = x.Select(r => (float)r.ComplexityChange).ToArray(),
-                    });
+            var segmentMetrics = analyticsService.GetMetricsWithIterationSplit(
+                metricList, teamsSegmentId, EntityTypes.Segment, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
 
-            return (from trw in DbContext.TeamReportsWeekly
-                    where trw.TeamId == team.Id
-                    where trw.DateId >= latestUpdateDateId
-                    group trw by 1
-                into r
-                    select new TeamStatsDTO
-                    {
-                        LatestUpdateDateId = latestUpdateDateId,
-                        Metrics = (new TeamStatsDTO.TeamMetricDTO[]
-                        {
-                        new TeamStatsDTO.TeamMetricDTO
-                        {
-                            Id = MetricTypes.Impact,
-                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.Impact,
-                                TotalAverage = x.Value.Impact.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.OImpactAverage).ToArray()
-                        },
-                        new TeamStatsDTO.TeamMetricDTO
-                        {
-                            Id = MetricTypes.Speed,
-                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.Speed,
-                                TotalAverage = x.Value.Speed.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.SpeedAverage).ToArray()
-                        },
-                        new TeamStatsDTO.TeamMetricDTO
-                        {
-                            Id = MetricTypes.Power,
-                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.Power,
-                                TotalAverage = x.Value.Power.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => x.PowerAverage).ToArray()
-                        },
-                        new TeamStatsDTO.TeamMetricDTO
-                        {
-                            Id = MetricTypes.Complexity,
-                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.Complexity,
-                                TotalAverage = x.Value.Complexity.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => (float) x.ComplexityChange).ToArray()
-                        },
-                        new TeamStatsDTO.TeamMetricDTO
-                        {
-                            Id = MetricTypes.Assist,
-                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.Assists,
-                                TotalAverage = x.Value.Assists.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => (float) x.AssistsChange).ToArray()
-                        },
-                        new TeamStatsDTO.TeamMetricDTO
-                        {
-                            Id = MetricTypes.WorkUnitsCompleted,
-                            TeamsAverages = otherTeamsStats.Select(x => new TeamStatsDTO.TeamMetricDTO.OtherTeamsAveragesDTO
-                            {
-                                Id = x.Key ,
-                                Averages = x.Value.TaskCompletion,
-                                TotalAverage = x.Value.TaskCompletion.Sum() / 4f
-                            }).ToArray(),
-                            WeeklyAverages = r.Select(x => (float) x.TasksCompletedChange).ToArray()
-                        }
-                        }).ToArray()
-                    }).FirstOrDefault();
+            return new TeamStatsDTO
+            {
+                LastRefreshAt = DbContext.TeamMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefault(),
+                EntityMetrics = teamMetrics,
+                ComparatorMetrics = segmentMetrics
+            };
         }
 
         public TeamPulseDTO GetTeamPulse(string teamKey)

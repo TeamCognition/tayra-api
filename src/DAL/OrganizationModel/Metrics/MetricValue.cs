@@ -7,7 +7,6 @@ using Tayra.Common;
 
 namespace Tayra.Services
 {
-    [JsonConverter(typeof(ToStringJsonConverter))]
     public class MetricValue
     {
         [System.Text.Json.Serialization.JsonIgnore]

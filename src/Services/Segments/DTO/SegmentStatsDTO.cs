@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Tayra.Common;
 
 namespace Tayra.Services
-{   
-    public class ProfileStatsDTO
+{
+    public class SegmentStatsDTO
     {
         public DateTime? LastRefreshAt { get; set; }
         public Dictionary<int, AnalyticsMetricWithIterationSplitDto> EntityMetrics { get; set; }

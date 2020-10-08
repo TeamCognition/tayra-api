@@ -38,7 +38,7 @@ namespace Tayra.API.Controllers
         {
             return Ok(TeamsService.GetTeamSwarmPloteDTO(teamKey));
         }
-        
+
         [HttpPost("search")]
         public ActionResult<GridData<TeamViewGridDTO>> Search([FromBody] TeamViewGridParams gridParams)
         {
@@ -78,10 +78,10 @@ namespace Tayra.API.Controllers
             return Ok();
         }
         
-        [HttpGet("{teamKey}/statsWidget")]
-        public ActionResult<TeamStatsDTO> GetTeamStatsData([FromRoute]string teamKey)
+        [HttpGet("statsWidget/{teamId}")]
+        public ActionResult<TeamStatsDTO> GetTeamStatsData([FromRoute]int teamId)
         {
-            return TeamsService.GetTeamStatsData(teamKey);
+            return TeamsService.GetTeamStatsData(teamId);
         }
         
         [HttpGet("{teamKey}/pulse")]

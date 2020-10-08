@@ -189,6 +189,28 @@ namespace Tayra.Services
             );
         }
 
+        public SegmentStatsDTO GetSegmentStats(int segmentId)
+        {
+            var analyticsService = new AnalyticsService(DbContext);
+
+            var metricList = new MetricType[]
+            {
+                MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists,
+                MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
+            };
+
+            var segmentMetrics = analyticsService.GetMetricsWithIterationSplit(
+                metricList, segmentId, EntityTypes.Segment,
+                new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
+
+            return new SegmentStatsDTO()
+            {
+                LastRefreshAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefault(),
+                EntityMetrics = segmentMetrics,
+                ComparatorMetrics = null
+            };
+        }
+
         public void AddMember(SegmentMemberAddRemoveDTO dto)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId);
