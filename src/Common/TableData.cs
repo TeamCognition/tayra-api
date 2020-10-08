@@ -99,4 +99,19 @@ namespace Tayra.Common
             public override string ToString() => $"{MetricTypeId}\0{Value}";
         }
     }
+    
+    public partial class TableData
+    {
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        public class DateInSeconds
+        {
+            public long Seconds { get; }
+            public DateInSeconds(DateTime date)
+            {
+                this.Seconds = ((DateTimeOffset)date).ToUnixTimeSeconds();
+            }
+
+            public override string ToString() => Seconds.ToString(CultureInfo.InvariantCulture);
+        }
+    }
 }

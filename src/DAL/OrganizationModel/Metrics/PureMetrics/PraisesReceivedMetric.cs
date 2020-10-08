@@ -28,7 +28,7 @@ namespace Tayra.SyncServices.Metrics
                     Praiser = new TableData.Profile($"{praiser.FirstName} {praiser.LastName}",
                         praiser.Username),
                     Type = p.Type,
-                    Date = p.Created,
+                    Date = new TableData.DateInSeconds(p.Created),
                     Message = p.Message
                 }).ToArray<object>();
         }
@@ -39,7 +39,7 @@ namespace Tayra.SyncServices.Metrics
         {
             public TableData.Profile Praiser { get; set; }
             public PraiseTypes Type { get; set; }
-            public DateTime Date { get; set; }
+            public TableData.DateInSeconds Date { get; set; }
             public string Message { get; set; }
         }
     }

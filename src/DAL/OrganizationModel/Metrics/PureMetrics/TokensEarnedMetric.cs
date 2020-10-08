@@ -34,7 +34,7 @@ namespace Tayra.SyncServices.Metrics
                     Profile = new TableData.Profile($"{tt.Profile.FirstName} {tt.Profile.LastName}",
                         tt.Profile.Username),
                     Value = (float)tt.Value,
-                    Date = tt.Created
+                    Date = new TableData.DateInSeconds(tt.Created)
                 }).ToArray<object>();
         }
         
@@ -44,7 +44,7 @@ namespace Tayra.SyncServices.Metrics
         {
             public TableData.Profile Profile { get; set; }
             public float Value { get; set; }
-            public DateTime Date { get; set; }
+            public TableData.DateInSeconds Date { get; set; }
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Tayra.SyncServices.Metrics
                     Author = new TableData.Profile($"{c.AuthorProfile.FirstName} {c.AuthorProfile.LastName}",
                         c.AuthorProfile.Username),
                     Commit = new TableData.ExternalLink(c.Message, c.ExternalUrl),
-                    Date = c.Created,
+                    Date = new TableData.DateInSeconds(c.Created),
                     Sha = c.SHA
                 }).ToArray<object>();
         }
@@ -39,7 +39,7 @@ namespace Tayra.SyncServices.Metrics
         {
             public TableData.Profile Author { get; set; }
             public TableData.ExternalLink Commit { get; set; }
-            public DateTime Date { get; set; }
+            public TableData.DateInSeconds Date { get; set; }
             public string Sha { get; set; }
         }
     }
