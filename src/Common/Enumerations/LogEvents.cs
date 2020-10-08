@@ -26,8 +26,9 @@
         QuestCompleted = 7001,
         QuestGoalCompleted = 7002,
         
-        CodeCommit = 8000,
+        Code = 8000,
         CodeCommitted = 8001,
-        CodePullRequest = 8002
+        PullRequestCreated = 8002,
+        PullRequestReviewCreated=8003
     }
 }

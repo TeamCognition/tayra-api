@@ -35,16 +35,7 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
         public string State { get; set;}
         
         [JsonProperty("user")]
-        public ReviewUser ReviewUser { get; set;}
+        public WebhookUser ReviewUser { get; set;}
         
-    }
-
-    public class ReviewUser
-    {
-        [JsonProperty("login")]
-        public string Username { get; set; }
-        
-        [JsonProperty("id")]
-        public string Id { get; set; }
     }
 }

@@ -3,10 +3,11 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class PullRequestGit : ITimeStampedEntity
+    public class PullRequest : ITimeStampedEntity
     {
         public int Id { get; set; }
 
+        public string ExternalId { get; set; }
         public string Title { get; set; }
         
         public string Body { get; set; }
@@ -25,7 +26,7 @@ namespace Tayra.Models.Organizations
         
         public int ReviewComments {get; set;}
         
-        public string UserName { get; set; }
+        public string ExternalAuthorId { get; set; }
         
         public int? AuthorProfileId { get; set; }
         

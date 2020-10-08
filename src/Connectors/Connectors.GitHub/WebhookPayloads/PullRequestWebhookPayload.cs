@@ -38,11 +38,11 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
         [JsonProperty("review_comments")]
         public int ReviewComments {get; set;}
         [JsonProperty("user")]
-        public PullRequestWebhooksUser Author { get; set; }
+        public WebhookUser Author { get; set; }
 
     }
 
-    public class PullRequestWebhooksUser
+    public class WebhookUser
     {
         [JsonProperty("login")]
         public string Username { get; set;}
