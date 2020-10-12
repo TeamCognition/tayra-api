@@ -20,12 +20,6 @@ namespace Tayra.Analytics
         Heat = 7
     }
     
-    public class MetricRawWEntity
-    {
-        public int EntityId { get; set; }
-        public MetricShard MetricShard { get; set; }
-    }
-    
     [JsonConverter(typeof(SmartEnumValueConverter<MetricType, int>))]
     public abstract class MetricType: SmartEnum<MetricType>
     {

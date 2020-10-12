@@ -22,12 +22,14 @@ namespace Tayra.Services
             this.Value = entityType == EntityTypes.Profile ? metricType.Calc(raws, period) : metricType.CalcGroup(raws, period);
         }
 
-        protected MetricValue(float value, int dateId, MetricType type)
+        public MetricValue(MetricType type, int dateId, float value)
         {
             this.Type = type;
             this.Period = new DatePeriod(dateId, dateId);
             this.Value = value;
         }
+
+        public override string ToString() => $"{Type.Value}\0{Value}";
     }
 
     public class MetricValueConverter : System.Text.Json.Serialization.JsonConverter<MetricValue>

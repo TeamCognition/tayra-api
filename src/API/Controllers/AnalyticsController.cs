@@ -10,6 +10,7 @@ using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.Analytics;
+using Tayra.SyncServices.Metrics;
 using MetricValue = Tayra.Services.MetricValue;
 
 namespace Tayra.API.Controllers
@@ -58,7 +59,7 @@ namespace Tayra.API.Controllers
             
             return new TableData(metricType.TypeOfRawMetric, metricType.GetRawMetrics(OrganizationContext, datePeriod, entityId, entityType));
         }
-
+        
         #endregion
     }
 }

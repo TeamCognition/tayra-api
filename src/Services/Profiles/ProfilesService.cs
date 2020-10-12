@@ -459,8 +459,8 @@ using Tayra.Services.Analytics;
             return new ProfileStatsDTO
             {
                 LastRefreshAt = DbContext.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefault(),
-                ProfileMetrics = profileMetrics,
-                AssignmentMetrics = segmentMetrics
+                EntityMetrics = profileMetrics,
+                ComparatorMetrics = segmentMetrics
             };
         }
 

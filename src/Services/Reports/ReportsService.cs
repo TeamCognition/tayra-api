@@ -62,6 +62,12 @@ namespace Tayra.Services
 
         public ReportOverviewDTO GetOverviewReport(ReportParams reportParams)
         {
+            var metricList = new MetricType[]
+            {
+                MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Heat,
+                MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
+            };
+            
             var avg = (from srw in DbContext.SegmentReportsWeekly
                       where srw.DateId >= reportParams.From && srw.DateId <= reportParams.To
                       where srw.SegmentId == reportParams.SegmentId

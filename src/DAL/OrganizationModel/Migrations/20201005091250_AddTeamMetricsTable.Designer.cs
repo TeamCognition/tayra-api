@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201005091250_AddTeamMetricsTable")]
+    partial class AddTeamMetricsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1296,131 +1298,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("SegmentId", "OrganizationId");
 
                     b.ToTable("ProfileReportsWeekly");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.PullRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<int?>("AuthorProfileId");
-
-                    b.Property<string>("Body");
-
-                    b.Property<DateTime>("ClosedAt");
-
-                    b.Property<int>("CommitsCount");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("ExternalAuthorId");
-
-                    b.Property<string>("ExternalId");
-
-                    b.Property<string>("ExternalUrl");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<DateTime>("MergedAt");
-
-                    b.Property<int>("ReviewCommentsCount");
-
-                    b.Property<string>("Title");
-
-                    b.Property<DateTime>("UpdatedAt");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("AuthorProfileId", "OrganizationId");
-
-                    b.ToTable("PullRequests");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.PullRequestReview", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<string>("Body");
-
-                    b.Property<string>("CommitId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int>("PullRequestId");
-
-                    b.Property<string>("ReviewerExternalId");
-
-                    b.Property<int?>("ReviewerProfileId");
-
-                    b.Property<string>("State");
-
-                    b.Property<DateTime>("SubmittedAt");
-
-                    b.Property<string>("Title");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("PullRequestId", "OrganizationId");
-
-                    b.HasIndex("ReviewerProfileId", "OrganizationId");
-
-                    b.ToTable("PullRequestReviews");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.PullRequestReviewComment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<string>("Body");
-
-                    b.Property<int?>("CommentedProfileId");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("ExternalId");
-
-                    b.Property<string>("ExternalUrl");
-
-                    b.Property<int>("PullRequestId");
-
-                    b.Property<int>("PullRequestReviewId");
-
-                    b.Property<DateTime>("UpdatedAt");
-
-                    b.Property<int?>("UserCommentedPullRequestReviewProfileId");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasAlternateKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("PullRequestId", "OrganizationId");
-
-                    b.HasIndex("PullRequestReviewId", "OrganizationId");
-
-                    b.HasIndex("UserCommentedPullRequestReviewProfileId", "OrganizationId");
-
-                    b.ToTable("PullRequestReviewComments");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Quest", b =>
@@ -3257,66 +3134,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.PullRequest", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Profile", "AuthorProfile")
-                        .WithMany()
-                        .HasForeignKey("AuthorProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.PullRequestReview", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.PullRequest", "PullRequest")
-                        .WithMany()
-                        .HasForeignKey("PullRequestId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Profile", "ReviewerProfile")
-                        .WithMany()
-                        .HasForeignKey("ReviewerProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.PullRequestReviewComment", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.PullRequest", "PullRequest")
-                        .WithMany()
-                        .HasForeignKey("PullRequestId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.PullRequestReview", "PullRequestReview")
-                        .WithMany()
-                        .HasForeignKey("PullRequestReviewId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Profile", "UserCommentedPullRequestReviewProfile")
-                        .WithMany()
-                        .HasForeignKey("UserCommentedPullRequestReviewProfileId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
                 });

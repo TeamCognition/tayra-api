@@ -125,6 +125,17 @@ namespace Tayra.Services.Analytics
                             DateId = m.DateId
                         }).ToArray();
                     break;
+                case EntityTypes.Team:
+                    metrics = (from m in DbContext.TeamMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where m.TeamId == entityId
+                        select new MetricShard
+                        {
+                            Type = m.Type,
+                            Value = m.Value,
+                            DateId = m.DateId
+                        }).ToArray();
+                    break;
                 default:
                     metrics = (from m in DbContext.ProfileMetrics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
@@ -148,7 +159,7 @@ namespace Tayra.Services.Analytics
         
         public Dictionary<int, MetricsValueWEntity[]> GetMetricsRanks(MetricType[] metricTypes, int[] entityIds, EntityTypes entityType, DatePeriod period)
         {
-            MetricRawWEntity[] metrics = null;
+            MetricShardWEntity[] metrics = null;
         
             switch (entityType)
             {
@@ -156,30 +167,36 @@ namespace Tayra.Services.Analytics
                     metrics = (from m in DbContext.SegmentMetrics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
                         where entityIds.Contains(m.SegmentId)
-                        select new MetricRawWEntity
+                        select new MetricShardWEntity
                         {
                             EntityId = m.SegmentId,
-                            MetricShard = new MetricShard
-                            {
-                                Type = m.Type,
-                                Value = m.Value,
-                                DateId = m.DateId
-                            }
+                            Type = m.Type, 
+                            Value = m.Value,
+                            DateId = m.DateId
+                        }).ToArray();
+                    break;
+                case EntityTypes.Team:
+                    metrics = (from m in DbContext.TeamMetrics
+                        where m.DateId >= period.FromId && m.DateId <= period.ToId
+                        where entityIds.Contains(m.TeamId)
+                        select new MetricShardWEntity
+                        {
+                            EntityId = m.TeamId,
+                            Type = m.Type,
+                            Value = m.Value,
+                            DateId = m.DateId
                         }).ToArray();
                     break;
                 default:
                     metrics = (from m in DbContext.ProfileMetrics
                         where m.DateId >= period.FromId && m.DateId <= period.ToId
                         where entityIds.Contains(m.ProfileId)
-                        select new MetricRawWEntity
+                        select new MetricShardWEntity
                         {
                             EntityId = m.ProfileId,
-                            MetricShard = new MetricShard
-                            {
-                                Type = m.Type,
-                                Value = m.Value,
-                                DateId = m.DateId
-                            }
+                            Type = m.Type,
+                            Value = m.Value,
+                            DateId = m.DateId
                         }).ToArray();
                     break;
             }

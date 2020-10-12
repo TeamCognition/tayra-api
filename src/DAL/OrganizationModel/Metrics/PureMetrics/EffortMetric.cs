@@ -44,8 +44,8 @@ namespace Tayra.SyncServices.Metrics
                     Complexity = t.Complexity,
                     Priority = t.Priority,
                     TimeLogged = new TableData.TimeInMinutes(t.TimeSpentInMinutes),
-                    LastModifiedAt = t.LastModified ?? t.Created,
-                    CreatedAt = t.Created
+                    LastModifiedAt = new TableData.DateInSeconds(t.LastModified ?? t.Created),
+                    CreatedAt = new TableData.DateInSeconds(t.Created)
                 }).ToArray<object>();
         }
 
@@ -60,8 +60,8 @@ namespace Tayra.SyncServices.Metrics
             public int Complexity { get; set; }
             public TaskPriorities Priority { get; set; }
             public TableData.TimeInMinutes TimeLogged { get; set; }
-            public DateTime LastModifiedAt { get; set; }
-            public DateTime CreatedAt { get; set; }
+            public TableData.DateInSeconds LastModifiedAt { get; set; }
+            public TableData.DateInSeconds CreatedAt { get; set; }
         }
     }
 }

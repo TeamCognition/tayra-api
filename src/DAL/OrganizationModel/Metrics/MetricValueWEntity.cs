@@ -9,14 +9,14 @@ namespace Tayra.Services
     {
         public int EntityId { get; set; }
 
-        public static MetricsValueWEntity Create(MetricType metricType, int entityId, DatePeriod period, MetricRawWEntity[] rawsWEntity, EntityTypes entityType)
+        public static MetricsValueWEntity Create(MetricType metricType, int entityId, DatePeriod period, MetricShardWEntity[] rawsWEntity, EntityTypes entityType)
         {
-            var raws = rawsWEntity.Where(m => m.EntityId == entityId).Select(x => x.MetricShard).ToArray();
+            var raws = rawsWEntity.Where(m => m.EntityId == entityId).ToArray();
             var value = entityType == EntityTypes.Profile ? metricType.Calc(raws, period) : metricType.CalcGroup(raws, period);
-            return new MetricsValueWEntity(metricType, value, period.ToId, entityId);
+            return new MetricsValueWEntity(metricType, period.ToId, value, entityId);
         }
 
-        public MetricsValueWEntity(MetricType type, float value, int dateId, int entityId) : base (value, dateId, type)
+        public MetricsValueWEntity(MetricType type, int dateId, float value, int entityId) : base (type, dateId, value)
         {
             this.EntityId = entityId;
         }

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
+using Tayra.Analytics;
+using Tayra.Analytics.Metrics;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -117,6 +120,21 @@ namespace Tayra.API.Controllers
         public ActionResult<List<IntegrationSegmentViewDTO>> GetSegmentIntegrations([FromRoute] string segmentKey)
         {
             return IntegrationsService.GetSegmentIntegrations(segmentKey);
+        }
+        
+        [HttpGet("rawMetrics")]
+        public TableData GetRawMetrics([FromQuery] int m, [FromQuery] int entityId, [FromQuery] string period)
+        {
+            var datePeriod = new DatePeriod(period);
+            var metricType = MetricType.FromValue(m) as PureMetric;
+            
+            return new TableData(metricType.TypeOfRawMetric, metricType.GetRawMetrics(DbContext, datePeriod, entityId, EntityTypes.Segment));
+        }
+        
+        [HttpGet("statsWidget/{segmentId:int}")]
+        public ActionResult<SegmentStatsDTO> GetSegmentStats(int segmentId)
+        {
+            return SegmentsService.GetSegmentStats(segmentId);
         }
 
         #endregion

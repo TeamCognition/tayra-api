@@ -29,7 +29,7 @@ namespace Tayra.SyncServices.Metrics
                         i.Profile.Username),
                     Item = i.Item.Name,
                     Price = i.Item.Price,
-                    DisenchantedAt = i.Created
+                    DisenchantedAt = new TableData.DateInSeconds(i.Created)
                 }).ToArray<object>();
         }
         
@@ -40,7 +40,7 @@ namespace Tayra.SyncServices.Metrics
             public TableData.Profile Profile { get; set; }
             public string Item { get; set; }
             public float Price { get; set; }
-            public DateTime DisenchantedAt { get; set; }
+            public TableData.DateInSeconds DisenchantedAt { get; set; }
         }
     }
 }
