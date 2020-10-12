@@ -137,7 +137,7 @@ namespace Tayra.API.Controllers
                         {"committedAt", commit.Timestamp.ToString()},
                         {"externalUrl", commit.Url},
                         {"externalAuthorUsername", commit.Author.Username},
-                        {"externalId", commit.Id},
+                        {"sha", commit.Id},
                         {"message", commit.Message},
                     }
                 };
