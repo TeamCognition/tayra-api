@@ -71,7 +71,7 @@ namespace Tayra.API.Controllers
         {
             Request.Headers.TryGetValue("X-GitHub-Event", out StringValues ghEvent);
 
-            if (new string[] {"push", "pull_request", "pull_request_review", "pull_request_review_comment"}
+            if (!new [] {"push", "pull_request", "pull_request_review", "pull_request_review_comment"}
                 .Contains(ghEvent.ToString()))
             {
                 return Ok("skipped");
