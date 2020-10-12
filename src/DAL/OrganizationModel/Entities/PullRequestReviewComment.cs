@@ -15,8 +15,6 @@ namespace Tayra.Models.Organizations
         
         public DateTime UpdatedAt { get; set; }
 
-        #region RelationShips
-
         public int? CommentedProfileId { get; set; }
 
         public Profile UserCommentedPullRequestReviewProfile { get; set; }
@@ -28,10 +26,5 @@ namespace Tayra.Models.Organizations
         public int PullRequestId { get; set; }  
         
         public PullRequest PullRequest { get; set; }
-
-        #endregion
-
-        
-
     }
 }
