@@ -68,6 +68,13 @@ namespace Tayra.Models.Organizations
         public DbSet<CompetitionLog> CompetitionLogs { get; set; }
         //public DbSet<Date> Dates { get; set; }
         public DbSet<GitCommit> GitCommits { get; set; }
+        
+        public DbSet<PullRequest> PullRequests { get; set; }
+        
+        public DbSet<PullRequestReview> PullRequestReviews { get; set; }
+        
+        public DbSet<PullRequestReviewComment> PullRequestReviewComments { get; set; }
+        
         public DbSet<Integration> Integrations { get; set; }
         public DbSet<IntegrationField> IntegrationFields { get; set; }
         public DbSet<CompetitionReward> CompetitionRewards { get; set; }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201012123721_AddGithubPRTables")]
+    partial class AddGithubPRTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2358,29 +2360,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.TeamMetric", b =>
-                {
-                    b.Property<int>("TeamId");
-
-                    b.Property<int>("Type");
-
-                    b.Property<int>("DateId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<float>("Value");
-
-                    b.HasKey("TeamId", "Type", "DateId", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("TeamMetrics");
-                });
-
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportDaily", b =>
                 {
                     b.Property<int>("DateId");
@@ -3696,20 +3675,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("Teams")
                         .HasForeignKey("SegmentId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.TeamMetric", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
