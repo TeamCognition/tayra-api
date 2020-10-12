@@ -22,9 +22,9 @@ namespace Tayra.Models.Organizations
         
         public DateTime MergedAt { get; set; }
         
-        public int Commits { get; set; }
+        public int CommitsCount { get; set; }
         
-        public int ReviewComments {get; set;}
+        public int ReviewCommentsCount {get; set;}
         
         public string ExternalAuthorId { get; set; }
         

@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tayra.Common;
-using Tayra.Connectors.GitHub.WebhookPayloads;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services.webhooks

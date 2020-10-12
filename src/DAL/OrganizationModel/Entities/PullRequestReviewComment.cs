@@ -19,7 +19,7 @@ namespace Tayra.Models.Organizations
 
         public int? CommentedProfileId { get; set; }
 
-        public Profile CommentedProfile { get; set; }
+        public Profile UserCommentedPullRequestReviewProfile { get; set; }
 
         public int PullRequestReviewId { get; set; }
         

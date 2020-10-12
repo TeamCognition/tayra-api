@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.IIS;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,6 +13,7 @@ using Tayra.Connectors.GitHub.WebhookPayloads;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.TaskConverters;
+using BadHttpRequestException = Microsoft.AspNetCore.Server.IIS.BadHttpRequestException;
 
 namespace Tayra.API.Controllers
 {
@@ -101,6 +103,7 @@ namespace Tayra.API.Controllers
                     HandlePullRequestReviewComment(jObject, logsService);
                     break;
             }
+
             DbContext.SaveChanges();
             return Ok();
         }
@@ -134,7 +137,7 @@ namespace Tayra.API.Controllers
                         {"committedAt", commit.Timestamp.ToString()},
                         {"externalUrl", commit.Url},
                         {"externalAuthorUsername", commit.Author.Username},
-                        {"sha", commit.Id},
+                        {"externalId", commit.Id},
                         {"message", commit.Message},
                     }
                 };
@@ -160,8 +163,8 @@ namespace Tayra.API.Controllers
                 AuthorProfile = authorProfile,
                 CreatedAt = pullRequest.CreatedAt,
                 MergedAt = pullRequest.MergedAt,
-                Commits = pullRequest.Commits,
-                ReviewComments = pullRequest.ReviewComments,
+                CommitsCount = pullRequest.CommitsCount,
+                ReviewCommentsCount = pullRequest.ReviewCommentsCount,
                 UpdatedAt = pullRequest.UpdatedAt,
                 Title = pullRequest.Title,
                 Body = pullRequest.Body,
@@ -179,7 +182,7 @@ namespace Tayra.API.Controllers
                     {"created_at", pullRequest.CreatedAt.ToString()},
                     {"externalUrl", pullRequest.Url},
                     {"externalAuthorUsername", pullRequest.Author.Username},
-                    {"sha", pullRequest.Id},
+                    {"externalId", pullRequest.Id},
                     {"title", pullRequest.Title},
                 }
             };
@@ -202,6 +205,10 @@ namespace Tayra.API.Controllers
             PullRequest pullRequest =
                 DbContext.PullRequests.FirstOrDefault(x => x.ExternalId == prReviewPayload.PullRequest.Id);
 
+            if (pullRequest == null)
+            {
+                throw new Exception("Couldn't find the PullRequest");
+            }
             PullRequestReviewDTO pullRequestReview = prReviewPayload.PullRequestReview;
             DbContext.Add(new PullRequestReview()
             {
@@ -222,7 +229,7 @@ namespace Tayra.API.Controllers
                     {"timestamp", DateTime.UtcNow.ToString()},
                     {"submitted_at", pullRequestReview.SubmittedAt.ToString()},
                     {"externalReviewerUsername", pullRequestReview.ReviewUser.Username},
-                    {"sha", pullRequestReview.Id},
+                    {"externalId", pullRequestReview.Id},
                     {"title", pullRequestReview.Title},
                 }
             };
@@ -234,25 +241,36 @@ namespace Tayra.API.Controllers
 
             logsService.LogEvent(logData);
         }
-        
+
         private void HandlePullRequestReviewComment(JObject jObject, ILogsService logsService)
         {
-            PullRequestReviewCommentPayload prReviewCommentPayload = jObject.ToObject<PullRequestReviewCommentPayload>();
-            var commentedProfile =
-                ProfilesService.GetProfileByExternalId(prReviewCommentPayload.ReviewComment.CommentedUser.Username,
+            PullRequestReviewCommentPayload prReviewCommentPayload =
+                jObject.ToObject<PullRequestReviewCommentPayload>();
+            var userCommentedPullRequestReviewProfile =
+                ProfilesService.GetProfileByExternalId(
+                    prReviewCommentPayload.ReviewComment.UserCommentedPullRequestReviewProfile.Username,
                     IntegrationType.GH);
 
             PullRequest pullRequest =
                 DbContext.PullRequests.FirstOrDefault(x => x.ExternalId == prReviewCommentPayload.ReviewComment.Id);
-
+            
             PullRequestReview pullRequestReview =
                 DbContext.PullRequestReviews.FirstOrDefault(x =>
                     x.ReviewerExternalId == prReviewCommentPayload.ReviewComment.PullRequestReviewId);
 
-            PullRequestReviewCommentDTO pullRequestReviewComment = prReviewCommentPayload.ReviewComment;
+            if (pullRequest == null)
+            {
+                throw new Exception("Couldn't find the PullRequest");
+            }
+            if (pullRequestReview == null)
+            {
+                throw new Exception("Couldn't find the PullRequest review");
+            }
+
+    PullRequestReviewCommentDTO pullRequestReviewComment = prReviewCommentPayload.ReviewComment;
             DbContext.Add(new PullRequestReviewComment()
             {
-                CommentedProfile = commentedProfile,
+                UserCommentedPullRequestReviewProfile = userCommentedPullRequestReviewProfile,
                 PullRequestReview = pullRequestReview,
                 CreatedAt = pullRequestReviewComment.CreatedAt,
                 Body = pullRequestReviewComment.Body,
@@ -269,15 +287,15 @@ namespace Tayra.API.Controllers
                 {
                     {"timestamp", DateTime.UtcNow.ToString()},
                     {"created_at", pullRequestReviewComment.CreatedAt.ToString()},
-                    {"externalReviewerUsername", pullRequestReviewComment.CommentedUser.Username},
-                    {"sha", pullRequestReviewComment.Id},
+                    {"externalReviewerUsername", pullRequestReviewComment.UserCommentedPullRequestReviewProfile.Username},
+                    {"externalId", pullRequestReviewComment.Id},
                     {"external_url",pullRequestReviewComment.Url},
                 }
             };
-            if (commentedProfile != null)
+            if (userCommentedPullRequestReviewProfile != null)
             {
-                logData.Data.Add("profileUsername", commentedProfile.Username);
-                logData.ProfileId = commentedProfile.Id;
+                logData.Data.Add("profileUsername", userCommentedPullRequestReviewProfile.Username);
+                logData.ProfileId = userCommentedPullRequestReviewProfile.Id;
             }
 
             logsService.LogEvent(logData);

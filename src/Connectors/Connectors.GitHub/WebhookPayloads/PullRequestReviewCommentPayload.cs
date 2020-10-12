@@ -37,6 +37,6 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
         public DateTime UpdatedAt { get; set;}
         
         [JsonProperty("user")]
-        public WebhookUser CommentedUser { get; set;}
+        public WebhookUser UserCommentedPullRequestReviewProfile { get; set;}
     }
 }

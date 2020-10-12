@@ -34,9 +34,9 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
         [JsonProperty("merged_at")]
         public DateTime MergedAt { get; set; }
         [JsonProperty("commits")]
-        public int Commits { get; set; }
+        public int CommitsCount { get; set; }
         [JsonProperty("review_comments")]
-        public int ReviewComments {get; set;}
+        public int ReviewCommentsCount {get; set;}
         [JsonProperty("user")]
         public WebhookUser Author { get; set; }
 

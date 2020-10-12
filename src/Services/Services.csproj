@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Connectors\Connectors.GitHub\Connectors.GitHub.csproj" />
     <ProjectReference Include="..\DAL\CatalogModel\CatalogModel.csproj" />
     <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
