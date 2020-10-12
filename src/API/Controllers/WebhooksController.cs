@@ -79,10 +79,10 @@ namespace Tayra.API.Controllers
 
             BaseWebhookPayload payload = jObject.ToObject<BaseWebhookPayload>();
 
-            if (!DbContext.Repositories.Any(x => x.ExternalId == payload.Repository.Id))
-            {
-                return Ok("skipped - repo not active");
-            }
+            // if (!DbContext.Repositories.Any(x => x.ExternalId == payload.Repository.Id))
+            // {
+            //     return Ok("skipped - repo not active");
+            // }
 
             SaveWebhookEventLog(jObject, IntegrationType.GH);
 

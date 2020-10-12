@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Tayra.Connectors.GitHub.WebhookPayloads
 {
-    public abstract class BaseWebhookPayload
+    public class BaseWebhookPayload
     {
         /// <summary>
         /// Most webhook payloads contain an action property that contains the specific activity that triggered the event.
