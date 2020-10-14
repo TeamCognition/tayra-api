@@ -29,6 +29,8 @@
         Code = 8000,
         CodeCommitted = 8001,
         PullRequestCreated = 8002,
-        PullRequestReviewCreated=8003
+        PullRequestUpdated = 8003,
+        PullRequestReviewCreated=8004,
+        PullRequestReviewCommentCreated= 8005
     }
 }

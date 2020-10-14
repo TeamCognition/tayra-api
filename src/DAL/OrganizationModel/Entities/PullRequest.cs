@@ -8,6 +8,8 @@ namespace Tayra.Models.Organizations
         public int Id { get; set; }
 
         public string ExternalId { get; set; }
+        
+    //    public string State { get; set; }
         public string Title { get; set; }
         
         public string Body { get; set; }
@@ -16,11 +18,14 @@ namespace Tayra.Models.Organizations
         
         public DateTime CreatedAt { get; set; }
         
+        
+      //  public bool IsLocked { get; set; }
+        
         public DateTime UpdatedAt { get; set; }
         
-        public DateTime ClosedAt { get; set; }
+        public DateTime? ClosedAt { get; set; }
         
-        public DateTime MergedAt { get; set; }
+        public DateTime? MergedAt { get; set; }
         
         public int CommitsCount { get; set; }
         

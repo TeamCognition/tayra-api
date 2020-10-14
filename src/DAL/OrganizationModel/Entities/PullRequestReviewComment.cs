@@ -15,7 +15,7 @@ namespace Tayra.Models.Organizations
         
         public DateTime UpdatedAt { get; set; }
 
-        public int? CommentedProfileId { get; set; }
+        public int? UserCommentedPullRequestReviewProfileId { get; set; }
 
         public Profile UserCommentedPullRequestReviewProfile { get; set; }
 
