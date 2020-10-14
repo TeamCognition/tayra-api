@@ -6,10 +6,7 @@ namespace Tayra.Models.Organizations
     public class PullRequestReview : ITimeStampedEntity
     {
         public int Id { get; set; }
-
-        //should be deleted
-        public string Title { get; set; }
-
+        
         public string Body { get; set; }
 
         public string State { get; set; }
@@ -23,7 +20,7 @@ namespace Tayra.Models.Organizations
 
         public PullRequest PullRequest { get; set; }
 
-        public string ReviewerExternalId { get; set; }
+        public string ReviewExternalId { get; set; }
 
 
         public int? ReviewerProfileId { get; set; }

@@ -9,7 +9,7 @@ namespace Tayra.Models.Organizations
 
         public string ExternalId { get; set; }
         
-    //    public string State { get; set; }
+        public string State { get; set; }
         public string Title { get; set; }
         
         public string Body { get; set; }
@@ -17,9 +17,8 @@ namespace Tayra.Models.Organizations
         public string ExternalUrl { get; set; }
         
         public DateTime CreatedAt { get; set; }
-        
-        
-      //  public bool IsLocked { get; set; }
+
+        public bool IsLocked { get; set; }
         
         public DateTime UpdatedAt { get; set; }
         
