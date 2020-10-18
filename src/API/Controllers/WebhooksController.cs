@@ -87,7 +87,6 @@ namespace Tayra.API.Controllers
 
             var now = DateTime.UtcNow;
 
-            string returnMessage = null;
             switch (ghEvent.ToString())
             {
                 case "push":
