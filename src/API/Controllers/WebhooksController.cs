@@ -94,23 +94,18 @@ namespace Tayra.API.Controllers
                     HandlePush(jObject, logsService);
                     break;
                 case "pull_request":
-                    returnMessage = HandlePullRequest(jObject, logsService);
+                     HandlePullRequest(jObject, logsService);
                     break;
                 case "pull_request_review":
-                    returnMessage = HandlePullRequestReview(jObject, logsService);
+                     HandlePullRequestReview(jObject, logsService);
                     break;
                 case "pull_request_review_comment":
-                    returnMessage = HandlePullRequestReviewComment(jObject, logsService);
+                      HandlePullRequestReviewComment(jObject, logsService);
                     break;
-            }
-
-            if (returnMessage == null)
-            {
-                returnMessage = "";
             }
 
             DbContext.SaveChanges();
-            return Ok(returnMessage);
+            return Ok();
         }
 
         private void HandlePush(JObject jObject, ILogsService logsService)
@@ -145,12 +140,12 @@ namespace Tayra.API.Controllers
             }
         }
 
-        private string HandlePullRequest(JObject jObject, ILogsService logsService)
+        private void HandlePullRequest(JObject jObject, ILogsService logsService)
         {
             PullRequestWebhookPayload prPayload = jObject.ToObject<PullRequestWebhookPayload>();
             if (PrWebhooksContstants.PullRequestIgnoredActions.Contains(prPayload.Action))
             {
-                return PrWebhooksContstants.PR_ACTION_IGNORED;
+                return;
             }
 
             var authorProfile =
@@ -158,11 +153,11 @@ namespace Tayra.API.Controllers
             if (prPayload.Action == "edited")
             {
                 UpdatePullRequest(prPayload,authorProfile,logsService);
-                return PrWebhooksContstants.PR_UPDATED;
+                return;
             }
 
           
-            PullRequestDTO pullRequest = prPayload.PullRequest;
+            PullRequestWebhookPayload.PullRequestDTO pullRequest = prPayload.PullRequest;
             CreatePullRequest(pullRequest, authorProfile);
             CreateLog(new Dictionary<string, string>
             {
@@ -173,15 +168,14 @@ namespace Tayra.API.Controllers
                 {"externalId", pullRequest.Id},
                 {"title", pullRequest.Title},
             }, LogEvents.PullRequestCreated, authorProfile, logsService);
-            return PrWebhooksContstants.PR_CREATED;
         }
 
 
-        private string HandlePullRequestReview(JObject jObject, ILogsService logsService)
+        private void HandlePullRequestReview(JObject jObject, ILogsService logsService)
         {
             PullRequsetReviewWebhookPayload prReviewPayload = jObject.ToObject<PullRequsetReviewWebhookPayload>();
             var reviewerProfile =
-                ProfilesService.GetProfileByExternalId(prReviewPayload.PullRequestReview.ReviewUser.Username,
+                ProfilesService.GetProfileByExternalId(prReviewPayload.PullRequestReview.ReviewedBy.Username,
                     IntegrationType.GH);
 
             PullRequest pullRequest =
@@ -195,30 +189,29 @@ namespace Tayra.API.Controllers
             if (prReviewPayload.Action == "edited")
             {
                 UpdatePullRequestReview(prReviewPayload,reviewerProfile,logsService);
-                return PrWebhooksContstants.PR_REVIEW_UPDATED;
+                return;
             }
 
-            PullRequestReviewDTO pullRequestReview = prReviewPayload.PullRequestReview;
+            PullRequsetReviewWebhookPayload.PullRequestReviewDTO pullRequestReview = prReviewPayload.PullRequestReview;
             CreatePullRequestReview(pullRequestReview, reviewerProfile, pullRequest);
             CreateLog(new Dictionary<string, string>
             {
                 {"timestamp", DateTime.UtcNow.ToString()},
                 {"submitted_at", pullRequestReview.SubmittedAt.ToString()},
-                {"externalReviewerUsername", pullRequestReview.ReviewUser.Username},
+                {"externalReviewerUsername", pullRequestReview.ReviewedBy.Username},
                 {"externalId", pullRequestReview.Id},
                 {"title", pullRequestReview.Title},
             }, LogEvents.PullRequestReviewCreated, reviewerProfile, logsService);
-            return PrWebhooksContstants.PR_REVIEW_CREATED;
         }
 
 
-        private string HandlePullRequestReviewComment(JObject jObject, ILogsService logsService)
+        private void HandlePullRequestReviewComment(JObject jObject, ILogsService logsService)
         {
             PullRequestReviewCommentPayload prReviewCommentPayload =
                 jObject.ToObject<PullRequestReviewCommentPayload>();
-            var userCommentedPullRequestReviewProfile =
+            var commenterProfile =
                 ProfilesService.GetProfileByExternalId(
-                    prReviewCommentPayload.ReviewComment.UserCommentedPullRequestReviewProfile.Username,
+                    prReviewCommentPayload.ReviewComment.GithubUserCommentedPullRequestReviewProfile.Username,
                     IntegrationType.GH);
             PullRequest pullRequest =
                 DbContext.PullRequests.FirstOrDefault(x => x.ExternalId == prReviewCommentPayload.PullRequest.Id);
@@ -237,34 +230,33 @@ namespace Tayra.API.Controllers
                 throw new Exception(PrWebhooksContstants.COULDNT_FIND_PR_REVIEW);
             }
 
-            PullRequestReviewCommentDTO pullRequestReviewComment = prReviewCommentPayload.ReviewComment;
+            PullRequestReviewCommentPayload.PullRequestReviewCommentDTO pullRequestReviewComment = prReviewCommentPayload.ReviewComment;
             if (prReviewCommentPayload.Action == "edited")
             {
-                UpdatePullRequestReviewComment(pullRequestReviewComment,userCommentedPullRequestReviewProfile,logsService);
-                return PrWebhooksContstants.COMMENT_UPDATED;
+                UpdatePullRequestReviewComment(pullRequestReviewComment,commenterProfile,logsService);
+                return;
             }
 
-            CreatePullRequestReviewComment(pullRequestReviewComment, userCommentedPullRequestReviewProfile,
+            CreatePullRequestReviewComment(pullRequestReviewComment, commenterProfile,
                 pullRequestReview, pullRequest);
             CreateLog(new Dictionary<string, string>
             {
                 {"timestamp", DateTime.UtcNow.ToString()},
                 {"created_at", pullRequestReviewComment.CreatedAt.ToString()},
-                {"externalReviewerUsername", pullRequestReviewComment.UserCommentedPullRequestReviewProfile.Username},
+                {"externalReviewerUsername", pullRequestReviewComment.GithubUserCommentedPullRequestReviewProfile.Username},
                 {"externalId", pullRequestReviewComment.Id},
                 {"external_url", pullRequestReviewComment.Url},
-            }, LogEvents.PullRequestReviewCommentCreated, userCommentedPullRequestReviewProfile, logsService);
-            return PrWebhooksContstants.COMMENT_CREATED;
+            }, LogEvents.PullRequestReviewCommentCreated, commenterProfile, logsService);
         }
 
 
-        private void CreatePullRequestReviewComment(PullRequestReviewCommentDTO pullRequestReviewComment,
-            Profile userCommentedPullRequestReviewProfile,
+        private void CreatePullRequestReviewComment(PullRequestReviewCommentPayload.PullRequestReviewCommentDTO pullRequestReviewComment,
+            Profile commenterProfile,
             PullRequestReview pullRequestReview, PullRequest pullRequest)
         {
             DbContext.Add(new PullRequestReviewComment()
             {
-                UserCommentedPullRequestReviewProfile = userCommentedPullRequestReviewProfile,
+                CommenterProfile = commenterProfile,
                 PullRequestReview = pullRequestReview,
                 CreatedAt = pullRequestReviewComment.CreatedAt,
                 Body = pullRequestReviewComment.Body,
@@ -275,7 +267,7 @@ namespace Tayra.API.Controllers
             });
         }
 
-        private void UpdatePullRequestReviewComment(PullRequestReviewCommentDTO pullRequestReviewCommentDto,Profile userCommentedPullRequestReviewProfile,
+        private void UpdatePullRequestReviewComment(PullRequestReviewCommentPayload.PullRequestReviewCommentDTO pullRequestReviewCommentDto,Profile commenterProfile,
             ILogsService logsService)
         {
             PullRequestReviewComment pullRequestReviewComment =
@@ -287,14 +279,14 @@ namespace Tayra.API.Controllers
             {
                 {"timestamp", DateTime.UtcNow.ToString()},
                 {"created_at", pullRequestReviewCommentDto.CreatedAt.ToString()},
-                {"externalReviewerUsername", pullRequestReviewComment.UserCommentedPullRequestReviewProfile.Username},
+                {"externalReviewerUsername", pullRequestReviewComment.CommenterProfile.Username},
                 {"externalId", pullRequestReviewCommentDto.Id},
                 {"external_url", pullRequestReviewCommentDto.Url},
-            }, LogEvents.PullRequestReviewCommentCreated, userCommentedPullRequestReviewProfile, logsService);
+            }, LogEvents.PullRequestReviewCommentUpdated, commenterProfile, logsService);
             
         }
 
-        private void CreatePullRequestReview(PullRequestReviewDTO pullRequestReview, Profile reviewerProfile,
+        private void CreatePullRequestReview(PullRequsetReviewWebhookPayload.PullRequestReviewDTO pullRequestReview, Profile reviewerProfile,
             PullRequest pullRequest)
         {
             DbContext.Add(new PullRequestReview()
@@ -311,7 +303,7 @@ namespace Tayra.API.Controllers
 
         private void UpdatePullRequestReview(PullRequsetReviewWebhookPayload prReviewPayload,Profile reviewerProfile, ILogsService logsService)
         {
-            PullRequestReviewDTO pullRequestReviewDto = prReviewPayload.PullRequestReview;
+            PullRequsetReviewWebhookPayload.PullRequestReviewDTO pullRequestReviewDto = prReviewPayload.PullRequestReview;
             PullRequestReview pullRequestReview =
                 DbContext.PullRequestReviews.FirstOrDefault(x => x.ReviewExternalId == pullRequestReviewDto.Id);
             pullRequestReview.Body = pullRequestReviewDto.Body;
@@ -322,13 +314,13 @@ namespace Tayra.API.Controllers
             {
                 {"timestamp", DateTime.UtcNow.ToString()},
                 {"submitted_at", pullRequestReviewDto.SubmittedAt.ToString()},
-                {"externalReviewerUsername", pullRequestReviewDto.ReviewUser.Username},
+                {"externalReviewerUsername", pullRequestReviewDto.ReviewedBy.Username},
                 {"externalId", pullRequestReviewDto.Id},
                 {"title", pullRequestReviewDto.Title},
-            }, LogEvents.PullRequestReviewCreated, reviewerProfile, logsService);
+            }, LogEvents.PullRequestReviewUpdated, reviewerProfile, logsService);
         }
 
-        private void CreatePullRequest(PullRequestDTO pullRequest, Profile authorProfile)
+        private void CreatePullRequest(PullRequestWebhookPayload.PullRequestDTO pullRequest, Profile authorProfile)
         {
             DbContext.Add(new PullRequest
             {
@@ -351,7 +343,7 @@ namespace Tayra.API.Controllers
 
         private void UpdatePullRequest(PullRequestWebhookPayload prPayload,Profile authorProfile,ILogsService logsService)
         {
-            PullRequestDTO pullRequestDto = prPayload.PullRequest;
+            PullRequestWebhookPayload.PullRequestDTO pullRequestDto = prPayload.PullRequest;
             PullRequest pullRequest = DbContext.PullRequests.FirstOrDefault(x => x.ExternalId == pullRequestDto.Id);
             pullRequest.Body = pullRequestDto.Body;
             pullRequest.Title = pullRequestDto.Title;
@@ -369,7 +361,7 @@ namespace Tayra.API.Controllers
                 {"externalAuthorUsername", pullRequestDto.Author.Username},
                 {"externalId", pullRequestDto.Id},
                 {"title", pullRequestDto.Title},
-            }, LogEvents.PullRequestCreated, authorProfile, logsService);
+            }, LogEvents.PullRequestUpdated, authorProfile, logsService);
         }
 
         private void CreateLog(Dictionary<string, string> log, LogEvents events, Profile profile,

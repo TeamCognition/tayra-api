@@ -31,6 +31,9 @@
         PullRequestCreated = 8002,
         PullRequestUpdated = 8003,
         PullRequestReviewCreated=8004,
-        PullRequestReviewCommentCreated= 8005
+        PullRequestReviewUpdated=8005,
+        PullRequestReviewCommentCreated= 8006,
+        PullRequestReviewCommentUpdated=8007
+        
     }
 }
