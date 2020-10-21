@@ -24,10 +24,8 @@ namespace Tayra.SyncServices.Common
         public static void RunFromHttp(JobTypes jobTypes, HttpRequest request, ExecutionContext context, ILogger logger)
         {
             var loader = GetLoader(jobTypes, context, logger);
-
-            var requestBody = new StreamReader(request.Body).ReadToEnd();
+            var requestBody = new StreamReader(request.Body).ReadToEndAsync().Result;
             var dto = string.IsNullOrEmpty(requestBody) ? new SyncRequest() : JsonConvert.DeserializeObject<SyncRequest>(requestBody);
-
             if (request.Query.TryGetValue("tenant", out StringValues tenantKey))
             {
                 dto.TenantKey = tenantKey;
@@ -52,9 +50,9 @@ namespace Tayra.SyncServices.Common
         public static void RunFromSchedule(JobTypes jobTypes, TimerInfo timerInfo, ExecutionContext context, ILogger logger)
         {
             var loader = GetLoader(jobTypes, context, logger);
-
+            
             var timezoneInfo = GetCurrentTimezones();
-
+            
             loader.Execute(timezoneInfo.First().Date.Date, null, timezoneInfo.ToArray());
         }
 

@@ -22,7 +22,7 @@ namespace Tayra.Analytics
     
     [JsonConverter(typeof(SmartEnumValueConverter<MetricType, int>))]
     public abstract class MetricType: SmartEnum<MetricType>
-    {
+    {    
         #region Tayra Metrics
         
         public static readonly MetricType Impact = new ImpactMetric("Impact", 101);

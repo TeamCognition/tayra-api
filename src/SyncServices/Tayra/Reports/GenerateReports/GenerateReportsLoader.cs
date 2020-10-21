@@ -27,7 +27,7 @@ namespace Tayra.SyncServices.Tayra
         public override void Execute(DateTime endDate, JObject requestBody, params Tenant[] tenants)
         {
             DateTime date = endDate;
-            if (requestBody.TryGetValue("startDateId", StringComparison.InvariantCultureIgnoreCase, out JToken value))
+            if (requestBody != null && requestBody.TryGetValue("startDateId", StringComparison.InvariantCultureIgnoreCase, out JToken value))
             {
                 date = DateHelper2.ParseDate(value.Value<int>());
                 if (date.Date > endDate.Date)
@@ -37,11 +37,11 @@ namespace Tayra.SyncServices.Tayra
             }
 
             int[] segmentIds = new int[0];
-            if (requestBody.TryGetValue("segmentId", StringComparison.InvariantCultureIgnoreCase, out JToken id))
+            if (requestBody != null && requestBody.TryGetValue("segmentId", StringComparison.InvariantCultureIgnoreCase, out JToken id))
             {
                 segmentIds = new int[] { id.Value<int>() };
             }
-
+            
             foreach (var tenant in tenants)
             {
                 LogService.SetOrganizationId(tenant.Key);

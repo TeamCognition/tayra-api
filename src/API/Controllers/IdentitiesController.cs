@@ -36,19 +36,19 @@ namespace Tayra.API.Controllers
              // var o = Resolve<IOrganizationsService>();
              // o.Create(new OrganizationCreateDTO
              // {
-             //     Key = "micetribe.tayra.io",
-             //     Name = "MICEtribe",
+             //     Key = "jsguru.tayra.io",
+             //     Name = "JSGuru",
              //     Timezone = "Central Europe Standard Time",
              //     DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
-             //     DatabaseName = "tayra-tenant_micetribe",
+             //     DatabaseName = "tayra-tenant_jsguru",
              //     TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
              // });
 
-            // IdentitiesService.CreateInvitation(0, "micetribe.tayra.io", new IdentityInviteDTO
+            // IdentitiesService.CreateInvitation(0, "jsguru.tayra.io", new IdentityInviteDTO
             // {
-            //     EmailAddress = "info@contactless.io",
-            //     FirstName = "Ahmed",
-            //     LastName = "Admin",
+            //     EmailAddress = "andrej@jsguru.io",
+            //     FirstName = "Andrej",
+            //     LastName = "Kaurin",
             //     Role = ProfileRoles.Admin
             // });
             // DbContext.SaveChanges();

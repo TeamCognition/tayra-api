@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Server.IIS;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.GitHub.WebhookPayloads;
