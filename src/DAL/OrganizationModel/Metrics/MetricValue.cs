@@ -22,10 +22,10 @@ namespace Tayra.Services
             this.Value = entityType == EntityTypes.Profile ? metricType.Calc(raws, period) : metricType.CalcGroup(raws, period);
         }
 
-        public MetricValue(MetricType type, int dateId, float value)
+        public MetricValue(MetricType type, DatePeriod period, float value)
         {
             this.Type = type;
-            this.Period = new DatePeriod(dateId, dateId);
+            this.Period = period;
             this.Value = value;
         }
 

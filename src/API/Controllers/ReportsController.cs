@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using Cog.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -20,7 +23,13 @@ namespace Tayra.API.Controllers
         public OrganizationDbContext DbContext { get; set; }
 
         #region Action Methods
-
+        
+        [HttpGet("statisticsReport")]
+        public ActionResult<Dictionary<int, MetricsValueWEntity[]>> GetStatisticsReport([FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] ReportsType reportType, [FromQuery] string period)
+        {
+            return ReportsService.GetStatisticsReports(entityId,entityType,reportType, new DatePeriod(period));
+        }
+        
         [HttpGet("statuses")]
         public ActionResult<ReportStatusDTO[]> GetReportStatuses()
         {

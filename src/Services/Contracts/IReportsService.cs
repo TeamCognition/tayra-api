@@ -1,9 +1,13 @@
-﻿using Tayra.Common;
+﻿using System.Collections.Generic;
+using Cog.Core;
+using Tayra.Common;
 
 namespace Tayra.Services
 {
     public interface IReportsService
     {
+        Dictionary<int, MetricsValueWEntity[]> GetStatisticsReports(int entityId, EntityTypes entityType,ReportsType reportsType, DatePeriod period);
+        
         ReportStatusDTO[] GetReportStatus(int[] segmentIds);
         void UnlockReporting(string tenantKey, int segmentId);
 
