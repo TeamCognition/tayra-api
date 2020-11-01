@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
@@ -27,7 +28,9 @@ namespace Tayra.Connectors.GitHub
         private const string GET_INSTALLATION_REPOSITORIES = "/installation/repositories";
         private const string CREATE_REPOSITORY_WEBHOOK = "/repos/{0}/{1}/hooks";
         private const string GET_LIST_ORGANIZATIONS = "/organizations";
-        
+        private const string REPOSITORY_NAME = "tayra-api";
+        private const string REPOSITORY_OWNER = "TeamCognition";
+        private const string REPOSITORY_BRACNH = "master";
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
         public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, string redirectUrl)
         {
@@ -97,6 +100,56 @@ namespace Tayra.Connectors.GitHub
                 .GetResult()?.Data?.Viewer;
         }
 
+        public static List<CommitType> GetCommitsByPeriod(string tokenType, string token, int period)
+        {
+            DateTime now= DateTime.UtcNow;
+            DateTime preparePeriod = now.AddDays(-period);
+            if (period == 0)
+            {
+                preparePeriod = new DateTime(preparePeriod.Year, preparePeriod.Month, preparePeriod.Day, 0, 0, 0);
+            }
+                    
+            using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
+            graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
+            var commitsRequest = new GraphQLRequest
+            {
+                Query = @"
+                    query CommitsByPeriod($commitPeriod : GitTimestamp!,$repositoryName : String!, $repositoryOwner : String!,$repositoryBranch : String! ){
+                          repository(name: $repositoryName owner: $repositoryOwner){
+                                ref(qualifiedName:$repositoryBranch){
+                                    target{
+                                    ... on Commit{
+                                       history(since:$commitPeriod){
+                                            edges{
+                                                node{
+                                                    oid,
+                                                    author{
+                                                      name,email
+                                                    },
+                                                   message
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                               }
+                        }
+                    ",
+                OperationName = "CommitsByPeriod",
+                Variables = new {
+                    commitPeriod = preparePeriod.ToString("o"),
+                    repositoryOwner=REPOSITORY_OWNER,
+                    repositoryName=REPOSITORY_NAME,
+                    repositoryBranch=REPOSITORY_BRACNH
+                    
+                }
+            };
+            var gitGraphQlResponse =
+                graphQLClient.SendQueryAsync<GetCommitsResponse>(commitsRequest).GetAwaiter().GetResult();
+            return Utils.MapResponseToCommitType(gitGraphQlResponse.Data);
+        }
+        
         public static IRestResponse<UserInstallationsResponse> GetUserInstallations(string tokenType, string accessToken)
         {
             var request = new RestRequest(GET_USER_INSTALLATIONS, Method.GET);

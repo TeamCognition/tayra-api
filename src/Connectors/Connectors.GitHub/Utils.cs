@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -61,6 +62,17 @@ namespace Tayra.Connectors.GitHub
             }
             
             return org.Login;
+        }
+
+        public static List<CommitType> MapResponseToCommitType(GetCommitsResponse commitsResponse)
+        {var edges = commitsResponse.Repository.Branch.Target.History.Edges;
+            List<CommitType> commits=new List<CommitType>();
+            foreach (var edge in edges)
+            {
+                commits.Add(edge.Node);
+            }
+            
+            return commits;
         }
     }
 }
