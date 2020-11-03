@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Tayra.Connectors.GitHub.Common;
 
 namespace Tayra.Connectors.GitHub
@@ -24,7 +25,7 @@ namespace Tayra.Connectors.GitHub
         public class History
         {
             [JsonProperty("edges")]
-            public Edge<CommitType>[] Edges { get; set;}
+            public List<Edge<CommitType>> Edges { get; set;}
         }
         
         public class Branch

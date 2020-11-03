@@ -6,6 +6,7 @@ using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using RestSharp;
 using Tayra.Connectors.Common;
+using Tayra.Connectors.GitHub.Helper;
 
 namespace Tayra.Connectors.GitHub
 {
@@ -102,13 +103,7 @@ namespace Tayra.Connectors.GitHub
 
         public static List<CommitType> GetCommitsByPeriod(string tokenType, string token, int period)
         {
-            DateTime now= DateTime.UtcNow;
-            DateTime preparePeriod = now.AddDays(-period);
-            if (period == 0)
-            {
-                preparePeriod = new DateTime(preparePeriod.Year, preparePeriod.Month, preparePeriod.Day, 0, 0, 0);
-            }
-                    
+            var preparePeriod = Utils.CalculateCommitPeriod(period);
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
             var commitsRequest = new GraphQLRequest
@@ -138,7 +133,7 @@ namespace Tayra.Connectors.GitHub
                     ",
                 OperationName = "CommitsByPeriod",
                 Variables = new {
-                    commitPeriod = preparePeriod.ToString("o"),
+                    commitPeriod = preparePeriod,
                     repositoryOwner=REPOSITORY_OWNER,
                     repositoryName=REPOSITORY_NAME,
                     repositoryBranch=REPOSITORY_BRACNH
@@ -147,9 +142,57 @@ namespace Tayra.Connectors.GitHub
             };
             var gitGraphQlResponse =
                 graphQLClient.SendQueryAsync<GetCommitsResponse>(commitsRequest).GetAwaiter().GetResult();
-            return Utils.MapResponseToCommitType(gitGraphQlResponse.Data);
+            return MapGQResponse<CommitType>.MapResponseToCommitType(gitGraphQlResponse.Data.Repository.Branch.Target.History.Edges);
         }
+
+        public static List<PullRequestType> GetPullRequestsByPeriod(string tokenType, string token, int period)
+        {
+            var preparePeriod = Utils.CalculateCommitPeriod(period);
+            using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
+            graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
+            var pullRequestsRequest = new GraphQLRequest
+            {
+                Query = $@"
+                    {{
+                    search(query:"" org:{REPOSITORY_OWNER} is:pr created:>{preparePeriod}"", type: ISSUE, last: 100) {{
+                      edges {{
+                          node {{
+                             ... on PullRequest {{
+                                      id
+                                      url
+                                      title
+                                      state
+                                      createdAt
+                                      updatedAt
+                                      merged
+                                      mergedAt
+                                      mergedBy{{
+                                            ... on User{{
+                                                login
+                                                id
+                                                 }}
+                                            }}
+                                      
+                                      author{{
+                                            ... on User {{
+                                                   id
+                                                   login
+              
+                                                 }}
+                                          }}
         
+                                       }}
+                                   }}
+                               }}
+                          }}
+                     }} "
+
+            };
+            var gitGraphQlResponse =
+                graphQLClient.SendQueryAsync<GetPullRequestsResponse>(pullRequestsRequest).GetAwaiter().GetResult();
+           return MapGQResponse<PullRequestType>.MapResponseToCommitType(gitGraphQlResponse.Data.Search.Edges);
+        }
+
         public static IRestResponse<UserInstallationsResponse> GetUserInstallations(string tokenType, string accessToken)
         {
             var request = new RestRequest(GET_USER_INSTALLATIONS, Method.GET);

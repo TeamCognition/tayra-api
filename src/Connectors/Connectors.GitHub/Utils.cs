@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -63,16 +62,17 @@ namespace Tayra.Connectors.GitHub
             
             return org.Login;
         }
-
-        public static List<CommitType> MapResponseToCommitType(GetCommitsResponse commitsResponse)
-        {var edges = commitsResponse.Repository.Branch.Target.History.Edges;
-            List<CommitType> commits=new List<CommitType>();
-            foreach (var edge in edges)
+        
+        public static string CalculateCommitPeriod(int period)
+        {
+            DateTime now= DateTime.UtcNow;
+            DateTime preparePeriod = now.AddDays(-period);
+            if (period == 0)
             {
-                commits.Add(edge.Node);
+                return  new DateTime(preparePeriod.Year, preparePeriod.Month, preparePeriod.Day, 0, 0, 0).ToString("o");
             }
-            
-            return commits;
+
+            return preparePeriod.ToString("o");
         }
     }
 }

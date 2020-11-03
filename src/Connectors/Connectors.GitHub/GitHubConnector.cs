@@ -122,10 +122,27 @@ namespace Tayra.Connectors.GitHub
 
             OrganizationContext.SaveChanges();
         }
+
+        public  List<PullRequestType> GetCommitsByPeriod(int integrationId, int period)
+        {
+            var accessToken = ReadAccessToken(integrationId);
+            var accessTokenType = ReadAccessTokenType(integrationId);
+            return GitHubService.GetPullRequestsByPeriod(accessTokenType, accessToken, period);
+
+        }
+        
+        public  List<PullRequestType> GetPullRequestsByPeriod(int integrationId, int period)
+        {
+            var accessToken = ReadAccessToken(integrationId);
+            var accessTokenType = ReadAccessTokenType(integrationId);
+            return GitHubService.GetPullRequestsByPeriod(accessTokenType, accessToken, period);
+
+        }
         
         #endregion
 
         #region Private Methods
+        
 
         private void AddOrUpdateRepositoriesByIntegration(string installationId, GetRepositoriesResponse.Repository[] dto) //RepositoryAddOrUpdate
         {
