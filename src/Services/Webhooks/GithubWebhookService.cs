@@ -10,12 +10,12 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.Services.webhooks
 {
-    public class GithubWebhookService :BaseService<OrganizationDbContext>, IWebhook
+    public class GithubWebhookServiceService :BaseService<OrganizationDbContext>, IGithubWebhookService
     {
         private readonly IProfilesService ProfilesService;
         private readonly ILogsService LogsService;
 
-        public GithubWebhookService(IProfilesService profilesService, ILogsService logsService,
+        public GithubWebhookServiceService(IProfilesService profilesService, ILogsService logsService,
             OrganizationDbContext dbContext) :base(dbContext)
         {
             DbContext = dbContext;
@@ -119,7 +119,6 @@ namespace Tayra.Services.webhooks
                 return;
             }
 
-
             PullRequestWebhookPayload.PullRequestDTO pullRequest = prPayload.PullRequest;
             CreatePullRequest(pullRequest, authorProfile);
             CreateLog(new Dictionary<string, string>
@@ -132,8 +131,7 @@ namespace Tayra.Services.webhooks
                 {"title", pullRequest.Title},
             }, LogEvents.PullRequestCreated, authorProfile, LogsService);
         }
-
-
+        
         private void HandlePullRequestReview(JObject jObject)
         {
             PullRequsetReviewWebhookPayload prReviewPayload = jObject.ToObject<PullRequsetReviewWebhookPayload>();
@@ -167,14 +165,13 @@ namespace Tayra.Services.webhooks
             }, LogEvents.PullRequestReviewCreated, reviewerProfile, LogsService);
         }
 
-
         private void HandlePullRequestReviewComment(JObject jObject)
         {
             PullRequestReviewCommentPayload prReviewCommentPayload =
                 jObject.ToObject<PullRequestReviewCommentPayload>();
             var commenterProfile =
                 ProfilesService.GetProfileByExternalId(
-                    prReviewCommentPayload.ReviewComment.GithubUserCommentedPullRequestReviewProfile.Username,
+                    prReviewCommentPayload.ReviewComment.CommenterProfile.Username,
                     IntegrationType.GH);
             PullRequest pullRequest =
                 DbContext.PullRequests.FirstOrDefault(x => x.ExternalId == prReviewCommentPayload.PullRequest.Id);
@@ -209,7 +206,7 @@ namespace Tayra.Services.webhooks
                 {"created_at", pullRequestReviewComment.CreatedAt.ToString()},
                 {
                     "externalReviewerUsername",
-                    pullRequestReviewComment.GithubUserCommentedPullRequestReviewProfile.Username
+                    pullRequestReviewComment.CommenterProfile.Username
                 },
                 {"externalId", pullRequestReviewComment.Id},
                 {"external_url", pullRequestReviewComment.Url},
@@ -226,12 +223,12 @@ namespace Tayra.Services.webhooks
             {
                 CommenterProfile = commenterProfile,
                 PullRequestReview = pullRequestReview,
-                CreatedAt = pullRequestReviewComment.CreatedAt,
+                ExternalCreatedAt = pullRequestReviewComment.CreatedAt,
                 Body = pullRequestReviewComment.Body,
                 ExternalId = pullRequestReviewComment.Id,
                 ExternalUrl = pullRequestReviewComment.Url,
                 PullRequest = pullRequest,
-                UpdatedAt = pullRequestReviewComment.UpdatedAt,
+                ExternalUpdatedAt = pullRequestReviewComment.UpdatedAt,
             });
         }
 
@@ -243,7 +240,7 @@ namespace Tayra.Services.webhooks
             PullRequestReviewComment pullRequestReviewComment =
                 DbContext.PullRequestReviewComments.FirstOrDefault(x => x.ExternalId == pullRequestReviewCommentDto.Id);
             pullRequestReviewComment.Body = pullRequestReviewCommentDto.Body;
-            pullRequestReviewComment.UpdatedAt = pullRequestReviewCommentDto.UpdatedAt;
+            pullRequestReviewComment.ExternalUpdatedAt = pullRequestReviewCommentDto.UpdatedAt;
             DbContext.Update(pullRequestReviewCommentDto);
             CreateLog(new Dictionary<string, string>
             {
@@ -298,12 +295,12 @@ namespace Tayra.Services.webhooks
             DbContext.Add(new PullRequest
             {
                 AuthorProfile = authorProfile,
-                CreatedAt = pullRequest.CreatedAt,
+                ExternalCreatedAt = pullRequest.CreatedAt,
                 MergedAt = pullRequest.MergedAt,
                 IsLocked = pullRequest.IsLocked,
                 CommitsCount = pullRequest.CommitsCount,
                 ReviewCommentsCount = pullRequest.ReviewCommentsCount,
-                UpdatedAt = pullRequest.UpdatedAt,
+                ExternalUpdatedAt = pullRequest.UpdatedAt,
                 Title = pullRequest.Title,
                 Body = pullRequest.Body,
                 ExternalUrl = pullRequest.Url,
@@ -321,7 +318,7 @@ namespace Tayra.Services.webhooks
             PullRequest pullRequest = DbContext.PullRequests.FirstOrDefault(x => x.ExternalId == pullRequestDto.Id);
             pullRequest.Body = pullRequestDto.Body;
             pullRequest.Title = pullRequestDto.Title;
-            pullRequest.UpdatedAt = pullRequestDto.UpdatedAt;
+            pullRequest.ExternalUpdatedAt = pullRequestDto.UpdatedAt;
             pullRequest.IsLocked = pullRequestDto.IsLocked;
             pullRequest.MergedAt = pullRequestDto.MergedAt;
             pullRequest.ClosedAt = pullRequestDto.ClosedAt;

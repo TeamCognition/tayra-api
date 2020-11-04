@@ -33,7 +33,7 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
             public string State { get; set;}
         
             [JsonProperty("user")]
-            public PullRequestWebhookPayload.WebhookGithubUser ReviewedBy { get; set;}
+            public GitHubWebhookUser ReviewedBy { get; set;}
         
         }
     }

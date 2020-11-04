@@ -12,9 +12,9 @@ namespace Tayra.Models.Organizations
         
         public string ExternalUrl { get; set; }
         
-        public DateTime CreatedAt { get; set; }
+        public DateTime ExternalCreatedAt { get; set; }
         
-        public DateTime UpdatedAt { get; set; }
+        public DateTime ExternalUpdatedAt { get; set; }
 
         public int? CommenterProfileId { get; set; }
 
