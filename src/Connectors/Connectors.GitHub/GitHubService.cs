@@ -101,9 +101,14 @@ namespace Tayra.Connectors.GitHub
                 .GetResult()?.Data?.Viewer;
         }
 
-        public static List<CommitType> GetCommitsByPeriod(string tokenType, string token, int period)
+        public static List<CommitType> GetCommitsByPeriod(string tokenType, string token, int days)
         {
-            var preparePeriod = Utils.CalculateCommitPeriod(period);
+            DateTime now= DateTime.UtcNow;
+            if (days == 0)
+            {
+                now=now.Date;
+            }
+            string preparePeriod = now.AddDays(-days).ToString(("o"));
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
             var commitsRequest = new GraphQLRequest
@@ -145,9 +150,15 @@ namespace Tayra.Connectors.GitHub
             return MapGQResponse<CommitType>.MapResponseToCommitType(gitGraphQlResponse.Data.Repository.Branch.Target.History.Edges);
         }
 
-        public static List<PullRequestType> GetPullRequestsByPeriod(string tokenType, string token, int period)
+        public static List<PullRequestType> GetPullRequestsByPeriod(string tokenType, string token, int days)
         {
-            var preparePeriod = Utils.CalculateCommitPeriod(period);
+            DateTime now= DateTime.UtcNow;
+            if (days == 0)
+            {
+                now=now.Date;
+            }
+            string preparePeriod = now.AddDays(-days).ToString(("o"));
+            
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
             var pullRequestsRequest = new GraphQLRequest

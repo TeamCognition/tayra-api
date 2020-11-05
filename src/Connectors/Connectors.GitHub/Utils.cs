@@ -62,17 +62,5 @@ namespace Tayra.Connectors.GitHub
             
             return org.Login;
         }
-        
-        public static string CalculateCommitPeriod(int period)
-        {
-            DateTime now= DateTime.UtcNow;
-            DateTime preparePeriod = now.AddDays(-period);
-            if (period == 0)
-            {
-                return  new DateTime(preparePeriod.Year, preparePeriod.Month, preparePeriod.Day, 0, 0, 0).ToString("o");
-            }
-
-            return preparePeriod.ToString("o");
-        }
     }
 }
