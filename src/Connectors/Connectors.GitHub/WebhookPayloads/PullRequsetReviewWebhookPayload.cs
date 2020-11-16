@@ -9,33 +9,32 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
         public PullRequestReviewDTO PullRequestReview { get; set; }
         
         [JsonProperty("pull_request")]
-        public PullRequestDTO PullRequest { get; set;}
+        public PullRequestWebhookPayload.PullRequestDTO PullRequest { get; set;}
         
-    }
-
-    public class PullRequestReviewDTO
-    {
+        public class PullRequestReviewDTO
+        {
         
-        [JsonProperty("id")]
-        public string Id { get; set;}
+            [JsonProperty("id")]
+            public string Id { get; set;}
         
-        [JsonProperty("body")]
-        public string Body { get; set;}
+            [JsonProperty("body")]
+            public string Body { get; set;}
         
-        [JsonProperty("title")]
-        public string Title { get; set;}
+            [JsonProperty("title")]
+            public string Title { get; set;}
         
-        [JsonProperty("commit_id")]
-        public string CommitId { get; set;}
+            [JsonProperty("commit_id")]
+            public string CommitId { get; set;}
         
-        [JsonProperty("submitted_at")]
-        public DateTime SubmittedAt { get; set;}
+            [JsonProperty("submitted_at")]
+            public DateTime SubmittedAt { get; set;}
         
-        [JsonProperty("state")]
-        public string State { get; set;}
+            [JsonProperty("state")]
+            public string State { get; set;}
         
-        [JsonProperty("user")]
-        public WebhookUser ReviewUser { get; set;}
+            [JsonProperty("user")]
+            public GitHubWebhookUser ReviewedBy { get; set;}
         
+        }
     }
 }
