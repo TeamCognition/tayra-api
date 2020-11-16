@@ -28,7 +28,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public Dictionary<int,MetricsValueWEntity[]> GetStatisticsReports(int entityId, EntityTypes entityType,ReportsType reportType, DatePeriod period)
+        public Dictionary<int,MetricsValueWEntity[]> GetReports(string entityKey, EntityTypes entityType,ReportsType reportType, DatePeriod period)
         {
             var analyticsService = new AnalyticsService(DbContext);
 
@@ -65,11 +65,11 @@ namespace Tayra.Services
             var entityMembers = new int[0];
                 
             if (entityType == EntityTypes.Team)
-                entityMembers = DbContext.ProfileAssignments.Where(x => entityId == x.TeamId).Select(x => x.ProfileId).ToArray();
+                entityMembers = DbContext.ProfileAssignments.Where(x => x.Team.Key == entityKey && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId).ToArray();
             else if (entityType == EntityTypes.Segment)
-                entityMembers = DbContext.ProfileAssignments.Where(x => entityId == x.SegmentId).Select(x => x.ProfileId).ToArray();
+                entityMembers = DbContext.ProfileAssignments.Where(x => x.Segment.Key == entityKey && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId).Distinct().ToArray();
 
-            return analyticsService.GetMetricsRanks(metricList, entityMembers, entityType, period);
+            return analyticsService.GetMetricsRanks(metricList, entityMembers, EntityTypes.Profile, period);
         }
 
         public ReportStatusDTO[] GetReportStatus(int[] segmentIds)

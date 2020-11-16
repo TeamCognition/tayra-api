@@ -6,7 +6,6 @@ using Tayra.Analytics;
 using Tayra.Analytics.Metrics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-
 namespace Tayra.SyncServices.Metrics
 {
     public class ComplexityMetric : PureMetric
@@ -48,7 +47,6 @@ namespace Tayra.SyncServices.Metrics
                     CreatedAt = new TableData.DateInSeconds(t.Created)
                 }).ToArray<object>();
         }
-
         public override Type TypeOfRawMetric => typeof(RawMetric);
         
         public class RawMetric
@@ -65,4 +63,3 @@ namespace Tayra.SyncServices.Metrics
         }
     }
 }
-

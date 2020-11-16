@@ -155,7 +155,6 @@ namespace Tayra.Services.Analytics
             return metricTypes.ToDictionary(type => type.Value,
                 type => new AnalyticsMetricWithBreakdownDto(type, period, metrics, lastRefreshAt, entityType));
         }
-
         
         public Dictionary<int, MetricsValueWEntity[]> GetMetricsRanks(MetricType[] metricTypes, int[] entityIds, EntityTypes entityType, DatePeriod period)
         {

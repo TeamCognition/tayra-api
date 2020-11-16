@@ -25,6 +25,7 @@ using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.Analytics;
+using Tayra.Services.webhooks;
 
 namespace Tayra.API
 {
@@ -66,6 +67,7 @@ namespace Tayra.API
             services.AddTransient<IClaimBundlesService, ClaimBundlesService>();
             services.AddTransient<ICompetitionsService, CompetitionsService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
+            services.AddTransient<IGithubWebhookService,GithubWebhookServiceService>();
 
             services.AddTransient<IOrganizationsService, Services.OrganizationsService>();
             

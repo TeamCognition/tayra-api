@@ -25,9 +25,9 @@ namespace Tayra.API.Controllers
         #region Action Methods
         
         [HttpGet("statisticsReport")]
-        public ActionResult<Dictionary<int, MetricsValueWEntity[]>> GetStatisticsReport([FromQuery] int entityId, [FromQuery] EntityTypes entityType, [FromQuery] ReportsType reportType, [FromQuery] string period)
+        public ActionResult<Dictionary<int, MetricsValueWEntity[]>> GetStatisticsReport([FromQuery] string entityKey, [FromQuery] EntityTypes entityType, [FromQuery] ReportsType reportType, [FromQuery] string period)
         {
-            return ReportsService.GetStatisticsReports(entityId,entityType,reportType, new DatePeriod(period));
+            return ReportsService.GetReports(entityKey,entityType,reportType, new DatePeriod(period));
         }
         
         [HttpGet("statuses")]
