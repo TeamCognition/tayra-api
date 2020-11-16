@@ -11,7 +11,6 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
         [JsonProperty("pull_request")]
         public PullRequestWebhookPayload.PullRequestDTO PullRequest { get; set; }
         
-        
         public class PullRequestReviewCommentDTO
         {
             [JsonProperty("id")]
@@ -38,7 +37,5 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
             [JsonProperty("user")]
             public GitHubWebhookUser CommenterProfile { get; set;}
         }
-        
     }
-
 }

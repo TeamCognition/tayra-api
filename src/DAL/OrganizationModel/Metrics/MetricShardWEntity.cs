@@ -3,7 +3,7 @@ namespace Tayra.Analytics
     public class MetricShardWEntity : MetricShard//MetricValueShard
     {
         public int EntityId { get; set; }
-        
+
         public MetricShardWEntity()
         {
         }

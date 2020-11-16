@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -6,10 +7,12 @@ using System.Text;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
+using Tayra.Services.Analytics;
 
 namespace Tayra.Services
 {
@@ -24,6 +27,50 @@ namespace Tayra.Services
         #endregion
 
         #region Public Methods
+
+        public Dictionary<int,MetricsValueWEntity[]> GetReports(string entityKey, EntityTypes entityType,ReportsType reportType, DatePeriod period)
+        {
+            var analyticsService = new AnalyticsService(DbContext);
+
+            MetricType[] metricList = new MetricType[0];
+
+            switch (reportType)
+            {
+                case ReportsType.Statistics:
+                    metricList = new MetricType[]
+                    {
+                        MetricType.Impact, MetricType.Speed, MetricType.Assists, MetricType.CommitRate,
+                        MetricType.Power, MetricType.Effort
+                    };
+                    break;
+                case ReportsType.Workload:
+                    metricList = new MetricType[]
+                    {
+                        MetricType.Heat, MetricType.TasksCompleted, MetricType.Complexity, MetricType.Effort,
+                        MetricType.Commits
+                    };
+                    break;
+                case ReportsType.TayraActivity:
+                    metricList = new MetricType[]
+                    {
+                        MetricType.PraisesReceived, MetricType.PraisesGiven, MetricType.TokensEarned,
+                        MetricType.TokensSpent,
+                        MetricType.InventoryValueChange, MetricType.ItemsBought, MetricType.ItemsDisenchanted,
+                        MetricType.GiftsReceived,
+                        MetricType.GiftsSent, MetricType.TimeWorkedLogged, MetricType.TimeWorked,
+                    };
+                    break;
+            }
+
+            var entityMembers = new int[0];
+                
+            if (entityType == EntityTypes.Team)
+                entityMembers = DbContext.ProfileAssignments.Where(x => x.Team.Key == entityKey && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId).ToArray();
+            else if (entityType == EntityTypes.Segment)
+                entityMembers = DbContext.ProfileAssignments.Where(x => x.Segment.Key == entityKey && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId).Distinct().ToArray();
+
+            return analyticsService.GetMetricsRanks(metricList, entityMembers, EntityTypes.Profile, period);
+        }
 
         public ReportStatusDTO[] GetReportStatus(int[] segmentIds)
         {

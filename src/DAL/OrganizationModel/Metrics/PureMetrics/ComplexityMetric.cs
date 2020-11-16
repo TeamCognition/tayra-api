@@ -6,7 +6,6 @@ using Tayra.Analytics;
 using Tayra.Analytics.Metrics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-
 namespace Tayra.SyncServices.Metrics
 {
     public class ComplexityMetric : PureMetric
@@ -39,6 +38,7 @@ namespace Tayra.SyncServices.Metrics
                     Assignee = new TableData.Profile($"{t.AssigneeProfile.FirstName} {t.AssigneeProfile.LastName}",
                         t.AssigneeProfile.Username),
                     Key = t.ExternalId,
+                    Type = t.Type.ToString(),
                     Summary = new TableData.ExternalLink(t.Summary, t.ExternalUrl),
                     Complexity = t.Complexity,
                     Priority = t.Priority,
@@ -47,13 +47,13 @@ namespace Tayra.SyncServices.Metrics
                     CreatedAt = new TableData.DateInSeconds(t.Created)
                 }).ToArray<object>();
         }
-
         public override Type TypeOfRawMetric => typeof(RawMetric);
         
         public class RawMetric
         {
             public TableData.Profile Assignee { get; set; }
             public string Key { get; set; }
+            public string Type { get; set; }
             public TableData.ExternalLink Summary { get; set; }
             public int Complexity { get; set; }
             public TaskPriorities Priority { get; set; }
@@ -63,4 +63,3 @@ namespace Tayra.SyncServices.Metrics
         }
     }
 }
-

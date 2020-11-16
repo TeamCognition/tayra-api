@@ -39,6 +39,4 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
 
         }
     }
-    
-    
 }
