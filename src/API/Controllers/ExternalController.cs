@@ -35,9 +35,9 @@ namespace Tayra.API.Controllers
         #region Public Methods
 
         [HttpGet, Route("callback/{type?}")]
-        public IActionResult AuthenticateCallback([FromServices]CatalogDbContext catalogContext, IntegrationType type, [FromQuery]string state, [FromQuery]string setup_action, [FromQuery]string installation_id)
+        public IActionResult AuthenticateCallback([FromServices]CatalogDbContext catalogContext, IntegrationType type, [FromQuery]string state, [FromQuery]string setup_action, [FromQuery]string installation_id, [FromQuery]string error = null)
         {
-            IOAuthConnector connector = null;
+            IOAuthConnector connector;
             if (setup_action == "update" && string.IsNullOrEmpty(state))
             {
                 var ti = catalogContext.TenantIntegrations.Include(x => x.Tenant).FirstOrDefault(x => x.InstallationId == installation_id);
@@ -50,6 +50,12 @@ namespace Tayra.API.Controllers
             var oauthState = new OAuthState(state);
             Request.QueryString = Request.QueryString.Add("tenant", oauthState.TenantKey);
             connector = ConnectorResolver.Get<IOAuthConnector>(type);
+            
+            if (!string.IsNullOrEmpty(error))
+            {
+                return Redirect(connector.GetAuthDoneUrl(oauthState.ReturnPath, false));
+            }
+            
             try
             {
                 connector.Authenticate(oauthState);

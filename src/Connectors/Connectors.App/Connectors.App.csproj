@@ -31,5 +31,6 @@
     <ProjectReference Include="..\..\Services\Services.csproj" />
     <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\Connectors.GitHub\Connectors.GitHub.csproj" />
+    <ProjectReference Include="..\Connectors.Slack\Connectors.Slack.csproj" />
   </ItemGroup>
 </Project>

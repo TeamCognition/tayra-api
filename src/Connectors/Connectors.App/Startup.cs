@@ -12,6 +12,7 @@ using Tayra.Connectors.App.Helpers;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
+using Tayra.Connectors.Slack;
 using Tayra.DAL;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -41,6 +42,7 @@ namespace Tayra.Connectors.App
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
             services.AddTransient<IOAuthConnector, GitHubConnector>();
+            services.AddTransient<IOAuthConnector, SlackConnector>();
             services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
             services.AddScoped<ITenantProvider, FakeTenantProvider>();
 

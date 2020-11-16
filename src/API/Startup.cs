@@ -17,6 +17,7 @@ using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
+using Tayra.Connectors.Slack;
 using Tayra.DAL;
 using Tayra.Helpers;
 using Tayra.Imager;
@@ -76,6 +77,7 @@ namespace Tayra.API
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
             services.AddTransient<IOAuthConnector, GitHubConnector>();
+            services.AddTransient<IOAuthConnector, SlackConnector>();
             services.AddTransient<ILogger, DebugLogger>();
 
             // Adds a default in-memory implementation of IDistributedCache.

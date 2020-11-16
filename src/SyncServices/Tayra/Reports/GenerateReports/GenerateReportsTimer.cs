@@ -1,4 +1,6 @@
-﻿using Microsoft.Azure.WebJobs;
+﻿using System;
+using Cog.Core;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Tayra.SyncServices.Common;
 

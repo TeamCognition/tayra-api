@@ -34,6 +34,7 @@
     
   <ItemGroup>
     <ProjectReference Include="..\Connectors\Connectors.GitHub\Connectors.GitHub.csproj" />
+    <ProjectReference Include="..\Connectors\Connectors.Slack\Connectors.Slack.csproj" />
     <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
     <ProjectReference Include="..\DAL\CatalogModel\CatalogModel.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />

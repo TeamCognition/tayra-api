@@ -93,7 +93,7 @@ namespace Tayra.SyncServices.Tayra
             var existing = organizationDb.SegmentMetrics.Count(x => x.DateId == dateId);
             if (existing > 0)
             {
-                logService.Log<ProfileReportDaily>($"date: ${dateId},  deleting {existing} records from database");
+                logService.Log<NewSegmentMetricsLoader>($"date: ${dateId},  deleting {existing} records from database");
                 //organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}");
                 organizationDb.Database.ExecuteSqlCommand($"delete from SegmentMetrics where {nameof(ProfileReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
                 organizationDb.SaveChanges();

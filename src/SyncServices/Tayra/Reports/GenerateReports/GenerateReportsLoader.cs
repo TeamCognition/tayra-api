@@ -41,9 +41,11 @@ namespace Tayra.SyncServices.Tayra
             {
                 segmentIds = new int[] { id.Value<int>() };
             }
+
             
             foreach (var tenant in tenants)
             {
+                DateTime tempDate = date;
                 LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
@@ -54,23 +56,23 @@ namespace Tayra.SyncServices.Tayra
 
                     do
                     {
-                        var profileMetrics = NewProfileMetricsLoader.GenerateProfileMetrics(organizationDb, date, LogService);
-                        var segmentMetrics = NewSegmentMetricsLoader.GenerateSegmentMetrics(organizationDb, date, LogService);
-                        var teamMetrics = NewTeamMetricsLoader.GenerateTeamMetrics(organizationDb, date, LogService);
+                        var profileMetrics = NewProfileMetricsLoader.GenerateProfileMetrics(organizationDb, tempDate, LogService);
+                        var segmentMetrics = NewSegmentMetricsLoader.GenerateSegmentMetrics(organizationDb, tempDate, LogService);
+                        var teamMetrics = NewTeamMetricsLoader.GenerateTeamMetrics(organizationDb, tempDate, LogService);
                         
-                         var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, date, LogService, segmentIds);
-                         var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, date, LogService, segmentIds);
+                         var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, tempDate, LogService, segmentIds);
+                         var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, tempDate, LogService, segmentIds);
                         
-                         GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, date, LogService, profileDailyReports, segmentIds);
-                        GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports, segmentIds);
+                         GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, tempDate, LogService, profileDailyReports, segmentIds);
+                        GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(organizationDb, tempDate, LogService, profileDailyReports, profileWeeklyReports, segmentIds);
                         
-                        GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, date, LogService, profileDailyReports, segmentIds);
-                        GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, date, LogService, profileDailyReports, profileWeeklyReports, segmentIds);
+                        GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, tempDate, LogService, profileDailyReports, segmentIds);
+                        GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, tempDate, LogService, profileDailyReports, profileWeeklyReports, segmentIds);
 
-                        date = date.AddDays(1);
-                    } while (date <= endDate);
+                        tempDate = tempDate.AddDays(1);
+                    } while (tempDate <= endDate);
 
-                    MakeActionPointsLoader.MakeActionPoints(organizationDb, date, LogService);
+                    MakeActionPointsLoader.MakeActionPoints(organizationDb, tempDate, LogService);
                 }
             }
         }

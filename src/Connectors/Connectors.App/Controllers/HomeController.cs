@@ -39,7 +39,7 @@ namespace Tayra.Connectors.App.Controllers
         }
 
         [HttpGet, Route("external/callback/{type?}")]
-        public IActionResult Callback([FromServices] CatalogDbContext catalogContext, IntegrationType type, [FromQuery]string state, [FromQuery]string setup_action, [FromQuery]string installation_id)
+        public IActionResult Callback([FromServices] CatalogDbContext catalogContext, IntegrationType type, [FromQuery]string state, [FromQuery]string setup_action, [FromQuery]string installation_id, [FromQuery]string error = null)
         {
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             if (setup_action == "update" && string.IsNullOrEmpty(state))
@@ -52,6 +52,12 @@ namespace Tayra.Connectors.App.Controllers
             }
             var oAuthState = new OAuthState(state);
             Request.QueryString = Request.QueryString.Add("tenant", oAuthState.TenantKey);
+            
+            if (!string.IsNullOrEmpty(error))
+            {
+                TempData["Error"] = error;
+                return RedirectToAction("Error");
+            }
             
             try
             {
