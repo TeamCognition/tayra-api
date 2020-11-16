@@ -53,7 +53,7 @@ namespace Tayra.SyncServices.Common
             
             var timezoneInfo = GetCurrentTimezones();
             
-            loader.Execute(DateTime.UtcNow, null, timezoneInfo.ToArray()); //doesnt work for all timezones ofc
+            loader.Execute(timezoneInfo.First().Date.Date, null, timezoneInfo.ToArray());
         }
 
         public static IConfigurationRoot LoadSettings(ExecutionContext context)

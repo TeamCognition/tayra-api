@@ -54,6 +54,9 @@ namespace Tayra.SyncServices.Tayra
                         segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
                     }
 
+                    if(segmentIds.Length == 0)
+                        continue;
+                    
                     do
                     {
                         var profileMetrics = NewProfileMetricsLoader.GenerateProfileMetrics(organizationDb, tempDate, LogService);

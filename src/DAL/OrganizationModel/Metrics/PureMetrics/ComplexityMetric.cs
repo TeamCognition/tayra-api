@@ -39,6 +39,7 @@ namespace Tayra.SyncServices.Metrics
                     Assignee = new TableData.Profile($"{t.AssigneeProfile.FirstName} {t.AssigneeProfile.LastName}",
                         t.AssigneeProfile.Username),
                     Key = t.ExternalId,
+                    Type = t.Type.ToString(),
                     Summary = new TableData.ExternalLink(t.Summary, t.ExternalUrl),
                     Complexity = t.Complexity,
                     Priority = t.Priority,
@@ -54,6 +55,7 @@ namespace Tayra.SyncServices.Metrics
         {
             public TableData.Profile Assignee { get; set; }
             public string Key { get; set; }
+            public string Type { get; set; }
             public TableData.ExternalLink Summary { get; set; }
             public int Complexity { get; set; }
             public TaskPriorities Priority { get; set; }

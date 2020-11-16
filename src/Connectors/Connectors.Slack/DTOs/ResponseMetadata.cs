@@ -1,4 +1,10 @@
-$HEADER$namespace $NAMESPACE$
+using Newtonsoft.Json;
+
+namespace Tayra.Connectors.Slack.DTOs
 {
-  public class $CLASS$ {$END$}
+    public class ResponseMetadata
+    {
+        [JsonProperty("next_cursor")]
+        public string NextCursor { get; set; }
+    }
 }

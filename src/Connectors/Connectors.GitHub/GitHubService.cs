@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cog.Core;
 using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
@@ -27,6 +28,8 @@ namespace Tayra.Connectors.GitHub
         private const string GET_INSTALLATION_REPOSITORIES = "/installation/repositories";
         private const string CREATE_REPOSITORY_WEBHOOK = "/repos/{0}/{1}/hooks";
         private const string GET_LIST_ORGANIZATIONS = "/organizations";
+        
+        #endregion
         
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
         public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, string redirectUrl)
@@ -69,7 +72,7 @@ namespace Tayra.Connectors.GitHub
             request.AddParameter("grant_type", "refresh_token");
 
             request.RequestFormat = DataFormat.Json;
-
+            
             var client = new RestClient(BASE_AUTH_URL);
             return client.Execute<TokenResponse>(request);
         }
@@ -144,7 +147,5 @@ namespace Tayra.Connectors.GitHub
 
             return client.Execute<List<GetOrganizationsResponse>>(request);
         }
-        
-        #endregion
     }
 }

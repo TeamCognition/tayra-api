@@ -14,12 +14,10 @@ namespace Tayra.Connectors.Slack
 {
     public class SlackConnector : BaseOAuthConnector
     {
-        private const string SEGMENT_AUTH_URL = "https://slack.com/oauth/v2/authorize";
-        private const string PROFILE_AUTH_URL = "https://slack.com/oauth/v2/authorize";
-        
+        private const string AUTH_URL = "https://slack.com/oauth/v2/authorize";
         private const string SLAPP_ID = "A013UGRR7FW";
+        private const string SCOPE = "commands,incoming-webhook,app_mentions:read,channels:history,channels:join,channels:read,chat:write,chat:write.public,chat:write.customize,groups:history,groups:read,groups:write,im:history,im:read,im:write,mpim:history,mpim:read,mpim:write,usergroups:read,users.profile:read,users:read,users:read.email";
         
-        private const string SCOPE = "incoming-webhook,commands";
         public SlackConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, dataContext, catalogDbContext)
         {
         }
@@ -34,7 +32,7 @@ namespace Tayra.Connectors.Slack
 
         public override string GetAuthUrl(OAuthState state)
         {
-            return $"{SEGMENT_AUTH_URL}?scope={SCOPE}&client_id={SlackService.CLIENT_ID}&state={state}&redirect_uri={GetCallbackUrl(state.ToString())}";
+            return $"{AUTH_URL}?scope={SCOPE}&client_id={SlackService.CLIENT_ID}&state={state}&redirect_uri={GetCallbackUrl(state.ToString())}";
         }
 
         public override Integration Authenticate(OAuthState state)
@@ -48,79 +46,76 @@ namespace Tayra.Connectors.Slack
                     throw new ApplicationException(errorDescription);
                 }
 
-                var userTokenData = SlackService.GetUserAccessToken(code, GetCallbackUrl(state.ToString()))?.Data;
-                //var loggedInUser = SlackService.GetLoggedInUser(userTokenData.TokenType, userTokenData.AccessToken);
+                var accessToken = SlackService.ExchangeCodeForAccessToken(code, GetCallbackUrl(state.ToString()))?.Data;
+
+                if (accessToken == null)
+                    return null;
                 
-                // var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
-                // var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
-                // if (segmentIntegration == null && !state.IsSegmentAuth)
-                // {
-                //     throw new CogSecurityException($"profileId: {state.ProfileId} tried to integrate {Type} before segment integration");
-                // }
-                //
-                // if (loggedInUser != null)
-                // {
-                //     var profileFields = new Dictionary<string, string>
-                //     {
-                //         [Constants.PROFILE_EXTERNAL_ID] = loggedInUser.Login
-                //     };
-                //
-                //     CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields, profileIntegration);
-                // }
-                //
-                // if (state.IsSegmentAuth && userTokenData != null)
-                // {
-                //     var installations = SlackService.GetUserInstallations(userTokenData.TokenType, userTokenData.AccessToken);
-                //     var installation = Utils.FindTayraAppInstallation(installations?.Data.Installations, GHAPP_ID);
-                //     var installationId = installation.Id;
-                //     var installationToken = SlackService.GetInstallationAccessToken(installationId, GHAPP_ID, GHAPP_RSA_KEY)?.Data.AccessToken;;
-                //
-                //     var repositories = SlackService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
-                //
-                //     AddOrUpdateRepositoriesByIntegration(installationId, repositories);
-                //     AddOrUpdateWebhooks(installationId, installationToken, repositories);
-                //
-                //     var targetName = installation.TargetType == "Organization"
-                //         ? Utils.GetInstallationOrganizationName(userTokenData.AccessToken, installation.TargetId)
-                //         : loggedInUser?.Login;
-                //     
-                //     var segmentFields = new Dictionary<string, string>
-                //     {
-                //         [Constants.ACCESS_TOKEN] = userTokenData.AccessToken,
-                //         [Constants.ACCESS_TOKEN_TYPE] = userTokenData.TokenType,
-                //         [Constants.SCOPE] = userTokenData.Scope,
-                //         [GHConstants.GH_INSTALLATION_ID] = installationId,
-                //         [GHConstants.GH_INSTALLATION_TARGET_TYPE] = installation.TargetType,
-                //         [GHConstants.GH_INSTALLATION_TARGET_NAME] = targetName
-                //     };
-                //
-                //     segmentIntegration = CreateSegmentIntegration(state.SegmentId, installationId, segmentFields, segmentIntegration);
-                // }
-                //
-                // var unlinkedGitCommits = OrganizationContext.GitCommits.Where(x => x.AuthorProfileId == null && x.AuthorExternalId == loggedInUser.Id);
-                // foreach (var commit in unlinkedGitCommits)
-                // {
-                //     commit.AuthorProfileId = state.ProfileId;
-                // }
-                //
-                // OrganizationContext.SaveChanges();
-                // CatalogContext.SaveChanges();
-                return null;
+                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
+                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
+                if (segmentIntegration == null && !state.IsSegmentAuth)
+                {
+                    throw new CogSecurityException($"profileId: {state.ProfileId} tried to integrate {Type} before segment integration");
+                }
+
+                var profileFields = new Dictionary<string, string>
+                {
+                    [Constants.PROFILE_EXTERNAL_ID] = accessToken.AuthedUser.Id
+                };
+            
+                CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields, profileIntegration);
+
+                if (state.IsSegmentAuth)
+                {
+                    var segmentFields = new Dictionary<string, string>
+                    {
+                        [Constants.ACCESS_TOKEN] = accessToken.AccessToken,
+                        [Constants.ACCESS_TOKEN_TYPE] = accessToken.TokenType,
+                        [Constants.SCOPE] = accessToken.Scope,
+                    };
+                
+                    segmentIntegration = CreateSegmentIntegration(state.SegmentId, installationId: null, segmentFields, segmentIntegration);
+                }
+
+                OrganizationContext.SaveChanges();
+                CatalogContext.SaveChanges();
+                return segmentIntegration;
             }
             return null;
         }
 
-        public override void UpdateAuthentication(string installationId)
+        private void LinkSlackAccountsWithTayraProfileThroughEmailAddress(OrganizationDbContext dbContext, int integrationId)
         {
-            // var installationToken = SlackService.GetInstallationAccessToken(installationId, GHAPP_ID, GHAPP_RSA_KEY)?.Data.AccessToken;;
-            //
-            // var repositories = SlackService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
-            //
-            // AddOrUpdateRepositoriesByIntegration(installationId, repositories);
-            // AddOrUpdateWebhooks(installationId, installationToken, repositories);
-            //
-            // OrganizationContext.SaveChanges();
+            var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.Id == integrationId && x.ProfileId == null);
+            var botToken = segmentIntegration.Fields.FirstOrDefault(x => x.Key == Constants.ACCESS_TOKEN).Value;
+            var slackUsers = SlackService.GetUsersList(botToken)?.Data;
+
+            if (slackUsers == null || !slackUsers.Ok)
+            {
+                throw new ApplicationException("could not fetch slack users");
+            }
+
+            var tenantShardingKey = dbContext.CurrentTenantId;
+            var tenantIdentities = CatalogContext.TenantIdentities
+                .Where(x => TenantUtilities.ConvertShardingKeyToTenantId(tenantShardingKey) == x.TenantId)
+                .Select(x => x.IdentityId).ToArray();
+
+            var identityEmails = CatalogContext.IdentityEmails.Where(x => tenantIdentities.Contains(x.IdentityId))
+                .AsNoTracking().ToArray();
+            
+            foreach (var u in slackUsers.Members)
+            {
+                if (u.Deleted == false && u.IsBot == false)
+                {
+                    var identity = identityEmails.FirstOrDefault(x => x.Email.ToLower() == u.Profile.Email.ToLower());
+                    // dbContext.Profiles.FirstOrDefault(x => x.IdentityId == i)
+                    // CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields,
+                    //     profileIntegration);
+                }
+            }
         }
+        
+        public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
         
         #endregion
     }
