@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Newtonsoft.Json.Linq;
 using Tayra.Analytics;
+using Tayra.Analytics.Metrics;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -123,6 +124,23 @@ namespace Tayra.SyncServices.Tayra
                                    where gc.Created.Date == fromDay.Date
                                    select gc).ToArray();
 
+            var gitCommentsPerPr = (from gc in organizationDb.PullRequestReviewComments.Include(p => p.PullRequest)
+                                    where profileIds.Contains(gc.PullRequest.AuthorProfileId.Value)
+                                    where gc.Created.Date == fromDay.Date
+                                    select gc).ToArray();
+            
+            var gitPullRequestsCreated = (from gp in organizationDb.PullRequests
+                                    where profileIds.Contains(gp.AuthorProfileId.Value)
+                                    where gp.Created.Date == fromDay.Date
+                                    select gp).ToArray();
+            
+            var gitPullRequestsReviewed = (from gp in organizationDb.PullRequests
+                                    join r in organizationDb.PullRequestReviews on gp.Id equals r.PullRequestId 
+                                    where profileIds.Contains(gp.AuthorProfileId.Value)
+                                    where gp.Created.Date == fromDay.Date
+                                    select gp).ToArray();
+
+            var existing = organizationDb.ProfileMetrics.Count(x => x.DateId == dateId);
             foreach (var p in profiles)
             {
                 var ts = tasks.Where(x => x.AssigneeProfileId == p.Id);
@@ -134,7 +152,11 @@ namespace Tayra.SyncServices.Tayra
                 var iGiftR = giftsReceived.Where(x => x.ReceiverId == p.Id);
                 var inv = inventory.Where(x => x.ProfileId == p.Id);
                 var commits = gitCommitsToday.Where(x => x.AuthorProfileId == p.Id);
-                
+                var prCreated = gitPullRequestsCreated.Where(x => x.AuthorProfileId == p.Id);
+                var prReviewed = gitPullRequestsReviewed.Where(x => x.AuthorProfileId == p.Id);
+                var prReviewComments = gitCommentsPerPr.Where(x => x.PullRequest.AuthorProfileId == p.Id);
+
+
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((PraisesReceivedMetric) MetricType.PraisesReceived).Create(praises, p.Id, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((PraisesGivenMetric)MetricType.PraisesGiven).Create(praises, p.Id, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((TokensEarnedMetric)MetricType.TokensEarned).Create(tt, dateId)));
@@ -145,7 +167,10 @@ namespace Tayra.SyncServices.Tayra
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((GiftsReceivedMetric)MetricType.GiftsReceived).Create(iGiftR, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((ItemsDisenchantedMetric)MetricType.ItemsDisenchanted).Create(iDissed, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((CommitsMetric)MetricType.Commits).Create(commits, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id,((PullRequestsCreatedMetric)MetricType.PullRequestsCreated).Create(prCreated,dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id,((PullRequestsReviewedMetric)MetricType.PullRequestsReviewed).Create(prReviewed,dateId)));
 
+                metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id,((CommentsPerPrMetric)MetricType.CommentsPerPr).Create(prReviewComments,dateId,prCreated)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((WorkUnitsCompletedMetric)MetricType.TasksCompleted).CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((EffortMetric)MetricType.Effort).CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((ComplexityMetric)MetricType.Complexity).CreateForEverySegment(ts, dateId)));
@@ -155,7 +180,6 @@ namespace Tayra.SyncServices.Tayra
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((TimeWorkedLoggedMetric)MetricType.TimeWorkedLogged).CreateForEverySegment(ts, dateId)));
             }
 
-            var existing = organizationDb.ProfileMetrics.Count(x => x.DateId == dateId);
             if (existing > 0)
             {
                 logService.Log<ProfileReportDaily>($"deleting {existing} records from database");
