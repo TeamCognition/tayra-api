@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
-using Microsoft.VisualBasic.CompilerServices;
 using Tayra.Analytics;
 using Tayra.Analytics.Metrics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-using Utils = Tayra.Common.Utils;
 
 namespace Tayra.SyncServices.Metrics
 {
@@ -17,19 +15,17 @@ namespace Tayra.SyncServices.Metrics
         {
             
         }
-        public MetricShard[] Create(IEnumerable<PullRequestReviewComment> comments, int dateId ,IEnumerable<PullRequest> pullRequests)
+        public MetricShard Create(IEnumerable<PullRequestReviewComment> comments, int dateId)
         {
-            List<MetricShard> metricShards=null;
-            foreach (var pullRequest in pullRequests)
+            List<int> pullRequestsIds= new List<int>();
+            foreach (var comment in comments)
             {
-                var commentsPerPr = comments.Where(c => c.PullRequestId == pullRequest.Id);
-                if (!Utils.IsNullOrEmpty(commentsPerPr))
+                if (!pullRequestsIds.Contains(comment.PullRequestId))
                 {
-                    metricShards.Add(new MetricShard(commentsPerPr.Count(), dateId,
-                        this));
+                    pullRequestsIds.Add(comment.PullRequestId);
                 }
             }
-            return metricShards.ToArray();
+            return new MetricShard(comments.Count()/pullRequestsIds.Count, dateId, this);
         }
             
 

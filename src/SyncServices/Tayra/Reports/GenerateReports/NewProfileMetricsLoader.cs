@@ -169,8 +169,9 @@ namespace Tayra.SyncServices.Tayra
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((CommitsMetric)MetricType.Commits).Create(commits, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id,((PullRequestsCreatedMetric)MetricType.PullRequestsCreated).Create(prCreated,dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id,((PullRequestsReviewedMetric)MetricType.PullRequestsReviewed).Create(prReviewed,dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id,((CommentsPerPrMetric)MetricType.CommentsPerPr).Create(prReviewComments,dateId)));
 
-                metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id,((CommentsPerPrMetric)MetricType.CommentsPerPr).Create(prReviewComments,dateId,prCreated)));
+
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((WorkUnitsCompletedMetric)MetricType.TasksCompleted).CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((EffortMetric)MetricType.Effort).CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((ComplexityMetric)MetricType.Complexity).CreateForEverySegment(ts, dateId)));
