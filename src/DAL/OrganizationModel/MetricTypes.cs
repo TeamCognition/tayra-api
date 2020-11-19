@@ -40,8 +40,8 @@ namespace Tayra.Analytics
         public static readonly MetricType GiftsReceived = new GiftsReceivedMetric("Gifts Received", 113);
         public static readonly MetricType GiftsSent = new GiftsSentMetric("Gifts Sent", 114);
         public static readonly MetricType CommentsPerPr = new CommentsPerPrMetric("Comments per PR",115);
-        public static readonly MetricType PullRequestsCreated = new CommentsPerPrMetric("Pull requests created",116);
-        public static readonly MetricType PullRequestsReviewed = new CommentsPerPrMetric("Pull requests reviewed",117);
+        public static readonly MetricType PullRequestsCreated = new PullRequestsCreatedMetric("Pull requests created",116);
+        public static readonly MetricType PullRequestsReviewed = new PullRequestsReviewedMetric("Pull requests reviewed",117);
 
         #endregion
         

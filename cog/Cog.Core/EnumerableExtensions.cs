@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Tayra.Common
+namespace Cog.Core
 {
-    public static class Utils
+    public static class EnumerableExtensions
     {
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable) {
             return enumerable == null || !enumerable.Any();
