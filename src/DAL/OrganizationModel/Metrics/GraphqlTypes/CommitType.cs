@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Tayra.Connectors.GitHub
+namespace Tayra.Models.Organizations.Metrics.GraphqlTypes
 {
     public class CommitType
     {

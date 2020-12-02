@@ -8,6 +8,8 @@ namespace Tayra.Models.Organizations
         public int Id { get; set; }
 
         public string ExternalId { get; set; }
+        
+        public int ExternalNumber { get; set; }
 
         public string State { get; set; }
 

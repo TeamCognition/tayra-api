@@ -126,7 +126,9 @@ namespace Tayra.Connectors.GitHub
                                                     author{
                                                       name,email
                                                     },
-                                                   message
+                                                   message,
+                                                   additions,
+                                                   deletions
                                                     }
                                                 }
                                             }

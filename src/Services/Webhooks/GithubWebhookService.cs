@@ -307,7 +307,8 @@ namespace Tayra.Services.webhooks
                 ExternalAuthorId = pullRequest.Author.Id,
                 ClosedAt = pullRequest.ClosedAt,
                 ExternalId = pullRequest.Id,
-                State = pullRequest.State,
+                ExternalNumber = pullRequest.Number,
+                State = pullRequest.State
             });
         }
 

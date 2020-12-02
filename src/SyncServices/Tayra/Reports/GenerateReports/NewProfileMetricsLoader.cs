@@ -10,7 +10,7 @@ using Tayra.Analytics.Metrics;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
-using Tayra.Services;
+using Tayra.Models.Organizations.Metrics;
 using Tayra.SyncServices.Common;
 using Tayra.SyncServices.Metrics;
 
@@ -139,6 +139,10 @@ namespace Tayra.SyncServices.Tayra
                                     where profileIds.Contains(gp.AuthorProfileId.Value)
                                     where gp.Created.Date == fromDay.Date
                                     select gp).ToArray();
+            var gitPullRequestsCycle = (from pc in organizationDb.PullRequests
+                                    where profileIds.Contains(pc.AuthorProfileId.Value)
+                                    where pc.MergedAt.Value.Date == fromDay.Date
+                                    select pc).ToArray();
 
             var existing = organizationDb.ProfileMetrics.Count(x => x.DateId == dateId);
             foreach (var p in profiles)
@@ -155,8 +159,8 @@ namespace Tayra.SyncServices.Tayra
                 var prCreated = gitPullRequestsCreated.Where(x => x.AuthorProfileId == p.Id);
                 var prReviewed = gitPullRequestsReviewed.Where(x => x.AuthorProfileId == p.Id);
                 var prReviewComments = gitCommentsPerPr.Where(x => x.PullRequest.AuthorProfileId == p.Id);
-
-
+                var pulRequestCycle = gitPullRequestsCycle.Where(x => x.AuthorProfileId == p.Id);
+                
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((PraisesReceivedMetric) MetricType.PraisesReceived).Create(praises, p.Id, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((PraisesGivenMetric)MetricType.PraisesGiven).Create(praises, p.Id, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((TokensEarnedMetric)MetricType.TokensEarned).Create(tt, dateId)));
@@ -167,11 +171,12 @@ namespace Tayra.SyncServices.Tayra
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((GiftsReceivedMetric)MetricType.GiftsReceived).Create(iGiftR, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((ItemsDisenchantedMetric)MetricType.ItemsDisenchanted).Create(iDissed, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((CommitsMetric)MetricType.Commits).Create(commits, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id,((PullRequestsCreatedMetric)MetricType.PullRequestsCreated).Create(prCreated,dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id,((PullRequestsReviewedMetric)MetricType.PullRequestsReviewed).Create(prReviewed,dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id,((CommentsPerPrMetric)MetricType.CommentsPerPr).Create(prReviewComments,dateId)));
-
-
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestsCreatedMetric)MetricType.PullRequestsCreated).Create(prCreated,dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestsReviewedMetric)MetricType.PullRequestsReviewed).Create(prReviewed,dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((CommentsPerPrMetric)MetricType.CommentsPerPr).Create(prReviewComments,dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestCycleMetric)MetricType.PullRequestCycle).Create(pulRequestCycle,dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestSizeMetric)MetricType.PullRequestSize).Create(new MetricService(organizationDb),prCreated, dateId)));
+                
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((WorkUnitsCompletedMetric)MetricType.TasksCompleted).CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((EffortMetric)MetricType.Effort).CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((ComplexityMetric)MetricType.Complexity).CreateForEverySegment(ts, dateId)));

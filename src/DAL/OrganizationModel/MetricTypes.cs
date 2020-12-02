@@ -42,6 +42,8 @@ namespace Tayra.Analytics
         public static readonly MetricType CommentsPerPr = new CommentsPerPrMetric("Comments per PR",115);
         public static readonly MetricType PullRequestsCreated = new PullRequestsCreatedMetric("Pull requests created",116);
         public static readonly MetricType PullRequestsReviewed = new PullRequestsReviewedMetric("Pull requests reviewed",117);
+        public static readonly MetricType PullRequestCycle = new PullRequestCycleMetric("Pull request cycle", 118);
+        public static readonly MetricType PullRequestSize = new PullRequestSizeMetric(" Pull Request size", 119);
 
         #endregion
         

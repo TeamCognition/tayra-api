@@ -15,9 +15,9 @@ namespace Tayra.Models.Organizations
 
         public string AuthorExternalId { get; set; }
         
-        public int AddedCodeLines { get; set; }
+        public int Additions { get; set; }
         
-        public int DeletedCodeLines { get; set; }
+        public int Deletions { get; set; }
 
         public int? AuthorProfileId { get; set; }
         public Profile AuthorProfile { get; set; }

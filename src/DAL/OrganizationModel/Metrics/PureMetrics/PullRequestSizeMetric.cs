@@ -6,23 +6,35 @@ using Tayra.Analytics;
 using Tayra.Analytics.Metrics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
+using Tayra.Models.Organizations.Metrics;
+using Tayra.Models.Organizations.Metrics.GraphqlTypes;
 
 namespace Tayra.SyncServices.Metrics
 {
-    public class PullRequestsReviewedMetric : PureMetric
+    public class PullRequestSizeMetric : PureMetric
     {
-        public PullRequestsReviewedMetric(string name, int value) : base(name, value)
+        public PullRequestSizeMetric(string name, int value) : base(name, value)
         {
         }
 
-        public MetricShard Create(IEnumerable<PullRequest> pullRequests, int dateId) =>
-            new MetricShard(pullRequests.Count(), dateId, this);
-
+        public MetricShard Create(MetricService metricService,IEnumerable<PullRequest> pullRequests, int dateId)
+        {
+            int pullRequestChanges = 0;
+            foreach (var pullRequest in pullRequests)
+            {
+                int integrationId = metricService.GetIntegrationId(IntegrationType.GH);
+                List<CommitType> commits = MetricService.GetCommitsByPUllRequest("bearer",metricService.ReadAccessToken(integrationId), pullRequest);
+               foreach (var commit in commits)
+               {
+                   pullRequestChanges = commit.Additions + commit.Deletions;
+               }
+            }
+            return new MetricShard(pullRequestChanges / pullRequests.Count(), dateId, this);
+        }
         public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType)
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from pr in db.PullRequests
-                join re in db.PullRequestReviews on pr.Id equals re.PullRequestId
                 where profileIds.Contains(pr.AuthorProfileId.Value)
                 where pr.Created >= period.From && pr.Created < period.To
                 select new RawMetric
@@ -31,6 +43,7 @@ namespace Tayra.SyncServices.Metrics
                         pr.AuthorProfile.Username),
                     PullRequest = new TableData.ExternalLink(pr.Title, pr.ExternalUrl),
                     Date = new TableData.DateInSeconds(pr.Created)
+
                 }).ToArray<object>();
         }
 
