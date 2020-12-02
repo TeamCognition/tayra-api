@@ -5,6 +5,7 @@ using Ardalis.SmartEnum.JsonNet;
 using Cog.Core;
 using Newtonsoft.Json;
 using Tayra.Analytics.Metrics;
+using Tayra.Models.Organizations.Metrics.PureMetrics;
 using Tayra.SyncServices.Metrics;
 
 namespace Tayra.Analytics

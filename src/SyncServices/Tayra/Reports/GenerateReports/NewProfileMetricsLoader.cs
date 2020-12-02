@@ -11,6 +11,7 @@ using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Models.Organizations.Metrics;
+using Tayra.Models.Organizations.Metrics.PureMetrics;
 using Tayra.SyncServices.Common;
 using Tayra.SyncServices.Metrics;
 
@@ -171,11 +172,11 @@ namespace Tayra.SyncServices.Tayra
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((GiftsReceivedMetric)MetricType.GiftsReceived).Create(iGiftR, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((ItemsDisenchantedMetric)MetricType.ItemsDisenchanted).Create(iDissed, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((CommitsMetric)MetricType.Commits).Create(commits, dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestsCreatedMetric)MetricType.PullRequestsCreated).Create(prCreated,dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestsReviewedMetric)MetricType.PullRequestsReviewed).Create(prReviewed,dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, ((CommentsPerPrMetric)MetricType.CommentsPerPr).Create(prReviewComments,dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestCycleMetric)MetricType.PullRequestCycle).Create(pulRequestCycle,dateId)));
-                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestSizeMetric)MetricType.PullRequestSize).Create(new MetricService(organizationDb),prCreated, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestsCreatedMetric)MetricType.PullRequestsCreated).Create(prCreated, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestsReviewedMetric)MetricType.PullRequestsReviewed).Create(prReviewed, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((CommentsPerPrMetric)MetricType.CommentsPerPr).Create(prReviewComments, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestCycleMetric)MetricType.PullRequestCycle).Create(pulRequestCycle, dateId)));
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((PullRequestSizeMetric)MetricType.PullRequestSize).Create(new MetricService(organizationDb), prCreated, dateId)));
                 
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((WorkUnitsCompletedMetric)MetricType.TasksCompleted).CreateForEverySegment(ts, dateId)));
                 metricsToInsert.AddRange(ProfileMetric.CreateRange(p.Id, ((EffortMetric)MetricType.Effort).CreateForEverySegment(ts, dateId)));

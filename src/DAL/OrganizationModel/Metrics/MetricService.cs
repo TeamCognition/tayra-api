@@ -26,7 +26,7 @@ namespace Tayra.Models.Organizations.Metrics
         private const string GITHUB_INSTALATION_ID = "GHInstallationId";
         private const string GITUB_ACCESS_TOKEN = "AccessToken";
 
-        public static List<CommitType> GetCommitsByPUllRequest(string tokenType, string token,PullRequest pullRequest)
+        public static List<CommitType> GetCommitsByPUllRequest(string tokenType, string token,int _pullRequestNumber)
         {
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
@@ -58,9 +58,9 @@ namespace Tayra.Models.Organizations.Metrics
                     ",
                 OperationName = "CommitsByPullRequest",
                 Variables = new {
-                    repositoryOwner=REPOSITORY_OWNER,
-                    repositoryName=REPOSITORY_NAME,
-                    pullRequestNumber=pullRequest.ExternalNumber
+                    repositoryOwner = REPOSITORY_OWNER,
+                    repositoryName = REPOSITORY_NAME,
+                    pullRequestNumber = _pullRequestNumber
                 }
             };
             var gitGraphQlResponse =

@@ -5,11 +5,9 @@ using Cog.Core;
 using Tayra.Analytics;
 using Tayra.Analytics.Metrics;
 using Tayra.Common;
-using Tayra.Models.Organizations;
-using Tayra.Models.Organizations.Metrics;
 using Tayra.Models.Organizations.Metrics.GraphqlTypes;
 
-namespace Tayra.SyncServices.Metrics
+namespace Tayra.Models.Organizations.Metrics.PureMetrics
 {
     public class PullRequestSizeMetric : PureMetric
     {
@@ -23,7 +21,7 @@ namespace Tayra.SyncServices.Metrics
             foreach (var pullRequest in pullRequests)
             {
                 int integrationId = metricService.GetIntegrationId(IntegrationType.GH);
-                List<CommitType> commits = MetricService.GetCommitsByPUllRequest("bearer",metricService.ReadAccessToken(integrationId), pullRequest);
+                List<CommitType> commits = MetricService.GetCommitsByPUllRequest("bearer", metricService.ReadAccessToken(integrationId), pullRequest.ExternalNumber);
                foreach (var commit in commits)
                {
                    pullRequestChanges = commit.Additions + commit.Deletions;
