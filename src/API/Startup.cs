@@ -25,6 +25,7 @@ using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.Analytics;
+using Tayra.Services.Contracts;
 using Tayra.Services.webhooks;
 
 namespace Tayra.API

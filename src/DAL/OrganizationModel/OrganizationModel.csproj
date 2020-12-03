@@ -24,10 +24,6 @@
     <ProjectReference Include="..\..\..\cog\Cog.DAL\Cog.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Metrics\Helper" />
-  </ItemGroup>
-
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

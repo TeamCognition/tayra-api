@@ -206,6 +206,37 @@ namespace Tayra.Connectors.GitHub
            return MapGQResponse<PullRequestType>.MapResponseToCommitType(gitGraphQlResponse.Data.Search.Edges);
         }
 
+        public static CommitType GetCommitBySha(string sha,string token)
+        {
+            var graphQlClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
+            graphQlClient.HttpClient.DefaultRequestHeaders.Add("Authorization",$"bearer {token}");
+            var graphQlRequest = new GraphQLRequest
+            {
+                Query = @"
+                     
+                query CommitsBySha($repositoryName : String!, $repositoryOwner : String!, $commitSha: GitObjectID!){
+                    repository(name: $repositoryName, owner: $repositoryOwner){
+                    object(oid: $commitSha){
+                ... on Commit{
+                oid,
+            additions,
+            deletions
+               }
+             }
+          }   
+        }   ",              
+                OperationName = "CommitsBySha",
+                Variables = new
+                {
+                    commitSha = sha,
+                    repositoryOwner = REPOSITORY_OWNER,
+                    repositoryName = REPOSITORY_NAME,
+                }
+            };
+            var graphQlResponse = graphQlClient.SendQueryAsync<GetCommitsByShaResponse>(graphQlRequest).GetAwaiter()
+                .GetResult();
+            return graphQlResponse?.Data?.Repository?.GhObject;
+        }
         public static IRestResponse<UserInstallationsResponse> GetUserInstallations(string tokenType, string accessToken)
         {
             var request = new RestRequest(GET_USER_INSTALLATIONS, Method.GET);
@@ -253,7 +284,6 @@ namespace Tayra.Connectors.GitHub
 
             return client.Execute<List<GetOrganizationsResponse>>(request);
         }
-        
         #endregion
     }
 }

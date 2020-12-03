@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
+using Tayra.Connectors.GitHub;
 
-namespace Tayra.Services.webhooks
+namespace Tayra.Services.Contracts
 {
     public interface IGithubWebhookService
     {
