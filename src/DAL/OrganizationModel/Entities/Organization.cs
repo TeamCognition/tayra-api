@@ -10,6 +10,13 @@ namespace Tayra.Models.Organizations
 
         public string Name { get; set; }
         public string Address { get; set; }
+        
+        public bool isCreateSegmentOnboarding { get; set; }
+        
+        public bool isAddSourcesOnboarding { get; set; }
+        
+        public bool isInviteUsersOnboarding { get; set; }
+        
 
         #region IAuditedEntity
 
