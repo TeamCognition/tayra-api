@@ -37,6 +37,7 @@ namespace Tayra.Models.Organizations
         public string AssistantSummary { get; set; }
 
         public Guid IdentityId { get; set; }
+        public bool isCreateProfileOnboarding { get; set; }
 
         public virtual ICollection<ProfilePraise> Praises { get; set; }
         public virtual ICollection<Integration> Integrations { get; set; }
