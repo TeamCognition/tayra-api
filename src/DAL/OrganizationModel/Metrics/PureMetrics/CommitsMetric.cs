@@ -13,24 +13,24 @@ namespace Tayra.SyncServices.Metrics
     {
         public CommitsMetric(string name, int value) : base(name, value)
         {
-            
+
         }
         public MetricShard Create(IEnumerable<GitCommit> commits, int dateId) => new MetricShard(commits.Count(), dateId, this);
-        
-        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType)
+
+        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType)
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from c in db.GitCommits
-                where profileIds.Contains(c.AuthorProfileId.Value)
-                where c.Created.Date >= period.From && c.Created.Date <= period.To
-                select new RawMetric
-                {
-                    Author = new TableData.Profile($"{c.AuthorProfile.FirstName} {c.AuthorProfile.LastName}",
-                        c.AuthorProfile.Username),
-                    Commit = new TableData.ExternalLink(c.Message, c.ExternalUrl),
-                    Date = new TableData.DateInSeconds(c.Created),
-                    Sha = c.SHA
-                }).ToArray<object>();
+                    where profileIds.Contains(c.AuthorProfileId.Value)
+                    where c.Created.Date >= period.From && c.Created.Date <= period.To
+                    select new RawMetric
+                    {
+                        Author = new TableData.Profile($"{c.AuthorProfile.FirstName} {c.AuthorProfile.LastName}",
+                            c.AuthorProfile.Username),
+                        Commit = new TableData.ExternalLink(c.Message, c.ExternalUrl),
+                        Date = new TableData.DateInSeconds(c.Created),
+                        Sha = c.SHA
+                    }).ToArray<object>();
         }
 
         public override Type TypeOfRawMetric => typeof(RawMetric);

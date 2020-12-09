@@ -27,7 +27,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public GridData<QuestViewGridDTO> GetQuestsGrid(int[] segmentIds, QuestViewGridParams gridParams)
+        public GridData<QuestViewGridDTO> GetQuestsGrid(Guid[] segmentIds, QuestViewGridParams gridParams)
         {
             IQueryable<QuestSegment> scope = DbContext.QuestSegments;
 
@@ -61,7 +61,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public GridData<QuestCommitsGridDTO> GetQuestCommitsGrid(int profileId, QuestCommitsGridParams gridParams)
+        public GridData<QuestCommitsGridDTO> GetQuestCommitsGrid(Guid profileId, QuestCommitsGridParams gridParams)
         {
             IQueryable<QuestCommit> scope = DbContext.QuestCommits.Where(x => x.QuestId == gridParams.QuestId);
 
@@ -79,7 +79,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public GridData<QuestCompletitionsGridDTO> GetQuestCompletitionsGrid(int profileId, QuestCompletitionsGridParams gridParams)
+        public GridData<QuestCompletitionsGridDTO> GetQuestCompletitionsGrid(Guid profileId, QuestCompletitionsGridParams gridParams)
         {
             IQueryable<QuestCompletion> scope = DbContext.QuestCompletions.Where(x => x.QuestId == gridParams.QuestId);
 
@@ -98,42 +98,42 @@ namespace Tayra.Services
         }
 
 
-        public QuestViewDTO GetQuestViewDTO(int profileId, int questId)
+        public QuestViewDTO GetQuestViewDTO(Guid profileId, int questId)
         {
             var quest = (from c in DbContext.Quests
-                             where c.Id == questId
-                             select new QuestViewDTO
+                         where c.Id == questId
+                         select new QuestViewDTO
+                         {
+                             Name = c.Name,
+                             Image = c.Image,
+                             Description = c.Description,
+                             Status = c.Status,
+                             RewardValue = c.RewardValue,
+                             CompletionsLimit = c.CompletionsLimit,
+                             CompletionsRemaining = c.CompletionsRemaining,
+                             Created = c.Created,
+                             ActiveUntil = c.ActiveUntil,
+                             EndedAt = c.EndedAt,
+                             CommittedOn = c.Commits.Where(x => x.ProfileId == profileId).Select(x => (DateTime?)x.Created).FirstOrDefault(),
+                             Segments = c.Segments.Select(x => x.SegmentId).ToArray(),
+                             Rewards = c.Rewards.Select(x => new QuestViewDTO.RewardDTO
                              {
-                                 Name = c.Name,
-                                 Image = c.Image,
-                                 Description = c.Description,
-                                 Status = c.Status,
-                                 RewardValue = c.RewardValue,
-                                 CompletionsLimit = c.CompletionsLimit,
-                                 CompletionsRemaining = c.CompletionsRemaining,
-                                 Created = c.Created,
-                                 ActiveUntil = c.ActiveUntil,
-                                 EndedAt = c.EndedAt,
-                                 CommittedOn = c.Commits.Where(x => x.ProfileId == profileId).Select(x => (DateTime?)x.Created).FirstOrDefault(),
-                                 Segments = c.Segments.Select(x => x.SegmentId).ToArray(),
-                                 Rewards = c.Rewards.Select(x => new QuestViewDTO.RewardDTO
-                                 {
-                                     ItemId = x.ItemId,
-                                     Name = x.Item.Name,
-                                     Image = x.Item.Image,
-                                     Type = x.Item.Type,
-                                     Rarity = x.Item.Rarity,
-                                     Price = x.Item.Price
-                                 }).ToArray(),
-                                 Goals = c.Goals.Select(x => new QuestViewDTO.GoalDTO
-                                 {
-                                     GoalId = x.Id,
-                                     Title = x.Title,
-                                     IsCommentRequired = x.IsCommentRequired,
-                                     Comment = x.Completitions.Where(gc => gc.ProfileId == profileId).Select(gc => gc.Comment).FirstOrDefault(),
-                                     IsCompleted = x.Completitions.Where(gc => gc.ProfileId == profileId).Any()
-                                 }).ToArray()
-                             }).FirstOrDefault();
+                                 ItemId = x.ItemId,
+                                 Name = x.Item.Name,
+                                 Image = x.Item.Image,
+                                 Type = x.Item.Type,
+                                 Rarity = x.Item.Rarity,
+                                 Price = x.Item.Price
+                             }).ToArray(),
+                             Goals = c.Goals.Select(x => new QuestViewDTO.GoalDTO
+                             {
+                                 GoalId = x.Id,
+                                 Title = x.Title,
+                                 IsCommentRequired = x.IsCommentRequired,
+                                 Comment = x.Completitions.Where(gc => gc.ProfileId == profileId).Select(gc => gc.Comment).FirstOrDefault(),
+                                 IsCompleted = x.Completitions.Where(gc => gc.ProfileId == profileId).Any()
+                             }).ToArray()
+                         }).FirstOrDefault();
 
             return quest;
         }
@@ -233,7 +233,7 @@ namespace Tayra.Services
             dto.Rewards.ForEach(r => quest.Rewards.Add(new QuestReward { QuestId = quest.Id, ItemId = r.ItemId, Quantity = r.Quantity }));
         }
 
-        public void CompleteGoal(int profileId, QuestGoalCompleteDTO dto)
+        public void CompleteGoal(Guid profileId, QuestGoalCompleteDTO dto)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);
             var goal = DbContext.QuestGoals.Include(x => x.Quest).FirstOrDefault(x => x.Id == dto.GoalId);
@@ -264,7 +264,7 @@ namespace Tayra.Services
             });
         }
 
-        public void CommitToQuest(int profileId, QuestCommitDTO dto)
+        public void CommitToQuest(Guid profileId, QuestCommitDTO dto)
         {
             var quest = DbContext.Quests.FirstOrDefault(x => x.Id == dto.QuestId);
 
@@ -296,7 +296,7 @@ namespace Tayra.Services
             });
 
             var questCommit = DbContext.QuestCommits.Where(x => x.ProfileId == profile.Id && x.QuestId == quest.Id).FirstOrDefault();
-            if(questCommit == null)
+            if (questCommit == null)
             {
                 questCommit = DbContext.Add(new QuestCommit
                 {
@@ -320,7 +320,7 @@ namespace Tayra.Services
             });
         }
 
-        public void EndQuest(int profileId, int questId)
+        public void EndQuest(Guid profileId, int questId)
         {
             var quest = DbContext.Quests.FirstOrDefault(x => x.Id == questId);
 

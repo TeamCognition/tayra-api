@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cog.Core;
 using Tayra.Analytics;
@@ -7,13 +8,13 @@ namespace Tayra.Services
 {
     public interface IAnalyticsService
     {
-        Dictionary<int, MetricValue> GetMetrics(MetricType[] metricTypes, int entityId, EntityTypes entityType, DatePeriod period);
+        Dictionary<int, MetricValue> GetMetrics(MetricType[] metricTypes, Guid entityId, EntityTypes entityType, DatePeriod period);
 
         Dictionary<int, AnalyticsMetricWithIterationSplitDto> GetMetricsWithIterationSplit(MetricType[] metricTypes,
-            int entityId, EntityTypes entityType, DatePeriod period);
-        Dictionary<int, AnalyticsMetricWithBreakdownDto> GetMetricsWithBreakdown(MetricType[] metricTypes, int entityId, EntityTypes entityType, DatePeriod period);
+            Guid entityId, EntityTypes entityType, DatePeriod period);
+        Dictionary<int, AnalyticsMetricWithBreakdownDto> GetMetricsWithBreakdown(MetricType[] metricTypes, Guid entityId, EntityTypes entityType, DatePeriod period);
 
-        Dictionary<int, MetricsValueWEntity[]> GetMetricsRanks(MetricType[] metricTypes, int[] entityIds,
+        Dictionary<int, MetricsValueWEntity[]> GetMetricsRanks(MetricType[] metricTypes, Guid[] entityIds,
             EntityTypes entityType, DatePeriod period);
     }
 }

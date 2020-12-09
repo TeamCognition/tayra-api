@@ -13,28 +13,28 @@ namespace Tayra.SyncServices.Metrics
     {
         public ItemsBoughtMetric(string name, int value) : base(name, value)
         {
-            
+
         }
         public MetricShard Create(IEnumerable<ShopPurchase> purchases, int dateId) => new MetricShard(purchases.Count(), dateId, this);
-        
-        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType)
+
+        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType)
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from sp in db.ShopPurchases
-                where profileIds.Contains(sp.ProfileId)
-                where sp.Status == ShopPurchaseStatuses.Fulfilled
-                where sp.LastModifiedDateId >= period.FromId && sp.LastModifiedDateId <= period.ToId
-                select new RawMetric
-                {
-                    Buyer = new TableData.Profile($"{sp.Profile.FirstName} {sp.Profile.LastName}",
-                        sp.Profile.Username),
-                    Item = sp.Item.Name,
-                    Price = sp.Price
-                }).ToArray<object>();
+                    where profileIds.Contains(sp.ProfileId)
+                    where sp.Status == ShopPurchaseStatuses.Fulfilled
+                    where sp.LastModifiedDateId >= period.FromId && sp.LastModifiedDateId <= period.ToId
+                    select new RawMetric
+                    {
+                        Buyer = new TableData.Profile($"{sp.Profile.FirstName} {sp.Profile.LastName}",
+                            sp.Profile.Username),
+                        Item = sp.Item.Name,
+                        Price = sp.Price
+                    }).ToArray<object>();
         }
-        
+
         public override Type TypeOfRawMetric => typeof(RawMetric);
-        
+
         public class RawMetric
         {
             public TableData.Profile Buyer { get; set; }

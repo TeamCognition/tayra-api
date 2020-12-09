@@ -13,26 +13,26 @@ namespace Tayra.Connectors.GitHub
         {
             [JsonProperty("ref")]
             public Branch Branch { get; set; }
-           
+
         }
         public class Target
         {
             [JsonProperty("history")]
             public History History { get; set; }
-            
-                    
+
+
         }
         public class History
         {
             [JsonProperty("edges")]
-            public List<Edge<CommitType>> Edges { get; set;}
+            public List<Edge<CommitType>> Edges { get; set; }
         }
-        
+
         public class Branch
         {
             [JsonProperty("target")]
             public Target Target { get; set; }
-               
+
         }
     }
 }

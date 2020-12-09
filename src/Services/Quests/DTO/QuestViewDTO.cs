@@ -23,13 +23,13 @@ namespace Tayra.Services
 
         public DateTime? CommittedOn { get; set; }
 
-        public ICollection<int> Segments { get; set; }
+        public ICollection<Guid> Segments { get; set; }
         public ICollection<GoalDTO> Goals { get; set; }
         public ICollection<RewardDTO> Rewards { get; set; }
 
         public class RewardDTO
         {
-            public int ItemId { get; set; }
+            public Guid ItemId { get; set; }
             public string Name { get; set; }
             public string Image { get; set; }
             public ItemTypes Type { get; set; }

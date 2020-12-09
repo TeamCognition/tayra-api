@@ -1,12 +1,16 @@
-﻿using IdentityServer4.ResponseHandling;
-using IdentityServer4.Validation;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Tayra.Models.Catalog;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using OpenIddict.Abstractions;
+using Tayra.Auth.Data;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -14,53 +18,64 @@ namespace Tayra.Auth
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment Environment { get; }
-
-        public Startup(IConfiguration config, IWebHostEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            Configuration = config;
-            Environment = env;
+            Configuration = configuration;
         }
 
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString()));
             services.AddDbContext<OrganizationDbContext>(options => { });
-
-            services.AddIdentityServerServices(Configuration);
-
-            //.AddConfigurationStore(options =>
-            //{
-            //    options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-            //})
-            //.AddOperationalStore(options =>
-            //{
-            //    options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-            //    options.EnableTokenCleanup = false;
-            //}
-
-            services.AddHttpContextAccessor();
-
-            services.AddCors(c =>
+            services.AddDbContext<OpeniddictDbContext>(options =>
             {
-                c.AddPolicy("AllowAllOrigins", options => options.AllowAnyOrigin()
-                                                                 .AllowAnyHeader());
+                // Configure the context to use Microsoft SQL Server.
+                options.UseSqlServer(Configuration.GetConnectionString("OpeniddictDatabase"));
+
+                // Register the entity sets needed by OpenIddict.
+                // Note: use the generic overload if you need
+                // to replace the default OpenIddict entities.
+                options.UseOpenIddict();
             });
+            
+            services.AddControllers();
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Auth", Version = "v1"}); });
+            
+            services.AddTayraAuthServices(Configuration);
+            
+            // services.AddHttpContextAccessor();
+            // services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
+            // services.AddScoped<ITenantProvider, ShardTenantProvider>();
+            // services.AddTransient<IIdentitiesService, IdentitiesService>();
+            // services.AddTransient<ITokensService, TokensService>();
+            // services.AddTransient<ILogsService, LogsService>();
         }
 
-        public void Configure(IApplicationBuilder app)
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, OpeniddictDbContext dbContext)
         {
-            if (Environment.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth v1"));
             }
 
-            app.UseCors("AllowAllOrigins");
+            app.UseHttpsRedirection();
 
-            app.UseIdentityServer();
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            dbContext.Database.Migrate();
         }
-
+        
         /// <summary>
         ///  Gets the catalog connection string using the app settings
         /// </summary>
@@ -72,7 +87,7 @@ namespace Tayra.Auth
             var catalogServer = Configuration["CatalogServer"];
 
             return
-                $"Server=tcp:{catalogServer},1433;Database={catalogDatabase};User ID={databaseUser};Password={databasePassword};Trusted_Connection=False;Encrypt=True;";
+                $"Data Source=tcp:{catalogServer},1433;Database={catalogDatabase};User ID={databaseUser};Password={databasePassword};Encrypt=True;TrustServerCertificate=True;";
         }
     }
 }

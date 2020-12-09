@@ -8,7 +8,7 @@ namespace Tayra.Services
 {
     public class PraiseProfileDTO
     {
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public PraiseTypes Type { get; set; } = PraiseTypes.HardWorker;
         public DateTime? DemoDate { get; set; }
 

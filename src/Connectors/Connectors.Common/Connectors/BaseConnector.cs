@@ -72,12 +72,12 @@ namespace Tayra.Connectors.Common
             //}
         }
 
-        protected Integration CreateSegmentIntegration(int segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
+        protected Integration CreateSegmentIntegration(Guid segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
             return CreateProfileIntegration(null, segmentId, installationId, fields, oldIntegration);
         }
 
-        protected Integration CreateProfileIntegration(int? profileId, int segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
+        protected Integration CreateProfileIntegration(Guid? profileId, Guid segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
             if (oldIntegration != null)
             {
@@ -141,7 +141,7 @@ namespace Tayra.Connectors.Common
             }).Entity;
         }
 
-        protected string ReadField(int integrationId, string key, string errorMessage = null)
+        protected string ReadField(Guid integrationId, string key, string errorMessage = null)
         {
             var field = OrganizationContext.IntegrationFields.FirstOrDefault(a => a.IntegrationId == integrationId && a.Key == key);
 

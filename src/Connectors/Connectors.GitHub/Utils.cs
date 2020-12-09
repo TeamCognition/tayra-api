@@ -27,7 +27,7 @@ namespace Tayra.Connectors.GitHub
 
             var jwt = new JwtSecurityToken(
                 issuer: githubAppId,
-                claims: new [] {
+                claims: new[] {
                     new Claim(JwtRegisteredClaimNames.Iat, unixTimeSeconds.ToString(), ClaimValueTypes.Integer64),
                 },
                 notBefore: now,
@@ -37,7 +37,7 @@ namespace Tayra.Connectors.GitHub
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
-        
+
         public static UserInstallationsResponse.Installation FindTayraAppInstallation(UserInstallationsResponse.Installation[] installations, string githubAppId)
         {
             var installation = installations.LastOrDefault(x => x.AppId == githubAppId);
@@ -46,10 +46,10 @@ namespace Tayra.Connectors.GitHub
             {
                 throw new ApplicationException("Github app Installation not found");
             }
-            
+
             return installation;
         }
-        
+
         public static string GetInstallationOrganizationName(string userToken, long organizationId)
         {
             var orgs = GitHubService.GetOrganizations(userToken, organizationId)?.Data;
@@ -59,7 +59,7 @@ namespace Tayra.Connectors.GitHub
             {
                 throw new ApplicationException("Organization by id not found");
             }
-            
+
             return org.Login;
         }
     }

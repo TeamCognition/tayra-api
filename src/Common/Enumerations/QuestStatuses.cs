@@ -9,7 +9,7 @@ namespace Tayra.Common
 
         [Description("Active")]
         Active = 1,
-        
+
         [Description("Ended")]
         Ended = 2,
 

@@ -80,7 +80,7 @@ namespace Tayra.Services
             }
         }
 
-    public static double GetProductAreaJuicer(string[] labels)
+        public static double GetProductAreaJuicer(string[] labels)
         {
             if (labels.Contains("Coding"))
             {

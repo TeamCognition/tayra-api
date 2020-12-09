@@ -1,4 +1,5 @@
-﻿using Tayra.Analytics;
+﻿using System;
+using Tayra.Analytics;
 
 namespace Tayra.Services
 {
@@ -8,7 +9,7 @@ namespace Tayra.Services
 
         public class MemberDTO
         {
-            public int ProfileId { get; set; }
+            public Guid ProfileId { get; set; }
             public string Avatar { get; set; }
             public string Name { get; set; }
             public float[] HeatTrend { get; set; }

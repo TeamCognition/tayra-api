@@ -4,7 +4,7 @@ using Tayra.Analytics;
 using Tayra.Common;
 
 namespace Tayra.Services
-{   
+{
     public class TeamStatsDTO
     {
         public DateTime? LastRefreshAt { get; set; }

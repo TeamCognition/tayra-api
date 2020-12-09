@@ -22,7 +22,7 @@ namespace Tayra.Services
         {
             var task = DbContext.Tasks.FirstOrDefault(x => x.ExternalId == dto.ExternalId && x.IntegrationType == dto.IntegrationType);
 
-            if(task == null)
+            if (task == null)
             {
                 task = new Task
                 {
@@ -59,7 +59,7 @@ namespace Tayra.Services
             task.TeamId = dto.TeamId;
             task.SegmentId = dto.SegmentId;
 
-            if(dto.EffortScore.HasValue)
+            if (dto.EffortScore.HasValue)
             {
                 task.EffortScore = (float?)dto.EffortScore;
             }

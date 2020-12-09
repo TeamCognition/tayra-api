@@ -1,9 +1,10 @@
-﻿using Cog.Core;
+﻿using System;
+using Cog.Core;
 
 namespace Tayra.Services
 {
     public class ProfileCommittedQuestsGridParams : GridParams
     {
-        public int? ProfileId  { get; set; }
+        public Guid? ProfileId { get; set; }
     }
 }

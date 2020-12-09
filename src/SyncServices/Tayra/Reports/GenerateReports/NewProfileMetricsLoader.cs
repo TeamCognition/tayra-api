@@ -56,7 +56,7 @@ namespace Tayra.SyncServices.Tayra
             var metricsToInsert = new List<ProfileMetric>();
 
             var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
-            if (companyTokenId == 0)
+            if (companyTokenId == default)
                 throw new ApplicationException("COMPANY TOKEN NOT FOUND");
 
             var dateId = DateHelper2.ToDateId(fromDay);
@@ -134,8 +134,8 @@ namespace Tayra.SyncServices.Tayra
                 var iGiftR = giftsReceived.Where(x => x.ReceiverId == p.Id);
                 var inv = inventory.Where(x => x.ProfileId == p.Id);
                 var commits = gitCommitsToday.Where(x => x.AuthorProfileId == p.Id);
-                
-                metricsToInsert.Add(new ProfileMetric(p.Id, ((PraisesReceivedMetric) MetricType.PraisesReceived).Create(praises, p.Id, dateId)));
+
+                metricsToInsert.Add(new ProfileMetric(p.Id, ((PraisesReceivedMetric)MetricType.PraisesReceived).Create(praises, p.Id, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((PraisesGivenMetric)MetricType.PraisesGiven).Create(praises, p.Id, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((TokensEarnedMetric)MetricType.TokensEarned).Create(tt, dateId)));
                 metricsToInsert.Add(new ProfileMetric(p.Id, ((TokensSpentMetric)MetricType.TokensSpent).Create(tt, dateId)));
@@ -159,8 +159,8 @@ namespace Tayra.SyncServices.Tayra
             if (existing > 0)
             {
                 logService.Log<ProfileReportDaily>($"deleting {existing} records from database");
-                //organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}");
-                organizationDb.Database.ExecuteSqlCommand($"delete from ProfileMetrics where {nameof(ProfileReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId}");
+                //organizationDb.Database.ExecuteSqlCommand($"delete from ProfileMetrics where {nameof(ProfileReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
                 organizationDb.SaveChanges();
             }
 

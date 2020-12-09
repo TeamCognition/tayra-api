@@ -2,7 +2,7 @@
   <Import Project="..\..\build\shared.csproj.props" />
       
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
     <RootNamespace>Tayra.Mailer</RootNamespace>
     <AssemblyName>Tayra.Mailer</AssemblyName>
   </PropertyGroup>

@@ -31,7 +31,7 @@ namespace Tayra.Services
 
             DbContext.Logs.Add(log);
 
-            if(dto.ProfileId.HasValue)
+            if (dto.ProfileId.HasValue)
             {
                 DbContext.ProfileLogs.Add(new ProfileLog
                 {
@@ -39,19 +39,6 @@ namespace Tayra.Services
                     Log = log,
                     ProfileId = dto.ProfileId.Value
                 });
-            }
-
-            if (dto.CompetitionIds != null)
-            {
-                foreach (var cId in dto.CompetitionIds)
-                {
-                    DbContext.CompetitionLogs.Add(new CompetitionLog
-                    {
-                        Event = dto.Event,
-                        Log = log,
-                        CompetitionId = cId
-                    });
-                }
             }
 
             if (dto.ShopId.HasValue)
@@ -66,7 +53,7 @@ namespace Tayra.Services
 
         }
 
-        public void SendLog(int profileId, LogEvents logEvent, ITemplateEmailDTO dto)
+        public void SendLog(Guid profileId, LogEvents logEvent, ITemplateEmailDTO dto)
         {
             var devices = DbContext.LogDevices.Where(x => x.ProfileId == profileId).Select(x => new
             {
@@ -75,7 +62,7 @@ namespace Tayra.Services
                 IsEnabled = x.Settings.Where(s => s.LogEvent == logEvent && s.IsEnabled == false).Any()
             }).ToList();
 
-            foreach(var d in devices)
+            foreach (var d in devices)
             {
                 MailerService.SendEmail(d.Address, dto);
             }
@@ -110,7 +97,7 @@ namespace Tayra.Services
             if (gridParams.SegmentIds.Length > 0)
             {
                 var sm = DbContext.ProfileAssignments.Where(x => gridParams.SegmentIds.Contains(x.SegmentId)).Select(x => x.ProfileId).ToArray();
-                
+
                 query = from l in query
                         join pl in DbContext.ProfileLogs on l.Id equals pl.LogId
                         where sm.Contains(pl.ProfileId)
@@ -137,7 +124,5 @@ namespace Tayra.Services
         }
 
         #endregion
-
-
     }
 }

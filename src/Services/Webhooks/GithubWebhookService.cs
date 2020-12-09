@@ -10,13 +10,13 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.Services.webhooks
 {
-    public class GithubWebhookServiceService :BaseService<OrganizationDbContext>, IGithubWebhookService
+    public class GithubWebhookServiceService : BaseService<OrganizationDbContext>, IGithubWebhookService
     {
         private readonly IProfilesService ProfilesService;
         private readonly ILogsService LogsService;
 
         public GithubWebhookServiceService(IProfilesService profilesService, ILogsService logsService,
-            OrganizationDbContext dbContext) :base(dbContext)
+            OrganizationDbContext dbContext) : base(dbContext)
         {
             DbContext = dbContext;
             ProfilesService = profilesService;
@@ -28,13 +28,13 @@ namespace Tayra.Services.webhooks
         private void SaveWebhookEventLog(JObject jObject, IntegrationType integrationType)
         {
             DbContext.WebhookEventLogs.Add(new WebhookEventLog
-                {IntegrationType = integrationType, Data = jObject.ToString(Formatting.None)});
+            { IntegrationType = integrationType, Data = jObject.ToString(Formatting.None) });
             DbContext.SaveChanges();
         }
 
         public string HandleWebhook(JObject jObject, string ghEvent)
         {
-            if (!new string[] {"push", "pull_request", "pull_request_review", "pull_request_review_comment"}
+            if (!new string[] { "push", "pull_request", "pull_request_review", "pull_request_review_comment" }
                 .Contains(ghEvent.ToString()))
             {
                 return "skipped";
@@ -131,7 +131,7 @@ namespace Tayra.Services.webhooks
                 {"title", pullRequest.Title},
             }, LogEvents.PullRequestCreated, authorProfile, LogsService);
         }
-        
+
         private void HandlePullRequestReview(JObject jObject)
         {
             PullRequsetReviewWebhookPayload prReviewPayload = jObject.ToObject<PullRequsetReviewWebhookPayload>();
@@ -338,7 +338,7 @@ namespace Tayra.Services.webhooks
         private void CreateLog(Dictionary<string, string> log, LogEvents events, Profile profile,
             ILogsService logsService)
         {
-            var logData = new LogCreateDTO {Event = events, Data = log};
+            var logData = new LogCreateDTO { Event = events, Data = log };
             if (profile != null)
             {
                 logData.Data.Add("profileUsername", profile.Username);

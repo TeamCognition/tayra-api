@@ -1,10 +1,11 @@
-﻿using Tayra.Common;
+﻿using System;
+using Tayra.Common;
 
 namespace Tayra.Services
 {
     public class ItemUpdateDTO
     {
-        public int ItemId { get; set; }
+        public Guid ItemId { get; set; }
         public bool AffectOwnedItems { get; set; }
 
         public string Name { get; set; }

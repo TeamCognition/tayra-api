@@ -64,7 +64,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [Constants.PROFILE_EXTERNAL_ID] = loggedInUser.AccountId
                     };
 
-                    CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId:null, profileFields, profileIntegration);
+                    CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields, profileIntegration);
                 }
 
                 if (state.IsSegmentAuth && tokenData != null && accResData != null)
@@ -100,7 +100,7 @@ namespace Tayra.Connectors.Atlassian.Jira
         }
 
         public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
-        public override Integration RefreshToken(int integrationId)
+        public override Integration RefreshToken(Guid integrationId)
         {
             var account = OrganizationContext
                 .Integrations
@@ -150,7 +150,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return account;
         }
 
-        public ICollection<JiraProject> GetProjects(int integrationId)
+        public ICollection<JiraProject> GetProjects(Guid integrationId)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -165,7 +165,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return AtlassianJiraService.GetProjects(cloudId, accessTokenType, accessToken).Data.Values;
         }
 
-        public ICollection<JiraIssueType> GetIssueTypesWithStatuses(int integrationId, string jiraProjectId)
+        public ICollection<JiraIssueType> GetIssueTypesWithStatuses(Guid integrationId, string jiraProjectId)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -180,7 +180,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return AtlassianJiraService.GetProjectStatuses(cloudId, accessTokenType, accessToken, jiraProjectId).Data;
         }
 
-        public ICollection<JiraStatus> GetIssueStatuses(int integrationId, string jiraProjectId, string jiraIssueTypeId = "")
+        public ICollection<JiraStatus> GetIssueStatuses(Guid integrationId, string jiraProjectId, string jiraIssueTypeId = "")
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -204,7 +204,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             }
         }
 
-        public JiraIssue GetIssue(int integrationId, string issueIdOrKey, string expand = "")
+        public JiraIssue GetIssue(Guid integrationId, string issueIdOrKey, string expand = "")
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -219,7 +219,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return AtlassianJiraService.GetIssue(cloudId, accessTokenType, accessToken, issueIdOrKey, expand).Data;
         }
 
-        public List<TaskChangelog> GetIssueChangelog(int integrationId, string issueIdOrKey, string fieldFilter = "")
+        public List<TaskChangelog> GetIssueChangelog(Guid integrationId, string issueIdOrKey, string fieldFilter = "")
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -234,9 +234,9 @@ namespace Tayra.Connectors.Atlassian.Jira
             var jiraChangelogs = AtlassianJiraService.GetIssueChangelog(cloudId, accessTokenType, accessToken, issueIdOrKey).Data.Values;
 
             var changelogs = new List<TaskChangelog>();
-            foreach(var cl in jiraChangelogs)
+            foreach (var cl in jiraChangelogs)
             {
-                cl.Items.Where(x => string.IsNullOrEmpty(fieldFilter) || x.Field == fieldFilter).ToList().ForEach(x => 
+                cl.Items.Where(x => string.IsNullOrEmpty(fieldFilter) || x.Field == fieldFilter).ToList().ForEach(x =>
                 changelogs.Add(new TaskChangelog
                 {
                     Created = cl.Created,
@@ -255,7 +255,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return changelogs;
         }
 
-        public List<JiraUser> GetUsers(int integrationId)
+        public List<JiraUser> GetUsers(Guid integrationId)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -270,11 +270,11 @@ namespace Tayra.Connectors.Atlassian.Jira
             var jiraUsers = AtlassianJiraService.GetUsers(cloudId, accessTokenType, accessToken).Data;
 
             jiraUsers.RemoveAll(x => x.AccountType != "atlassian");
-           
+
             return jiraUsers;
         }
 
-        public List<JiraIssueType> GetIssueTypes(int integrationId)
+        public List<JiraIssueType> GetIssueTypes(Guid integrationId)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -291,7 +291,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return issueTypes;
         }
 
-        public List<JiraIssue> GetBulkIssuesWithChangelog(int integrationId, string fieldFilter = "status", params string[] jiraProjects)
+        public List<JiraIssue> GetBulkIssuesWithChangelog(Guid integrationId, string fieldFilter = "status", params string[] jiraProjects)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -327,7 +327,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                 }
                 issue.TaskChangelogs = changelogs;
             }
-            
+
             return issueSearch.Issues;
         }
 
@@ -335,7 +335,7 @@ namespace Tayra.Connectors.Atlassian.Jira
 
         #region Private Methods
 
-        private string ReadCloudId(int integrationId)
+        private string ReadCloudId(Guid integrationId)
         {
             return ReadField(integrationId, ATConstants.AT_CLOUD_ID, "Unknown cloud id for integration " + integrationId);
         }

@@ -7,20 +7,20 @@ namespace Tayra.Services
 {
     public class ProfileViewDTO
     {
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Username { get; set; }
 
         public PulseDTO Pulse { get; set; }
-        
+
         public ProfileRoles Role { get; set; }
         public TeamDTO[] Teams { get; set; }
         public SegmentDTO[] Segments { get; set; }
         public string Avatar { get; set; }
         public double CompanyTokens { get; set; }
         public int Experience { get; set; }
-        
+
         public string AssistantSummary { get; set; }
 
         public IList<ItemActiveDTO> Badges { get; set; }
@@ -30,7 +30,7 @@ namespace Tayra.Services
         public DateTime? LastUppedAt { get; set; }
 
         public PraiseDTO[] Praises { get; set; }
-        
+
         public class TokenDTO
         {
             public TokenType Type { get; set; }
@@ -46,17 +46,17 @@ namespace Tayra.Services
         public class TeamDTO
         {
             public string Key { get; set; }
-            public int Id { get; set; }
+            public Guid Id { get; set; }
             public string Name { get; set; }
         }
 
         public class SegmentDTO
         {
             public string Key { get; set; }
-            public int Id { get; set; }
+            public Guid Id { get; set; }
             public string Name { get; set; }
         }
-        
+
         public class PulseDTO
         {
             public Task[] InProgress { get; set; }
@@ -69,7 +69,7 @@ namespace Tayra.Services
                 public string ExternalUrl { get; set; }
             }
         }
-        
+
         public class PraiseDTO
         {
             public PraiseTypes Type { get; set; }

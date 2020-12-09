@@ -3,10 +3,8 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class GitCommit: ITimeStampedEntity
+    public class GitCommit : Entity<Guid>, ITimeStampedEntity
     {
-        public int Id { get; set; }
-
         public string SHA { get; set; }
 
         public string ExternalUrl { get; set; }
@@ -15,7 +13,7 @@ namespace Tayra.Models.Organizations
 
         public string AuthorExternalId { get; set; }
 
-        public int? AuthorProfileId { get; set; }
+        public Guid? AuthorProfileId { get; set; }
         public Profile AuthorProfile { get; set; }
 
         #region ITimeStampedEntity

@@ -4,6 +4,6 @@ namespace Tayra.Services.webhooks
 {
     public interface IGithubWebhookService
     {
-        public string HandleWebhook(JObject jObject,string ghEvent);
+        public string HandleWebhook(JObject jObject, string ghEvent);
     }
 }

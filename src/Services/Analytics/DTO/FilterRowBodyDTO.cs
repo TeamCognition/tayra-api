@@ -1,3 +1,5 @@
+using System;
+
 namespace Tayra.Services
 {
     public class FilterRowBodyDTO
@@ -6,7 +8,7 @@ namespace Tayra.Services
 
         public class EntityRow
         {
-            public int Id { get; set; }
+            public Guid Id { get; set; }
             public string Type { get; set; }
         }
     }

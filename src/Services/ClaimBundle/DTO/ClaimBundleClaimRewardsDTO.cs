@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tayra.Common;
 
 namespace Tayra.Services
@@ -16,7 +17,7 @@ namespace Tayra.Services
 
         public class InventoryItem
         {
-            public int ItemId { get; set; }
+            public Guid ItemId { get; set; }
             public string Name { get; set; }
             public string Image { get; set; }
             public ItemRarities Rarity { get; set; }

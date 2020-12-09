@@ -75,7 +75,7 @@ namespace Cog.Core
 
         public static string[] CreateDayOfWeekList(int fromDateId, int periodInDays)
         {
-            var startDate = ParseDate(fromDateId).AddDays(-periodInDays+1);
+            var startDate = ParseDate(fromDateId).AddDays(-periodInDays + 1);
             return Enumerable.Range(0, periodInDays).Select(x => startDate.AddDays(x).DayOfWeek.ToString()).ToArray();
         }
 
@@ -84,7 +84,10 @@ namespace Cog.Core
             return ToDateId(ParseDate(dateId).AddDays(days));
         }
 
-        public static long GetCurrentUnixTimestamp() => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        public static long GetCurrentUnixTimestamp()
+        {
+            return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        }
 
         #endregion
     }

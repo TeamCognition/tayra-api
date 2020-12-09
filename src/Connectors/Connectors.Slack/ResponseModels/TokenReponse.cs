@@ -33,7 +33,7 @@ namespace Tayra.Connectors.Slack
 
         [JsonProperty("authed_user")]
         public AuthedUserDto AuthedUser { get; set; }
-        
+
         [DeserializeAs(Name = "incoming_webhook")]
         public IncomingWebhookDto IncomingWebhook { get; set; }
 
@@ -45,7 +45,7 @@ namespace Tayra.Connectors.Slack
             [JsonProperty("id")]
             public string Id { get; set; }
         }
-            
+
         public class AuthedUserDto
         {
             [JsonProperty("id")]
@@ -64,12 +64,12 @@ namespace Tayra.Connectors.Slack
         {
             [JsonProperty("url")]
             public string Url { get; set; }
-                
+
             [JsonProperty("channel")]
-            public string Channel { get; set; } 
-                
+            public string Channel { get; set; }
+
             [JsonProperty("configuration_url")]
-            public string ConfigurationUrl { get; set; } 
+            public string ConfigurationUrl { get; set; }
         }
     }
 }

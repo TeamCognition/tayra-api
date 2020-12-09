@@ -8,7 +8,7 @@ namespace Tayra.Services
 {
     public static class IntegrationHelpers
     {
-        public static int? GetIntegrationId(OrganizationDbContext organizationDb, string projectId, IntegrationType type)
+        public static Guid? GetIntegrationId(OrganizationDbContext organizationDb, string projectId, IntegrationType type)
         {
             if (type == IntegrationType.ATJ)
             {

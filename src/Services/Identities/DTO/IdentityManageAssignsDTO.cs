@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Tayra.Services
 {
@@ -9,20 +10,20 @@ namespace Tayra.Services
 
         public class CurrentAssignDTO
         {
-            public int SegmentId { get; set; }
+            public Guid SegmentId { get; set; }
             public string SegmentName { get; set; }
-            public int? TeamId { get; set; }
+            public Guid? TeamId { get; set; }
             public string TeamName { get; set; }
         }
 
         public class AvailableAssignDTO
         {
-            public int SegmentId { get; set; }
+            public Guid SegmentId { get; set; }
             public TeamDTO[] Teams { get; set; }
 
             public class TeamDTO
             {
-                public int TeamId { get; set; }
+                public Guid TeamId { get; set; }
                 public string Name { get; set; }
             }
         }

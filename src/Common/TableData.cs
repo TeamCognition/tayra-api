@@ -10,9 +10,9 @@ namespace Tayra.Common
     public partial class TableData
     {
         public Column[] Columns { get; }
-        
+
         public object[] Records { get; }
-        
+
         public TableData(Type dataType, object[] records)
         {
             this.Records = records;
@@ -27,7 +27,7 @@ namespace Tayra.Common
             internal Column(PropertyInfo p)
             {
                 this.Type = (Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType).Name.ToLowerFirst();
-                this.Accessor =  p.Name.ToLowerFirst();
+                this.Accessor = p.Name.ToLowerFirst();
             }
         }
     }
@@ -67,7 +67,7 @@ namespace Tayra.Common
             public override string ToString() => $"{Text}\0{Url}";
         }
     }
-    
+
     public partial class TableData
     {
         [JsonConverter(typeof(ToStringJsonConverter))]
@@ -83,7 +83,7 @@ namespace Tayra.Common
             public override string ToString() => Minutes.ToString(CultureInfo.InvariantCulture);
         }
     }
-    
+
     public partial class TableData
     {
         [JsonConverter(typeof(ToStringJsonConverter))]
@@ -99,7 +99,7 @@ namespace Tayra.Common
             public override string ToString() => $"{MetricTypeId}\0{Value}";
         }
     }
-    
+
     public partial class TableData
     {
         [JsonConverter(typeof(ToStringJsonConverter))]

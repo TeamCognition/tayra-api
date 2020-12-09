@@ -14,15 +14,15 @@ namespace Tayra.Services.TaskConverters
         NORMAL,
         BULK
     }
-    
+
     public abstract class TaskConverterBase
     {
         protected TaskConverterMode Mode;
         protected OrganizationDbContext DbContext;
         protected ProfileAssignment CachedProfileAssignment;
-        protected int? IntegrationIdCache;
+        protected Guid? IntegrationIdCache;
         private IntegrationField[] _integrationFields;
-        
+
         public TaskAddOrUpdateDTO Data { get; protected set; }
         protected IProfilesService ProfilesService;
         protected Profile AssigneeProfile;
@@ -63,7 +63,7 @@ namespace Tayra.Services.TaskConverters
         }
 
         public virtual bool ShouldBeProcessed() => true;
-        
+
         protected abstract int? GetTimeSpentInMinutes();
 
         public void EnsureBasicDataIsFilled()
@@ -73,7 +73,7 @@ namespace Tayra.Services.TaskConverters
                 UpdateBasicTaskData();
             }
         }
-        
+
         public void FillExtraDataIfCompleted()
         {
             EnsureBasicDataIsFilled();
@@ -114,7 +114,7 @@ namespace Tayra.Services.TaskConverters
         {
             if (tokensService == null)
                 return;
-            
+
             EnsureBasicDataIsFilled();
             if (Data.AssigneeProfileId.HasValue && IsCompleted())
             {
@@ -165,13 +165,13 @@ namespace Tayra.Services.TaskConverters
             return CachedProfileAssignment;
         }
 
-        protected int? GetCurrentSegmentId()
+        protected Guid? GetCurrentSegmentId()
         {
             return GetProfileAssignment()?.SegmentId;
         }
-        
+
         //not used beacuse there is a problem when profile is not assigned to any segment and gets wrong integrationid with no refresh token
-        protected int? GetIntegrationId()
+        protected Guid? GetIntegrationId()
         {
             if (IntegrationIdCache == null)
             {
@@ -184,13 +184,13 @@ namespace Tayra.Services.TaskConverters
             return IntegrationIdCache;
         }
 
-        protected int? GetTeamId()
+        protected Guid? GetTeamId()
         {
             return GetProfileAssignment()?.TeamId;
         }
 
         protected abstract int GetReporterProfileId();
-        protected int? GetAssigneeProfileId()
+        protected Guid? GetAssigneeProfileId()
         {
             return AssigneeProfile?.Id;
         }
@@ -214,7 +214,7 @@ namespace Tayra.Services.TaskConverters
             if (AssigneeProfile != null && logsService != null)
             {
                 var timestamp = DateTime.UtcNow;
-                if(Mode == TaskConverterMode.TEST)
+                if (Mode == TaskConverterMode.TEST)
                 {
                     Random rnd = new Random();
                     timestamp = DateHelper2.ParseDate(Data.RewardStatusEnteredDateId.Value).AddHours(rnd.Next(23)).AddMinutes(59).AddSeconds(59);

@@ -19,8 +19,8 @@ namespace Tayra.Models.Organizations
             {
                 _key = principal.CurrentTenantKey;
             }
-            else if(accessor.HttpContext.Request.Query.TryGetValue("tenant", out StringValues tenantKey))
-            {                
+            else if (accessor.HttpContext.Request.Query.TryGetValue("tenant", out StringValues tenantKey))
+            {
                 _key = tenantKey;
             }
             else
@@ -28,7 +28,7 @@ namespace Tayra.Models.Organizations
                 throw new ApplicationException("No way to identify the tenant");
                 //_key = "test5.tayra.io";
             }
-        
+
             //if(accessor.HttpContext.Request.Headers.TryGetValue("Origin", out StringValues origin))
             //{
             //    _host = new Uri(origin).Host;

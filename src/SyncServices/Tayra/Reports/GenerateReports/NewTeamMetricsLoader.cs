@@ -79,10 +79,10 @@ namespace Tayra.SyncServices.Tayra
                 var teamMetrics = MetricType.List
                         .Select(m => new TeamMetric(team.Id, dateId, m, profileIds.Sum(x =>
                                 m.Calc(rawMetrics.Where(m => m.EntityId == x).ToArray(),
-                                new DatePeriod(dateId, dateId))/ profileIds.Length)));
+                                new DatePeriod(dateId, dateId)) / profileIds.Length)));
 
-                
-                
+
+
                 metricsToInsert.AddRange(teamMetrics);
             }
 
@@ -90,8 +90,8 @@ namespace Tayra.SyncServices.Tayra
             if (existing > 0)
             {
                 logService.Log<TeamMetric>($"date: ${dateId},  deleting {existing} records from database");
-                //organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}");
-                organizationDb.Database.ExecuteSqlCommand($"delete from TeamMetrics where {nameof(TeamMetric.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId}");
+                //organizationDb.Database.ExecuteSqlCommand($"delete from TeamMetrics where {nameof(TeamMetric.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
                 organizationDb.SaveChanges();
             }
 

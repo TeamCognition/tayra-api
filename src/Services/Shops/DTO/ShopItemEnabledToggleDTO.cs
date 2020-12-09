@@ -1,7 +1,9 @@
-﻿namespace Tayra.Services
+﻿using System;
+
+namespace Tayra.Services
 {
     public class ShopItemEnabledToggleDTO
     {
-        public int ItemId { get; set; }
+        public Guid ItemId { get; set; }
     }
 }

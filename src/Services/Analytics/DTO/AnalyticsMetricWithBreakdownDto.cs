@@ -13,7 +13,7 @@ namespace Tayra.Services
         public DatePeriod Period { get; set; }
         public float Value { get; set; }
         public IterationBreakdownDto[] IterationsBreakdown { get; set; }
-    
+
         public AnalyticsMetricWithBreakdownDto(MetricType metricType, DatePeriod period, MetricShard[] raws, DateTime lastRefreshAt, EntityTypes entityType)
         {
             this.LastRefreshAt = lastRefreshAt;
@@ -21,7 +21,7 @@ namespace Tayra.Services
             this.Value = entityType == EntityTypes.Profile ? metricType.Calc(raws, period) : metricType.CalcGroup(raws, period);
             this.IterationsBreakdown = period.SplitToIterations().Select(i => new IterationBreakdownDto(metricType.BuildingMetrics.Append(metricType).ToArray(), i, raws, entityType)).ToArray();
         }
-        
+
         public class IterationBreakdownDto
         {
             public DatePeriod Period { get; set; }

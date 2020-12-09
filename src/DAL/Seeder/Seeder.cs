@@ -72,53 +72,53 @@ namespace Tayra.Models.Seeder
                             props[i] = null;
                     };
                     Console.WriteLine(t[0]);
-                    var x = new Task
-                    {
-                        ExternalId = props[1],
-                        IntegrationType = Enum.Parse<IntegrationType>(props[2]),
-                        Summary = props[3],
-                        Status = Enum.Parse<TaskStatuses>(props[4]),
-                        Type = Enum.Parse<TaskTypes>(props[5]),
-                        TimeSpentInMinutes = Parse<int?>(props[6]),
-                        TimeOriginalEstimatInMinutes = Parse<int?>(props[7]),
-                        StoryPoints = Parse<int?>(props[8]),
-                        Complexity = Parse<int>(props[9]),
-                        Priority = Enum.Parse<TaskPriorities>(props[10]),
-                        BugSeverity = Parse<int?>(props[11]),
-                        BugPopulationAffect = 0,
-                        IsProductionBugCausing = false,
-                        IsProductionBugFixing = false,
-                        EffortScore = Parse<int?>(props[15]),
-                        Labels = props[16],
-                        LastModifiedDateId = Parse<int>(props[17]),
-                        ReporterProfileId = Parse<int>(props[18]),
-                        AssigneeProfileId = Parse<int>(props[19]),
-                        TeamId = Parse<int?>(props[20]),
-                        SegmentId = Parse<int?>(props[21]),
-                        SegmentAreaId = Parse<int?>(props[22]),
-                        TaskCategoryId = Parse<int?>(props[23]),
-                        Created = DateTime.Parse(props[24]),
-                        LastModified = Parse<DateTime?>(props[25])
-                    };
-                    x.SegmentId = 55;
-                    x.TeamId = 204;
-
-                    if (x.AssigneeProfileId == 3)
-                        x.AssigneeProfileId = 30;
-
-                    if (x.AssigneeProfileId == 4)
-                        x.AssigneeProfileId = 31;
-
-                    if (x.AssigneeProfileId == 7)
-                        x.AssigneeProfileId = 32;
-
-                    if (x.AssigneeProfileId == 9)
-                        x.AssigneeProfileId = 33;
-
-                    if (x.AssigneeProfileId == 10)
-                        x.AssigneeProfileId = 34;
-
-                    organizationDb.Add(x);
+                    // var x = new Task
+                    // {
+                    //     ExternalId = props[1],
+                    //     IntegrationType = Enum.Parse<IntegrationType>(props[2]),
+                    //     Summary = props[3],
+                    //     Status = Enum.Parse<TaskStatuses>(props[4]),
+                    //     Type = Enum.Parse<TaskTypes>(props[5]),
+                    //     TimeSpentInMinutes = Parse<int?>(props[6]),
+                    //     TimeOriginalEstimatInMinutes = Parse<int?>(props[7]),
+                    //     StoryPoints = Parse<int?>(props[8]),
+                    //     Complexity = Parse<int>(props[9]),
+                    //     Priority = Enum.Parse<TaskPriorities>(props[10]),
+                    //     BugSeverity = Parse<int?>(props[11]),
+                    //     BugPopulationAffect = 0,
+                    //     IsProductionBugCausing = false,
+                    //     IsProductionBugFixing = false,
+                    //     EffortScore = Parse<int?>(props[15]),
+                    //     Labels = props[16],
+                    //     LastModifiedDateId = Parse<int>(props[17]),
+                    //     ReporterProfileId = Parse<int>(props[18]),
+                    //     AssigneeProfileId = Parse<Guid>(props[19]),
+                    //     TeamId = Parse<Guid?>(props[20]),
+                    //     SegmentId = Parse<Guid?>(props[21]),
+                    //     SegmentAreaId = Parse<int?>(props[22]),
+                    //     TaskCategoryId = Parse<int?>(props[23]),
+                    //     Created = DateTime.Parse(props[24]),
+                    //     LastModified = Parse<DateTime?>(props[25])
+                    // };
+                    // x.SegmentId = 55;
+                    // x.TeamId = 204;
+                    //
+                    // if (x.AssigneeProfileId == 3)
+                    //     x.AssigneeProfileId = 30;
+                    //
+                    // if (x.AssigneeProfileId == 4)
+                    //     x.AssigneeProfileId = 31;
+                    //
+                    // if (x.AssigneeProfileId == 7)
+                    //     x.AssigneeProfileId = 32;
+                    //
+                    // if (x.AssigneeProfileId == 9)
+                    //     x.AssigneeProfileId = 33;
+                    //
+                    // if (x.AssigneeProfileId == 10)
+                    //     x.AssigneeProfileId = 34;
+                    //
+                    // organizationDb.Add(x);
                 }
                 organizationDb.SaveChanges();
             }

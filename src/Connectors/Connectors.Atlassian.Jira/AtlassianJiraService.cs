@@ -212,7 +212,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             request.AddParameter("application/json", JsonConvert.SerializeObject(new
             {
                 url = "https://tayra-dev.azurewebsites.net/webhooks/atjissueupdate",
-                webhooks = new []
+                webhooks = new[]
                 {
                     new { events = new string[] { "jira:issue_updated" } }
                 }

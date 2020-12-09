@@ -17,7 +17,7 @@ namespace Tayra.Connectors.Slack
         private const string AUTH_URL = "https://slack.com/oauth/v2/authorize";
         private const string SLAPP_ID = "A013UGRR7FW";
         private const string SCOPE = "commands,incoming-webhook,app_mentions:read,channels:history,channels:join,channels:read,chat:write,chat:write.public,chat:write.customize,groups:history,groups:read,groups:write,im:history,im:read,im:write,mpim:history,mpim:read,mpim:write,usergroups:read,users.profile:read,users:read,users:read.email";
-        
+
         public SlackConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, dataContext, catalogDbContext)
         {
         }
@@ -50,7 +50,7 @@ namespace Tayra.Connectors.Slack
 
                 if (accessToken == null)
                     return null;
-                
+
                 var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
                 var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
                 if (segmentIntegration == null && !state.IsSegmentAuth)
@@ -62,7 +62,7 @@ namespace Tayra.Connectors.Slack
                 {
                     [Constants.PROFILE_EXTERNAL_ID] = accessToken.AuthedUser.Id
                 };
-            
+
                 CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields, profileIntegration);
 
                 if (state.IsSegmentAuth)
@@ -73,7 +73,7 @@ namespace Tayra.Connectors.Slack
                         [Constants.ACCESS_TOKEN_TYPE] = accessToken.TokenType,
                         [Constants.SCOPE] = accessToken.Scope,
                     };
-                
+
                     segmentIntegration = CreateSegmentIntegration(state.SegmentId, installationId: null, segmentFields, segmentIntegration);
                 }
 
@@ -84,7 +84,7 @@ namespace Tayra.Connectors.Slack
             return null;
         }
 
-        private void LinkSlackAccountsWithTayraProfileThroughEmailAddress(OrganizationDbContext dbContext, int integrationId)
+        private void LinkSlackAccountsWithTayraProfileThroughEmailAddress(OrganizationDbContext dbContext, Guid integrationId)
         {
             var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.Id == integrationId && x.ProfileId == null);
             var botToken = segmentIntegration.Fields.FirstOrDefault(x => x.Key == Constants.ACCESS_TOKEN).Value;
@@ -102,7 +102,7 @@ namespace Tayra.Connectors.Slack
 
             var identityEmails = CatalogContext.IdentityEmails.Where(x => tenantIdentities.Contains(x.IdentityId))
                 .AsNoTracking().ToArray();
-            
+
             foreach (var u in slackUsers.Members)
             {
                 if (u.Deleted == false && u.IsBot == false)
@@ -114,9 +114,9 @@ namespace Tayra.Connectors.Slack
                 }
             }
         }
-        
+
         public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
-        
+
         #endregion
     }
 }

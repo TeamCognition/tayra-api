@@ -44,7 +44,7 @@ namespace Tayra.SyncServices.Tayra
         }
 
         #endregion
-        
+
         public static void MakeActionPoints(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService)
         {
             var reportsToInsert = new List<ActionPoint>();
@@ -101,19 +101,19 @@ namespace Tayra.SyncServices.Tayra
 
 
             var shopItemsAddedInLast4 = (from si in organizationDb.ShopItems
-                                        where si.CreatedBy > 0
-                                        where si.Created > DateHelper2.ParseDate(dateId4ago)
-                                        select si).Count();
+                                         where si.CreatedBy != default
+                                         where si.Created > DateHelper2.ParseDate(dateId4ago)
+                                         select si).Count();
 
 
             var questsCreatedInLast4 = (from c in organizationDb.QuestSegments
-                                            where c.Created > DateHelper2.ParseDate(dateId4ago)
-                                            group c by c.SegmentId into g
-                                            select new
-                                            {
-                                                SegmentId = g.Key,
-                                                Count = g.Count()
-                                            }).ToArray();
+                                        where c.Created > DateHelper2.ParseDate(dateId4ago)
+                                        group c by c.SegmentId into g
+                                        select new
+                                        {
+                                            SegmentId = g.Key,
+                                            Count = g.Count()
+                                        }).ToArray();
 
 
             {//if Action Points where already generated today, delete since we are going to re-create them
@@ -121,8 +121,8 @@ namespace Tayra.SyncServices.Tayra
                 if (existing > 0)
                 {
                     logService.Log<MakeActionPointsLoader>($"deleting {existing} records from database");
-                    organizationDb.Database.ExecuteSqlCommand($"delete from {nameof(ActionPoint)}s where {nameof(ProfileReportWeekly.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
-                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from {nameof(ActionPoint)}s where {nameof(ProfileReportWeekly.DateId)} = {dateId}");
+                    //organizationDb.Database.ExecuteSqlCommand($"delete from {nameof(ActionPoint)}s where {nameof(ProfileReportWeekly.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.Database.ExecuteSqlInterpolated($"delete from {nameof(ActionPoint)}s where {nameof(ProfileReportWeekly.DateId)} = {dateId}");
                     organizationDb.SaveChanges();
                 }
             }
@@ -216,7 +216,7 @@ namespace Tayra.SyncServices.Tayra
                         MakeSegmentAP(organizationDb, ActionPointTypes.ShopNoItemsAddedIn4Weeks, s.Id,
                             isTrue: shopItemsAddedInLast4 == 0,
                             aps);
-                        
+
                         // MakeSegmentAP(organizationDb, ActionPointTypes.QuestsNotCreatedIn4Weeks, s.Id,
                         //     isTrue: (questsCreatedInLast4.FirstOrDefault(x => x.SegmentId == s.Id)?.Count ?? 0) == 0,
                         //     aps);   
@@ -230,8 +230,8 @@ namespace Tayra.SyncServices.Tayra
         }
 
         #region Private Methods
-        
-        private static void MakeProfileAP(OrganizationDbContext dbContext, ActionPointTypes type, int? segmentId, int profileId, bool isTrue, ActionPoint[] aps, int dateId = 0)
+
+        private static void MakeProfileAP(OrganizationDbContext dbContext, ActionPointTypes type, Guid? segmentId, Guid profileId, bool isTrue, ActionPoint[] aps, int dateId = 0)
         {
             var ap = aps.FirstOrDefault(x => x.Type == type && x.ProfileId == profileId); //if active ap exists
             if (ap != null)
@@ -258,7 +258,7 @@ namespace Tayra.SyncServices.Tayra
             });
         }
 
-        private static void MakeSegmentAP(OrganizationDbContext dbContext, ActionPointTypes type, int segmentId, bool isTrue, ActionPoint[] aps, int dateId = 0)
+        private static void MakeSegmentAP(OrganizationDbContext dbContext, ActionPointTypes type, Guid segmentId, bool isTrue, ActionPoint[] aps, int dateId = 0)
         {
             var ap = aps.FirstOrDefault(x => x.Type == type && x.SegmentId == segmentId); //if active ap exists
             if (ap != null)
@@ -296,10 +296,10 @@ namespace Tayra.SyncServices.Tayra
             });
         }
 
-            
+
         private class APointDTO
         {
-            public int ProfileId { get; set; }
+            public Guid ProfileId { get; set; }
             public ActionPointTypes Type { get; set; }
         }
 

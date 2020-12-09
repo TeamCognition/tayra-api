@@ -29,17 +29,18 @@ namespace Tayra.Connectors.App.Controllers
             return View();
         }
 
-        private bool isSegmentAuth = true;
-        
+        //private bool isSegmentAuth = true;
+
         [HttpGet, Route("connect/{type?}")]
         public IActionResult Connect(IntegrationType type)
         {
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
-            return Redirect(connector.GetAuthUrl(new OAuthState("devtenant.tayra.local", 1, 1, isSegmentAuth, "home")));
+            //return Redirect(connector.GetAuthUrl(new OAuthState("devtenant.tayra.local", 1, 1, isSegmentAuth, "home")));
+            return Ok();
         }
 
         [HttpGet, Route("external/callback/{type?}")]
-        public IActionResult Callback([FromServices] CatalogDbContext catalogContext, IntegrationType type, [FromQuery]string state, [FromQuery]string setup_action, [FromQuery]string installation_id, [FromQuery]string error = null)
+        public IActionResult Callback([FromServices] CatalogDbContext catalogContext, IntegrationType type, [FromQuery] string state, [FromQuery] string setup_action, [FromQuery] string installation_id, [FromQuery] string error = null)
         {
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             if (setup_action == "update" && string.IsNullOrEmpty(state))
@@ -47,22 +48,22 @@ namespace Tayra.Connectors.App.Controllers
                 var ti = catalogContext.TenantIntegrations.Include(x => x.Tenant).FirstOrDefault(x => x.InstallationId == installation_id);
                 Request.QueryString = Request.QueryString.Add("tenant", ti.Tenant.Key);
                 connector.UpdateAuthentication(installation_id);
-                
+
                 return Redirect($"https://{ti.Tenant.Key}/login");
             }
             var oAuthState = new OAuthState(state);
             Request.QueryString = Request.QueryString.Add("tenant", oAuthState.TenantKey);
-            
+
             if (!string.IsNullOrEmpty(error))
             {
                 TempData["Error"] = error;
                 return RedirectToAction("Error");
             }
-            
+
             try
             {
                 var account = connector.Authenticate(oAuthState);
-                
+
                 TempData["Account"] = JsonConvert.SerializeObject(account, new JsonSerializerSettings
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
@@ -82,7 +83,7 @@ namespace Tayra.Connectors.App.Controllers
         }
 
         [HttpGet, Route("refresh/{type}/{id}")]
-        public IActionResult Refresh([FromRoute]IntegrationType type, [FromRoute]int id)
+        public IActionResult Refresh([FromRoute] IntegrationType type, [FromRoute] Guid id)
         {
             try
             {

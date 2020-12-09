@@ -77,7 +77,7 @@ namespace Tayra.Models.Catalog
 
             modelBuilder.Entity<TenantIdentity>(entity =>
             {
-                entity.HasKey(x => new { x.TenantId, x.IdentityId});
+                entity.HasKey(x => new { x.TenantId, x.IdentityId });
             });
 
             modelBuilder.Entity<TenantIntegration>(entity =>
@@ -85,7 +85,7 @@ namespace Tayra.Models.Catalog
                 entity.HasKey(x => new { x.TenantId, x.Type, x.SegmentId });
                 entity.HasIndex(x => new { x.InstallationId });
             });
-            
+
             Seed(modelBuilder);
 
             base.OnModelCreating(modelBuilder);

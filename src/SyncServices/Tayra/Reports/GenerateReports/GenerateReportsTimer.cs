@@ -9,7 +9,7 @@ namespace Tayra.SyncServices.Tayra
     public class GenerateReportsTimer
     {
         [FunctionName(nameof(GenerateReportsTimer))] //Runs every hour
-        public static void Run([TimerTrigger("0 0 * * * *")]TimerInfo timerInfo, ExecutionContext context, ILogger logger)
+        public static void Run([TimerTrigger("0 0 * * * *")] TimerInfo timerInfo, ExecutionContext context, ILogger logger)
         {
             SyncHelper.RunFromSchedule(JobTypes.GenerateReports, timerInfo, context, logger);
         }

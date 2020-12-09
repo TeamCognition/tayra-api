@@ -50,13 +50,13 @@ namespace Tayra.SyncServices.Tayra
 
         #region Private Methods
 
-        public static List<ProfileReportDaily> GenerateProfileReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, params int[] segmentIds)
+        public static List<ProfileReportDaily> GenerateProfileReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, params Guid[] segmentIds)
         {
             var reportsToInsert = new List<ProfileReportDaily>();
 
-            if(segmentIds.Length > 0)
+            if (segmentIds.Length > 0)
             {
-                if(!organizationDb.Segments.Any(x => segmentIds.Contains(x.Id)))
+                if (!organizationDb.Segments.Any(x => segmentIds.Contains(x.Id)))
                 {
                     throw new ApplicationException("there is an ID in segmentIds that doesn't exists");
                 }
@@ -67,7 +67,7 @@ namespace Tayra.SyncServices.Tayra
             }
 
             var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
-            if (companyTokenId == 0)
+            if (companyTokenId == default)
                 throw new ApplicationException("COMPANY TOKEN NOT FOUND");
 
             var dateId = DateHelper2.ToDateId(fromDay);
@@ -132,30 +132,30 @@ namespace Tayra.SyncServices.Tayra
                               }).ToList();
 
                 var praisesGiven = (from u in organizationDb.ProfilePraises
-                                   where profileIds.Contains(u.PraiserProfileId)
-                                   group u by u.PraiserProfileId into total
-                                   let change = total.Where(x => x.DateId == dateId)
-                                   select new
-                                   {
-                                       ProfileId = total.Key,
+                                    where profileIds.Contains(u.PraiserProfileId)
+                                    group u by u.PraiserProfileId into total
+                                    let change = total.Where(x => x.DateId == dateId)
+                                    select new
+                                    {
+                                        ProfileId = total.Key,
 
-                                       Usernames = change.Select(x => x.Profile.Username).ToArray(),
-                                       Count = change.Count(),
-                                       CountTotal = total.Count()
-                                   }).ToList();
+                                        Usernames = change.Select(x => x.Profile.Username).ToArray(),
+                                        Count = change.Count(),
+                                        CountTotal = total.Count()
+                                    }).ToList();
 
                 var praisesReceived = (from u in organizationDb.ProfilePraises
-                                      where profileIds.Contains(u.ProfileId)
-                                      group u by u.ProfileId into total
-                                      let change = total.Where(x => x.DateId == dateId)
-                                      select new
-                                      {
-                                          ProfileId = total.Key,
+                                       where profileIds.Contains(u.ProfileId)
+                                       group u by u.ProfileId into total
+                                       let change = total.Where(x => x.DateId == dateId)
+                                       select new
+                                       {
+                                           ProfileId = total.Key,
 
-                                          Usernames = organizationDb.Profiles.Where(x => change.Select(c => c.CreatedBy).Contains(x.Id)).Select(x => x.Username).ToArray(),
-                                          Count = change.Count(),
-                                          CountTotal = total.Count()
-                                      }).ToList();
+                                           Usernames = organizationDb.Profiles.Where(x => change.Select(c => c.CreatedBy).Contains(x.Id)).Select(x => x.Username).ToArray(),
+                                           Count = change.Count(),
+                                           CountTotal = total.Count()
+                                       }).ToList();
 
                 var itemsCreated = (from i in organizationDb.Items
                                     where profileIds.Contains(i.CreatedBy)
@@ -230,27 +230,27 @@ namespace Tayra.SyncServices.Tayra
                                  }).ToList();
 
                 var quests = (from qc in organizationDb.QuestCompletions
-                    where profileIds.Contains(qc.ProfileId)
-                    group qc by qc.ProfileId
+                              where profileIds.Contains(qc.ProfileId)
+                              group qc by qc.ProfileId
                     into total
-                    let change = total.Where(x => x.Created.Date == fromDay.Date)
-                    select new
-                    {
-                        ProfileId = total.Key,
+                              let change = total.Where(x => x.Created.Date == fromDay.Date)
+                              select new
+                              {
+                                  ProfileId = total.Key,
 
-                        Count = change.Count(),
-                        CountTotal = total.Count()
-                    }).ToList();
-                
+                                  Count = change.Count(),
+                                  CountTotal = total.Count()
+                              }).ToList();
+
                 var gitCommitsToday = (from gc in organizationDb.GitCommits
-                    where profileIds.Contains(gc.AuthorProfileId.Value)
-                    where gc.Created.Date == fromDay.Date
-                    select new
-                    {
-                        ProfileId = gc.AuthorProfileId,
-                        Message = gc.Message,
-                        ExternalUrl = gc.ExternalUrl
-                    }).ToList();
+                                       where profileIds.Contains(gc.AuthorProfileId.Value)
+                                       where gc.Created.Date == fromDay.Date
+                                       select new
+                                       {
+                                           ProfileId = gc.AuthorProfileId,
+                                           Message = gc.Message,
+                                           ExternalUrl = gc.ExternalUrl
+                                       }).ToList();
 
                 foreach (var p in profiles)
                 {
@@ -288,7 +288,7 @@ namespace Tayra.SyncServices.Tayra
                             Bought = sp?.Names ?? new string[0],
                             Disenchanted = iDissed?.Names ?? new string[0]
                         },
-                        GitCommitData = gcommits.Select(x => 
+                        GitCommitData = gcommits.Select(x =>
                             new ProfileActivityChartDTO.GitCommitDTO
                             {
                                 Message = x.Message,
@@ -343,7 +343,7 @@ namespace Tayra.SyncServices.Tayra
 
                         TacklesChange = ts?.Tackles ?? 0,
                         TacklesTotal = ts?.TacklesTotal ?? 0,
-                    
+
                         TasksCompletionTimeChange = ts?.MinutesSpent ?? 0,
                         TasksCompletionTimeTotal = ts?.MinutesSpentTotal ?? 0,
 
@@ -364,7 +364,7 @@ namespace Tayra.SyncServices.Tayra
 
                         QuestsCompletedChange = (q?.Count) ?? 0,
                         QuestsCompletedTotal = (q?.CountTotal) ?? 0,
-                        
+
                         ActivityChartJson = JsonConvert.SerializeObject(activityChart)
                     });
                 }
@@ -373,24 +373,24 @@ namespace Tayra.SyncServices.Tayra
                 if (existing > 0)
                 {
                     logService.Log<ProfileReportDaily>($"deleting {existing} records from database");
-                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}");
-                    organizationDb.Database.ExecuteSqlCommand($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}");
+                    //organizationDb.Database.ExecuteSqlCommand($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}", dateId); //this extra parameter is a workaround in ef 2.2
                     organizationDb.SaveChanges();
                 }
             }
             organizationDb.ProfileReportsDaily.AddRange(reportsToInsert);
-            
+
             organizationDb.SaveChanges();
 
             logService.Log<GenerateProfileReportsLoader>($"{reportsToInsert.Count} new profile reports saved to database.");
             return reportsToInsert;
         }
 
-        public static List<ProfileReportWeekly> GenerateProfileReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, params int[] segmentIds)
+        public static List<ProfileReportWeekly> GenerateProfileReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, params Guid[] segmentIds)
         {
             if (!CommonHelper.IsMonday(fromDay))
                 return null;
- 
+
             var reportsToInsert = new List<ProfileReportWeekly>();
 
             var iterationDays = 7;
@@ -413,7 +413,7 @@ namespace Tayra.SyncServices.Tayra
             }
 
             foreach (var segmentId in segmentIds)
-            {   
+            {
                 reportsToInsert = (from d in organizationDb.ProfileReportsDaily
                                    where d.DateId <= dateId
                                    where d.SegmentId == segmentId
@@ -526,7 +526,7 @@ namespace Tayra.SyncServices.Tayra
                         r.Heat = 10f;
                     }
                     //no work been done in a week
-                    else if(r.ComplexityChange == 0)
+                    else if (r.ComplexityChange == 0)
                     {
                         r.HeatIndex = 0;
                         r.Heat = 0;
@@ -543,8 +543,8 @@ namespace Tayra.SyncServices.Tayra
                 if (existing > 0)
                 {
                     logService.Log<ProfileReportWeekly>($"deleting {existing} records from database");
-                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsWeekly where {nameof(ProfileReportWeekly.DateId)} = {dateId} AND {nameof(ProfileReportWeekly.SegmentId)} = {segmentId}");
-                    organizationDb.Database.ExecuteSqlCommand($"delete from ProfileReportsWeekly where {nameof(ProfileReportWeekly.DateId)} = {dateId} AND {nameof(ProfileReportWeekly.SegmentId)} = {segmentId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsWeekly where {nameof(ProfileReportWeekly.DateId)} = {dateId} AND {nameof(ProfileReportWeekly.SegmentId)} = {segmentId}");
+                    //organizationDb.Database.ExecuteSqlCommand($"delete from ProfileReportsWeekly where {nameof(ProfileReportWeekly.DateId)} = {dateId} AND {nameof(ProfileReportWeekly.SegmentId)} = {segmentId}", dateId); //this extra parameter is a workaround in ef 2.2
                     organizationDb.SaveChanges();
                 }
 

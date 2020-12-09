@@ -6,27 +6,27 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class TeamMetric: ITimeStampedEntity
+    public class TeamMetric : Entity<Guid>, ITimeStampedEntity
     {
-        public int TeamId { get; private set; }
-        public Team Team { get; private set;}
-        
-        public int DateId { get; private set;}
-        
-        public MetricType Type { get; private set;}
+        public Guid TeamId { get; private set; }
+        public Team Team { get; private set; }
 
-        public float Value { get; private set;}
+        public int DateId { get; private set; }
 
-        protected TeamMetric(){}
+        public MetricType Type { get; private set; }
 
-        public TeamMetric(int teamId, int dateId, MetricType type, float value)
+        public float Value { get; private set; }
+
+        protected TeamMetric() { }
+
+        public TeamMetric(Guid teamId, int dateId, MetricType type, float value)
         {
             TeamId = teamId;
             DateId = dateId;
             Type = type;
             Value = value;
         }
-        
+
         #region ITimeStampedEntity
 
         public DateTime Created { get; set; }

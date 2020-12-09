@@ -4,10 +4,8 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class TaskLog : ITimeStampedEntity
+    public class TaskLog : Entity<Guid>, ITimeStampedEntity
     {
-        public int Id { get; set; }
-
         public string ExternalId { get; set; }
 
         public IntegrationType IntegrationType { get; set; }
@@ -19,10 +17,10 @@ namespace Tayra.Models.Organizations
         public int AssigneeProfileId { get; set; }
         public virtual Profile AssigneeProfile { get; set; }
 
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public virtual Team Team { get; set; }
 
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
         #region ITimeStampedEntity

@@ -42,7 +42,7 @@ namespace Tayra.Services
                 Data = JsonConvert.SerializeObject(dto.Data),
                 Created = created
             };
-           
+
             DbContext.Logs.Add(log);
 
             if (dto.ProfileId.HasValue)
@@ -53,19 +53,6 @@ namespace Tayra.Services
                     Log = log,
                     ProfileId = dto.ProfileId.Value
                 });
-            }
-
-            if (dto.CompetitionIds != null)
-            {
-                foreach (var cId in dto.CompetitionIds)
-                {
-                    DbContext.CompetitionLogs.Add(new CompetitionLog
-                    {
-                        Event = dto.Event,
-                        Log = log,
-                        CompetitionId = cId
-                    });
-                }
             }
 
             if (dto.ShopId.HasValue)
@@ -79,7 +66,7 @@ namespace Tayra.Services
             }
         }
 
-        public void SendLog(int profileId, LogEvents logEvent, ITemplateEmailDTO dto)
+        public void SendLog(Guid profileId, LogEvents logEvent, ITemplateEmailDTO dto)
         {
             return;
         }
@@ -90,7 +77,5 @@ namespace Tayra.Services
         }
 
         #endregion
-
-
     }
 }

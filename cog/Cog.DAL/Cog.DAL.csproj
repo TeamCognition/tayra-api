@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\build\deps.csproj.props" />
+  
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
     <RootNamespace>Cog.DAL</RootNamespace>
     <AssemblyName>Cog.DAL</AssemblyName>
     <VersionPrefix>1.0.0</VersionPrefix>
@@ -13,9 +15,9 @@
     
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.2" />
-    <PackageReference Include="LINQKit.Core" Version="1.1.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(DotnetPackagesVersion)" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.6" />
+    <PackageReference Include="LINQKit.Core" Version="1.1.21" />
   </ItemGroup>
     
   <ItemGroup>

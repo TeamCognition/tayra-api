@@ -36,7 +36,7 @@ namespace Tayra.API.Controllers
         {
             var isImage = ImageFileExtensions.Any(ex => dto.File.FileName.EndsWith(ex, StringComparison.OrdinalIgnoreCase));
 
-            if(!isImage)
+            if (!isImage)
             {
                 throw new Exception("file has to be an image");
             }

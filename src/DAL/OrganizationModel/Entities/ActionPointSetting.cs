@@ -8,7 +8,7 @@ namespace Tayra.Models.Organizations
     {
         public ActionPointTypes Type { get; set; }
 
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
         //public ActionPointCategories? Category { get; set; }

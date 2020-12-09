@@ -1,17 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\..\build\deps.csproj.props" />
+  
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
     <RootNamespace>Tayra.Models.Catalog</RootNamespace>
     <AssemblyName>Tayra.Models.Catalog</AssemblyName>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(DotnetPackagesVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(DotnetPackagesVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(DotnetPackagesVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(DotnetPackagesVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(DotnetPackagesVersion)" />
   </ItemGroup>
     
   <ItemGroup>

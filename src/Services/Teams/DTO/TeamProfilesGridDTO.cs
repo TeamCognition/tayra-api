@@ -4,7 +4,7 @@ namespace Tayra.Services
 {
     public class TeamProfilesGridDTO
     {
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public string Name { get; set; }
         public string Username { get; set; }
         public string Avatar { get; set; }

@@ -5,11 +5,9 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ClaimBundle : ITimeStampedEntity
+    public class ClaimBundle :Entity<Guid>, ITimeStampedEntity
     {
-        public int Id { get; set; }
-
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
         public ClaimBundleTypes Type { get; set; }

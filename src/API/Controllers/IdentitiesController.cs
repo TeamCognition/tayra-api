@@ -13,7 +13,8 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public IdentitiesController(ITenantProvider tenantProvider, OrganizationDbContext dbContext, IServiceProvider serviceProvider) : base(serviceProvider)
+        public IdentitiesController(ITenantProvider tenantProvider, OrganizationDbContext dbContext,
+            IServiceProvider serviceProvider) : base(serviceProvider)
         {
             TenantProvider = tenantProvider; 
             DbContext = dbContext;
@@ -29,29 +30,29 @@ namespace Tayra.API.Controllers
         #endregion
 
         #region Action Methods
-        
+
         [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {
-             // var o = Resolve<IOrganizationsService>();
-             // o.Create(new OrganizationCreateDTO
-             // {
-             //     Key = "jsguru.tayra.io",
-             //     Name = "JSGuru",
-             //     Timezone = "Central Europe Standard Time",
-             //     DatabaseServer = "tayra-sqlserver.czyjrarofbip.eu-central-1.rds.amazonaws.com",
-             //     DatabaseName = "tayra-tenant_jsguru",
-             //     TemplateConnectionString = "User ID = admin; Password = Kr7N9#p!2AbR;Connect Timeout=100;Application Name=Tayra"
-             // });
-
-            // IdentitiesService.CreateInvitation(0, "jsguru.tayra.io", new IdentityInviteDTO
+            // var o = Resolve<IOrganizationsService>();
+            // o.Create(new OrganizationCreateDTO
             // {
-            //     EmailAddress = "andrej@jsguru.io",
-            //     FirstName = "Andrej",
-            //     LastName = "Kaurin",
-            //     Role = ProfileRoles.Admin
+            //     Key = "deverino.tayra.local",
+            //     Name = "Tayra Haris",
+            //     Timezone = "Central Europe Standard Time",
+            //     DatabaseServer = "localhost",
+            //     DatabaseName = "tayra_tenant-deverino",
+            //     TemplateConnectionString = "User ID=sa;Password=strong!Password;Connect Timeout=100;Application Name=Tayra"
             // });
-            // DbContext.SaveChanges();
+
+            IdentitiesService.CreateInvitation("deverino.tayra.local", new IdentityInviteDTO
+            {
+                EmailAddress = "androvana+fejkara2@gmail.com",
+                FirstName = "Andrej",
+                LastName = "Kaurin",
+                Role = ProfileRoles.Admin
+            });
+            DbContext.SaveChanges();
             //
             // IdentitiesService.InternalCreateWithProfile(dto);
             // DbContext.SaveChanges();
@@ -70,14 +71,14 @@ namespace Tayra.API.Controllers
         [HttpPost("invitation")]
         public IActionResult SendInvitation([FromBody] IdentityInviteDTO dto)
         {
-            IdentitiesService.CreateInvitation(CurrentUser.ProfileId, TenantProvider.GetTenant().Key, dto);
+            IdentitiesService.CreateInvitation(TenantProvider.GetTenant().Key, dto);
 
             DbContext.SaveChanges();
             return Ok();
         }
-        
+
         [HttpPost("resendInvitation/{invitationId:int}")]
-        public IActionResult ResendInvitation([FromRoute] int invitationId)
+        public IActionResult ResendInvitation([FromRoute] Guid invitationId)
         {
             IdentitiesService.ResendInvitation(TenantProvider.GetTenant().Key, invitationId);
 
@@ -94,13 +95,14 @@ namespace Tayra.API.Controllers
         [AllowAnonymous, HttpGet("invitation")]
         public ActionResult<IdentityInvitationViewDTO> GetInvitation([FromQuery] string invitationCode)
         {
+            Console.WriteLine(invitationCode);
             var invitation = IdentitiesService.GetInvitation(invitationCode);
             DbContext.SaveChanges();
             return invitation;
         }
 
         [HttpDelete("invitation/{invitationId:int}")]
-        public IActionResult DeleteInvitation([FromRoute] int invitationId)
+        public IActionResult DeleteInvitation([FromRoute] Guid invitationId)
         {
             IdentitiesService.DeleteInvitation(invitationId);
 
@@ -159,13 +161,13 @@ namespace Tayra.API.Controllers
                 throw new CogSecurityException("You don' have permission to segment " + gridParams.SegmentId);
             }
 
-            return IdentitiesService.GetIdentityManageGridData(CurrentUser.ProfileId,CurrentUser.Role, gridParams);
+            return IdentitiesService.GetIdentityManageGridData(CurrentUser.ProfileId, CurrentUser.Role, gridParams);
         }
 
         [HttpGet("manage/assigns/{profileId:int}")]
-        public ActionResult<IdentityManageAssignsDTO> GetManageTeamAssignData([FromRoute] int profileId)
+        public ActionResult<IdentityManageAssignsDTO> GetManageTeamAssignData([FromRoute] Guid profileId)
         {
-            if(profileId == CurrentUser.ProfileId)
+            if (profileId == CurrentUser.ProfileId)
             {
                 throw new CogSecurityException("You can't assign yourself to a team or segment");
             }
@@ -174,7 +176,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPut("manage/changeRole/{profileId:int}")]
-        public IActionResult ChangeProfile([FromRoute] int profileId, [FromBody] ProfileRoles toRole)
+        public IActionResult ChangeProfile([FromRoute] Guid profileId, [FromBody] ProfileRoles toRole)
         {
             IdentitiesService.ChangeProfileRole(CurrentUser.Role, profileId, toRole);
             DbContext.SaveChanges();
@@ -183,7 +185,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpDelete("manage/archive/{profileId:int}")]
-        public IActionResult ArchiveProfile([FromRoute] int profileId)
+        public IActionResult ArchiveProfile([FromRoute] Guid profileId)
         {
             IdentitiesService.ArchiveProfile(CurrentUser.Role, profileId);
             DbContext.SaveChanges();

@@ -64,22 +64,19 @@ namespace Tayra.Models.Organizations
         public DbSet<ClaimBundle> ClaimBundles { get; set; }
         public DbSet<ClaimBundleItem> ClaimBundleItems { get; set; }
         public DbSet<ClaimBundleTokenTxn> ClaimBundleTokenTxns { get; set; }
-        public DbSet<Competition> Competitions { get; set; }
-        public DbSet<CompetitionLog> CompetitionLogs { get; set; }
+        
         //public DbSet<Date> Dates { get; set; }
         public DbSet<GitCommit> GitCommits { get; set; }
-        
+
         public DbSet<PullRequest> PullRequests { get; set; }
-        
+
         public DbSet<PullRequestReview> PullRequestReviews { get; set; }
-        
+
         public DbSet<PullRequestReviewComment> PullRequestReviewComments { get; set; }
-        
+
         public DbSet<Integration> Integrations { get; set; }
         public DbSet<IntegrationField> IntegrationFields { get; set; }
-        public DbSet<CompetitionReward> CompetitionRewards { get; set; }
-        public DbSet<Competitor> Competitors { get; set; }
-        public DbSet<CompetitorScore> CompetitorScores { get; set; }
+        
         public DbSet<Invitation> Invitations { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemDisenchant> ItemDisenchants { get; set; }
@@ -166,27 +163,7 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ClaimBundleItem>().HasKey(x => new { x.ClaimBundleId, x.ProfileInventoryItemId });
             modelBuilder.Entity<ClaimBundleTokenTxn>().HasKey(x => new { x.ClaimBundleId, x.TokenTransactionId });
-
-            modelBuilder.Entity<CompetitionLog>(entity =>
-            {
-                entity.HasKey(x => new { x.CompetitionId, x.LogId });
-                entity.HasIndex(x => new { x.CompetitionId, x.Event });
-            });
-
-            modelBuilder.Entity<Competitor>(entity =>
-            {
-                entity.HasIndex(x => new { x.CompetitionId, x.ProfileId, x.TeamId }).IsUnique();
-                entity.HasIndex(x => new { x.CompetitionId, x.ProfileId }).IsUnique();
-                entity.HasIndex(x => new { x.CompetitionId, x.TeamId }).IsUnique();
-            });
-
-            modelBuilder.Entity<CompetitorScore>(entity =>
-            {
-                entity.HasIndex(x => new { x.CompetitorId, x.ProfileId });
-                entity.HasIndex(x => x.ProfileId);
-                entity.HasIndex(x => new { x.CompetitorId, x.TeamId });
-            });
-
+            
             modelBuilder.Entity<Integration>(entity =>
             {
                 entity.HasIndex(x => new { x.ProfileId, x.SegmentId });
@@ -307,7 +284,7 @@ namespace Tayra.Models.Organizations
                         p => p.Value,
                         p => MetricType.FromValue(p));
             });
-            
+
             modelBuilder.Entity<TeamReportDaily>(entity =>
             {
                 entity.HasKey(x => new { x.DateId, x.TeamId, x.TaskCategoryId });
@@ -319,7 +296,7 @@ namespace Tayra.Models.Organizations
             });
 
             modelBuilder.Ignore<Date>();
-            
+
             var orgEntity = modelBuilder.Model.FindEntityType(typeof(Organization));
             var orgPKey = orgEntity.FindPrimaryKey();
             foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
@@ -353,19 +330,19 @@ namespace Tayra.Models.Organizations
                 var method = SetGlobalQueryMethod.MakeGenericMethod(clrType);
                 method.Invoke(this, new object[] { modelBuilder });
             }
-            
+
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
-            
+
             modelBuilder.Entity<ClaimBundleItem>(entity =>
             {
                 entity.HasOne(x => x.ProfileInventoryItem)
                     .WithMany()
                     .OnDelete(DeleteBehavior.Cascade);
             });
-            
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -373,7 +350,7 @@ namespace Tayra.Models.Organizations
         {
             if (!string.IsNullOrEmpty(DirectConnectionString))
             {
-                optionsBuilder.UseSqlServer(DirectConnectionString);
+                optionsBuilder.UseSqlServer(DirectConnectionString, b => b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             }
             else
             {
@@ -457,7 +434,9 @@ namespace Tayra.Models.Organizations
         private static DbContextOptions ConfigureDbContextOptions(string connectionString)
         {
             var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
-            return optionsBuilder.UseSqlServer(connectionString).Options;
+            return optionsBuilder
+                .UseSqlServer(connectionString,
+                    b => b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)).Options;
         }
         //TODO: convert these two to use OnConfiguring, what will happen to migrations
     }

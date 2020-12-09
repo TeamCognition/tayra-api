@@ -27,7 +27,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public InventoryItemViewDTO GetInventoryItemViewDTO(int inventoryItemId)
+        public InventoryItemViewDTO GetInventoryItemViewDTO(Guid inventoryItemId)
         {
             var invItemDto = (from pi in DbContext.ProfileInventoryItems
                               where pi.Id == inventoryItemId
@@ -85,7 +85,7 @@ namespace Tayra.Services
                             IsDisenchantable = i.Item.IsDisenchantable,
                             IsGiftable = i.Item.IsGiftable,
                             Price = i.Item.Price,
-                            AcquireMethod=i.AcquireMethod
+                            AcquireMethod = i.AcquireMethod
                         };
 
             GridData<InventoryItemGridDTO> gridData = query.GetGridData(gridParams);
@@ -93,7 +93,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void Activate(int profileId, InventoryItemActivateToggleDTO dto)
+        public void Activate(Guid profileId, InventoryItemActivateToggleDTO dto)
         {
             var itemToActivate = DbContext.ProfileInventoryItems.Include(x => x.Item).FirstOrDefault(x => x.Id == dto.InventoryItemId && x.ProfileId == profileId);
 
@@ -126,7 +126,7 @@ namespace Tayra.Services
             }
         }
 
-        public void Deactivate(int profileId, InventoryItemActivateToggleDTO dto)
+        public void Deactivate(Guid profileId, InventoryItemActivateToggleDTO dto)
         {
             var invItem = DbContext.ProfileInventoryItems.FirstOrDefault(x => x.ProfileId == profileId && x.Id == dto.InventoryItemId);
 
@@ -135,7 +135,7 @@ namespace Tayra.Services
             invItem.IsActive = false;
         }
 
-        public void Gift(int profileId, InventoryItemGiftDTO dto)
+        public void Gift(Guid profileId, InventoryItemGiftDTO dto)
         {
             var invItem = DbContext.ProfileInventoryItems.Include(x => x.Item).FirstOrDefault(x => x.Id == dto.InventoryItemId);
 
@@ -201,7 +201,7 @@ namespace Tayra.Services
             LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername));
         }
 
-        public void Disenchant(int profileId, InventoryItemDisenchantDTO dto)
+        public void Disenchant(Guid profileId, InventoryItemDisenchantDTO dto)
         {
             var invItem = DbContext.ProfileInventoryItems.Include(x => x.Item).Include(x => x.Profile).FirstOrDefault(x => x.ProfileId == profileId && x.Id == dto.InventoryItemId);
             var claimBundleItem =
@@ -240,7 +240,7 @@ namespace Tayra.Services
             TokensService.CreateTransaction(TokenType.CompanyToken, profileId, disenchantValue, TransactionReason.ItemDisenchant, null);
         }
 
-        public void Give(int profileId, InventoryGiveDTO dto)
+        public void Give(Guid profileId, InventoryGiveDTO dto)
         {
             var item = DbContext.Items.FirstOrDefault(x => x.Id == dto.ItemId);
             var receiverId = DbContext.Profiles.Where(x => x.Username == dto.ReceiverUsername).Select(x => x.Id).FirstOrDefault();

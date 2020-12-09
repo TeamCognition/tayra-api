@@ -50,9 +50,9 @@ namespace Tayra.SyncServices.Common
         public static void RunFromSchedule(JobTypes jobTypes, TimerInfo timerInfo, ExecutionContext context, ILogger logger)
         {
             var loader = GetLoader(jobTypes, context, logger);
-            
+
             var timezoneInfo = GetCurrentTimezones();
-            
+
             loader.Execute(timezoneInfo.First().Date.Date, null, timezoneInfo.ToArray());
         }
 
@@ -87,9 +87,6 @@ namespace Tayra.SyncServices.Common
 
                 case JobTypes.GenerateReportTeam:
                     return new GenerateTeamReportsLoader(shardMapProvider, logService, coreDatabase);
-
-                case JobTypes.SyncCompetitions:
-                    return new SyncCompetitionsLoader(shardMapProvider, logService, coreDatabase);
 
                 case JobTypes.MakeActionPoints:
                     return new MakeActionPointsLoader(shardMapProvider, logService, coreDatabase);

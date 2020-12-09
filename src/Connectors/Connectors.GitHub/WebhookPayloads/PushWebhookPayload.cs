@@ -7,7 +7,7 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
     {
         [JsonProperty("commits")]
         public CommitDTO[] Commits { get; set; }
-        
+
         public class CommitDTO
         {
             /// <summary>
@@ -24,10 +24,10 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
 
             [JsonProperty("url")]
             public string Url { get; set; }
-            
+
             [JsonProperty("timestamp")]
             public DateTime Timestamp { get; set; }
-            
+
             [JsonProperty("author")]
             public AuthorDTO Author { get; set; }
 

@@ -9,10 +9,10 @@ namespace Tayra.Services
             double w1 = 1;
             double w2 = 0.75d;
             double w3 = 0.66d;
- 
+
             double BP1 = 4 * 60 * story; //8 hours if story = 2
             double BP2 = 4 * 60 * 3 * story; //3 days if story = 2
- 
+
             if (time < BP1)
             {
                 return time;
@@ -26,7 +26,7 @@ namespace Tayra.Services
                 return BP1 * w1 + (BP2 - BP1) * w2 + (time - BP2) * w3;
             }
         }
- 
+
         //time values are in minutes
         private static double CalcEffortScore(double time, int story)
         {

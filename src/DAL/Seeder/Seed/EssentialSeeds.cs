@@ -28,7 +28,7 @@ namespace Tayra.Models.Seeder
 
             dbContext.AddRange(tokensSeed);
             dbContext.AddRange(shopsSeed);
-            
+
             Console.WriteLine("Added essentials");
 
         }

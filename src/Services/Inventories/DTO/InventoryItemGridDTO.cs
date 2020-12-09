@@ -5,8 +5,8 @@ namespace Tayra.Services
 {
     public class InventoryItemGridDTO
     {
-        public int InventoryItemId { get; set; }
-        public int ItemId { get; set; }
+        public Guid InventoryItemId { get; set; }
+        public Guid ItemId { get; set; }
 
         public string Name { get; set; }
         public string Description { get; set; }
@@ -22,7 +22,7 @@ namespace Tayra.Services
 
         public InventoryAcquireMethods AcquireMethod { get; set; }
         public float Price { get; set; }
-        
+
         public DateTime Created { get; set; }
     }
 }

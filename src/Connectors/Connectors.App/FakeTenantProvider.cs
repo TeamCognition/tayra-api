@@ -12,7 +12,7 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.App
 {
-    class FakeTenantProvider  : ITenantProvider
+    class FakeTenantProvider : ITenantProvider
     {
         private string _key;
 
@@ -26,9 +26,9 @@ namespace Tayra.Connectors.App
                 new Claim(CogClaimTypes.IdentityId, "1"),
                 new Claim(ClaimTypes.Role, ProfileRoles.Admin.ToString())
             })));
-            
-            if(accessor.HttpContext.Request.Query.TryGetValue("tenant", out StringValues tenantKey))
-            {                
+
+            if (accessor.HttpContext.Request.Query.TryGetValue("tenant", out StringValues tenantKey))
+            {
                 _key = tenantKey;
             }
             else if (principal != null)

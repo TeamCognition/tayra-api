@@ -4,10 +4,8 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Token : IAuditedEntity
+    public class Token : Entity<Guid>, IAuditedEntity
     {
-        public int Id { get; set; }
-
         public string Name { get; set; }
         public string Symbol { get; set; }
         public TokenType Type { get; set; }
@@ -18,8 +16,8 @@ namespace Tayra.Models.Organizations
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

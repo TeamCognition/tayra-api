@@ -27,8 +27,8 @@ namespace Tayra.Services
 
         #endregion
 
-        IQueryable<Integration> ProfileIntegrationsScope(int profileId, int segmentId) => DbContext.Integrations.Where(x => x.ProfileId == profileId && x.SegmentId == segmentId);
-        IQueryable<Integration> SegmentIntegrationsScope(int segmentId) => DbContext.Integrations.Where(x => x.ProfileId == null && x.SegmentId == segmentId);
+        IQueryable<Integration> ProfileIntegrationsScope(Guid profileId, Guid segmentId) => DbContext.Integrations.Where(x => x.ProfileId == profileId && x.SegmentId == segmentId);
+        IQueryable<Integration> SegmentIntegrationsScope(Guid segmentId) => DbContext.Integrations.Where(x => x.ProfileId == null && x.SegmentId == segmentId);
 
         #region Public Methods
 
@@ -37,12 +37,12 @@ namespace Tayra.Services
         /// </summary>
         /// <param name="externalId"></param>
         /// <returns></returns>
-        public int GetProfileIdByExternalId(string externalId)
+        public Guid GetProfileIdByExternalId(string externalId)
         {
             return DbContext.IntegrationFields.Where(x => x.Value == externalId).Select(x => x.Integration.SegmentId).FirstOrDefault();
         }
 
-        public void DeleteSegmentIntegration(int profileId, int segmentId, IntegrationType integrationType)
+        public void DeleteSegmentIntegration(Guid profileId, Guid segmentId, IntegrationType integrationType)
         {
             var integration = ProfileIntegrationsScope(profileId, segmentId)
                                 .Include(x => x.Fields)
@@ -54,7 +54,7 @@ namespace Tayra.Services
             DbContext.Remove(integration);
         }
 
-        public List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(int[] segmentIds, int profileId)
+        public List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(Guid[] segmentIds, Guid profileId)
         {
             var integrations = DbContext.Integrations
                 .Where(x => (x.ProfileId == profileId || x.ProfileId == null) && segmentIds.Contains(x.SegmentId))
@@ -67,7 +67,7 @@ namespace Tayra.Services
                 })
                 .ToList();
 
-            foreach(var i in integrations.Where(x => x.ExternalId == null).ToArray())
+            foreach (var i in integrations.Where(x => x.ExternalId == null).ToArray())
             {
                 if (integrations.Any(x => x.SegmentId == i.SegmentId && x.Type == i.Type && x.ExternalId != null))
                     integrations.Remove(i);
@@ -78,7 +78,7 @@ namespace Tayra.Services
         public List<IntegrationSegmentViewDTO> GetSegmentIntegrations(string segmentKey)
         {
             var segment = DbContext.Segments.Where(x => x.Key == segmentKey).FirstOrDefault();
-            
+
             segment.EnsureNotNull(segmentKey);
 
             return SegmentIntegrationsScope(segment.Id)
@@ -94,7 +94,7 @@ namespace Tayra.Services
                 .ToList();
         }
 
-        public JiraSettingsViewDTO GetJiraSettingsViewDTO(string webhookServerUrl, string tenantKey, int segmentId)
+        public JiraSettingsViewDTO GetJiraSettingsViewDTO(string webhookServerUrl, string tenantKey, Guid segmentId)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
@@ -132,7 +132,7 @@ namespace Tayra.Services
             };
         }
 
-        public async void UpdateJiraSettingsWithSaveChanges(int segmentId, string organizationKey, JiraSettingsUpdateDTO dto)
+        public async void UpdateJiraSettingsWithSaveChanges(Guid segmentId, string organizationKey, JiraSettingsUpdateDTO dto)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
@@ -152,12 +152,12 @@ namespace Tayra.Services
 
             var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
             var allProjects = jiraConnector.GetProjects(integration.Id);
-            
+
             foreach (var s in dto.ActiveProjects)
             {
                 var project = allProjects.FirstOrDefault(x => x.Id == s.ProjectId);
                 var rewardStatus = s.RewardStatusId;
-                if (project == null || rewardStatus == null )
+                if (project == null || rewardStatus == null)
                 {
                     throw new ApplicationException("projectId or rewardStatusId is null or invalid"); //use nameOf
                 }
@@ -168,7 +168,7 @@ namespace Tayra.Services
 
             DbContext.SaveChanges();
 
-            if(dto.PullTasksForNewProjects)
+            if (dto.PullTasksForNewProjects)
             {
                 using (HttpClient client = new HttpClient())
                 {

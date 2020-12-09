@@ -25,10 +25,10 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public ShopViewDTO GetShopViewDTO(int profileId, ProfileRoles role)
+        public ShopViewDTO GetShopViewDTO(Guid profileId, ProfileRoles role)
         {
             var shopDto = (from s in DbContext.Shops
-                           //where s.Id == shopId
+                               //where s.Id == shopId
                            select new ShopViewDTO
                            {
                                Name = s.Name,
@@ -42,11 +42,11 @@ namespace Tayra.Services
             if (role == ProfileRoles.Member)
             {
                 var stats = (from r in DbContext.ProfileReportsDaily
-                            where r.ProfileId == profileId
-                            group r by 1 into total
-                            let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
-                            select new []
-                            {
+                             where r.ProfileId == profileId
+                             group r by 1 into total
+                             let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
+                             select new[]
+                             {
                                 new ShopViewDTO.ShopStatisticDTO
                                 {
                                     Last30 = last30.Sum(x => x.ItemsBoughtChange),
@@ -76,10 +76,10 @@ namespace Tayra.Services
                 }
 
                 var stats = (from r in rQuery
-                            group r by 1 into total
-                            let last30 = total.Where(x => x.DateId >= 100)
-                            select new []
-                            {
+                             group r by 1 into total
+                             let last30 = total.Where(x => x.DateId >= 100)
+                             select new[]
+                             {
                                 new ShopViewDTO.ShopStatisticDTO
                                 {
                                     Last30 = last30.Sum(x => x.ItemsBoughtChange),
@@ -102,7 +102,7 @@ namespace Tayra.Services
             return shopDto;
         }
 
-        public GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(int profileId, ProfileRoles role, ShopPurchasesGridParams gridParams)
+        public GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(Guid profileId, ProfileRoles role, ShopPurchasesGridParams gridParams)
         {
             var scope = role == ProfileRoles.Member
                 ? DbContext.ShopPurchases.Where(x => x.ProfileId == profileId)
@@ -141,7 +141,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void UpdateShopPurchaseStatus(int profileId, int shopPurchaseId, ShopPurchaseStatuses newStatus)
+        public void UpdateShopPurchaseStatus(Guid profileId, Guid shopPurchaseId, ShopPurchaseStatuses newStatus)
         {
             var shopPurchase = DbContext.ShopPurchases.Include(x => x.Item).FirstOrDefault(x => x.Id == shopPurchaseId);
 

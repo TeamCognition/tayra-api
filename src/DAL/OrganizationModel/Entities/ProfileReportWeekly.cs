@@ -10,10 +10,10 @@ namespace Tayra.Models.Organizations
         public int IterationCount { get; set; }
         public ProfileRoles ProfileRole { get; set; }
 
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
         public int TaskCategoryId { get; set; }
@@ -30,7 +30,7 @@ namespace Tayra.Models.Organizations
 
         public float EffortScoreChange { get; set; }
         public float EffortScoreTotalAverage { get; set; }
-        
+
         public int PraisesGivenChange { get; set; }
         public float PraisesGivenTotalAverage { get; set; }
 

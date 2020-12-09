@@ -6,10 +6,10 @@ namespace Tayra.Models.Organizations
     public class ShopItemSegment : ITimeStampedEntity
     {
         //Composite Key
-        public int ShopItemId { get; set; }
+        public Guid ShopItemId { get; set; }
         public virtual ShopItem ShopItem { get; set; }
 
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
         public float? DiscountPrice { get; set; }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cog.DAL
 {
-    [Table("EntityChangeLogs"/*, Schema = "Cog"*/)]
+    [Table("EntityChangeLogs" /*, Schema = "Cog"*/)]
     public class EntityChangeLog
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -13,7 +13,7 @@ namespace Cog.DAL
 
         public string EntityType { get; set; }
 
-        public int EntityId { get; set; }
+        public Guid EntityId { get; set; }
 
         public EntityState EntityState { get; set; }
 

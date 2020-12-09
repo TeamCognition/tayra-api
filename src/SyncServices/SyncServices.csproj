@@ -2,7 +2,7 @@
   <Import Project="..\..\build\shared.csproj.props" />
     
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
     <RootNamespace>Tayra.SyncServices</RootNamespace>
     <AssemblyName>Tayra.SyncServices</AssemblyName>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
@@ -22,10 +22,7 @@
     </Content>
     </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.7" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3">
-        <NoWarn>NU1608</NoWarn>
-    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.11" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

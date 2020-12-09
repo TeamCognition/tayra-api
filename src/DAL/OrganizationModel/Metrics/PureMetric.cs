@@ -21,10 +21,10 @@ namespace Tayra.Analytics.Metrics
             return SumRawMetricByType(metricsInPeriod, this);
         }
 
-        public abstract Type TypeOfRawMetric { get; }    
-        public abstract object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType);
+        public abstract Type TypeOfRawMetric { get; }
+        public abstract object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType);
 
-        protected int[] GetProfileIds(OrganizationDbContext db, int entityId, EntityTypes entityType)
+        protected Guid[] GetProfileIds(OrganizationDbContext db, Guid entityId, EntityTypes entityType)
         {
             switch (entityType)
             {
@@ -35,9 +35,9 @@ namespace Tayra.Analytics.Metrics
                     return db.ProfileAssignments.Where(x => x.SegmentId == entityId).Select(x => x.ProfileId).Distinct()
                         .ToArray();
                 case EntityTypes.Profile:
-                    return new int[] {entityId};
-                
-                default: return new int[] {entityId};
+                    return new[] { entityId };
+
+                default: return new[] { entityId };
             }
         }
     }

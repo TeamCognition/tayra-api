@@ -3,25 +3,23 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfileAssignment : ITimeStampedEntity, IUserStampedEntity
+    public class ProfileAssignment : Entity<Guid>, ITimeStampedEntity, IUserStampedEntity
     {
-        public int Id { get; set; }
-        
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
-        public int? TeamId { get; set; }
+        public Guid? TeamId { get; set; }
         public virtual Team Team { get; set; }
 
         #region ITimeAndIUser
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

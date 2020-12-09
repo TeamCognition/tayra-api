@@ -7,12 +7,12 @@ namespace Tayra.Connectors.GitHub
 {
     public class GetPullRequestsResponse
     {
-        [JsonProperty("search")] 
+        [JsonProperty("search")]
         public GqSearch Search { get; set; }
         public class GqSearch
         {
             [JsonProperty("edges")]
-            public List<Edge<PullRequestType>> Edges { get; set;}
+            public List<Edge<PullRequestType>> Edges { get; set; }
         }
     }
 }

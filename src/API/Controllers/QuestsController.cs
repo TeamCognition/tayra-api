@@ -55,7 +55,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPut("update/{questId:int}")]
-        public IActionResult UpdateQuest([FromRoute]int questId, [FromBody] QuestUpdateDTO dto)
+        public IActionResult UpdateQuest([FromRoute] int questId, [FromBody] QuestUpdateDTO dto)
         {
             QuestsService.Update(questId, dto);
             OrganizationContext.SaveChanges();
@@ -91,7 +91,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost("end/{questId}")]
-        public IActionResult EndQuest([FromRoute]int questId)
+        public IActionResult EndQuest([FromRoute] int questId)
         {
             QuestsService.EndQuest(CurrentUser.ProfileId, questId);
             OrganizationContext.SaveChanges();

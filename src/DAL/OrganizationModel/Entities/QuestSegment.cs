@@ -9,7 +9,7 @@ namespace Tayra.Models.Organizations
         public int QuestId { get; set; }
         public virtual Quest Quest { get; set; }
 
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
         #region ITimeStampedEntity

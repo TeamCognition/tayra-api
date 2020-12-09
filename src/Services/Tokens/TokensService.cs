@@ -32,7 +32,7 @@ namespace Tayra.Services
                 .ToList();
         }
 
-        public double CreateTransaction(TokenType tokenType, int profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
+        public double CreateTransaction(TokenType tokenType, Guid profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
         {
             var tokenId = DbContext.Tokens.FirstOrDefault(x => x.Type == tokenType);
             if (tokenId == null)
@@ -43,7 +43,7 @@ namespace Tayra.Services
             return CreateTransaction(tokenId.Id, profileId, value, reason, claimBundleType, date);
         }
 
-        public double CreateTransaction(int tokenId, int profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
+        public double CreateTransaction(Guid tokenId, Guid profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
         {
             var scope = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == tokenId);
             var txn = new TokenTransaction
@@ -80,39 +80,5 @@ namespace Tayra.Services
         }
 
         #endregion
-
-        #region Private Methods
-
-        private void UpdateCompetitorsTokenValue(TokenTransaction txn)
-        {
-            var teamIds = DbContext.ProfileAssignments
-                .Where(x => x.ProfileId == txn.ProfileId)
-                .Select(x => x.TeamId)
-                .ToList();
-
-            var competitors = DbContext.Competitors
-                .Where(x => (x.ProfileId.HasValue && x.ProfileId == txn.ProfileId) || (x.TeamId.HasValue && teamIds.Contains(x.TeamId.Value)))
-                .Where(x => x.Competition.Status == CompetitionStatus.Started)
-                .Where(x => x.Competition.TokenId == txn.TokenId)
-                .ToList();
-
-
-            foreach (var c in competitors)
-            {
-                c.ScoreValue += txn.Value;
-
-                DbContext.Add(new CompetitorScore
-                {
-                    CompetitorId = c.Id,
-                    ProfileId = txn.ProfileId,
-                    Value = txn.Value,
-                    TeamId = c.TeamId,
-                    CompetitionId = c.CompetitionId
-                });
-            }
-        }
-
-        #endregion
-
     }
 }

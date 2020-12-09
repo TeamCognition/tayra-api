@@ -15,8 +15,8 @@
 
         public double? TeamAssistsAverage { get; set; }
         public double? TeamComplexityAverage { get; set; }
-        public double? TeamTasksCompletedAverage { get; set; }       
-        
+        public double? TeamTasksCompletedAverage { get; set; }
+
         #endregion
     }
 }

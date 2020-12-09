@@ -5,11 +5,8 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class TokenTransaction : IClaimableEntity, ITimeStampedEntity
+    public class TokenTransaction : Entity<Guid>, IClaimableEntity, ITimeStampedEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         public double Value { get; set; }
         public double FinalBalance { get; set; }
 
@@ -19,10 +16,10 @@ namespace Tayra.Models.Organizations
         public string Comment { get; set; }
         public TransactionReason Reason { get; set; }
 
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
-        public int TokenId { get; set; }
+        public Guid TokenId { get; set; }
         public virtual Token Token { get; set; }
 
         public int DateId { get; set; }

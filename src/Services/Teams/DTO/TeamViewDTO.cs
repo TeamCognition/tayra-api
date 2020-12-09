@@ -4,7 +4,7 @@ namespace Tayra.Services
 {
     public class TeamViewDTO
     {
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public string TeamKey { get; set; }
         public string Name { get; set; }
         public string AvatarColor { get; set; }
