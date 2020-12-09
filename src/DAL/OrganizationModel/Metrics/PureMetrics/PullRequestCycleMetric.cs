@@ -30,7 +30,7 @@ namespace Tayra.SyncServices.Metrics
 
             return new MetricShard(prCyclePeriodInMinutes / pullRequests.Count(), dateId, this);
         }
-        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType)
+        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType)
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from ps in db.PullRequests

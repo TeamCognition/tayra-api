@@ -82,13 +82,13 @@ namespace Tayra.Services.webhooks
             {
                 if (!commit.Distinct)
                     continue;
-                int? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, "", IntegrationType.GH);
+                Guid? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, "", IntegrationType.GH);
                 if (!integrationId.HasValue)
                 {
                     throw new ApplicationException("GH integration token not found");
                 }
                 string token = ReadAccessToken(integrationId.Value);
-                var commitWithChanges = GitHubService.GetCommitBySha(commit.Id, token);
+                var commitWithChanges = GitHubService.GetCommitBySha(commit.Id, token, "xxxx", "xxxx");
                 var authorProfile =
                     ProfilesService.GetProfileByExternalId(commit.Author.Username, IntegrationType.GH);
                 DbContext.Add(new GitCommit
@@ -360,7 +360,7 @@ namespace Tayra.Services.webhooks
             logsService.LogEvent(logData);
         }
         
-        private string ReadAccessToken(int integrationId)
+        private string ReadAccessToken(Guid integrationId)
         {
             var field = DbContext.IntegrationFields.FirstOrDefault(a => a.IntegrationId == integrationId && a.Key == GHConstants.GH_ACCESS_TOKEN);
 

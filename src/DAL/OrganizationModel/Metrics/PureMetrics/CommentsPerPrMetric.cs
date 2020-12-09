@@ -9,7 +9,7 @@ using Tayra.Models.Organizations;
 
 namespace Tayra.SyncServices.Metrics
 {
-    public class CommentsPerPrMetric:PureMetric
+    public class CommentsPerPrMetric : PureMetric
     {
        public CommentsPerPrMetric(string name, int value) : base(name, value)
         {
@@ -17,7 +17,7 @@ namespace Tayra.SyncServices.Metrics
         }
         public MetricShard Create(IEnumerable<PullRequestReviewComment> comments, int dateId)
         {
-            List<int> pullRequestsIds= new List<int>();
+            var pullRequestsIds= new List<Guid>();
             foreach (var comment in comments)
             {
                 if (!pullRequestsIds.Contains(comment.PullRequestId))
@@ -29,7 +29,7 @@ namespace Tayra.SyncServices.Metrics
         }
             
 
-        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType)
+        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType)
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from c in db.PullRequestReviewComments

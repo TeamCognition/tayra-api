@@ -25,7 +25,6 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpPost("completeStep")]
-
         public IActionResult OnboardingSteps([FromBody] OnboardingStepIds step)
         {
             
@@ -44,6 +43,7 @@ namespace Tayra.API.Controllers
             InviteUsers
         }
         
+        [NonAction]
         public void MarkStepAsCompleted(OnboardingStepIds s, Organization o, Profile p)
         {
             switch (s)

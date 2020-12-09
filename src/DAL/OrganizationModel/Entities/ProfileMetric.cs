@@ -42,7 +42,7 @@ namespace Tayra.Models.Organizations
         {
             return metric.Select(x => new ProfileMetric(profileId, x)).ToArray();
         }
-        public static ProfileMetric[] CreateRange(int profileId, MetricShard[] metric)
+        public static ProfileMetric[] CreateRange(Guid profileId, MetricShard[] metric)
         {
             return metric.Select(x => new ProfileMetric(profileId, x)).ToArray();
         }

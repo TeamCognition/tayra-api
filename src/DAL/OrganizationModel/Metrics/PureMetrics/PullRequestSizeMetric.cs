@@ -20,7 +20,7 @@ namespace Tayra.Models.Organizations.Metrics.PureMetrics
             int pullRequestChanges = 0;
             foreach (var pullRequest in pullRequests)
             {
-                int integrationId = metricService.GetIntegrationId(IntegrationType.GH);
+                Guid integrationId = metricService.GetIntegrationId(IntegrationType.GH);
                 List<CommitType> commits = MetricService.GetCommitsByPUllRequest("bearer", metricService.ReadAccessToken(integrationId), pullRequest.ExternalNumber);
                foreach (var commit in commits)
                {
@@ -29,7 +29,7 @@ namespace Tayra.Models.Organizations.Metrics.PureMetrics
             }
             return new MetricShard(pullRequestChanges / pullRequests.Count(), dateId, this);
         }
-        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType)
+        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType)
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from pr in db.PullRequests

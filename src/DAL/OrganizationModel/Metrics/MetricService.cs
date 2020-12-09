@@ -75,7 +75,7 @@ namespace Tayra.Models.Organizations.Metrics
             return commitsForRes;
         }
 
-        public int GetIntegrationId(IntegrationType type)
+        public Guid GetIntegrationId(IntegrationType type)
         {
             if (type == IntegrationType.GH)
             {
@@ -90,7 +90,7 @@ namespace Tayra.Models.Organizations.Metrics
             throw new ArgumentException("Integration type not supported");
         }
 
-        public string ReadAccessToken(int integrationId)
+        public string ReadAccessToken(Guid integrationId)
         {
             var field = _organizationDbContext.IntegrationFields.FirstOrDefault(a => a.IntegrationId == integrationId && a.Key == GITUB_ACCESS_TOKEN);
 
