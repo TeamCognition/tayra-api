@@ -5,6 +5,7 @@ using Ardalis.SmartEnum.JsonNet;
 using Cog.Core;
 using Newtonsoft.Json;
 using Tayra.Analytics.Metrics;
+using Tayra.Models.Organizations.Metrics.PureMetrics;
 using Tayra.SyncServices.Metrics;
 
 namespace Tayra.Analytics
@@ -39,6 +40,11 @@ namespace Tayra.Analytics
         public static readonly MetricType ItemsDisenchanted = new ItemsDisenchantedMetric("Items Disenchanted", 112);
         public static readonly MetricType GiftsReceived = new GiftsReceivedMetric("Gifts Received", 113);
         public static readonly MetricType GiftsSent = new GiftsSentMetric("Gifts Sent", 114);
+        public static readonly MetricType CommentsPerPr = new CommentsPerPrMetric("Comments per PR",115);
+        public static readonly MetricType PullRequestsCreated = new PullRequestsCreatedMetric("Pull requests created",116);
+        public static readonly MetricType PullRequestsReviewed = new PullRequestsReviewedMetric("Pull requests reviewed",117);
+        public static readonly MetricType PullRequestCycle = new PullRequestCycleMetric("Pull request cycle", 118);
+        public static readonly MetricType PullRequestSize = new PullRequestSizeMetric(" Pull Request size", 119);
 
         #endregion
 

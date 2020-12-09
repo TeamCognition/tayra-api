@@ -6,6 +6,8 @@ namespace Tayra.Models.Organizations
     public class PullRequest : Entity<Guid>, ITimeStampedEntity
     {
         public string ExternalId { get; set; }
+        
+        public int ExternalNumber { get; set; }
 
         public string State { get; set; }
 

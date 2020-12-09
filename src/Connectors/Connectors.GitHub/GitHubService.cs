@@ -13,7 +13,6 @@ namespace Tayra.Connectors.GitHub
     public static class GitHubService
     {
         #region Constants
-
         public const string CLIENT_ID = "Iv1.8aa19d523bcef4dd";
         public const string CLIENT_SECRET = "24bbd04c4a071a1298f1dd96b547d3054ef4534a";
 
@@ -29,7 +28,6 @@ namespace Tayra.Connectors.GitHub
         private const string GET_INSTALLATION_REPOSITORIES = "/installation/repositories";
         private const string CREATE_REPOSITORY_WEBHOOK = "/repos/{0}/{1}/hooks";
         private const string GET_LIST_ORGANIZATIONS = "/organizations";
-
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
         public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, string redirectUrl)
         {
@@ -50,7 +48,6 @@ namespace Tayra.Connectors.GitHub
         public static IRestResponse<InstallationTokenResponse> GetInstallationAccessToken(string installationId, string githubAppId, string rsaPrivateKey)
         {
             var appJwt = Utils.CreateGithubAppJwt(githubAppId, rsaPrivateKey);
-
             var request = new RestRequest(string.Format(GET_INSTALLATION_TOKEN, installationId), Method.POST);
             request.AddHeader("Authorization", $"Bearer {appJwt}");
             request.AddHeader("Accept", "application/vnd.github.machine-man-preview+json");
@@ -60,7 +57,6 @@ namespace Tayra.Connectors.GitHub
             var client = new RestClient(BASE_REST_URL);
             return client.Execute<InstallationTokenResponse>(request);
         }
-
         //developer.github.com/apps/building-github-apps/refreshing-user-to-server-access-tokens/
         public static IRestResponse<TokenResponse> RefreshAccessToken(string refreshToken)
         {
@@ -250,7 +246,6 @@ namespace Tayra.Connectors.GitHub
 
             return client.Execute<List<GetOrganizationsResponse>>(request);
         }
-
         #endregion
     }
 }

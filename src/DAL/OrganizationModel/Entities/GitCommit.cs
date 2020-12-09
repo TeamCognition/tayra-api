@@ -12,6 +12,10 @@ namespace Tayra.Models.Organizations
         public string Message { get; set; }
 
         public string AuthorExternalId { get; set; }
+        
+        public int Additions { get; set; }
+        
+        public int Deletions { get; set; }
 
         public Guid? AuthorProfileId { get; set; }
         public Profile AuthorProfile { get; set; }

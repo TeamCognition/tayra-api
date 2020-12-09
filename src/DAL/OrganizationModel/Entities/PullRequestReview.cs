@@ -13,7 +13,7 @@ namespace Tayra.Models.Organizations
 
         public DateTime SubmittedAt { get; set; }
 
-        public int PullRequestId { get; set; }
+        public Guid PullRequestId { get; set; }
 
         public PullRequest PullRequest { get; set; }
 

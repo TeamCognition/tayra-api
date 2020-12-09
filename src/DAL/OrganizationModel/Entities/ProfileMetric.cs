@@ -42,7 +42,10 @@ namespace Tayra.Models.Organizations
         {
             return metric.Select(x => new ProfileMetric(profileId, x)).ToArray();
         }
-
+        public static ProfileMetric[] CreateRange(int profileId, MetricShard[] metric)
+        {
+            return metric.Select(x => new ProfileMetric(profileId, x)).ToArray();
+        }
         #region ITimeStampedEntity
 
         public DateTime Created { get; set; }

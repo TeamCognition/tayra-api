@@ -14,6 +14,8 @@ namespace Tayra.Connectors.GitHub.WebhookPayloads
 
             [JsonProperty("id")] public string Id { get; set; }
 
+            [JsonProperty("number")] public int Number { get; set; }
+            
             [JsonProperty("title")] public string Title { get; set; }
 
             [JsonProperty("url")] public string Url { get; set; }

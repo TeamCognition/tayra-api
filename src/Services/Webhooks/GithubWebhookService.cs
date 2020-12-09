@@ -4,9 +4,12 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tayra.Common;
+using Tayra.Connectors.Common;
+using Tayra.Connectors.GitHub;
 using Tayra.Connectors.GitHub.Helper;
 using Tayra.Connectors.GitHub.WebhookPayloads;
 using Tayra.Models.Organizations;
+using Tayra.Services.Contracts;
 
 namespace Tayra.Services.webhooks
 {
@@ -14,7 +17,7 @@ namespace Tayra.Services.webhooks
     {
         private readonly IProfilesService ProfilesService;
         private readonly ILogsService LogsService;
-
+        
         public GithubWebhookServiceService(IProfilesService profilesService, ILogsService logsService,
             OrganizationDbContext dbContext) : base(dbContext)
         {
@@ -79,7 +82,13 @@ namespace Tayra.Services.webhooks
             {
                 if (!commit.Distinct)
                     continue;
-
+                int? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, "", IntegrationType.GH);
+                if (!integrationId.HasValue)
+                {
+                    throw new ApplicationException("GH integration token not found");
+                }
+                string token = ReadAccessToken(integrationId.Value);
+                var commitWithChanges = GitHubService.GetCommitBySha(commit.Id, token);
                 var authorProfile =
                     ProfilesService.GetProfileByExternalId(commit.Author.Username, IntegrationType.GH);
                 DbContext.Add(new GitCommit
@@ -88,7 +97,9 @@ namespace Tayra.Services.webhooks
                     AuthorProfile = authorProfile,
                     AuthorExternalId = commit.Author.Username,
                     Message = commit.Message,
-                    ExternalUrl = commit.Url
+                    ExternalUrl = commit.Url,
+                    Additions = commitWithChanges.Additions,
+                    Deletions = commitWithChanges.Deletions
                 });
 
                 CreateLog(new Dictionary<string, string>
@@ -307,7 +318,8 @@ namespace Tayra.Services.webhooks
                 ExternalAuthorId = pullRequest.Author.Id,
                 ClosedAt = pullRequest.ClosedAt,
                 ExternalId = pullRequest.Id,
-                State = pullRequest.State,
+                ExternalNumber = pullRequest.Number,
+                State = pullRequest.State
             });
         }
 
@@ -347,6 +359,17 @@ namespace Tayra.Services.webhooks
 
             logsService.LogEvent(logData);
         }
+        
+        private string ReadAccessToken(int integrationId)
+        {
+            var field = DbContext.IntegrationFields.FirstOrDefault(a => a.IntegrationId == integrationId && a.Key == GHConstants.GH_ACCESS_TOKEN);
 
+            if (string.IsNullOrWhiteSpace(field?.Value))
+            {
+                throw new ApplicationException("Unable to access the integration account, access token is missing or has expired");
+            }
+
+            return field?.Value;
+        }
     }
 }

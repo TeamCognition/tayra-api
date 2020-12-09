@@ -8,6 +8,7 @@ using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Models.Organizations;
 using Tayra.Services;
+using Tayra.Services.Contracts;
 using Tayra.Services.TaskConverters;
 using Tayra.Services.webhooks;
 
@@ -29,7 +30,7 @@ namespace Tayra.API.Controllers
         #endregion
 
         #region Properties
-
+        
         private IGithubWebhookService webhookService { get; }
 
         private OrganizationDbContext DbContext { get; }
@@ -71,6 +72,7 @@ namespace Tayra.API.Controllers
             Request.Headers.TryGetValue("X-GitHub-Event", out StringValues ghEvent);
             return Ok(webhookService.HandleWebhook(jObject, ghEvent));
         }
+        
         #endregion
     }
 }
