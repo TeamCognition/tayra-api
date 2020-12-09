@@ -8,9 +8,9 @@ namespace Tayra.Models.Organizations
         public int DateId { get; set; }
         public int IterationCount { get; set; }
         public bool IsUnassigned { get; set; }
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
 
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public virtual Team Team { get; set; }
 
         public int TaskCategoryId { get; set; }
@@ -57,7 +57,7 @@ namespace Tayra.Models.Organizations
 
         public int TasksCompletionTimeChange { get; set; }
         public int TasksCompletionTimeTotal { get; set; }
-        
+
         public int ItemsBoughtChange { get; set; }
         public int ItemsBoughtTotal { get; set; }
 

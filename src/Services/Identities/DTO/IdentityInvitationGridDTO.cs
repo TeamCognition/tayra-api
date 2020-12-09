@@ -5,7 +5,7 @@ namespace Tayra.Services
 {
     public class IdentityInvitationGridDTO
     {
-        public int InvitationId { get; set; }
+        public Guid InvitationId { get; set; }
         public string EmailAddress { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

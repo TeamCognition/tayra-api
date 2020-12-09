@@ -2,7 +2,7 @@
   <Import Project="..\..\..\build\shared.csproj.props" />
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <AssemblyName>Tayra.Connectors.App</AssemblyName>
     <RootNamespace>Tayra.Connectors.App</RootNamespace>

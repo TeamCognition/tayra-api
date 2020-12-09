@@ -5,7 +5,7 @@ namespace Tayra.Services
 {
     public class SegmentMemberGridDTO
     {
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public string Name { get; set; }
         public string Username { get; set; }
         public ProfileRoles Role { get; set; }

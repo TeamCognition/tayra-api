@@ -4,14 +4,12 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ActionPoint : ITimeStampedEntity
+    public class ActionPoint : Entity<Guid>, ITimeStampedEntity
     {
-        public int Id { get; set; }
-
-        public int? SegmentId { get; set; }
+        public Guid? SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
-        public int? ProfileId { get; set; }
+        public Guid? ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
         //public bool IsMemberOnly { get; set; }
 

@@ -20,7 +20,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public ItemViewDTO GetItemViewDTO(ProfileRoles role, int itemId)
+        public ItemViewDTO GetItemViewDTO(ProfileRoles role, Guid itemId)
         {
             if (role == ProfileRoles.Member)
             {
@@ -51,18 +51,18 @@ namespace Tayra.Services
             itemDto.EnsureNotNull(itemId);
 
             var shopItem = DbContext.ShopItems.Where(x => x.ItemId == itemId).FirstOrDefault();
-            if(shopItem != null)
+            if (shopItem != null)
             {
                 itemDto.PlaceInShop = true;
                 itemDto.IsDisabled = shopItem.DisabledAt.HasValue;
             }
 
-            return itemDto; 
+            return itemDto;
         }
 
         public GridData<ItemGridDTO> GetGridData(ProfileRoles role, ItemGridParams gridParams)
         {
-            if(role == ProfileRoles.Member)
+            if (role == ProfileRoles.Member)
             {
                 throw new ApplicationException("Members don't have access to this API");
             }
@@ -71,9 +71,9 @@ namespace Tayra.Services
 
             if (!string.IsNullOrEmpty(gridParams.ItemNameQuery))
                 scope = scope.Where(x => x.Name.Contains(gridParams.ItemNameQuery));
-            
+
             var query = from i in scope
-                select new ItemGridDTO
+                        select new ItemGridDTO
                         {
                             ItemId = i.Id,
                             Name = i.Name,
@@ -116,7 +116,7 @@ namespace Tayra.Services
                 GiveawayQuantityRemaining = dto.GiveawayQuantityRemaining
             }).Entity;
 
-            if(dto.PlaceInShop)
+            if (dto.PlaceInShop)
             {
                 DbContext.Add(new ShopItem
                 {
@@ -155,7 +155,7 @@ namespace Tayra.Services
             item.GiveawayQuantityRemaining = dto.GiveawayQuantityRemaining;
 
             var shopItem = DbContext.ShopItems.Include(x => x.Item).FirstOrDefault(x => x.ItemId == dto.ItemId);
-            
+
             if (!dto.PlaceInShop)
             {
                 if (shopItem != null)
@@ -169,7 +169,7 @@ namespace Tayra.Services
 
             return shopItem.Item;
         }
-        public void Archive(int itemId)
+        public void Archive(Guid itemId)
         {
             var item = DbContext.Items.FirstOrDefault(x => x.Id == itemId);
             var shopItem = DbContext.ShopItems.FirstOrDefault(x => x.Id == itemId);
@@ -180,7 +180,7 @@ namespace Tayra.Services
             DbContext.Remove(item);
         }
 
-        public void DeleteItem(int itemId)
+        public void DeleteItem(Guid itemId)
         {
             var item = DbContext.Items.FirstOrDefault(x => x.Id == itemId);
             item.EnsureNotNull(itemId);
@@ -188,7 +188,7 @@ namespace Tayra.Services
             DbContext.Remove(item);
 
             var shopItem = DbContext.ShopItems.FirstOrDefault(x => x.ItemId == itemId);
-            if(shopItem != null)
+            if (shopItem != null)
             {
                 DbContext.Remove(shopItem);
             }

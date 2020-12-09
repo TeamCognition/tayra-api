@@ -53,7 +53,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPut("purchaseStatus/{shopPurchaseId:int}")]
-        public IActionResult UpdateShopItem([FromRoute] int shopPurchaseId, [FromBody] ShopPurchaseStatuses status)
+        public IActionResult UpdateShopItem([FromRoute] Guid shopPurchaseId, [FromBody] ShopPurchaseStatuses status)
         {
             ShopsService.UpdateShopPurchaseStatus(CurrentUser.ProfileId, shopPurchaseId, status);
             OrganizationContext.SaveChanges();

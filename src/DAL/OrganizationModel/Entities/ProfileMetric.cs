@@ -5,23 +5,23 @@ using Tayra.Analytics;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfileMetric: ITimeStampedEntity
+    public class ProfileMetric : Entity<Guid>, ITimeStampedEntity
     {
-        public int ProfileId { get; private set; }
+        public Guid ProfileId { get; private set; }
         public Profile Profile { get; set; }
-        
+
         public int DateId { get; private set; }
-        
+
         public MetricType Type { get; private set; }
-        
-        public int? SegmentId { get; private set; }
+
+        public Guid? SegmentId { get; private set; }
         public Segment Segment { get; set; }
-        
+
         public float Value { get; set; }
 
-        protected ProfileMetric(){}
+        protected ProfileMetric() { }
 
-        public ProfileMetric(int profileId, MetricShard metricShard)
+        public ProfileMetric(Guid profileId, MetricShard metricShard)
         {
             ProfileId = profileId;
             DateId = metricShard.DateId;
@@ -29,7 +29,7 @@ namespace Tayra.Models.Organizations
             Value = metricShard.Value;
         }
 
-        public ProfileMetric(int profileId, MetricShardWEntity metricShard)
+        public ProfileMetric(Guid profileId, MetricShardWEntity metricShard)
         {
             ProfileId = profileId;
             SegmentId = metricShard.EntityId;
@@ -38,7 +38,7 @@ namespace Tayra.Models.Organizations
             Value = metricShard.Value;
         }
 
-        public static ProfileMetric[] CreateRange(int profileId, MetricShardWEntity[] metric)
+        public static ProfileMetric[] CreateRange(Guid profileId, MetricShardWEntity[] metric)
         {
             return metric.Select(x => new ProfileMetric(profileId, x)).ToArray();
         }

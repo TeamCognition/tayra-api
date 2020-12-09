@@ -134,7 +134,7 @@ namespace Tayra.Services.TaskConverters
                 return (DateHelper2.ToDateId(We.JiraIssue.Fields.StatusCategoryChangeDate), (int?)null);
 
             var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
-            int? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
+            Guid? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
             if (!integrationId.HasValue)
             {
                 throw new ApplicationException($"Jira project with Id: {GetExternalProjectId()} is not connected to any tayra segments");
@@ -192,7 +192,7 @@ namespace Tayra.Services.TaskConverters
                 return (
                     rewardStatusEnteredDateId: fakeEnteredRewardStatus.HasValue
                         ? DateHelper2.ToDateId(fakeEnteredRewardStatus.Value)
-                        : (int?) null,
+                        : (int?)null,
                     autoTimeSpentInMinutes: null);
             }
 
@@ -208,7 +208,7 @@ namespace Tayra.Services.TaskConverters
             var days = (enteredRewardStatus.Value - enteredInProgress.Value).Days;
             var hours = (enteredRewardStatus.Value - enteredInProgress.Value).TotalHours;
 
-            return (rewardStatusEnteredDateId: fakeEnteredRewardStatus.HasValue ? DateHelper2.ToDateId(fakeEnteredRewardStatus.Value) : (int?)null, autoTimeSpentInMinutes:(int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes);
+            return (rewardStatusEnteredDateId: fakeEnteredRewardStatus.HasValue ? DateHelper2.ToDateId(fakeEnteredRewardStatus.Value) : (int?)null, autoTimeSpentInMinutes: (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes);
         }
 
         protected override string GetIssueStatusName()

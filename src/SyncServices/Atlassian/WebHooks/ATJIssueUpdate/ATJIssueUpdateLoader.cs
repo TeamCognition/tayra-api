@@ -85,15 +85,14 @@ namespace Tayra.SyncServices
 
             var profilesService = new ProfilesService(null, null, null, organizationDb);
             var tasksService = new TasksService(organizationDb);
-            var competitionService = new CompetitionsService(organizationDb);
+            
             var logsService = new LogsService(organizationDb);
             var tokensService = new TokensService(organizationDb);
 
             var assigneProfile = fields?.Assignee == null ? null : profilesService.GetProfileByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
             var profileAssignment = assigneProfile == null ? null : organizationDb.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
-            var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (int?)null;
-
-            var activeCompetitions = assigneProfile == null ? null : competitionService.GetActiveCompetitions(assigneProfile.Id);
+            var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (Guid?)null;
+            
             var jiraBaseUrl = $"https://{jiraSiteName}.atlassian.net";
             if (assigneProfile == null || fields.Status.Id != rewardStatusField.Value)
             {
@@ -134,8 +133,7 @@ namespace Tayra.SyncServices
                         { "competitorName", assigneProfile.Username }, //prev: activeCompetitions.FirstOrDefault()?.CompetitorName
                         { "timespent", fields.Timespent.ToString()}
                     },
-                        ProfileId = assigneProfile.Id,
-                        CompetitionIds = activeCompetitions.Select(x => x.Id).Distinct()
+                        ProfileId = assigneProfile.Id
                     });
                 }
 
@@ -243,11 +241,9 @@ namespace Tayra.SyncServices
                     { "issueStatus", fields.Status.Name },
                     { "effortScore", Math.Round(effortScoreDiff, 2).ToString() },
                     { "profileUsername", assigneProfile.Username },
-                    { "competitorName", activeCompetitions.FirstOrDefault()?.CompetitorName},
                     { "timespent", TayraEffortCalculator.GetEffectiveTimeSpent(fields.Timespent, autoTimeSpent).ToString()}
                 },
-                ProfileId = assigneProfile.Id,
-                CompetitionIds = activeCompetitions.Select(x => x.Id).Distinct()
+                ProfileId = assigneProfile.Id
             });
 
             var aps = organizationDb.ActionPoints.Where(x => x.ProfileId == assigneProfile.Id && x.ConcludedOn == null && (x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn1Week || x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn2Week)).ToArray();

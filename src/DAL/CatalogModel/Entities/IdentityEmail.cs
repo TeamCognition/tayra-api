@@ -7,7 +7,7 @@ namespace Tayra.Models.Catalog
     public class IdentityEmail : ITimeStampedEntity
     {
         //Composite Key
-        public int IdentityId { get; set; }
+        public Guid IdentityId { get; set; }
         public virtual Identity Identity { get; set; }
 
         [MaxLength(200)]

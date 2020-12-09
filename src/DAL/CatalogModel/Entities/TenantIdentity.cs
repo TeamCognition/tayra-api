@@ -9,7 +9,7 @@ namespace Tayra.Models.Catalog
         public byte[] TenantId { get; set; }
         public virtual Tenant Tenant { get; set; }
 
-        public int IdentityId { get; set; }
+        public Guid IdentityId { get; set; }
         public virtual Identity Identity { get; set; }
 
         #region ITimeStampedEntity

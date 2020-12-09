@@ -14,7 +14,7 @@ using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services.Analytics;
 
- namespace Tayra.Services
+namespace Tayra.Services
 {
     public class ProfilesService : BaseService<OrganizationDbContext>, IProfilesService
     {
@@ -36,7 +36,7 @@ using Tayra.Services.Analytics;
 
         #region Public Methods
 
-        public Profile GetByIdentityId(int identityId)
+        public Profile GetByIdentityId(Guid identityId)
         {
             return DbContext.Profiles
                 .FirstOrDefault(x => x.IdentityId == identityId);
@@ -76,21 +76,21 @@ using Tayra.Services.Analytics;
             return !dbContext.Profiles.Any(x => x.Username == username);
         }
 
-        public GridData<ProfileGridDTO> GetGridData(int profileId, ProfileGridParams gridParams)
+        public GridData<ProfileGridDTO> GetGridData(Guid profileId, ProfileGridParams gridParams)
         {
             IQueryable<Profile> scope = DbContext.Profiles;
 
             if (!gridParams.IncludeSearcher)
             {
                 scope = DbContext.Profiles.Where(x => x.Id != profileId);
-            } 
+            }
 
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
 
-            if (gridParams.SegmentIdExclude.HasValue)
+            if (gridParams.segmentIdExclude.HasValue)
             {
-                var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == gridParams.SegmentIdExclude).Select(x => x.ProfileId).ToList();
+                var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == gridParams.segmentIdExclude).Select(x => x.ProfileId).ToList();
                 scope = scope.Where(x => !profileIds.Contains(x.Id));
             }
 
@@ -98,7 +98,7 @@ using Tayra.Services.Analytics;
             {
                 scope = scope.Where(x => x.IsAnalyticsEnabled);
             }
-            
+
             if (!string.IsNullOrEmpty(gridParams.UsernameQuery) && !string.IsNullOrEmpty(gridParams.NameQuery))
                 scope = scope.Chain(ChainType.OR, byUsername, byName);
             else
@@ -125,7 +125,7 @@ using Tayra.Services.Analytics;
             return gridData;
         }
 
-        public GridData<ProfileSummaryGridDTO> GetGridDataWithSummary(int profileId, ProfileSummaryGridParams gridParams)
+        public GridData<ProfileSummaryGridDTO> GetGridDataWithSummary(Guid profileId, ProfileSummaryGridParams gridParams)
         {
             IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Role == ProfileRoles.Member && x.Id != profileId);
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
@@ -228,7 +228,7 @@ using Tayra.Services.Analytics;
             return gridData;
         }
 
-        public ProfileUpdateDTO GetUpdateProfileData(int profileId)
+        public ProfileUpdateDTO GetUpdateProfileData(Guid profileId)
         {
             return DbContext.Profiles.Where(x => x.Id == profileId).Select(x => new ProfileUpdateDTO
             {
@@ -242,7 +242,7 @@ using Tayra.Services.Analytics;
             }).FirstOrDefault();
         }
 
-        public void UpdateProfile(int profileId, ProfileUpdateDTO dto)
+        public void UpdateProfile(Guid profileId, ProfileUpdateDTO dto)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);
 
@@ -256,8 +256,8 @@ using Tayra.Services.Analytics;
             profile.EmployedOn = dto.EmployedOn;
             profile.Username = dto.Username;
         }
-        
-        public void TogglePersonalAnalytics(int profileId)
+
+        public void TogglePersonalAnalytics(Guid profileId)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);
 
@@ -266,7 +266,7 @@ using Tayra.Services.Analytics;
             profile.IsAnalyticsEnabled = !profile.IsAnalyticsEnabled;
         }
 
-        public ProfileViewDTO GetProfileViewDTO(int profileId, Expression<Func<Profile, bool>> condition)
+        public ProfileViewDTO GetProfileViewDTO(Guid profileId, Expression<Func<Profile, bool>> condition)
         {
             var profileDto = (from p in DbContext.Profiles.Where(condition)
                               select new ProfileViewDTO
@@ -322,15 +322,15 @@ using Tayra.Services.Analytics;
             profile.EnsureNotNull(username);
 
             var analyticsService = new AnalyticsService(DbContext);
-            
+
             var metrics = analyticsService.GetMetrics(
                 new MetricType[]
                 {
                     MetricType.TasksCompleted, MetricType.Assists, MetricType.TimeWorked, MetricType.TokensEarned,
                     MetricType.TokensSpent, MetricType.ItemsBought
                 }, profile.Id, EntityTypes.Profile, new DatePeriod(new DateTime(2020, 06, 01), DateTime.UtcNow));
-            
-            
+
+
             return (from r in DbContext.ProfileMetrics
                     where r.ProfileId == profile.Id
                     select new ProfileRawScoreDTO
@@ -356,7 +356,7 @@ using Tayra.Services.Analytics;
             TokensService.CreateTransaction(TokenType.CompanyToken, dto.ProfileId, dto.TokenValue, TransactionReason.Manual, null);
         }
 
-        public ProfileNotificationSettingsDTO GetNotificationSettings(int profileId)
+        public ProfileNotificationSettingsDTO GetNotificationSettings(Guid profileId)
         {
             var devices = DbContext.LogDevices.Where(x => x.ProfileId == profileId && x.Type == LogDeviceTypes.Email).Include(x => x.Settings).FirstOrDefault();
 
@@ -370,7 +370,7 @@ using Tayra.Services.Analytics;
             };
         }
 
-        public void UpdateNotificationSettings(int profileId, ProfileNotificationSettingsDTO dto)
+        public void UpdateNotificationSettings(Guid profileId, ProfileNotificationSettingsDTO dto)
         {
             var devices = DbContext.LogDevices.Where(x => x.ProfileId == profileId && x.Type == LogDeviceTypes.Email).Include(x => x.Settings).ToList();
 
@@ -394,7 +394,7 @@ using Tayra.Services.Analytics;
             }
         }
 
-        public ProfileActivityChartDTO[] GetProfileActivityChart(int profileId)
+        public ProfileActivityChartDTO[] GetProfileActivityChart(Guid profileId)
         {
             var oldestDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-31));
             return (from r in DbContext.ProfileReportsDaily
@@ -437,7 +437,7 @@ using Tayra.Services.Analytics;
                     }).ToArray();
         }
 
-        public ProfileStatsDTO GetProfileStatsData(int profileId)
+        public ProfileStatsDTO GetProfileStatsData(Guid profileId)
         {
             var analyticsService = new AnalyticsService(DbContext);
 
@@ -446,13 +446,13 @@ using Tayra.Services.Analytics;
                 MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists,
                 MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
             };
-            
+
             var profileMetrics = analyticsService.GetMetricsWithIterationSplit(
                 metricList, profileId, EntityTypes.Profile, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
-         
+
             var firstSegmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId)
                 .Select(x => x.SegmentId).FirstOrDefault();
-            
+
             var segmentMetrics = analyticsService.GetMetricsWithIterationSplit(
                 metricList, firstSegmentId, EntityTypes.Segment, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
 
@@ -464,7 +464,7 @@ using Tayra.Services.Analytics;
             };
         }
 
-        public Dictionary<int,AnalyticsMetricWithIterationSplitDto> GetProfileHeatStream(int profileId)
+        public Dictionary<int, AnalyticsMetricWithIterationSplitDto> GetProfileHeatStream(Guid profileId)
         {
             var analyticsService = new AnalyticsService(DbContext);
 
@@ -475,7 +475,7 @@ using Tayra.Services.Analytics;
 
             return analyticsService.GetMetricsWithIterationSplit(
                 metricList, profileId, EntityTypes.Profile,
-                new DatePeriod(DateTime.UtcNow.AddDays(-1*(8*7-1)), DateTime.UtcNow));
+                new DatePeriod(DateTime.UtcNow.AddDays(-1 * (8 * 7 - 1)), DateTime.UtcNow));
 
         }
         #endregion
@@ -489,7 +489,7 @@ using Tayra.Services.Analytics;
             public ItemActiveDTO Border { get; set; }
         }
 
-        public static ProfileActiveItemsDTO GetProfileActiveItems(OrganizationDbContext dbContext, int profileId)
+        public static ProfileActiveItemsDTO GetProfileActiveItems(OrganizationDbContext dbContext, Guid profileId)
         {
             var activeItems = (from ii in dbContext.ProfileInventoryItems
                                where ii.ProfileId == profileId
@@ -512,7 +512,7 @@ using Tayra.Services.Analytics;
             };
         }
 
-        private ProfileViewDTO.PulseDTO GetProfilePulseDTO(int profileId)
+        private ProfileViewDTO.PulseDTO GetProfilePulseDTO(Guid profileId)
         {
             var yesterdayDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-1));
             var tasks = (from t in DbContext.Tasks

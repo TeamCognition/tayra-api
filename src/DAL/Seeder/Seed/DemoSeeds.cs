@@ -20,7 +20,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
 {
     public class ProfileAssignmentDemo
     {
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public int MembersCount { get; set; }
 
     }
@@ -32,7 +32,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
         public ProfileAssignmentDemo[] ProfileAssignmentDemos { get; set; }
         public Task[] Tasks { get; set; }
     }
-    
+
     public static class DemoSeeds
     {
         public static void UnseedDemo(OrganizationDbContext context)
@@ -68,10 +68,11 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     Console.WriteLine("Deleting " + tableName);
                     try
                     {
-                        //context.Database.ExecuteSqlInterpolated($"DELETE FROM {tableName}");
-                        context.Database.ExecuteSqlCommand($"DELETE FROM {tableName}", tableName);
+                        context.Database.ExecuteSqlInterpolated($"DELETE FROM {tableName}");
+                        //context.Database.ExecuteSqlCommand($"DELETE FROM {tableName}", tableName);
                         finishedTables.Add(tableName);
-                    } catch(SqlException e)
+                    }
+                    catch (SqlException e)
                     {
                         Console.WriteLine("Error on unseed: " + e.Message);
                         wasError = true;
@@ -107,15 +108,15 @@ namespace Tayra.Models.Seeder.DemoSeeds
             Console.WriteLine("Seeding Profiles ...");
             demoData.Profiles.ForEach(x =>
             {
-                if(x.Role == ProfileRoles.Member)
+                if (x.Role == ProfileRoles.Member)
                     x.IsAnalyticsEnabled = true;
             });
             organizationDb.Profiles.AddRange(demoData.Profiles);
-            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
-            organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
+            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
+            //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
             organizationDb.SaveChanges();
-            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
-            organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
+            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
+            //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
             demoData.Profiles = demoData.Profiles.Where(x => x.Role == ProfileRoles.Member).ToArray();
 
             Console.WriteLine("Seeding Segments ...");
@@ -168,20 +169,20 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 });
             }
 
-            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
-            organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
+            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
+            //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
             organizationDb.SaveChanges();
-            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
-            organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
+            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
+            //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
 
             Console.WriteLine("Seeding Teams ...");
             organizationDb.Teams.AddRange(demoData.Teams);
 
-            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
-            organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
+            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
+            //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
             organizationDb.SaveChanges();
-            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
-            organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
+            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
+            //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
 
             Console.WriteLine("Seeding ProfileAssignments ...");
             demoData.ProfileAssignmentDemos = demoData.ProfileAssignmentDemos.DistinctBy(x => new { x.TeamId }).ToArray();
@@ -336,8 +337,8 @@ namespace Tayra.Models.Seeder.DemoSeeds
             foreach (var p in demoData.Profiles)
             {
                 var invItems = organizationDb.ProfileInventoryItems.Where(x => x.ProfileId == p.Id).ToList();
-                var receiverId = rnd.Next(p.Id, demoData.Profiles.Max(x => x.Id));
-                if (invItems.Count() == 0 || p.Id == receiverId)
+                var receiverId = demoData.Profiles[rnd.Next(0, demoData.Profiles.Length)].Id;
+                if (!invItems.Any() || p.Id == receiverId)
                     continue;
 
                 var toGift = rnd.Next(0, invItems.Count() - 1);
@@ -423,8 +424,8 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 foreach (var ci in customItems)
                 {
                     ci.Created = GetRandomDateTimeInPast();
-                    ci.CreatedBy = 1;
-                    ShopItemsService.PurchaseShopItem(demoData.Profiles[0].Id, new ShopItemPurchaseDTO { ItemId = ci.Id, DemoDate = GetRandomDateTimeInPast() });
+                    ci.CreatedBy = demoData.Profiles.First().Id;
+                    ShopItemsService.PurchaseShopItem(demoData.Profiles.First().Id, new ShopItemPurchaseDTO { ItemId = ci.Id, DemoDate = GetRandomDateTimeInPast() });
                 }
             }
 

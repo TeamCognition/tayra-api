@@ -1,4 +1,5 @@
-﻿using Tayra.Common;
+﻿using System;
+using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 
 namespace Tayra.Services
@@ -32,13 +33,13 @@ namespace Tayra.Services
         public string[] Labels { get; set; }
 
         public string AssigneeExternalId { get; set; }
-        public int? AssigneeProfileId { get; set; }
+        public Guid? AssigneeProfileId { get; set; }
 
         public int ReporterProfileId { get; set; }
 
-        public int? TeamId { get; set; }
+        public Guid? TeamId { get; set; }
 
-        public int? SegmentId { get; set; }
+        public Guid? SegmentId { get; set; }
 
         public int? RewardStatusEnteredDateId { get; set; }
     }

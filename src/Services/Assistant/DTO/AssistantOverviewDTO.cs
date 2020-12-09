@@ -1,4 +1,5 @@
-﻿using Tayra.Common;
+﻿using System;
+using Tayra.Common;
 
 namespace Tayra.Services
 {
@@ -7,7 +8,7 @@ namespace Tayra.Services
         public ActionPointDTO[] ActionPoints { get; set; }
         public class ActionPointDTO
         {
-            public int? SegmentId { get; set; }
+            public Guid? SegmentId { get; set; }
             public ActionPointTypes[] Types { get; set; }
         }
     }

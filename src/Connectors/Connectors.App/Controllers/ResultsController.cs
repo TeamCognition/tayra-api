@@ -53,7 +53,7 @@ namespace Tayra.Connectors.App.Controllers
             }
             return View(model);
         }
-        
+
         public IActionResult SL()
         {
             var connector = (SlackConnector)ConnectorResolver.Get<IOAuthConnector>(IntegrationType.SL);

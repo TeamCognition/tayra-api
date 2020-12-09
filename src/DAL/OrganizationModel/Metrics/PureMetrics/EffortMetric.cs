@@ -13,9 +13,9 @@ namespace Tayra.SyncServices.Metrics
     {
         public EffortMetric(string name, int value) : base(name, value)
         {
-            
+
         }
-        public MetricShardWEntity Create(IEnumerable<Task> tasks, int dateId, int segmentId) => new MetricShardWEntity(tasks.Sum(x => x.EffortScore) ?? 0f, dateId, segmentId, this);
+        public MetricShardWEntity Create(IEnumerable<Task> tasks, int dateId, Guid segmentId) => new MetricShardWEntity(tasks.Sum(x => x.EffortScore) ?? 0f, dateId, segmentId, this);
 
         public MetricShardWEntity[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
         {
@@ -25,32 +25,32 @@ namespace Tayra.SyncServices.Metrics
                 .Select(s => this.Create(s.AsEnumerable(), dateId, s.Key.Value))
                 .ToArray();
         }
-        
-        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType)
+
+        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType)
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from t in db.Tasks
-                where t.Status == TaskStatuses.Done
-                where t.SegmentId.HasValue
-                where profileIds.Contains(t.AssigneeProfileId.Value)
-                where t.LastModifiedDateId >= period.FromId && t.LastModifiedDateId <= period.ToId
-                select new RawMetric
-                {
-                    Assignee = new TableData.Profile($"{t.AssigneeProfile.FirstName} {t.AssigneeProfile.LastName}",
-                        t.AssigneeProfile.Username),
-                    Key = t.ExternalId,
-                    Summary = new TableData.ExternalLink(t.Summary, t.ExternalUrl),
-                    Effort = t.EffortScore ?? 0,
-                    Complexity = t.Complexity,
-                    Priority = t.Priority,
-                    TimeLogged = new TableData.TimeInMinutes(t.TimeSpentInMinutes),
-                    LastModifiedAt = new TableData.DateInSeconds(t.LastModified ?? t.Created),
-                    CreatedAt = new TableData.DateInSeconds(t.Created)
-                }).ToArray<object>();
+                    where t.Status == TaskStatuses.Done
+                    where t.SegmentId.HasValue
+                    where profileIds.Contains(t.AssigneeProfileId.Value)
+                    where t.LastModifiedDateId >= period.FromId && t.LastModifiedDateId <= period.ToId
+                    select new RawMetric
+                    {
+                        Assignee = new TableData.Profile($"{t.AssigneeProfile.FirstName} {t.AssigneeProfile.LastName}",
+                            t.AssigneeProfile.Username),
+                        Key = t.ExternalId,
+                        Summary = new TableData.ExternalLink(t.Summary, t.ExternalUrl),
+                        Effort = t.EffortScore ?? 0,
+                        Complexity = t.Complexity,
+                        Priority = t.Priority,
+                        TimeLogged = new TableData.TimeInMinutes(t.TimeSpentInMinutes),
+                        LastModifiedAt = new TableData.DateInSeconds(t.LastModified ?? t.Created),
+                        CreatedAt = new TableData.DateInSeconds(t.Created)
+                    }).ToArray<object>();
         }
 
         public override Type TypeOfRawMetric => typeof(RawMetric);
-        
+
         public class RawMetric
         {
             public TableData.Profile Assignee { get; set; }

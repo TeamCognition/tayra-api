@@ -15,31 +15,40 @@ namespace Tayra.Models.Organizations.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("Cog.DAL.EntityChangeLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<byte>("AuditType");
+                    b.Property<byte>("AuditType")
+                        .HasColumnType("tinyint");
 
-                    b.Property<string>("ChangedValues");
+                    b.Property<string>("ChangedValues")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EntityId");
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("EntityState");
+                    b.Property<int>("EntityState")
+                        .HasColumnType("int");
 
-                    b.Property<string>("EntityType");
+                    b.Property<string>("EntityType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Modified");
+                    b.Property<DateTime>("Modified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("ModifiedBy");
+                    b.Property<int>("ModifiedBy")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -52,27 +61,36 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ActionPoint", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("ConcludedOn");
+                    b.Property<DateTime?>("ConcludedOn")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Data");
+                    b.Property<string>("Data")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("ProfileId");
+                    b.Property<Guid?>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("SegmentId");
+                    b.Property<Guid?>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -89,23 +107,32 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ActionPointSetting", b =>
                 {
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("MuteUntil");
+                    b.Property<DateTime?>("MuteUntil")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("NotifyByEmail");
+                    b.Property<bool>("NotifyByEmail")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("NotifyByNotification");
+                    b.Property<bool>("NotifyByNotification")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("NotifyByPush");
+                    b.Property<bool>("NotifyByPush")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Type", "OrganizationId");
 
@@ -119,27 +146,38 @@ namespace Tayra.Models.Organizations.Migrations
             modelBuilder.Entity("Tayra.Models.Organizations.Blob", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Extension");
+                    b.Property<string>("Extension")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Filename");
+                    b.Property<string>("Filename")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Filesize");
+                    b.Property<long>("Filesize")
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Purpose");
+                    b.Property<int>("Purpose")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -152,21 +190,27 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundle", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("RewardClaimedAt");
+                    b.Property<DateTime?>("RewardClaimedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -179,11 +223,14 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundleItem", b =>
                 {
-                    b.Property<int>("ClaimBundleId");
+                    b.Property<Guid>("ClaimBundleId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ProfileInventoryItemId");
+                    b.Property<Guid>("ProfileInventoryItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
                     b.HasKey("ClaimBundleId", "ProfileInventoryItemId", "OrganizationId");
 
@@ -196,11 +243,14 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundleTokenTxn", b =>
                 {
-                    b.Property<int>("ClaimBundleId");
+                    b.Property<Guid>("ClaimBundleId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TokenTransactionId");
+                    b.Property<Guid>("TokenTransactionId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
                     b.HasKey("ClaimBundleId", "TokenTransactionId", "OrganizationId");
 
@@ -211,239 +261,35 @@ namespace Tayra.Models.Organizations.Migrations
                     b.ToTable("ClaimBundleTokenTxns");
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.Competition", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("CreatedBy");
-
-                    b.Property<DateTime?>("DeletedAt");
-
-                    b.Property<DateTime?>("EndedAt");
-
-                    b.Property<bool>("IsIndividual");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int?>("LastModifiedBy");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(100);
-
-                    b.Property<int?>("PreviousCompetitionId");
-
-                    b.Property<int>("RepeatCount");
-
-                    b.Property<bool>("RepeatWhenCompleted");
-
-                    b.Property<DateTime?>("ScheduledEndAt");
-
-                    b.Property<int>("SegmentId");
-
-                    b.Property<DateTime?>("StartedAt");
-
-                    b.Property<int>("Status");
-
-                    b.Property<int>("Theme");
-
-                    b.Property<int>("TokenId");
-
-                    b.Property<double>("TokenRewardValue");
-
-                    b.Property<int>("Type");
-
-                    b.Property<int?>("WinnerId");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("PreviousCompetitionId", "OrganizationId");
-
-                    b.HasIndex("SegmentId", "OrganizationId");
-
-                    b.HasIndex("TokenId", "OrganizationId");
-
-                    b.ToTable("Competitions");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.CompetitionLog", b =>
-                {
-                    b.Property<int>("CompetitionId");
-
-                    b.Property<int>("LogId");
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<int>("Event");
-
-                    b.HasKey("CompetitionId", "LogId", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("LogId", "OrganizationId");
-
-                    b.HasIndex("CompetitionId", "Event", "OrganizationId");
-
-                    b.ToTable("CompetitionLogs");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.CompetitionReward", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<int>("CompetitionId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("CreatedBy");
-
-                    b.Property<int>("ItemId");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int?>("LastModifiedBy");
-
-                    b.Property<int>("TokenId");
-
-                    b.Property<float>("TokenValue");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasAlternateKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("CompetitionId", "OrganizationId");
-
-                    b.HasIndex("ItemId", "OrganizationId");
-
-                    b.HasIndex("TokenId", "OrganizationId");
-
-                    b.ToTable("CompetitionRewards");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.Competitor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<int>("CompetitionId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("CreatedBy");
-
-                    b.Property<string>("DisplayName");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int?>("LastModifiedBy");
-
-                    b.Property<int?>("ProfileId");
-
-                    b.Property<double>("ScoreValue");
-
-                    b.Property<int?>("TeamId");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProfileId", "OrganizationId");
-
-                    b.HasIndex("TeamId", "OrganizationId");
-
-                    b.HasIndex("CompetitionId", "ProfileId", "OrganizationId")
-                        .IsUnique()
-                        .HasFilter("[ProfileId] IS NOT NULL");
-
-                    b.HasIndex("CompetitionId", "TeamId", "OrganizationId")
-                        .IsUnique()
-                        .HasFilter("[TeamId] IS NOT NULL");
-
-                    b.HasIndex("CompetitionId", "ProfileId", "TeamId", "OrganizationId")
-                        .IsUnique()
-                        .HasFilter("[ProfileId] IS NOT NULL AND [TeamId] IS NOT NULL");
-
-                    b.ToTable("Competitors");
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.CompetitorScore", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId");
-
-                    b.Property<int>("CompetitionId");
-
-                    b.Property<int>("CompetitorId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime?>("LastModified");
-
-                    b.Property<int>("ProfileId");
-
-                    b.Property<int?>("TeamId");
-
-                    b.Property<double>("Value");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasAlternateKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("CompetitionId", "OrganizationId");
-
-                    b.HasIndex("ProfileId", "OrganizationId");
-
-                    b.HasIndex("TeamId", "OrganizationId");
-
-                    b.HasIndex("CompetitorId", "ProfileId", "OrganizationId");
-
-                    b.HasIndex("CompetitorId", "TeamId", "OrganizationId");
-
-                    b.ToTable("CompetitorScores");
-                });
-
             modelBuilder.Entity("Tayra.Models.Organizations.GitCommit", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("AuthorExternalId");
+                    b.Property<string>("AuthorExternalId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("AuthorProfileId");
+                    b.Property<Guid?>("AuthorProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("ExternalUrl");
+                    b.Property<string>("ExternalUrl")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Message");
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SHA");
+                    b.Property<string>("SHA")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -458,25 +304,33 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Integration", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("ProfileId");
+                    b.Property<Guid?>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -491,26 +345,34 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.IntegrationField", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("IntegrationId");
+                    b.Property<Guid>("IntegrationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Key")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Value");
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -525,37 +387,50 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Invitation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("Code");
+                    b.Property<Guid>("Code")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EmailAddress")
                         .IsRequired()
-                        .HasMaxLength(1000);
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("FirstName");
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("LastName");
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Role");
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("SegmentId");
+                    b.Property<Guid?>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("TeamId");
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -572,48 +447,67 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Item", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long>("ArchivedAt")
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CreatedDateId");
+                    b.Property<int>("CreatedDateId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GiveawayQuantityRemaining");
+                    b.Property<int?>("GiveawayQuantityRemaining")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Image");
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActivable");
+                    b.Property<bool>("IsActivable")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsDisenchantable");
+                    b.Property<bool>("IsDisenchantable")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsGiftable");
+                    b.Property<bool>("IsGiftable")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<float>("Price");
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
-                    b.Property<int?>("QuestsQuantityRemaining");
+                    b.Property<int?>("QuestsQuantityRemaining")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Rarity");
+                    b.Property<int>("Rarity")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("ShopQuantityRemaining");
+                    b.Property<int?>("ShopQuantityRemaining")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -624,21 +518,27 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ItemDisenchant", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemId");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -655,26 +555,34 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ItemGift", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemId");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Message")
-                        .HasMaxLength(250);
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
-                    b.Property<int>("ReceiverId");
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("SenderId");
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -693,19 +601,24 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Log", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Data");
+                    b.Property<string>("Data")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Event");
+                    b.Property<int>("Event")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -716,21 +629,27 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.LogDevice", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Address");
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("ProfileId");
+                    b.Property<Guid?>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -743,19 +662,29 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.LogSetting", b =>
                 {
-                    b.Property<int>("LogDeviceId");
+                    b.Property<Guid>("LogDeviceId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("LogEvent");
+                    b.Property<int>("LogEvent")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsEnabled");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("LogDeviceId", "LogEvent", "OrganizationId");
 
@@ -768,23 +697,30 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.LoginLog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ClaimsJson");
+                    b.Property<string>("ClaimsJson")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("FailReason");
+                    b.Property<string>("FailReason")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IdentityId");
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -797,19 +733,26 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Organization", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Address");
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -818,48 +761,65 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Profile", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long>("ArchivedAt")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("AssistantSummary");
+                    b.Property<string>("AssistantSummary")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Avatar")
-                        .HasMaxLength(2000);
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
-                    b.Property<DateTime?>("BornOn");
+                    b.Property<DateTime?>("BornOn")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("EmployedOn");
+                    b.Property<DateTime?>("EmployedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("IdentityId");
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsAnalyticsEnabled");
+                    b.Property<bool>("IsAnalyticsEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("JobPosition")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LastName")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Role");
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<string>("Username")
-                        .HasMaxLength(20);
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -876,25 +836,33 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileAssignment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("TeamId");
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -918,19 +886,29 @@ namespace Tayra.Models.Organizations.Migrations
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileExternalId", b =>
                 {
                     b.Property<string>("ExternalId")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("IntegrationType");
+                    b.Property<int>("IntegrationType")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ExternalId", "IntegrationType", "SegmentId", "OrganizationId");
 
@@ -945,31 +923,42 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileInventoryItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("AcquireDetail");
+                    b.Property<string>("AcquireDetail")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("AcquireMethod");
+                    b.Property<int>("AcquireMethod")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("ClaimRequired");
+                    b.Property<bool>("ClaimRequired")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("ClaimedAt");
+                    b.Property<DateTime?>("ClaimedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsActive");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ItemId");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ItemType");
+                    b.Property<int>("ItemType")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -984,13 +973,17 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileLog", b =>
                 {
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("LogId");
+                    b.Property<Guid>("LogId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Event");
+                    b.Property<int>("Event")
+                        .HasColumnType("int");
 
                     b.HasKey("ProfileId", "LogId", "OrganizationId");
 
@@ -1005,21 +998,32 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileMetric", b =>
                 {
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("SegmentId");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float>("Value");
+                    b.Property<Guid?>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<float>("Value")
+                        .HasColumnType("real");
 
                     b.HasKey("ProfileId", "Type", "DateId", "OrganizationId");
 
@@ -1032,26 +1036,39 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfilePraise", b =>
                 {
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("PraiserProfileId");
+                    b.Property<Guid>("PraiserProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Message")
-                        .HasMaxLength(140);
+                        .HasMaxLength(140)
+                        .HasColumnType("nvarchar(140)");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("DateId", "ProfileId", "PraiserProfileId", "OrganizationId");
 
@@ -1064,105 +1081,155 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileReportDaily", b =>
                 {
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TaskCategoryId");
+                    b.Property<int>("TaskCategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ActivityChartJson");
+                    b.Property<string>("ActivityChartJson")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("AssistsChange");
+                    b.Property<int>("AssistsChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("AssistsTotal");
+                    b.Property<int>("AssistsTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("CompanyTokensEarnedChange");
+                    b.Property<float>("CompanyTokensEarnedChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensEarnedTotal");
+                    b.Property<float>("CompanyTokensEarnedTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentChange");
+                    b.Property<float>("CompanyTokensSpentChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentTotal");
+                    b.Property<float>("CompanyTokensSpentTotal")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ComplexityChange");
+                    b.Property<int>("ComplexityChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ComplexityTotal");
+                    b.Property<int>("ComplexityTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("ContributionChange");
+                    b.Property<float>("ContributionChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ContributionTotal");
+                    b.Property<float>("ContributionTotal")
+                        .HasColumnType("real");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float>("EffortScoreChange");
+                    b.Property<float>("EffortScoreChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("EffortScoreTotal");
+                    b.Property<float>("EffortScoreTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorChange");
+                    b.Property<float>("ErrorChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorTotal");
+                    b.Property<float>("ErrorTotal")
+                        .HasColumnType("real");
 
-                    b.Property<int>("InventoryCountTotal");
+                    b.Property<int>("InventoryCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("InventoryValueTotal");
+                    b.Property<float>("InventoryValueTotal")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ItemsBoughtChange");
+                    b.Property<int>("ItemsBoughtChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsBoughtTotal");
+                    b.Property<int>("ItemsBoughtTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsCreatedChange");
+                    b.Property<int>("ItemsCreatedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsCreatedTotal");
+                    b.Property<int>("ItemsCreatedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsDisenchantedChange");
+                    b.Property<int>("ItemsDisenchantedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsDisenchantedTotal");
+                    b.Property<int>("ItemsDisenchantedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsGiftedChange");
+                    b.Property<int>("ItemsGiftedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsGiftedTotal");
+                    b.Property<int>("ItemsGiftedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("IterationCount");
+                    b.Property<int>("IterationCount")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("PraisesGivenChange");
+                    b.Property<int>("PraisesGivenChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesGivenTotal");
+                    b.Property<int>("PraisesGivenTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesReceivedChange");
+                    b.Property<int>("PraisesReceivedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesReceivedTotal");
+                    b.Property<int>("PraisesReceivedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProfileRole");
+                    b.Property<int>("ProfileRole")
+                        .HasColumnType("int");
 
-                    b.Property<int>("QuestsCompletedChange");
+                    b.Property<int>("QuestsCompletedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("QuestsCompletedTotal");
+                    b.Property<int>("QuestsCompletedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SavesChange");
+                    b.Property<int>("SavesChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SavesTotal");
+                    b.Property<int>("SavesTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TacklesChange");
+                    b.Property<int>("TacklesChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TacklesTotal");
+                    b.Property<int>("TacklesTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletedChange");
+                    b.Property<int>("TasksCompletedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletedTotal");
+                    b.Property<int>("TasksCompletedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeChange");
+                    b.Property<int>("TasksCompletionTimeChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeTotal");
+                    b.Property<int>("TasksCompletionTimeTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TurnoverChange");
+                    b.Property<int>("TurnoverChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TurnoverTotal");
+                    b.Property<int>("TurnoverTotal")
+                        .HasColumnType("int");
 
                     b.HasKey("DateId", "ProfileId", "SegmentId", "TaskCategoryId", "OrganizationId");
 
@@ -1177,115 +1244,170 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileReportWeekly", b =>
                 {
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TaskCategoryId");
+                    b.Property<int>("TaskCategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("AssistsChange");
+                    b.Property<int>("AssistsChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("AssistsTotalAverage");
+                    b.Property<float>("AssistsTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensEarnedChange");
+                    b.Property<float>("CompanyTokensEarnedChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensEarnedTotalAverage");
+                    b.Property<float>("CompanyTokensEarnedTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentChange");
+                    b.Property<float>("CompanyTokensSpentChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentTotalAverage");
+                    b.Property<float>("CompanyTokensSpentTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ComplexityChange");
+                    b.Property<int>("ComplexityChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("ComplexityTotalAverage");
+                    b.Property<float>("ComplexityTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ContributionChange");
+                    b.Property<float>("ContributionChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ContributionTotalAverage");
+                    b.Property<float>("ContributionTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float>("DImpactAverage");
+                    b.Property<float>("DImpactAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("DImpactTotalAverage");
+                    b.Property<float>("DImpactTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("EffortScoreChange");
+                    b.Property<float>("EffortScoreChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("EffortScoreTotalAverage");
+                    b.Property<float>("EffortScoreTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorChange");
+                    b.Property<float>("ErrorChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorTotalAverage");
+                    b.Property<float>("ErrorTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("Heat");
+                    b.Property<float>("Heat")
+                        .HasColumnType("real");
 
-                    b.Property<float>("HeatIndex");
+                    b.Property<float>("HeatIndex")
+                        .HasColumnType("real");
 
-                    b.Property<int>("InventoryCountTotal");
+                    b.Property<int>("InventoryCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("InventoryValueTotal");
+                    b.Property<float>("InventoryValueTotal")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ItemsBoughtChange");
+                    b.Property<int>("ItemsBoughtChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsCreatedChange");
+                    b.Property<int>("ItemsCreatedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsDisenchantedChange");
+                    b.Property<int>("ItemsDisenchantedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsGiftedChange");
+                    b.Property<int>("ItemsGiftedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("IterationCount");
+                    b.Property<int>("IterationCount")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float>("OImpactAverage");
+                    b.Property<float>("OImpactAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("OImpactTotalAverage");
+                    b.Property<float>("OImpactTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("PowerAverage");
+                    b.Property<float>("PowerAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("PowerTotalAverage");
+                    b.Property<float>("PowerTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("PraisesGivenChange");
+                    b.Property<int>("PraisesGivenChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("PraisesGivenTotalAverage");
+                    b.Property<float>("PraisesGivenTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("PraisesReceivedChange");
+                    b.Property<int>("PraisesReceivedChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("PraisesReceivedTotalAverage");
+                    b.Property<float>("PraisesReceivedTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ProfileRole");
+                    b.Property<int>("ProfileRole")
+                        .HasColumnType("int");
 
-                    b.Property<int>("RangeChange");
+                    b.Property<int>("RangeChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("RangeTotalAverage");
+                    b.Property<int>("RangeTotalAverage")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SavesChange");
+                    b.Property<int>("SavesChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("SavesTotalAverage");
+                    b.Property<float>("SavesTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("SpeedAverage");
+                    b.Property<float>("SpeedAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("SpeedTotalAverage");
+                    b.Property<float>("SpeedTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("TacklesChange");
+                    b.Property<int>("TacklesChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("TacklesTotalAverage");
+                    b.Property<float>("TacklesTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("TasksCompletedChange");
+                    b.Property<int>("TasksCompletedChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("TasksCompletedTotalAverage");
+                    b.Property<float>("TasksCompletedTotalAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("TasksCompletionTimeAverage");
+                    b.Property<int>("TasksCompletionTimeAverage")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeChange");
+                    b.Property<int>("TasksCompletionTimeChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TurnoverChange");
+                    b.Property<int>("TurnoverChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("TurnoverTotalAverage");
+                    b.Property<float>("TurnoverTotalAverage")
+                        .HasColumnType("real");
 
                     b.HasKey("DateId", "ProfileId", "SegmentId", "TaskCategoryId", "OrganizationId");
 
@@ -1300,39 +1422,60 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.PullRequest", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("AuthorProfileId");
+                    b.Property<Guid?>("AuthorProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Body");
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ClosedAt");
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CommitsCount");
+                    b.Property<int>("CommitsCount")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CreatedAt");
+                    b.Property<string>("ExternalAuthorId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExternalAuthorId");
+                    b.Property<DateTime>("ExternalCreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("ExternalId");
+                    b.Property<string>("ExternalId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExternalUrl");
+                    b.Property<DateTime>("ExternalUpdatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<string>("ExternalUrl")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("MergedAt");
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ReviewCommentsCount");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Title");
+                    b.Property<DateTime?>("MergedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("UpdatedAt");
+                    b.Property<int>("ReviewCommentsCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -1345,37 +1488,48 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.PullRequestReview", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Body");
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CommitId");
+                    b.Property<string>("CommitId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("PullRequestId");
+                    b.Property<int>("PullRequestId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ReviewerExternalId");
+                    b.Property<Guid?>("PullRequestId1")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("ReviewerProfileId");
+                    b.Property<string>("ReviewExternalId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("State");
+                    b.Property<Guid?>("ReviewerProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("SubmittedAt");
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title");
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id", "OrganizationId");
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("PullRequestId", "OrganizationId");
+                    b.HasIndex("PullRequestId1", "OrganizationId");
 
                     b.HasIndex("ReviewerProfileId", "OrganizationId");
 
@@ -1384,29 +1538,42 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.PullRequestReviewComment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Body");
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CommentedProfileId");
+                    b.Property<Guid?>("CommenterProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedAt");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("ExternalId");
+                    b.Property<DateTime>("ExternalCreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("ExternalUrl");
+                    b.Property<string>("ExternalId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PullRequestId");
+                    b.Property<DateTime>("ExternalUpdatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("PullRequestReviewId");
+                    b.Property<string>("ExternalUrl")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdatedAt");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("UserCommentedPullRequestReviewProfileId");
+                    b.Property<Guid>("PullRequestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PullRequestReviewId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -1414,11 +1581,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
+                    b.HasIndex("CommenterProfileId", "OrganizationId");
+
                     b.HasIndex("PullRequestId", "OrganizationId");
 
                     b.HasIndex("PullRequestReviewId", "OrganizationId");
-
-                    b.HasIndex("UserCommentedPullRequestReviewProfileId", "OrganizationId");
 
                     b.ToTable("PullRequestReviewComments");
                 });
@@ -1427,41 +1594,59 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("ActiveUntil");
+                    b.Property<DateTime?>("ActiveUntil")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("CompletionsLimit");
+                    b.Property<int?>("CompletionsLimit")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("CompletionsRemaining");
+                    b.Property<int?>("CompletionsRemaining")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("EndedAt");
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Image");
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsArchived");
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsEasterEgg");
+                    b.Property<bool>("IsEasterEgg")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<float>("RewardValue");
+                    b.Property<float>("RewardValue")
+                        .HasColumnType("real");
 
-                    b.Property<int?>("SegmentId");
+                    b.Property<Guid?>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -1474,17 +1659,23 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestCommit", b =>
                 {
-                    b.Property<int>("QuestId");
+                    b.Property<int>("QuestId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("CompletedAt");
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("QuestId", "ProfileId", "OrganizationId");
 
@@ -1497,15 +1688,20 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestCompletion", b =>
                 {
-                    b.Property<int>("QuestId");
+                    b.Property<int>("QuestId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("QuestId", "ProfileId", "OrganizationId");
 
@@ -1520,19 +1716,26 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsCommentRequired");
+                    b.Property<bool>("IsCommentRequired")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("QuestId");
+                    b.Property<int>("QuestId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -1545,17 +1748,23 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestGoalCompletion", b =>
                 {
-                    b.Property<int>("GoalId");
+                    b.Property<int>("GoalId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Comment");
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("GoalId", "ProfileId", "OrganizationId");
 
@@ -1568,17 +1777,23 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestReward", b =>
                 {
-                    b.Property<int>("QuestId");
+                    b.Property<int>("QuestId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemId");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("Quantity");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("QuestId", "ItemId", "OrganizationId");
 
@@ -1591,15 +1806,20 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestSegment", b =>
                 {
-                    b.Property<int>("QuestId");
+                    b.Property<int>("QuestId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("QuestId", "SegmentId", "OrganizationId");
 
@@ -1612,34 +1832,46 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Repository", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ExternalId");
+                    b.Property<string>("ExternalId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExternalUrl");
+                    b.Property<string>("ExternalUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IntegrationInstallationId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameWithOwner");
+                    b.Property<string>("NameWithOwner")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PrimaryLanguage");
+                    b.Property<string>("PrimaryLanguage")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TeamId");
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -1654,45 +1886,59 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Segment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long>("ArchivedAt")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("AssistantSummary");
+                    b.Property<string>("AssistantSummary")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Avatar")
-                        .HasMaxLength(2000);
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DataStore")
-                        .HasMaxLength(4000);
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<string>("DataWarehouse")
-                        .HasMaxLength(4000);
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
-                    b.Property<bool>("IsReportingUnlocked");
+                    b.Property<bool>("IsReportingUnlocked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Timezone")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -1706,21 +1952,27 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentArea", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -1735,19 +1987,26 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentMetric", b =>
                 {
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float>("Value");
+                    b.Property<float>("Value")
+                        .HasColumnType("real");
 
                     b.HasKey("SegmentId", "Type", "DateId", "OrganizationId");
 
@@ -1758,89 +2017,131 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportDaily", b =>
                 {
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TaskCategoryId");
+                    b.Property<int>("TaskCategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("AssistsChange");
+                    b.Property<int>("AssistsChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("AssistsTotal");
+                    b.Property<int>("AssistsTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("CompanyTokensEarnedChange");
+                    b.Property<float>("CompanyTokensEarnedChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensEarnedTotal");
+                    b.Property<float>("CompanyTokensEarnedTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentChange");
+                    b.Property<float>("CompanyTokensSpentChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentTotal");
+                    b.Property<float>("CompanyTokensSpentTotal")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ComplexityChange");
+                    b.Property<int>("ComplexityChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ComplexityTotal");
+                    b.Property<int>("ComplexityTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("ContributionChange");
+                    b.Property<float>("ContributionChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ContributionTotal");
+                    b.Property<float>("ContributionTotal")
+                        .HasColumnType("real");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float>("EffortScoreChange");
+                    b.Property<float>("EffortScoreChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("EffortScoreTotal");
+                    b.Property<float>("EffortScoreTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorChange");
+                    b.Property<float>("ErrorChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorTotal");
+                    b.Property<float>("ErrorTotal")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ItemsBoughtChange");
+                    b.Property<int>("ItemsBoughtChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsBoughtTotal");
+                    b.Property<int>("ItemsBoughtTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsCreatedChange");
+                    b.Property<int>("ItemsCreatedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsDisenchantedChange");
+                    b.Property<int>("ItemsDisenchantedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsGiftedChange");
+                    b.Property<int>("ItemsGiftedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("IterationCount");
+                    b.Property<int>("IterationCount")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("MembersCountTotal");
+                    b.Property<int>("MembersCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("NonMembersCountTotal");
+                    b.Property<int>("NonMembersCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesGivenChange");
+                    b.Property<int>("PraisesGivenChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesGivenTotal");
+                    b.Property<int>("PraisesGivenTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesReceivedChange");
+                    b.Property<int>("PraisesReceivedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesReceivedTotal");
+                    b.Property<int>("PraisesReceivedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SavesChange");
+                    b.Property<int>("SavesChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SavesTotal");
+                    b.Property<int>("SavesTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TacklesChange");
+                    b.Property<int>("TacklesChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TacklesTotal");
+                    b.Property<int>("TacklesTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletedChange");
+                    b.Property<int>("TasksCompletedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletedTotal");
+                    b.Property<int>("TasksCompletedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeChange");
+                    b.Property<int>("TasksCompletionTimeChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeTotal");
+                    b.Property<int>("TasksCompletionTimeTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TurnoverChange");
+                    b.Property<int>("TurnoverChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TurnoverTotal");
+                    b.Property<int>("TurnoverTotal")
+                        .HasColumnType("int");
 
                     b.HasKey("DateId", "SegmentId", "TaskCategoryId", "OrganizationId");
 
@@ -1853,109 +2154,161 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportWeekly", b =>
                 {
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TaskCategoryId");
+                    b.Property<int>("TaskCategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<float>("AssistsAverage");
+                    b.Property<float>("AssistsAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("AssistsChange");
+                    b.Property<int>("AssistsChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("CompanyTokensEarnedAverage");
+                    b.Property<float>("CompanyTokensEarnedAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensEarnedChange");
+                    b.Property<float>("CompanyTokensEarnedChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentAverage");
+                    b.Property<float>("CompanyTokensSpentAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentChange");
+                    b.Property<float>("CompanyTokensSpentChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ComplexityAverage");
+                    b.Property<float>("ComplexityAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ComplexityChange");
+                    b.Property<int>("ComplexityChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("ContributionAverage");
+                    b.Property<float>("ContributionAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ContributionChange");
+                    b.Property<float>("ContributionChange")
+                        .HasColumnType("real");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float>("DImpactAverage");
+                    b.Property<float>("DImpactAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("DImpactAverageTotal");
+                    b.Property<float>("DImpactAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("EffortScoreAverage");
+                    b.Property<float>("EffortScoreAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("EffortScoreChange");
+                    b.Property<float>("EffortScoreChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorAverage");
+                    b.Property<float>("ErrorAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorChange");
+                    b.Property<float>("ErrorChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("HeatAverageTotal");
+                    b.Property<float>("HeatAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ItemsBoughtChange");
+                    b.Property<int>("ItemsBoughtChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsCreatedChange");
+                    b.Property<int>("ItemsCreatedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsDisenchantedChange");
+                    b.Property<int>("ItemsDisenchantedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsGiftedChange");
+                    b.Property<int>("ItemsGiftedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("IterationCount");
+                    b.Property<int>("IterationCount")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("MembersCountTotal");
+                    b.Property<int>("MembersCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("NonMembersCountTotal");
+                    b.Property<int>("NonMembersCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("OImpactAverage");
+                    b.Property<float>("OImpactAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("OImpactAverageTotal");
+                    b.Property<float>("OImpactAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("PowerAverage");
+                    b.Property<float>("PowerAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("PowerAverageTotal");
+                    b.Property<float>("PowerAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("PraisesGivenAverage");
+                    b.Property<float>("PraisesGivenAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("PraisesGivenChange");
+                    b.Property<int>("PraisesGivenChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("PraisesReceivedAverage");
+                    b.Property<float>("PraisesReceivedAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("PraisesReceivedChange");
+                    b.Property<int>("PraisesReceivedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("RangeAverage");
+                    b.Property<int>("RangeAverage")
+                        .HasColumnType("int");
 
-                    b.Property<int>("RangeChange");
+                    b.Property<int>("RangeChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("SavesAverage");
+                    b.Property<float>("SavesAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("SavesChange");
+                    b.Property<int>("SavesChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("SpeedAverage");
+                    b.Property<float>("SpeedAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("SpeedAverageTotal");
+                    b.Property<float>("SpeedAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("TacklesAverage");
+                    b.Property<float>("TacklesAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("TacklesChange");
+                    b.Property<int>("TacklesChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("TasksCompletedAverage");
+                    b.Property<float>("TasksCompletedAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("TasksCompletedChange");
+                    b.Property<int>("TasksCompletedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeAverage");
+                    b.Property<int>("TasksCompletionTimeAverage")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeChange");
+                    b.Property<int>("TasksCompletionTimeChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("TurnoverAverage");
+                    b.Property<float>("TurnoverAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("TurnoverChange");
+                    b.Property<int>("TurnoverChange")
+                        .HasColumnType("int");
 
                     b.HasKey("DateId", "SegmentId", "TaskCategoryId", "OrganizationId");
 
@@ -1968,23 +2321,30 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Shop", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("ClosedAt");
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -1995,33 +2355,45 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ShopItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long>("ArchivedAt")
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("DisabledAt");
+                    b.Property<DateTime?>("DisabledAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DiscountEndsAt");
+                    b.Property<DateTime?>("DiscountEndsAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float?>("DiscountPrice");
+                    b.Property<float?>("DiscountPrice")
+                        .HasColumnType("real");
 
-                    b.Property<DateTime?>("FeaturedUntil");
+                    b.Property<DateTime?>("FeaturedUntil")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsGlobal");
+                    b.Property<bool>("IsGlobal")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ItemId");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2035,21 +2407,29 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ShopItemSegment", b =>
                 {
-                    b.Property<int>("ShopItemId");
+                    b.Property<Guid>("ShopItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DiscountEndsAt");
+                    b.Property<DateTime?>("DiscountEndsAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float?>("DiscountPrice");
+                    b.Property<float?>("DiscountPrice")
+                        .HasColumnType("real");
 
-                    b.Property<DateTime?>("HiddenAt");
+                    b.Property<DateTime?>("HiddenAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("ShopItemId", "SegmentId", "OrganizationId");
 
@@ -2062,13 +2442,17 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ShopLog", b =>
                 {
-                    b.Property<int>("ShopId");
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("LogId");
+                    b.Property<Guid>("LogId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Event");
+                    b.Property<int>("Event")
+                        .HasColumnType("int");
 
                     b.HasKey("ShopId", "LogId", "OrganizationId");
 
@@ -2081,37 +2465,51 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.ShopPurchase", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("GiftFor");
+                    b.Property<int?>("GiftFor")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsDiscounted");
+                    b.Property<bool>("IsDiscounted")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsFeatured");
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ItemId");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ItemType");
+                    b.Property<int>("ItemType")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("LastModifiedDateId");
+                    b.Property<int>("LastModifiedDateId")
+                        .HasColumnType("int");
 
-                    b.Property<float>("Price");
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
-                    b.Property<float?>("PriceDiscountedFor");
+                    b.Property<float?>("PriceDiscountedFor")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("SegmentId");
+                    b.Property<Guid?>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2130,69 +2528,105 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Task", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("AssigneeExternalId");
+                    b.Property<string>("AssigneeExternalId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("AssigneeProfileId");
+                    b.Property<Guid?>("AssigneeProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("AutoTimeSpentInMinutes");
+                    b.Property<int?>("AutoTimeSpentInMinutes")
+                        .HasColumnType("int");
 
-                    b.Property<float?>("BugPopulationAffect");
+                    b.Property<float?>("BugPopulationAffect")
+                        .HasColumnType("real");
 
-                    b.Property<int?>("BugSeverity");
+                    b.Property<int?>("BugSeverity")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Complexity");
+                    b.Property<int>("Complexity")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float?>("EffortScore");
+                    b.Property<float?>("EffortScore")
+                        .HasColumnType("real");
 
-                    b.Property<string>("ExternalId");
+                    b.Property<string>("ExternalId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ExternalProjectId");
+                    b.Property<string>("ExternalProjectId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExternalUrl");
+                    b.Property<string>("ExternalUrl")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IntegrationType");
+                    b.Property<int>("IntegrationType")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsProductionBugCausing");
+                    b.Property<bool>("IsProductionBugCausing")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsProductionBugFixing");
+                    b.Property<bool>("IsProductionBugFixing")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Labels");
+                    b.Property<string>("Labels")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("LastModifiedDateId");
+                    b.Property<int>("LastModifiedDateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Priority");
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ReporterProfileId");
+                    b.Property<int>("ReporterProfileId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("SegmentAreaId");
+                    b.Property<int?>("SegmentAreaId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("SegmentId");
+                    b.Property<Guid?>("SegmentAreaId1")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status");
+                    b.Property<Guid?>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("StoryPoints");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Summary");
+                    b.Property<int?>("StoryPoints")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("TaskCategoryId");
+                    b.Property<string>("Summary")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TeamId");
+                    b.Property<int?>("TaskCategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("TimeOriginalEstimatInMinutes");
+                    b.Property<Guid?>("TaskCategoryId1")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("TimeSpentInMinutes");
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Type");
+                    b.Property<int?>("TimeOriginalEstimatInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TimeSpentInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2202,11 +2636,11 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("AssigneeProfileId", "OrganizationId");
 
-                    b.HasIndex("SegmentAreaId", "OrganizationId");
+                    b.HasIndex("SegmentAreaId1", "OrganizationId");
 
                     b.HasIndex("SegmentId", "OrganizationId");
 
-                    b.HasIndex("TaskCategoryId", "OrganizationId");
+                    b.HasIndex("TaskCategoryId1", "OrganizationId");
 
                     b.HasIndex("TeamId", "OrganizationId");
 
@@ -2221,19 +2655,24 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TaskCategory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -2246,29 +2685,42 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TaskLog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("AssigneeProfileId");
+                    b.Property<int>("AssigneeProfileId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<Guid?>("AssigneeProfileId1")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ExternalId");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("IntegrationType");
+                    b.Property<string>("ExternalId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<int>("IntegrationType")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ReporterProfileId");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<int>("ReporterProfileId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Status");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TeamId");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2276,7 +2728,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("AssigneeProfileId", "OrganizationId");
+                    b.HasIndex("AssigneeProfileId1", "OrganizationId");
 
                     b.HasIndex("SegmentId", "OrganizationId");
 
@@ -2287,23 +2739,30 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TaskSync", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ExternalProjectId");
+                    b.Property<string>("ExternalProjectId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IntegrationType");
+                    b.Property<int>("IntegrationType")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2318,34 +2777,45 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Team", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<long>("ArchivedAt");
+                    b.Property<long>("ArchivedAt")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("AssistantSummary");
+                    b.Property<string>("AssistantSummary")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AvatarColor")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Key")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2360,19 +2830,29 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamMetric", b =>
                 {
-                    b.Property<int>("TeamId");
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<float>("Value");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<float>("Value")
+                        .HasColumnType("real");
 
                     b.HasKey("TeamId", "Type", "DateId", "OrganizationId");
 
@@ -2383,91 +2863,134 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportDaily", b =>
                 {
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TeamId");
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TaskCategoryId");
+                    b.Property<int>("TaskCategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("AssistsChange");
+                    b.Property<int>("AssistsChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("AssistsTotal");
+                    b.Property<int>("AssistsTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("CompanyTokensEarnedChange");
+                    b.Property<float>("CompanyTokensEarnedChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensEarnedTotal");
+                    b.Property<float>("CompanyTokensEarnedTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentChange");
+                    b.Property<float>("CompanyTokensSpentChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentTotal");
+                    b.Property<float>("CompanyTokensSpentTotal")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ComplexityChange");
+                    b.Property<int>("ComplexityChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ComplexityTotal");
+                    b.Property<int>("ComplexityTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("ContributionChange");
+                    b.Property<float>("ContributionChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ContributionTotal");
+                    b.Property<float>("ContributionTotal")
+                        .HasColumnType("real");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float>("EffortScoreChange");
+                    b.Property<float>("EffortScoreChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("EffortScoreTotal");
+                    b.Property<float>("EffortScoreTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorChange");
+                    b.Property<float>("ErrorChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorTotal");
+                    b.Property<float>("ErrorTotal")
+                        .HasColumnType("real");
 
-                    b.Property<bool>("IsUnassigned");
+                    b.Property<bool>("IsUnassigned")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ItemsBoughtChange");
+                    b.Property<int>("ItemsBoughtChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemsBoughtTotal");
+                    b.Property<int>("ItemsBoughtTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("IterationCount");
+                    b.Property<int>("IterationCount")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("MembersCountTotal");
+                    b.Property<int>("MembersCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("NonMembersCountTotal");
+                    b.Property<int>("NonMembersCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesGivenChange");
+                    b.Property<int>("PraisesGivenChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesGivenTotal");
+                    b.Property<int>("PraisesGivenTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesReceivedChange");
+                    b.Property<int>("PraisesReceivedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("PraisesReceivedTotal");
+                    b.Property<int>("PraisesReceivedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("QuestsCompletedChange");
+                    b.Property<int>("QuestsCompletedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("QuestsCompletedTotal");
+                    b.Property<int>("QuestsCompletedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SavesChange");
+                    b.Property<int>("SavesChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SavesTotal");
+                    b.Property<int>("SavesTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TacklesChange");
+                    b.Property<int>("TacklesChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TacklesTotal");
+                    b.Property<int>("TacklesTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletedChange");
+                    b.Property<int>("TasksCompletedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletedTotal");
+                    b.Property<int>("TasksCompletedTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeChange");
+                    b.Property<int>("TasksCompletionTimeChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeTotal");
+                    b.Property<int>("TasksCompletionTimeTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TurnoverChange");
+                    b.Property<int>("TurnoverChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TurnoverTotal");
+                    b.Property<int>("TurnoverTotal")
+                        .HasColumnType("int");
 
                     b.HasKey("DateId", "TeamId", "TaskCategoryId", "OrganizationId");
 
@@ -2480,103 +3003,152 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportWeekly", b =>
                 {
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TeamId");
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TaskCategoryId");
+                    b.Property<int>("TaskCategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<float>("AssistsAverage");
+                    b.Property<float>("AssistsAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("AssistsChange");
+                    b.Property<int>("AssistsChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("CompanyTokensEarnedAverage");
+                    b.Property<float>("CompanyTokensEarnedAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensEarnedChange");
+                    b.Property<float>("CompanyTokensEarnedChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentAverage");
+                    b.Property<float>("CompanyTokensSpentAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("CompanyTokensSpentChange");
+                    b.Property<float>("CompanyTokensSpentChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ComplexityAverage");
+                    b.Property<float>("ComplexityAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("ComplexityChange");
+                    b.Property<int>("ComplexityChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("ContributionAverage");
+                    b.Property<float>("ContributionAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ContributionChange");
+                    b.Property<float>("ContributionChange")
+                        .HasColumnType("real");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<float>("DImpactAverage");
+                    b.Property<float>("DImpactAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("DImpactAverageTotal");
+                    b.Property<float>("DImpactAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("EffortScoreAverage");
+                    b.Property<float>("EffortScoreAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("EffortScoreChange");
+                    b.Property<float>("EffortScoreChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorAverage");
+                    b.Property<float>("ErrorAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("ErrorChange");
+                    b.Property<float>("ErrorChange")
+                        .HasColumnType("real");
 
-                    b.Property<float>("HeatAverageTotal");
+                    b.Property<float>("HeatAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<int>("IterationCount");
+                    b.Property<int>("IterationCount")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("MembersCountTotal");
+                    b.Property<int>("MembersCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<int>("NonMembersCountTotal");
+                    b.Property<int>("NonMembersCountTotal")
+                        .HasColumnType("int");
 
-                    b.Property<float>("OImpactAverage");
+                    b.Property<float>("OImpactAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("OImpactAverageTotal");
+                    b.Property<float>("OImpactAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("PowerAverage");
+                    b.Property<float>("PowerAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("PowerAverageTotal");
+                    b.Property<float>("PowerAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("PraisesGivenAverage");
+                    b.Property<float>("PraisesGivenAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("PraisesGivenChange");
+                    b.Property<int>("PraisesGivenChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("PraisesReceivedAverage");
+                    b.Property<float>("PraisesReceivedAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("PraisesReceivedChange");
+                    b.Property<int>("PraisesReceivedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("RangeAverage");
+                    b.Property<int>("RangeAverage")
+                        .HasColumnType("int");
 
-                    b.Property<int>("RangeChange");
+                    b.Property<int>("RangeChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("SavesAverage");
+                    b.Property<float>("SavesAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("SavesChange");
+                    b.Property<int>("SavesChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<float>("SpeedAverage");
+                    b.Property<float>("SpeedAverage")
+                        .HasColumnType("real");
 
-                    b.Property<float>("SpeedAverageTotal");
+                    b.Property<float>("SpeedAverageTotal")
+                        .HasColumnType("real");
 
-                    b.Property<float>("TacklesAverage");
+                    b.Property<float>("TacklesAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("TacklesChange");
+                    b.Property<int>("TacklesChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("TasksCompletedAverage");
+                    b.Property<float>("TasksCompletedAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("TasksCompletedChange");
+                    b.Property<int>("TasksCompletedChange")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeAverage");
+                    b.Property<int>("TasksCompletionTimeAverage")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TasksCompletionTimeChange");
+                    b.Property<int>("TasksCompletionTimeChange")
+                        .HasColumnType("int");
 
-                    b.Property<float>("TurnoverAverage");
+                    b.Property<float>("TurnoverAverage")
+                        .HasColumnType("real");
 
-                    b.Property<int>("TurnoverChange");
+                    b.Property<int>("TurnoverChange")
+                        .HasColumnType("int");
 
                     b.HasKey("DateId", "TeamId", "TaskCategoryId", "OrganizationId");
 
@@ -2589,27 +3161,36 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.Token", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SupplyAddress");
+                    b.Property<string>("SupplyAddress")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Symbol");
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2620,36 +3201,49 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.TokenTransaction", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("ClaimRequired");
+                    b.Property<bool>("ClaimRequired")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("ClaimedAt");
+                    b.Property<DateTime?>("ClaimedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Comment")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("DateId");
+                    b.Property<int>("DateId")
+                        .HasColumnType("int");
 
-                    b.Property<double>("FinalBalance");
+                    b.Property<double>("FinalBalance")
+                        .HasColumnType("float");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("ProfileId");
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Reason");
+                    b.Property<int>("Reason")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TokenId");
+                    b.Property<Guid>("TokenId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("TxnHash");
+                    b.Property<string>("TxnHash")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Value");
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2664,19 +3258,24 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.WebhookEventLog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Data");
+                    b.Property<string>("Data")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IntegrationType");
+                    b.Property<int>("IntegrationType")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -2689,18 +3288,20 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Cog.DAL.EntityChangeLog", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ActionPoint", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
@@ -2713,42 +3314,55 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ActionPointSetting", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Blob", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundle", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundleItem", b =>
@@ -2757,18 +3371,25 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany("Items")
                         .HasForeignKey("ClaimBundleId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.ProfileInventoryItem", "ProfileInventoryItem")
                         .WithMany()
                         .HasForeignKey("ProfileInventoryItemId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClaimBundle");
+
+                    b.Navigation("ProfileInventoryItem");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundleTokenTxn", b =>
@@ -2777,148 +3398,25 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany("TokenTxns")
                         .HasForeignKey("ClaimBundleId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.TokenTransaction", "TokenTransaction")
                         .WithMany()
                         .HasForeignKey("TokenTransactionId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-            modelBuilder.Entity("Tayra.Models.Organizations.Competition", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.Navigation("ClaimBundle");
 
-                    b.HasOne("Tayra.Models.Organizations.Competition", "PreviousCompetition")
-                        .WithMany()
-                        .HasForeignKey("PreviousCompetitionId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
-                        .WithMany()
-                        .HasForeignKey("SegmentId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Token", "Token")
-                        .WithMany()
-                        .HasForeignKey("TokenId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.CompetitionLog", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Competition", "Competition")
-                        .WithMany()
-                        .HasForeignKey("CompetitionId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Log", "Log")
-                        .WithMany()
-                        .HasForeignKey("LogId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.CompetitionReward", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Competition", "Competition")
-                        .WithMany("Rewards")
-                        .HasForeignKey("CompetitionId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Token", "Token")
-                        .WithMany()
-                        .HasForeignKey("TokenId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.Competitor", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Competition", "Competition")
-                        .WithMany("Competitors")
-                        .HasForeignKey("CompetitionId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
-                        .WithMany()
-                        .HasForeignKey("ProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Tayra.Models.Organizations.CompetitorScore", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Competition", "Competition")
-                        .WithMany()
-                        .HasForeignKey("CompetitionId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Competitor", "Competitor")
-                        .WithMany()
-                        .HasForeignKey("CompetitorId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
-                        .WithMany()
-                        .HasForeignKey("ProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Tayra.Models.Organizations.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.Navigation("TokenTransaction");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.GitCommit", b =>
@@ -2929,18 +3427,22 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AuthorProfile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Integration", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("Integrations")
@@ -2952,7 +3454,12 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany("Integrations")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.IntegrationField", b =>
@@ -2961,20 +3468,25 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany("Fields")
                         .HasForeignKey("IntegrationId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Integration");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Invitation", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
@@ -2987,14 +3499,19 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Segment");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Item", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ItemDisenchant", b =>
@@ -3003,18 +3520,25 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ItemGift", b =>
@@ -3023,46 +3547,60 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Log", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.LogDevice", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.LogSetting", b =>
@@ -3071,80 +3609,105 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany("Settings")
                         .HasForeignKey("LogDeviceId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LogDevice");
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.LoginLog", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Profile", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileAssignment", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("Assignments")
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("Members")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Team", "Team")
                         .WithMany("Members")
                         .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Segment");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileExternalId", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("MembersLinked")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileInventoryItem", b =>
@@ -3153,18 +3716,25 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("InventoryItems")
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileLog", b =>
@@ -3173,92 +3743,123 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("LogId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Log");
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileMetric", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfilePraise", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("Praises")
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileReportDaily", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("StatsDaily")
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ProfileReportWeekly", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("StatsWeekly")
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.PullRequest", b =>
@@ -3269,22 +3870,26 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AuthorProfile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.PullRequestReview", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.PullRequest", "PullRequest")
                         .WithMany()
-                        .HasForeignKey("PullRequestId")
+                        .HasForeignKey("PullRequestId1")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -3293,42 +3898,56 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasForeignKey("ReviewerProfileId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("PullRequest");
+
+                    b.Navigation("ReviewerProfile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.PullRequestReviewComment", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Profile", "CommenterProfile")
+                        .WithMany()
+                        .HasForeignKey("CommenterProfileId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.PullRequest", "PullRequest")
                         .WithMany()
                         .HasForeignKey("PullRequestId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.PullRequestReview", "PullRequestReview")
                         .WithMany()
                         .HasForeignKey("PullRequestReviewId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Profile", "UserCommentedPullRequestReviewProfile")
-                        .WithMany()
-                        .HasForeignKey("UserCommentedPullRequestReviewProfileId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.Navigation("CommenterProfile");
+
+                    b.Navigation("PullRequest");
+
+                    b.Navigation("PullRequestReview");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Quest", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Segment")
+                    b.HasOne("Tayra.Models.Organizations.Segment", null)
                         .WithMany("Quests")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
@@ -3337,56 +3956,74 @@ namespace Tayra.Models.Organizations.Migrations
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestCommit", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
                         .WithMany("Commits")
                         .HasForeignKey("QuestId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Quest");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestCompletion", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("CompletedQuests")
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
                         .WithMany()
                         .HasForeignKey("QuestId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Quest");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestGoal", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
                         .WithMany("Goals")
                         .HasForeignKey("QuestId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Quest");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestGoalCompletion", b =>
@@ -3395,18 +4032,25 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany("Completitions")
                         .HasForeignKey("GoalId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Goal");
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestReward", b =>
@@ -3415,118 +4059,150 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
                         .WithMany("Rewards")
                         .HasForeignKey("QuestId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Quest");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.QuestSegment", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Quest", "Quest")
                         .WithMany("Segments")
                         .HasForeignKey("QuestId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Quest");
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Repository", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Segment", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentArea", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentMetric", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportDaily", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("ReportsDaily")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.SegmentReportWeekly", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("ReportsWeekly")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Shop", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ShopItem", b =>
@@ -3535,32 +4211,43 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ShopItemSegment", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.ShopItem", "ShopItem")
                         .WithMany("Segments")
                         .HasForeignKey("ShopItemId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Segment");
+
+                    b.Navigation("ShopItem");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ShopLog", b =>
@@ -3569,18 +4256,25 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("LogId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Log");
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.ShopPurchase", b =>
@@ -3589,24 +4283,33 @@ namespace Tayra.Models.Organizations.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("ShopPurchases")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Task", b =>
@@ -3617,14 +4320,15 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.SegmentArea", "SegmentArea")
                         .WithMany()
-                        .HasForeignKey("SegmentAreaId")
+                        .HasForeignKey("SegmentAreaId1")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -3636,7 +4340,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasOne("Tayra.Models.Organizations.TaskCategory", "TaskCategory")
                         .WithMany()
-                        .HasForeignKey("TaskCategoryId")
+                        .HasForeignKey("TaskCategoryId1")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Tayra.Models.Organizations.Team", "Team")
@@ -3644,138 +4348,273 @@ namespace Tayra.Models.Organizations.Migrations
                         .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AssigneeProfile");
+
+                    b.Navigation("Segment");
+
+                    b.Navigation("SegmentArea");
+
+                    b.Navigation("TaskCategory");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.TaskLog", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Profile", "AssigneeProfile")
                         .WithMany()
-                        .HasForeignKey("AssigneeProfileId")
+                        .HasForeignKey("AssigneeProfileId1")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssigneeProfile");
+
+                    b.Navigation("Segment");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.TaskSync", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany()
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Team", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Segment", "Segment")
                         .WithMany("Teams")
                         .HasForeignKey("SegmentId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Segment");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamMetric", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportDaily", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Team", "Team")
                         .WithMany("ReportsDaily")
                         .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.TeamReportWeekly", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Team", "Team")
                         .WithMany("ReportsWeekly")
                         .HasForeignKey("TeamId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.Token", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.TokenTransaction", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "Profile")
                         .WithMany("Tokens")
                         .HasForeignKey("ProfileId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Token", "Token")
                         .WithMany()
                         .HasForeignKey("TokenId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Token");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.WebhookEventLog", b =>
                 {
-                    b.HasOne("Tayra.Models.Organizations.Organization")
+                    b.HasOne("Tayra.Models.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.ClaimBundle", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("TokenTxns");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.Integration", b =>
+                {
+                    b.Navigation("Fields");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.LogDevice", b =>
+                {
+                    b.Navigation("Settings");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.Profile", b =>
+                {
+                    b.Navigation("Assignments");
+
+                    b.Navigation("CompletedQuests");
+
+                    b.Navigation("Integrations");
+
+                    b.Navigation("InventoryItems");
+
+                    b.Navigation("Praises");
+
+                    b.Navigation("StatsDaily");
+
+                    b.Navigation("StatsWeekly");
+
+                    b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.Quest", b =>
+                {
+                    b.Navigation("Commits");
+
+                    b.Navigation("Goals");
+
+                    b.Navigation("Rewards");
+
+                    b.Navigation("Segments");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.QuestGoal", b =>
+                {
+                    b.Navigation("Completitions");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.Segment", b =>
+                {
+                    b.Navigation("ActionPoints");
+
+                    b.Navigation("Integrations");
+
+                    b.Navigation("Members");
+
+                    b.Navigation("MembersLinked");
+
+                    b.Navigation("Quests");
+
+                    b.Navigation("ReportsDaily");
+
+                    b.Navigation("ReportsWeekly");
+
+                    b.Navigation("ShopPurchases");
+
+                    b.Navigation("Teams");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.ShopItem", b =>
+                {
+                    b.Navigation("Segments");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Organizations.Team", b =>
+                {
+                    b.Navigation("Members");
+
+                    b.Navigation("ReportsDaily");
+
+                    b.Navigation("ReportsWeekly");
                 });
 #pragma warning restore 612, 618
         }

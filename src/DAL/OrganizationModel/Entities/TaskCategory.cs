@@ -4,17 +4,16 @@ using Cog.DAL;
 namespace Tayra.Models.Organizations
 {
     [TenantSharedEntity]
-    public class TaskCategory : IAuditedEntity
+    public class TaskCategory : Entity<Guid>, IAuditedEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; }
 
         #region IAuditedEntity
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

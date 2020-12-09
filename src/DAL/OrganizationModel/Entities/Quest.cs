@@ -14,7 +14,7 @@ namespace Tayra.Models.Organizations
         public string Name { get; set; }
         public string Description { get; set; }
         public string Image { get; set; }
-        
+
         public int? CompletionsLimit { get; set; }
         public int? CompletionsRemaining { get; set; }
 
@@ -30,13 +30,13 @@ namespace Tayra.Models.Organizations
         public virtual ICollection<QuestCommit> Commits { get; set; }
         public virtual ICollection<QuestReward> Rewards { get; set; }
         public virtual ICollection<QuestSegment> Segments { get; set; }
-        
+
         #region IAuditedEntity
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

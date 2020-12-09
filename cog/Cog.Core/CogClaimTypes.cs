@@ -1,7 +1,7 @@
 ﻿namespace Cog.Core
 {
     /// <summary>
-    /// Set of frequently used claim types.
+    ///     Set of frequently used claim types.
     /// </summary>
     public static class CogClaimTypes
     {

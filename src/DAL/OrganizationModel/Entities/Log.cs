@@ -4,10 +4,8 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Log : ITimeStampedEntity
+    public class Log : Entity<Guid>, ITimeStampedEntity
     {
-        public int Id { get; set; }
-
         public string Data { get; set; }
 
         public LogEvents Event { get; set; }

@@ -1,4 +1,6 @@
-﻿namespace Tayra.Services
+﻿using System;
+
+namespace Tayra.Services
 {
     public class ReportItemsTeamMetricsDTO
     {
@@ -7,7 +9,7 @@
 
         public class MemberDTO
         {
-            public int ProfileId { get; set; }
+            public Guid ProfileId { get; set; }
             public string Name { get; set; }
             public float InventoryValue { get; set; }
             public int InventoryCount { get; set; }

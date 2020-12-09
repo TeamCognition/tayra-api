@@ -32,7 +32,6 @@ namespace Tayra.API.Controllers
         private IIdentitiesService _identitiesService;
         private IInventoriesService _inventoriesService;
         private IClaimBundlesService _claimBundlesService;
-        private ICompetitionsService _competitionsService;
         private IIntegrationsService _integrationsService;
 
         private TayraPrincipal _currentUser;
@@ -76,7 +75,6 @@ namespace Tayra.API.Controllers
         protected IIdentitiesService IdentitiesService => _identitiesService ?? (_identitiesService = Resolve<IIdentitiesService>());
         protected IInventoriesService InventoriesService => _inventoriesService ?? (_inventoriesService = Resolve<IInventoriesService>());
         protected IClaimBundlesService ClaimBundlesService => _claimBundlesService ?? (_claimBundlesService = Resolve<IClaimBundlesService>());
-        protected ICompetitionsService CompetitionsService => _competitionsService ?? (_competitionsService = Resolve<ICompetitionsService>());
         protected IIntegrationsService IntegrationsService => _integrationsService ?? (_integrationsService = Resolve<IIntegrationsService>());
 
         #endregion

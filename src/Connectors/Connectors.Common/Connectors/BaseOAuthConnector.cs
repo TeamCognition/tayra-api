@@ -28,7 +28,7 @@ namespace Tayra.Connectors.Common
         public abstract Integration Authenticate(OAuthState state);
         public abstract void UpdateAuthentication(string installationId);
 
-        public virtual  Integration RefreshToken(int integrationId)
+        public virtual Integration RefreshToken(Guid integrationId)
         {
             throw new NotImplementedException("Not supported by this network");
         }
@@ -48,12 +48,12 @@ namespace Tayra.Connectors.Common
             return $"https://{HttpContext.Request.Host}/external/callback/{Type.ToString().ToLower()}";
         }
 
-        protected string ReadAccessToken(int integrationId)
+        protected string ReadAccessToken(Guid integrationId)
         {
             return ReadField(integrationId, Constants.ACCESS_TOKEN, "Unable to access the integration account, access token is missing or has expired");
         }
 
-        protected string ReadAccessTokenType(int integrationId)
+        protected string ReadAccessTokenType(Guid integrationId)
         {
             return ReadField(integrationId, Constants.ACCESS_TOKEN_TYPE) ?? "Bearer";
         }

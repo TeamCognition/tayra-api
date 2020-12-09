@@ -53,7 +53,7 @@ namespace Tayra.SyncServices.Tayra
         public static List<SegmentMetric> GenerateSegmentMetrics(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService)
         {
             var metricsToInsert = new List<SegmentMetric>();
-            
+
             var dateId = DateHelper2.ToDateId(fromDay);
 
             var segmentIds = organizationDb.Segments.Select(x => x.Id).ToArray();
@@ -77,16 +77,16 @@ namespace Tayra.SyncServices.Tayra
                         Type = x.Type,
                         Value = x.Value,
                         DateId = x.DateId
-                        })
+                    })
                     .ToArray();
 
                 var segmentMetrics = MetricType.List
                         .Select(m => new SegmentMetric(segmentId, dateId, m, profileIds.Sum(x =>
                                 m.Calc(rawMetrics.Where(m => m.EntityId == x).ToArray(),
-                                new DatePeriod(dateId, dateId))/ profileIds.Length)));
+                                new DatePeriod(dateId, dateId)) / profileIds.Length)));
 
-                
-                
+
+
                 metricsToInsert.AddRange(segmentMetrics);
             }
 
@@ -94,8 +94,8 @@ namespace Tayra.SyncServices.Tayra
             if (existing > 0)
             {
                 logService.Log<NewSegmentMetricsLoader>($"date: ${dateId},  deleting {existing} records from database");
-                //organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}");
-                organizationDb.Database.ExecuteSqlCommand($"delete from SegmentMetrics where {nameof(ProfileReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId}");
+                //organizationDb.Database.ExecuteSqlCommand($"delete from SegmentMetrics where {nameof(ProfileReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
                 organizationDb.SaveChanges();
             }
 

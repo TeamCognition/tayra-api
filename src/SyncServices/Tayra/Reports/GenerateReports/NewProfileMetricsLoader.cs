@@ -58,7 +58,7 @@ namespace Tayra.SyncServices.Tayra
             var metricsToInsert = new List<ProfileMetric>();
 
             var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
-            if (companyTokenId == 0)
+            if (companyTokenId == default)
                 throw new ApplicationException("COMPANY TOKEN NOT FOUND");
 
             var dateId = DateHelper2.ToDateId(fromDay);
@@ -190,8 +190,8 @@ namespace Tayra.SyncServices.Tayra
             if (existing > 0)
             {
                 logService.Log<ProfileReportDaily>($"deleting {existing} records from database");
-                //organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId} AND {nameof(ProfileReportDaily.SegmentId)} = {segmentId}");
-                organizationDb.Database.ExecuteSqlCommand($"delete from ProfileMetrics where {nameof(ProfileReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
+                organizationDb.Database.ExecuteSqlInterpolated($"delete from ProfileReportsDaily where {nameof(ProfileReportDaily.DateId)} = {dateId}");
+                //organizationDb.Database.ExecuteSqlCommand($"delete from ProfileMetrics where {nameof(ProfileReportDaily.DateId)} = {dateId}", dateId); //this extra parameter is a workaround in ef 2.2
                 organizationDb.SaveChanges();
             }
 

@@ -13,18 +13,18 @@ namespace Tayra.Services
 
         public AssistantService(OrganizationDbContext dbContext) : base(dbContext)
         {
-           
+
         }
 
         #endregion
 
         #region Public Methods
 
-        public AssistantOverviewDTO GetActionPointOverview(int? segmentId)
+        public AssistantOverviewDTO GetActionPointOverview(Guid? segmentId)
         {
             IQueryable<ActionPoint> scope = DbContext.ActionPoints.Where(x => x.ConcludedOn == null && x.SegmentId.HasValue);
 
-            if(segmentId.HasValue)
+            if (segmentId.HasValue)
             {
                 scope = scope.Where(x => x.SegmentId == segmentId);
             }
@@ -42,7 +42,7 @@ namespace Tayra.Services
             };
         }
 
-        public GridData<AssistantMemberGridDTO> GetMemberActionPointGrid(GridParams gridParams, int profileId)
+        public GridData<AssistantMemberGridDTO> GetMemberActionPointGrid(GridParams gridParams, Guid profileId)
         {
             var q = from ap in DbContext.ActionPoints
                     where ap.ProfileId == profileId
@@ -59,39 +59,39 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public GridData<AssistantSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams, int segmentId)
+        public GridData<AssistantSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams, Guid segmentId)
         {
-            var q =  from ap in DbContext.ActionPoints
-                     where ap.SegmentId == segmentId
-                     where ap.ConcludedOn == null
-                     group ap by ap.Type into g
-                     select new AssistantSegmentGridDTO
-                     {
+            var q = from ap in DbContext.ActionPoints
+                    where ap.SegmentId == segmentId
+                    where ap.ConcludedOn == null
+                    group ap by ap.Type into g
+                    select new AssistantSegmentGridDTO
+                    {
                         Type = g.Key,
-                        ImpactedMembers = g.Select(x => new AssistantSegmentGridDTO.ProfileDTO        
-                        {  
+                        ImpactedMembers = g.Select(x => new AssistantSegmentGridDTO.ProfileDTO
+                        {
                             ActionPointId = x.Id,
                             FullName = $"{x.Profile.FirstName} {x.Profile.LastName}",
                             Username = x.Profile.Username,
                             Avatar = x.Profile.Avatar,
                             Created = x.Created
-                        }).ToArray()                     
-                     };
-                    
+                        }).ToArray()
+                    };
+
             GridData<AssistantSegmentGridDTO> gridData = q.GetGridData(gridParams);
 
             return gridData;
         }
 
-        public void ConcludeActionPoints(int segmentId, int[] apIds, ActionPointTypes? apType)
+        public void ConcludeActionPoints(Guid segmentId, Guid[] apIds, ActionPointTypes? apType)
         {
             IQueryable<ActionPoint> scope = DbContext.ActionPoints.Where(x => x.SegmentId == segmentId);
 
-            if(apIds.Length > 0)
+            if (apIds.Length > 0)
             {
                 scope = scope.Where(x => apIds.Contains(x.Id));
             }
-            else if(apType.HasValue)
+            else if (apType.HasValue)
             {
                 scope = scope.Where(x => x.Type == apType);
             }
@@ -101,10 +101,10 @@ namespace Tayra.Services
             }
 
             var now = DateTime.UtcNow;
-            foreach(var ap in scope)
+            foreach (var ap in scope)
             {
                 ap.ConcludedOn = now;
-            }  
+            }
         }
 
         #endregion

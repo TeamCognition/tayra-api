@@ -5,10 +5,8 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Item : IAuditedEntity, IArchivableEntity
+    public class Item : Entity<Guid>, IAuditedEntity, IArchivableEntity
     {
-        public int Id { get; set; }
-
         [MaxLength(100)]
         public string Name { get; set; }
         public string Description { get; set; }
@@ -32,8 +30,8 @@ namespace Tayra.Models.Organizations
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

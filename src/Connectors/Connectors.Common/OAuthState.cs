@@ -6,12 +6,12 @@ namespace Tayra.Connectors.Common
     public class OAuthState
     {
         public string TenantKey { get; }
-        public int ProfileId { get; }
-        public int SegmentId { get; }
+        public Guid ProfileId { get; }
+        public Guid SegmentId { get; }
         public bool IsSegmentAuth { get; }
         public string ReturnPath { get; }
 
-        public OAuthState(string tenantKey, int profileId, int segmentId, bool isSegmentAuth, string returnPath)
+        public OAuthState(string tenantKey, Guid profileId, Guid segmentId, bool isSegmentAuth, string returnPath)
         {
             ProfileId = profileId;
             SegmentId = segmentId;
@@ -25,8 +25,8 @@ namespace Tayra.Connectors.Common
             try
             {
                 var stateProps = SplitProps(Cipher.Decrypt(oAuthState.Base64UrlDecode()));
-                ProfileId = int.Parse(stateProps[0]);
-                SegmentId = int.Parse(stateProps[1]);
+                ProfileId = Guid.Parse(stateProps[0]);
+                SegmentId = Guid.Parse(stateProps[1]);
                 IsSegmentAuth = bool.Parse(stateProps[2]);
                 TenantKey = stateProps[3];
                 ReturnPath = stateProps[4];

@@ -6,7 +6,7 @@ namespace Tayra.Models.Organizations
     public class QuestGoalCompletion : ITimeStampedEntity
     {
         //Composite Key
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
         public int GoalId { get; set; }

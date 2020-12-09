@@ -1,9 +1,11 @@
-﻿namespace Cog.DAL
+﻿using System;
+
+namespace Cog.DAL
 {
     public interface IUserStampedEntity
     {
-        int CreatedBy { get; set; }
+        Guid CreatedBy { get; set; }
 
-        int? LastModifiedBy { get; set; }
+        Guid? LastModifiedBy { get; set; }
     }
 }

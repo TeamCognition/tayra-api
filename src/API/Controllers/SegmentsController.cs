@@ -55,7 +55,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("{segmentKey}/averageMetrics")]
-        public ActionResult<Dictionary<int,AnalyticsMetricWithIterationSplitDto>> GetSegmentAverageMetrics([FromRoute] string segmentKey)
+        public ActionResult<Dictionary<int, AnalyticsMetricWithIterationSplitDto>> GetSegmentAverageMetrics([FromRoute] string segmentKey)
         {
             return SegmentsService.GetSegmentAverageMetrics(segmentKey);
         }
@@ -67,7 +67,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("{segmentKey}/rankChart")]
-        public Dictionary<int, MetricsValueWEntity[]>  GetSegmentRankChart([FromRoute] string segmentKey)
+        public Dictionary<int, MetricsValueWEntity[]> GetSegmentRankChart([FromRoute] string segmentKey)
         {
             return SegmentsService.GetSegmentRankChart(segmentKey);
         }
@@ -81,7 +81,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update([FromQuery] int segmentId, [FromBody] SegmentCreateDTO dto)
+        public IActionResult Update([FromQuery] Guid segmentId, [FromBody] SegmentCreateDTO dto)
         {
             SegmentsService.Update(segmentId, dto);
             DbContext.SaveChanges();
@@ -89,7 +89,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Archive([FromQuery] int segmentId)
+        public IActionResult Archive([FromQuery] Guid segmentId)
         {
             SegmentsService.Archive(segmentId);
             DbContext.SaveChanges();
@@ -121,18 +121,18 @@ namespace Tayra.API.Controllers
         {
             return IntegrationsService.GetSegmentIntegrations(segmentKey);
         }
-        
+
         [HttpGet("rawMetrics")]
-        public TableData GetRawMetrics([FromQuery] int m, [FromQuery] int entityId, [FromQuery] string period)
+        public TableData GetRawMetrics([FromQuery] int m, [FromQuery] Guid entityId, [FromQuery] string period)
         {
             var datePeriod = new DatePeriod(period);
             var metricType = MetricType.FromValue(m) as PureMetric;
-            
+
             return new TableData(metricType.TypeOfRawMetric, metricType.GetRawMetrics(DbContext, datePeriod, entityId, EntityTypes.Segment));
         }
-        
+
         [HttpGet("statsWidget/{segmentId:int}")]
-        public ActionResult<SegmentStatsDTO> GetSegmentStats(int segmentId)
+        public ActionResult<SegmentStatsDTO> GetSegmentStats(Guid segmentId)
         {
             return SegmentsService.GetSegmentStats(segmentId);
         }

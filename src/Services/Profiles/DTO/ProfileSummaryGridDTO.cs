@@ -5,7 +5,7 @@ namespace Tayra.Services
 {
     public class ProfileSummaryGridDTO
     {
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public string Name { get; set; }
         public string Username { get; set; }
         public string Avatar { get; set; }
@@ -15,7 +15,7 @@ namespace Tayra.Services
         public Integration[] Integrations { get; set; }
 
         public class PlatformData
-        { 
+        {
             public float CompanyTokens { get; set; }
             public int? Praises { get; set; }
             public int? CompletedQuests { get; set; } = 0;

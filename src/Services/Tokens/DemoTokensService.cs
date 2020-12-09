@@ -32,7 +32,7 @@ namespace Tayra.Services
                 .ToList();
         }
 
-        public double CreateTransaction(TokenType tokenType, int profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
+        public double CreateTransaction(TokenType tokenType, Guid profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
         {
             var tokenId = DbContext.Tokens.FirstOrDefault(x => x.Type == tokenType);
             if (tokenId == null)
@@ -43,7 +43,7 @@ namespace Tayra.Services
             return CreateTransaction(tokenId.Id, profileId, value, reason, claimBundleType, date);
         }
 
-        public double CreateTransaction(int tokenId, int profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
+        public double CreateTransaction(Guid tokenId, Guid profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
         {
             var scope = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == tokenId);
             var txn = new TokenTransaction

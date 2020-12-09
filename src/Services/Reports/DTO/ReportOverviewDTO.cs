@@ -7,7 +7,7 @@ namespace Tayra.Services
     public class ReportOverviewDTO
     {
         public StatisticsDTO Statistics { get; set; }
-        public MetricDTO[] Metrics { get;set; }
+        public MetricDTO[] Metrics { get; set; }
         public NodeDTO[] Nodes { get; set; }
 
         public class StatisticsDTO

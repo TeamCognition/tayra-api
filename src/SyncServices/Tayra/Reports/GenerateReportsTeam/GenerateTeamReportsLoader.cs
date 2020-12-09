@@ -42,7 +42,7 @@ namespace Tayra.SyncServices.Tayra
             }
         }
 
-        public static void GenerateTeamReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, params int[] segmentIds)
+        public static void GenerateTeamReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, params Guid[] segmentIds)
         {
             var dateId = DateHelper2.ToDateId(fromDay);
 
@@ -134,21 +134,21 @@ namespace Tayra.SyncServices.Tayra
 
                     TasksCompletionTimeChange = mr.Sum(x => x.TasksCompletionTimeChange),
                     TasksCompletionTimeTotal = mr.Sum(x => x.TasksCompletionTimeTotal),
-                    
+
                     ItemsBoughtChange = mr.Sum(x => x.ItemsBoughtChange),
                     ItemsBoughtTotal = mr.Sum(x => x.ItemsBoughtTotal),
-                    
+
                     QuestsCompletedChange = mr.Sum(x => x.QuestsCompletedChange),
                     QuestsCompletedTotal = mr.Sum(x => x.QuestsCompletedTotal)
                 });
-            
+
 
                 var existing = organizationDb.TeamReportsDaily.Count(x => x.DateId == dateId && x.TeamId == t.TeamId);
                 if (existing > 0)
                 {
                     logService.Log<TeamReportDaily>($"deleting {existing} records from database");
-                    organizationDb.Database.ExecuteSqlCommand($"delete from TeamReportsDaily where {nameof(TeamReportDaily.DateId)} = {dateId} AND {nameof(TeamReportDaily.TeamId)} = {t.TeamId}", dateId); //this extra parameter is a workaround in ef 2.2
-                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from TeamReportsDaily where {nameof(TeamReportDaily.DateId)} = {dateId} AND {nameof(TeamReportDaily.TeamId)} = {t.TeamId}");
+                    //organizationDb.Database.ExecuteSqlCommand($"delete from TeamReportsDaily where {nameof(TeamReportDaily.DateId)} = {dateId} AND {nameof(TeamReportDaily.TeamId)} = {t.TeamId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.Database.ExecuteSqlInterpolated($"delete from TeamReportsDaily where {nameof(TeamReportDaily.DateId)} = {dateId} AND {nameof(TeamReportDaily.TeamId)} = {t.TeamId}");
                     organizationDb.SaveChanges();
                 }
             }
@@ -158,7 +158,7 @@ namespace Tayra.SyncServices.Tayra
             logService.Log<GenerateTeamReportsLoader>($"{reportsToInsert.Count} new reports saved to database.");
         }
 
-        public static void GenerateTeamReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, List<ProfileReportWeekly> profileReportsWeekly = null, params int[] segmentIds)
+        public static void GenerateTeamReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, List<ProfileReportWeekly> profileReportsWeekly = null, params Guid[] segmentIds)
         {
             if (!CommonHelper.IsMonday(fromDay) || profileReportsWeekly == null)
                 return;
@@ -276,14 +276,14 @@ namespace Tayra.SyncServices.Tayra
 
                     HeatAverageTotal = wmr.Average(x => x.Heat)
                 });
-            
+
 
                 var existing = organizationDb.TeamReportsWeekly.Count(x => x.DateId == dateId && x.TeamId == t.TeamId);
                 if (existing > 0)
                 {
                     logService.Log<TeamReportWeekly>($"deleting {existing} records from database");
-                    organizationDb.Database.ExecuteSqlCommand($"delete from TeamReportsWeekly where {nameof(TeamReportWeekly.DateId)} = {dateId} AND {nameof(TeamReportWeekly.TeamId)} = {t.TeamId}", dateId); //this extra parameter is a workaround in ef 2.2
-                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from TeamReportsWeekly where {nameof(TeamReportWeekly.DateId)} = {dateId} AND {nameof(TeamReportWeekly.TeamId)} = {t.TeamId}");
+                    //organizationDb.Database.ExecuteSqlCommand($"delete from TeamReportsWeekly where {nameof(TeamReportWeekly.DateId)} = {dateId} AND {nameof(TeamReportWeekly.TeamId)} = {t.TeamId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.Database.ExecuteSqlInterpolated($"delete from TeamReportsWeekly where {nameof(TeamReportWeekly.DateId)} = {dateId} AND {nameof(TeamReportWeekly.TeamId)} = {t.TeamId}");
                     organizationDb.SaveChanges();
                 }
             }

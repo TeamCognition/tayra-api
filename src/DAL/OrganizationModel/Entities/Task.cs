@@ -4,10 +4,8 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Task : ITimeStampedEntity
+    public class Task : Entity<Guid>, ITimeStampedEntity
     {
-        public int Id { get; set; }
-
         public string ExternalId { get; set; }
         /// <summary>
         /// ex. jira project id
@@ -47,13 +45,13 @@ namespace Tayra.Models.Organizations
 
         public string AssigneeExternalId { get; set; }
 
-        public int? AssigneeProfileId { get; set; }
+        public Guid? AssigneeProfileId { get; set; }
         public virtual Profile AssigneeProfile { get; set; }
 
-        public int? TeamId { get; set; }
+        public Guid? TeamId { get; set; }
         public virtual Team Team { get; set; }
 
-        public int? SegmentId { get; set; }
+        public Guid? SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
         public int? SegmentAreaId { get; set; }

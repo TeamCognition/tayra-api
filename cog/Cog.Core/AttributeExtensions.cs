@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Cog.Core
@@ -9,7 +6,7 @@ namespace Cog.Core
     public static class AttributeExtensions
     {
         /// <summary>
-        /// Checks whether specified class type is decorated with attribute of type T.
+        ///     Checks whether specified class type is decorated with attribute of type T.
         /// </summary>
         /// <typeparam name="T">Type of attribute.</typeparam>
         /// <param name="element">Class type.</param>
@@ -21,7 +18,7 @@ namespace Cog.Core
 
         public static T GetAttribute<T>(this MemberInfo element) where T : Attribute
         {
-            return CustomAttributeExtensions.GetCustomAttribute<T>(element, inherit: true);
+            return element.GetCustomAttribute<T>(true);
         }
     }
 }

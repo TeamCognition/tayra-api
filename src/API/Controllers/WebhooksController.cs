@@ -19,7 +19,7 @@ namespace Tayra.API.Controllers
     public class WebhooksController : BaseController
     {
         #region Constructor
-        public WebhooksController(IServiceProvider serviceProvider,IGithubWebhookService webhookService, OrganizationDbContext dbContext) : base(
+        public WebhooksController(IServiceProvider serviceProvider, IGithubWebhookService webhookService, OrganizationDbContext dbContext) : base(
 
             serviceProvider)
         {
@@ -42,7 +42,7 @@ namespace Tayra.API.Controllers
         private void SaveWebhookEventLog(JObject jObject, IntegrationType integrationType)
         {
             DbContext.WebhookEventLogs.Add(new WebhookEventLog
-                {IntegrationType = integrationType, Data = jObject.ToString(Formatting.None)});
+            { IntegrationType = integrationType, Data = jObject.ToString(Formatting.None) });
             DbContext.SaveChanges();
         }
 

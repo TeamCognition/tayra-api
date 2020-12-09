@@ -3,10 +3,8 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class PullRequestReview : ITimeStampedEntity
+    public class PullRequestReview : Entity<Guid>, ITimeStampedEntity
     {
-        public int Id { get; set; }
-
         public string Body { get; set; }
 
         public string State { get; set; }
@@ -15,22 +13,22 @@ namespace Tayra.Models.Organizations
 
         public DateTime SubmittedAt { get; set; }
 
-        public int PullRequestId { get; set; }
+        public Guid PullRequestId { get; set; }
 
         public PullRequest PullRequest { get; set; }
 
         public string ReviewExternalId { get; set; }
 
-        public int? ReviewerProfileId { get; set; }
+        public Guid? ReviewerProfileId { get; set; }
 
         public Profile ReviewerProfile { get; set; }
 
         #region ITimeStampedEntity
-        
+
         public DateTime Created { get; set; }
-        
+
         public DateTime? LastModified { get; set; }
-        
+
         #endregion
     }
 }

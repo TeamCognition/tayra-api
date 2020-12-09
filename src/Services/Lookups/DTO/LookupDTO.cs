@@ -1,4 +1,6 @@
-﻿namespace Tayra.Services
+﻿using System;
+
+namespace Tayra.Services
 {
     public class LookupDTO
     {
@@ -15,7 +17,7 @@
             Key = key;
             Value = value;
         }
-        public LookupDTO(int key, string value)
+        public LookupDTO(Guid key, string value)
         {
             Key = key.ToString();
             Value = value;

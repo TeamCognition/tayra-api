@@ -64,7 +64,7 @@ namespace Tayra.SyncServices
 
             var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null);
 
-            int? integrationId = IntegrationHelpers.GetIntegrationId(organizationDb, jiraProjectId, IntegrationType.ATJ);
+            Guid? integrationId = IntegrationHelpers.GetIntegrationId(organizationDb, jiraProjectId, IntegrationType.ATJ);
             if (!integrationId.HasValue)
             {
                 throw new ApplicationException($"Jira project with Id: {jiraProjectId} is not connected to any tayra segments");

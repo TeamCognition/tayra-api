@@ -3,38 +3,38 @@ using Newtonsoft.Json;
 
 namespace Tayra.Connectors.GitHub.WebhookPayloads
 {
-    public class PullRequsetReviewWebhookPayload : BaseWebhookPayload 
+    public class PullRequsetReviewWebhookPayload : BaseWebhookPayload
     {
         [JsonProperty("review")]
         public PullRequestReviewDTO PullRequestReview { get; set; }
-        
+
         [JsonProperty("pull_request")]
-        public PullRequestWebhookPayload.PullRequestDTO PullRequest { get; set;}
-        
+        public PullRequestWebhookPayload.PullRequestDTO PullRequest { get; set; }
+
         public class PullRequestReviewDTO
         {
-        
+
             [JsonProperty("id")]
-            public string Id { get; set;}
-        
+            public string Id { get; set; }
+
             [JsonProperty("body")]
-            public string Body { get; set;}
-        
+            public string Body { get; set; }
+
             [JsonProperty("title")]
-            public string Title { get; set;}
-        
+            public string Title { get; set; }
+
             [JsonProperty("commit_id")]
-            public string CommitId { get; set;}
-        
+            public string CommitId { get; set; }
+
             [JsonProperty("submitted_at")]
-            public DateTime SubmittedAt { get; set;}
-        
+            public DateTime SubmittedAt { get; set; }
+
             [JsonProperty("state")]
-            public string State { get; set;}
-        
+            public string State { get; set; }
+
             [JsonProperty("user")]
-            public GitHubWebhookUser ReviewedBy { get; set;}
-        
+            public GitHubWebhookUser ReviewedBy { get; set; }
+
         }
     }
 }

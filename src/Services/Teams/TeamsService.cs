@@ -106,7 +106,7 @@ namespace Tayra.Services
                                 select new
                                 {
                                     ProfileId = r.ProfileId,
-                                    Impact = r.OImpactAverage,    
+                                    Impact = r.OImpactAverage,
                                     Speed = r.SpeedAverage,
                                     Heat = r.Heat,
                                     Power = r.PowerAverage,
@@ -125,7 +125,7 @@ namespace Tayra.Services
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow))
             };
         }
-        public GridData<TeamViewGridDTO> GetViewGridData(int[] segmentIds, TeamViewGridParams gridParams)
+        public GridData<TeamViewGridDTO> GetViewGridData(Guid[] segmentIds, TeamViewGridParams gridParams)
         {
             //this query is garbo
             IQueryable<TeamViewGridDTO> query = from s in DbContext.Segments
@@ -176,7 +176,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void Create(int segmentId, TeamCreateDTO dto)
+        public void Create(Guid segmentId, TeamCreateDTO dto)
         {
             DbContext.Add(new Team
             {
@@ -187,7 +187,7 @@ namespace Tayra.Services
             });
         }
 
-        public void Update(int teamId, TeamUpdateDTO dto)
+        public void Update(Guid teamId, TeamUpdateDTO dto)
         {
             var team = DbContext.Teams.FirstOrDefault(x => x.Id == teamId);
 
@@ -198,7 +198,7 @@ namespace Tayra.Services
             team.AvatarColor = dto.AvatarColor;
         }
 
-        public void Archive(int profileId, string teamKey)
+        public void Archive(Guid profileId, string teamKey)
         {
             var team = DbContext.Teams.Include(x => x.Members).FirstOrDefault(x => x.Key == teamKey);
 
@@ -212,7 +212,7 @@ namespace Tayra.Services
             }
         }
 
-        public TeamStatsDTO GetTeamStatsData(int teamId)
+        public TeamStatsDTO GetTeamStatsData(Guid teamId)
         {
 
             var analyticsService = new AnalyticsService(DbContext);
@@ -222,7 +222,7 @@ namespace Tayra.Services
                 MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Assists,
                 MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
             };
-            
+
             var teamMetrics = analyticsService.GetMetricsWithIterationSplit(
                 metricList, teamId, EntityTypes.Team, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
 

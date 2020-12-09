@@ -7,9 +7,9 @@ namespace Tayra.Models.Organizations
     {
         public int DateId { get; set; }
         public int IterationCount { get; set; }
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
 
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public virtual Team Team { get; set; }
 
         public int TaskCategoryId { get; set; }
@@ -37,7 +37,7 @@ namespace Tayra.Models.Organizations
         public float AssistsAverage { get; set; }
 
         public int TasksCompletedChange { get; set; }
-        public float TasksCompletedAverage { get; set; }       
+        public float TasksCompletedAverage { get; set; }
 
         public int TurnoverChange { get; set; }
         public float TurnoverAverage { get; set; }

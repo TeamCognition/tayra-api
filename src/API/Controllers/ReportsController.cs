@@ -23,13 +23,13 @@ namespace Tayra.API.Controllers
         public OrganizationDbContext DbContext { get; set; }
 
         #region Action Methods
-        
+
         [HttpGet("statisticsReport")]
         public ActionResult<Dictionary<int, MetricsValueWEntity[]>> GetStatisticsReport([FromQuery] string entityKey, [FromQuery] EntityTypes entityType, [FromQuery] ReportsType reportType, [FromQuery] string period)
         {
-            return ReportsService.GetReports(entityKey,entityType,reportType, new DatePeriod(period));
+            return ReportsService.GetReports(entityKey, entityType, reportType, new DatePeriod(period));
         }
-        
+
         [HttpGet("statuses")]
         public ActionResult<ReportStatusDTO[]> GetReportStatuses()
         {
@@ -37,7 +37,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost("unlock/{segmentId:int}")]
-        public IActionResult UnlockReporting(int segmentId)
+        public IActionResult UnlockReporting(Guid segmentId)
         {
             ReportsService.UnlockReporting(CurrentUser.CurrentTenantKey, segmentId);
             DbContext.SaveChanges();
@@ -64,7 +64,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("delivery/teamMetrics")]
-        public ActionResult<ReportDeliveryTeamMetricsDTO> GetDeliveryTeamMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
+        public ActionResult<ReportDeliveryTeamMetricsDTO> GetDeliveryTeamMetrics([FromQuery] Guid teamId, [FromQuery] ReportParams reportParams)
         {
             return ReportsService.GetDeliveryTeamMetricsReport(teamId, reportParams);
         }
@@ -76,7 +76,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("statistics/teamMetrics")]
-        public ActionResult<ReportStatisticsTeamMetricsDTO> GetStatisticsSegmentMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
+        public ActionResult<ReportStatisticsTeamMetricsDTO> GetStatisticsSegmentMetrics([FromQuery] Guid teamId, [FromQuery] ReportParams reportParams)
         {
             return ReportsService.GetStatisticsTeamMetricsReport(teamId, reportParams);
         }
@@ -100,7 +100,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("items/teamMetrics")]
-        public ActionResult<ReportItemsTeamMetricsDTO> GetItemsTeamMetrics([FromQuery]int teamId, [FromQuery] ReportParams reportParams)
+        public ActionResult<ReportItemsTeamMetricsDTO> GetItemsTeamMetrics([FromQuery] Guid teamId, [FromQuery] ReportParams reportParams)
         {
             return ReportsService.GetItemTeamMetricsReport(teamId, reportParams);
         }

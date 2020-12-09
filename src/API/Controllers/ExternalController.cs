@@ -35,7 +35,7 @@ namespace Tayra.API.Controllers
         #region Public Methods
 
         [HttpGet, Route("callback/{type?}")]
-        public IActionResult AuthenticateCallback([FromServices]CatalogDbContext catalogContext, IntegrationType type, [FromQuery]string state, [FromQuery]string setup_action, [FromQuery]string installation_id, [FromQuery]string error = null)
+        public IActionResult AuthenticateCallback([FromServices] CatalogDbContext catalogContext, IntegrationType type, [FromQuery] string state, [FromQuery] string setup_action, [FromQuery] string installation_id, [FromQuery] string error = null)
         {
             IOAuthConnector connector;
             if (setup_action == "update" && string.IsNullOrEmpty(state))
@@ -44,18 +44,18 @@ namespace Tayra.API.Controllers
                 Request.QueryString = Request.QueryString.Add("tenant", ti.Tenant.Key);
                 connector = ConnectorResolver.Get<IOAuthConnector>(type);
                 connector.UpdateAuthentication(installation_id);
-                
+
                 return Redirect($"https://{ti.Tenant.Key}/segments");
             }
             var oauthState = new OAuthState(state);
             Request.QueryString = Request.QueryString.Add("tenant", oauthState.TenantKey);
             connector = ConnectorResolver.Get<IOAuthConnector>(type);
-            
+
             if (!string.IsNullOrEmpty(error))
             {
                 return Redirect(connector.GetAuthDoneUrl(oauthState.ReturnPath, false));
             }
-            
+
             try
             {
                 connector.Authenticate(oauthState);
@@ -64,7 +64,7 @@ namespace Tayra.API.Controllers
             {
                 return Redirect(connector.GetAuthDoneUrl(oauthState.ReturnPath, false));
             }
-        
+
             return Redirect(connector.GetAuthDoneUrl(oauthState.ReturnPath, true));
         }
 
@@ -108,7 +108,7 @@ namespace Tayra.API.Controllers
             public string PhoneNumber { get; set; }
             public string Message { get; set; }
         }
-        
+
         [HttpPost("landingForm")]
 
         public IActionResult LandingForm([FromBody] JObject jObject)
@@ -119,14 +119,14 @@ namespace Tayra.API.Controllers
             if (jObject.TryGetValue("name", out var nameToken)) name = nameToken.ToString();
             if (jObject.TryGetValue("email", out var emailToken)) name = emailToken.ToString();
             if (jObject.TryGetValue("contact", out var contactToken)) name = contactToken.ToString();
-            
+
             try
             {
                 MailerService.SendEmail("haris.botic96@gmail.com",
                     "haris@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));
-                
+
                 MailerService.SendEmail("haris.botic96@gmail.com",
                     "ejub@tayra.io",
                     "New Company Signup",
@@ -146,10 +146,10 @@ namespace Tayra.API.Controllers
             {
                 throw new Exception();
             }
-            
+
             return Ok();
         }
-        
+
         #endregion
     }
 }

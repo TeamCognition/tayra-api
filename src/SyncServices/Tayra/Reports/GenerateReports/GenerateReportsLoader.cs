@@ -36,13 +36,13 @@ namespace Tayra.SyncServices.Tayra
                 }
             }
 
-            int[] segmentIds = new int[0];
+            Guid[] segmentIds = new Guid[0];
             if (requestBody != null && requestBody.TryGetValue("segmentId", StringComparison.InvariantCultureIgnoreCase, out JToken id))
             {
-                segmentIds = new int[] { id.Value<int>() };
+                segmentIds = new[] { id.Value<Guid>() };
             }
 
-            
+
             foreach (var tenant in tenants)
             {
                 DateTime tempDate = date;
@@ -54,21 +54,21 @@ namespace Tayra.SyncServices.Tayra
                         segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
                     }
 
-                    if(segmentIds.Length == 0)
+                    if (segmentIds.Length == 0)
                         continue;
-                    
+
                     do
                     {
                         var profileMetrics = NewProfileMetricsLoader.GenerateProfileMetrics(organizationDb, tempDate, LogService);
                         var segmentMetrics = NewSegmentMetricsLoader.GenerateSegmentMetrics(organizationDb, tempDate, LogService);
                         var teamMetrics = NewTeamMetricsLoader.GenerateTeamMetrics(organizationDb, tempDate, LogService);
-                        
-                         var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, tempDate, LogService, segmentIds);
-                         var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, tempDate, LogService, segmentIds);
-                        
-                         GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, tempDate, LogService, profileDailyReports, segmentIds);
+
+                        var profileDailyReports = GenerateProfileReportsLoader.GenerateProfileReportsDaily(organizationDb, tempDate, LogService, segmentIds);
+                        var profileWeeklyReports = GenerateProfileReportsLoader.GenerateProfileReportsWeekly(organizationDb, tempDate, LogService, segmentIds);
+
+                        GenerateSegmentReportsLoader.GenerateSegmentReportsDaily(organizationDb, tempDate, LogService, profileDailyReports, segmentIds);
                         GenerateSegmentReportsLoader.GenerateSegmentReportsWeekly(organizationDb, tempDate, LogService, profileDailyReports, profileWeeklyReports, segmentIds);
-                        
+
                         GenerateTeamReportsLoader.GenerateTeamReportsDaily(organizationDb, tempDate, LogService, profileDailyReports, segmentIds);
                         GenerateTeamReportsLoader.GenerateTeamReportsWeekly(organizationDb, tempDate, LogService, profileDailyReports, profileWeeklyReports, segmentIds);
 

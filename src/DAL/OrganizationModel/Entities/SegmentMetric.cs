@@ -6,20 +6,20 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class SegmentMetric: ITimeStampedEntity
+    public class SegmentMetric : ITimeStampedEntity
     {
-        public int SegmentId { get; private set; }
-        public Segment Segment { get; private set;}
-        
-        public int DateId { get; private set;}
-        
-        public MetricType Type { get; private set;}
+        public Guid SegmentId { get; private set; }
+        public Segment Segment { get; private set; }
 
-        public float Value { get; private set;}
+        public int DateId { get; private set; }
 
-        protected SegmentMetric(){}
+        public MetricType Type { get; private set; }
 
-        public SegmentMetric(int segmentId, int dateId, MetricType type, float value)
+        public float Value { get; private set; }
+
+        protected SegmentMetric() { }
+
+        public SegmentMetric(Guid segmentId, int dateId, MetricType type, float value)
         {
             SegmentId = segmentId;
             DateId = dateId;
@@ -27,11 +27,11 @@ namespace Tayra.Models.Organizations
             Value = value;
         }
 
-        // public static SegmentMetric[] CreateRange(int segmentId, Metric[] metric)
+        // public static SegmentMetric[] CreateRange(Guid segmentId, Metric[] metric)
         // {
         //     return metric.Select(x => new SegmentMetric(segmentId, x)).ToArray();
         // }
-        
+
         #region ITimeStampedEntity
 
         public DateTime Created { get; set; }

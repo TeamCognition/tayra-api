@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{5E95A6E4-610B-481F-8AE0-932224E8F436}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{5E95A6E4-610B-481F-8AE0-932224E8F436}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", "{62CB41AF-42B6-405D-9E64-B29B0D197A54}"
 EndProject
@@ -35,8 +35,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "src\Common\Common.csproj", "{6AFD8AED-8105-45EE-A3DC-DE24789B1F6C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "src\Services\Services.csproj", "{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportsTester", "src\ReportsTester\ReportsTester.csproj", "{0829AF23-4A5D-4A93-8085-01A5BF867A78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncServices", "src\SyncServices\SyncServices.csproj", "{F0F6700C-862D-490B-9853-1EAB9A4A4082}"
 EndProject
@@ -106,10 +104,6 @@ Global
 		{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0829AF23-4A5D-4A93-8085-01A5BF867A78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0829AF23-4A5D-4A93-8085-01A5BF867A78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0829AF23-4A5D-4A93-8085-01A5BF867A78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0829AF23-4A5D-4A93-8085-01A5BF867A78}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F0F6700C-862D-490B-9853-1EAB9A4A4082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0F6700C-862D-490B-9853-1EAB9A4A4082}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0F6700C-862D-490B-9853-1EAB9A4A4082}.Release|Any CPU.ActiveCfg = Release|Any CPU

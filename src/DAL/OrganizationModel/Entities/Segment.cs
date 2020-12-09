@@ -5,11 +5,8 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class Segment : IAuditedEntity, IArchivableEntity
+    public class Segment : Entity<Guid>, IAuditedEntity, IArchivableEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required, MaxLength(50)]
         public string Key { get; set; }
 
@@ -29,7 +26,7 @@ namespace Tayra.Models.Organizations
         public string DataWarehouse { get; set; }
 
         public bool IsReportingUnlocked { get; set; }
-        
+
         public string AssistantSummary { get; set; }
 
         public virtual ICollection<Team> Teams { get; set; }
@@ -46,8 +43,8 @@ namespace Tayra.Models.Organizations
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

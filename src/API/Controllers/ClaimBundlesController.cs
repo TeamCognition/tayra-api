@@ -29,7 +29,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet]
-        public ActionResult<ClaimBundleClaimRewardsDTO> ShowClaimBundle([FromQuery] int? claimBundleId, [FromQuery] ClaimBundleTypes? claimBundleType)
+        public ActionResult<ClaimBundleClaimRewardsDTO> ShowClaimBundle([FromQuery] Guid? claimBundleId, [FromQuery] ClaimBundleTypes? claimBundleType)
         {
             if (!claimBundleId.HasValue && !claimBundleType.HasValue)
             {
@@ -50,9 +50,9 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost("claim")]
-        public ActionResult<ClaimBundleClaimRewardsDTO> ClaimClaimBundle([FromQuery] int? claimBundleId, [FromQuery] ClaimBundleTypes? claimBundleType)
+        public ActionResult<ClaimBundleClaimRewardsDTO> ClaimClaimBundle([FromQuery] Guid? claimBundleId, [FromQuery] ClaimBundleTypes? claimBundleType)
         {
-            if(!claimBundleId.HasValue && !claimBundleType.HasValue)
+            if (!claimBundleId.HasValue && !claimBundleType.HasValue)
             {
                 throw new ApplicationException("provide claimBundleId or claimBundleType");
             }

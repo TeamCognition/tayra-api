@@ -28,7 +28,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public Dictionary<int,MetricsValueWEntity[]> GetReports(string entityKey, EntityTypes entityType,ReportsType reportType, DatePeriod period)
+        public Dictionary<int, MetricsValueWEntity[]> GetReports(string entityKey, EntityTypes entityType, ReportsType reportType, DatePeriod period)
         {
             var analyticsService = new AnalyticsService(DbContext);
 
@@ -62,8 +62,8 @@ namespace Tayra.Services
                     break;
             }
 
-            var entityMembers = new int[0];
-                
+            var entityMembers = new Guid[0];
+
             if (entityType == EntityTypes.Team)
                 entityMembers = DbContext.ProfileAssignments.Where(x => x.Team.Key == entityKey && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId).ToArray();
             else if (entityType == EntityTypes.Segment)
@@ -72,7 +72,7 @@ namespace Tayra.Services
             return analyticsService.GetMetricsRanks(metricList, entityMembers, EntityTypes.Profile, period);
         }
 
-        public ReportStatusDTO[] GetReportStatus(int[] segmentIds)
+        public ReportStatusDTO[] GetReportStatus(Guid[] segmentIds)
         {
             return (from s in DbContext.Segments
                     where segmentIds.Contains(s.Id)
@@ -85,13 +85,13 @@ namespace Tayra.Services
                     }).ToArray();
         }
 
-        public async void UnlockReporting(string tenantKey, int segmentId)
+        public async void UnlockReporting(string tenantKey, Guid segmentId)
         {
             var segment = DbContext.Segments.FirstOrDefault(x => x.Id == segmentId);
             segment.EnsureNotNull(segmentId);
 
             int? startDateId = DbContext.Tasks.OrderBy(x => x.LastModifiedDateId).Select(x => (int?)x.LastModifiedDateId).FirstOrDefault();
-            if(startDateId == 0)
+            if (startDateId == 0)
             {
                 startDateId = null;
             }
@@ -114,19 +114,19 @@ namespace Tayra.Services
                 MetricType.Impact, MetricType.Speed, MetricType.Power, MetricType.Heat,
                 MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
             };
-            
+
             var avg = (from srw in DbContext.SegmentReportsWeekly
-                      where srw.DateId >= reportParams.From && srw.DateId <= reportParams.To
-                      where srw.SegmentId == reportParams.SegmentId
-                      //orderby trw.DateId ascending
-                      group srw by 1 into r
-                      select new 
-                      {
-                          OImpactAverage = r.Average(x => x.OImpactAverage),
-                          SpeedAverage = r.Average(x => x.SpeedAverage),
-                          PowerAverage = r.Average(x => x.PowerAverage),
-                          HeatAverage = r.Average(x => x.HeatAverageTotal)
-                      }).FirstOrDefault();
+                       where srw.DateId >= reportParams.From && srw.DateId <= reportParams.To
+                       where srw.SegmentId == reportParams.SegmentId
+                       //orderby trw.DateId ascending
+                       group srw by 1 into r
+                       select new
+                       {
+                           OImpactAverage = r.Average(x => x.OImpactAverage),
+                           SpeedAverage = r.Average(x => x.SpeedAverage),
+                           PowerAverage = r.Average(x => x.PowerAverage),
+                           HeatAverage = r.Average(x => x.HeatAverageTotal)
+                       }).FirstOrDefault();
 
             var dateFrom = DateHelper2.ParseDate(reportParams.From);
             var dateTo = DateHelper2.ParseDate(reportParams.To);
@@ -169,14 +169,14 @@ namespace Tayra.Services
                     }
                 },
                 Nodes = (from trw in DbContext.TeamReportsWeekly
-                      where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
-                      where trw.SegmentId == reportParams.SegmentId && trw.MembersCountTotal > 0
-                      group trw by trw.TeamId into r
-                      select new ReportOverviewDTO.NodeDTO
-                      {
-                          Name = r.FirstOrDefault().Team.Name,
-                          Metrics = new ReportOverviewDTO.NodeDTO.MetricDTO[]
-                          {
+                         where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To
+                         where trw.SegmentId == reportParams.SegmentId && trw.MembersCountTotal > 0
+                         group trw by trw.TeamId into r
+                         select new ReportOverviewDTO.NodeDTO
+                         {
+                             Name = r.FirstOrDefault().Team.Name,
+                             Metrics = new ReportOverviewDTO.NodeDTO.MetricDTO[]
+                             {
                               new ReportOverviewDTO.NodeDTO.MetricDTO
                               {
                                   Id = MetricTypes.Impact,
@@ -192,8 +192,8 @@ namespace Tayra.Services
                                   Id = MetricTypes.Power,
                                   Value = r.Average(a => a.PowerAverage)
                               }
-                          }
-                      }).ToArray()
+                             }
+                         }).ToArray()
             };
         }
 
@@ -233,7 +233,7 @@ namespace Tayra.Services
                 MembersPerformance = ms
             };
         }
-          
+
         public ReportDeliverySegmentMetricsDTO GetDeliverySegmentMetricsReport(ReportParams reportParams)
         {
             var teamIds = DbContext.TeamsScopeOfSegment(reportParams.SegmentId).Select(x => x.Id);
@@ -251,7 +251,7 @@ namespace Tayra.Services
                           MinutesSpentAverage = trw.TasksCompletedChange != 0 ? trw.TasksCompletionTimeChange / trw.TasksCompletedChange : 0
                       }).ToArray();
 
-            if(!wr.Any())
+            if (!wr.Any())
             {
                 return null;
             }
@@ -294,7 +294,7 @@ namespace Tayra.Services
             };
         }
 
-        public ReportDeliveryTeamMetricsDTO GetDeliveryTeamMetricsReport(int teamId, ReportParams reportParams)
+        public ReportDeliveryTeamMetricsDTO GetDeliveryTeamMetricsReport(Guid teamId, ReportParams reportParams)
         {
             var ms = (from trd in DbContext.TeamReportsDaily
                       where trd.DateId >= reportParams.From && trd.DateId <= reportParams.To
@@ -397,7 +397,7 @@ namespace Tayra.Services
             };
         }
 
-        public ReportStatisticsTeamMetricsDTO GetStatisticsTeamMetricsReport(int teamId, ReportParams reportParams)
+        public ReportStatisticsTeamMetricsDTO GetStatisticsTeamMetricsReport(Guid teamId, ReportParams reportParams)
         {
             //TODO: make this secure
             var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
@@ -559,7 +559,7 @@ namespace Tayra.Services
                           BoughtAvg = trw.ItemsBoughtChange / trw.MembersCountTotal
                       }).ToList();
 
-            if(!wr.Any())
+            if (!wr.Any())
             {
                 return null;
             }
@@ -580,7 +580,7 @@ namespace Tayra.Services
             };
         }
 
-        public ReportItemsTeamMetricsDTO GetItemTeamMetricsReport(int teamId, ReportParams reportParams)
+        public ReportItemsTeamMetricsDTO GetItemTeamMetricsReport(Guid teamId, ReportParams reportParams)
         {
             //TODO: make this secure
             var profileIds = DbContext.ProfileAssignments.Where(x => x.TeamId == teamId).Select(x => x.ProfileId).ToArray();
@@ -600,7 +600,7 @@ namespace Tayra.Services
                           GiftedCount = pr.Sum(x => x.ItemsGiftedChange)
                       }).ToArray();
 
-            if(!ms.Any())
+            if (!ms.Any())
             {
                 return null;
             }
@@ -618,12 +618,12 @@ namespace Tayra.Services
 
         private static int GetTimeIntervalModifier(ReportTimeIntervals i)
         {
-            switch(i)
+            switch (i)
             {
                 case ReportTimeIntervals.Month:
                     return 100;
 
-                default:return 1;
+                default: return 1;
             }
         }
 

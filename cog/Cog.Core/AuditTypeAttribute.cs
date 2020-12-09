@@ -2,18 +2,14 @@
 
 namespace Cog.Core
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class)]
     public class AuditTypeAttribute : Attribute
     {
-        public AuditType AuditType
-        {
-            get;
-            private set;
-        }
-
         public AuditTypeAttribute(AuditType auditType)
         {
             AuditType = auditType;
         }
+
+        public AuditType AuditType { get; }
     }
 }

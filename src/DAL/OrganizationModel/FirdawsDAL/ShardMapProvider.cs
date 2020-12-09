@@ -26,7 +26,7 @@ namespace Tayra.Models.Organizations
         private ListShardMap<int> CreateShardMap(IConfiguration config)
         {
             var connBuilder = new SqlConnectionStringBuilder(ConnectionStringUtilities.GetCatalogDbConnStr(config));
-            
+
             string shardMapName = connBuilder.InitialCatalog;
             string connectionString = connBuilder.ConnectionString;
 

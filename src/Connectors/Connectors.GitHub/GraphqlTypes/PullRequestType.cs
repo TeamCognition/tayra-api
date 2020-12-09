@@ -5,7 +5,7 @@ namespace Tayra.Connectors.Common
 {
     public class PullRequestType
     {
-        
+
         [JsonProperty("id")]
         public string Id { get; set; }
         [JsonProperty("title")]
@@ -26,10 +26,10 @@ namespace Tayra.Connectors.Common
         public class PullRequestUser
         {
             [JsonProperty("login")]
-            public string Username { get; set;}
-        
+            public string Username { get; set; }
+
             [JsonProperty("Id")]
-            public string Id { get; set;}
+            public string Id { get; set; }
         }
     }
 }

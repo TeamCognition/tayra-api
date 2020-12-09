@@ -38,7 +38,7 @@ namespace Tayra.SyncServices.Tayra
             }
         }
 
-        public static void GenerateSegmentReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, params int[] segmentIds)
+        public static void GenerateSegmentReportsDaily(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, params Guid[] segmentIds)
         {
             var dateId = DateHelper2.ToDateId(fromDay);
 
@@ -134,13 +134,13 @@ namespace Tayra.SyncServices.Tayra
                     ItemsDisenchantedChange = mr.Sum(x => x.ItemsDisenchantedChange),
                     ItemsGiftedChange = mr.Sum(x => x.ItemsGiftedChange)
                 });
-            
+
                 var existing = organizationDb.SegmentReportsDaily.Count(x => x.DateId == dateId && x.SegmentId == s.SegmentId);
                 if (existing > 0)
                 {
                     logService.Log<SegmentReportDaily>($"deleting {existing} records from database");
-                    organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsDaily where {nameof(SegmentReportDaily.DateId)} = {dateId} AND  {nameof(SegmentReportDaily.SegmentId)} = {s.SegmentId}", dateId); //this extra parameter is a workaround in ef 2.2
-                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from SegmentReportsDaily where {nameof(SegmentReportDaily.DateId)} = {dateId} AND  {nameof(SegmentReportDaily.SegmentId)} = {s.SegmentId}");
+                    //organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsDaily where {nameof(SegmentReportDaily.DateId)} = {dateId} AND  {nameof(SegmentReportDaily.SegmentId)} = {s.SegmentId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.Database.ExecuteSqlInterpolated($"delete from SegmentReportsDaily where {nameof(SegmentReportDaily.DateId)} = {dateId} AND  {nameof(SegmentReportDaily.SegmentId)} = {s.SegmentId}");
                     organizationDb.SaveChanges();
                 }
             }
@@ -150,7 +150,7 @@ namespace Tayra.SyncServices.Tayra
             logService.Log<GenerateSegmentReportsLoader>($"{reportsToInsert.Count} new reports saved to database.");
         }
 
-        public static void GenerateSegmentReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, List<ProfileReportWeekly> profileReportsWeekly = null, params int[] segmentIds)
+        public static void GenerateSegmentReportsWeekly(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, List<ProfileReportDaily> profileReportsDaily = null, List<ProfileReportWeekly> profileReportsWeekly = null, params Guid[] segmentIds)
         {
             if (!CommonHelper.IsMonday(fromDay) || profileReportsWeekly == null)
                 return;
@@ -279,8 +279,8 @@ namespace Tayra.SyncServices.Tayra
                 if (existing > 0)
                 {
                     logService.Log<SegmentReportWeekly>($"deleting {existing} records from database");
-                    organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsWeekly where {nameof(SegmentReportWeekly.DateId)} = {dateId} AND {nameof(SegmentReportWeekly.SegmentId)} = {s.SegmentId}", dateId); //this extra parameter is a workaround in ef 2.2
-                    //organizationDb.Database.ExecuteSqlInterpolated($"delete from SegmentReportsWeekly where {nameof(SegmentReportWeekly.DateId)} = {dateId} AND {nameof(SegmentReportWeekly.SegmentId)} = {s.SegmentId}");
+                    //organizationDb.Database.ExecuteSqlCommand($"delete from SegmentReportsWeekly where {nameof(SegmentReportWeekly.DateId)} = {dateId} AND {nameof(SegmentReportWeekly.SegmentId)} = {s.SegmentId}", dateId); //this extra parameter is a workaround in ef 2.2
+                    organizationDb.Database.ExecuteSqlInterpolated($"delete from SegmentReportsWeekly where {nameof(SegmentReportWeekly.DateId)} = {dateId} AND {nameof(SegmentReportWeekly.SegmentId)} = {s.SegmentId}");
                     organizationDb.SaveChanges();
                 }
             }

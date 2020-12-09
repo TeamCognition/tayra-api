@@ -1,4 +1,5 @@
-﻿using Cog.Core;
+﻿using System;
+using Cog.Core;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 
@@ -9,20 +10,20 @@ namespace Tayra.Services
         void InternalCreateWithProfile(IdentityCreateDTO dto);
         Identity GetByEmail(string email);
         void InvitationJoinWithSaveChanges(IdentityJoinDTO dto);
-        void CreateInvitation(int profileId, string host, IdentityInviteDTO dto);
-        void ResendInvitation(string host, int invitationId);
+        void CreateInvitation(string host, IdentityInviteDTO dto);
+        void ResendInvitation(string host, Guid invitationId);
         GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams);
-        IdentityInvitationViewDTO GetInvitation(string InvitationCode);
-        void DeleteInvitation(int invitationId);
-        GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, ProfileRoles role, IdentityManageGridParams gridParams);
-        IdentityManageAssignsDTO GetIdentityManageAssignsData(int[] segmentIds, int memberProfileId);
-        GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams);
-        void ChangePasswordWithSaveChange(int identityId, IdentityChangePasswordDTO dto);
+        IdentityInvitationViewDTO GetInvitation(string invitationCode);
+        void DeleteInvitation(Guid invitationId);
+        GridData<IdentityManageGridDTO> GetIdentityManageGridData(Guid profileId, ProfileRoles role, IdentityManageGridParams gridParams);
+        IdentityManageAssignsDTO GetIdentityManageAssignsData(Guid[] segmentIds, Guid memberProfileId);
+        GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(Guid profileId, IdentityEmailsGridParams gridParams);
+        void ChangePasswordWithSaveChange(Guid identityId, IdentityChangePasswordDTO dto);
         bool IsEmailAddressUnique(string email);
-        void AddEmail(int identityId, int profileId, string email);
-        void SetPrimaryEmail(int identityId, int profileId, string email);
-        bool RemoveEmail(int identityId, string email);
-        void ChangeProfileRole(ProfileRoles role, int memberProfileId, ProfileRoles toRole);
-        void ArchiveProfile(ProfileRoles role, int memberProfileId);
+        void AddEmail(Guid identityId, Guid profileId, string email);
+        void SetPrimaryEmail(Guid identityId, Guid profileId, string email);
+        bool RemoveEmail(Guid identityId, string email);
+        void ChangeProfileRole(ProfileRoles role, Guid memberProfileId, ProfileRoles toRole);
+        void ArchiveProfile(ProfileRoles role, Guid memberProfileId);
     }
 }

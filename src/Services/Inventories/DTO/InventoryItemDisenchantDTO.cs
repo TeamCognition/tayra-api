@@ -1,7 +1,9 @@
+using System;
+
 namespace Tayra.Services
 {
     public class InventoryItemDisenchantDTO
     {
-        public int InventoryItemId { get; set; }
+        public Guid InventoryItemId { get; set; }
     }
 }

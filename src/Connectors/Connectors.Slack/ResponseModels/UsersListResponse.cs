@@ -16,7 +16,7 @@ namespace Tayra.Connectors.Slack
 
         [JsonProperty("response_metadata")]
         public ResponseMetadata ResponseMetadata { get; set; }
-        
+
         public class Member
         {
             [JsonProperty("id")]

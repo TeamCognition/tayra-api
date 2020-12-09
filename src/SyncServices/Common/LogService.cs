@@ -6,8 +6,8 @@ namespace Tayra.SyncServices.Common
     public class LogService
     {
         protected string _tenantKey;
-        protected int _segmentId;
-        protected int _teamId;
+        protected Guid _segmentId;
+        protected Guid _teamId;
         protected DateTime _timestamp;
 
         protected ILogger _logger;
@@ -23,19 +23,19 @@ namespace Tayra.SyncServices.Common
             _timestamp = timestamp ?? _timestamp;
         }
 
-        public void SetSegmentId(int segmentId, DateTime? timestamp = null)
+        public void SetSegmentId(Guid segmentId, DateTime? timestamp = null)
         {
             _segmentId = segmentId;
             _timestamp = timestamp ?? _timestamp;
         }
 
-        public void SetTeamId(int teamId, DateTime? timestamp = null)
+        public void SetTeamId(Guid teamId, DateTime? timestamp = null)
         {
             _teamId = teamId;
-             _timestamp = timestamp ?? _timestamp;
+            _timestamp = timestamp ?? _timestamp;
         }
 
-        public void SetIds(string tenantKey, int segmentId, int teamId, DateTime? timestamp = null)
+        public void SetIds(string tenantKey, Guid segmentId, Guid teamId, DateTime? timestamp = null)
         {
             _tenantKey = tenantKey;
             _segmentId = segmentId;

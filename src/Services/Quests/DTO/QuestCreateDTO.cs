@@ -16,13 +16,13 @@ namespace Tayra.Services
 
         public DateTime? ActiveUntil { get; set; }
 
-        public List<int> Segments { get; set; }
+        public List<Guid> Segments { get; set; }
         public List<GoalDTO> Goals { get; set; }
-        public List<RewardDTO> Rewards { get; set; }        
+        public List<RewardDTO> Rewards { get; set; }
 
         public class RewardDTO
         {
-            public int ItemId { get; set; }
+            public Guid ItemId { get; set; }
             public int Quantity { get; set; }
         }
 

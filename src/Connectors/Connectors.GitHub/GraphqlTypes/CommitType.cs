@@ -24,7 +24,7 @@ namespace Tayra.Connectors.GitHub
         {
             [JsonProperty("name")]
             public String Name { get; set; }
-        
+
             [JsonProperty("email")]
             public String email { get; set; }
 

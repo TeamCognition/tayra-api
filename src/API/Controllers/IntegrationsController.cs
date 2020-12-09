@@ -36,12 +36,12 @@ namespace Tayra.API.Controllers
 
         [HttpGet, Route("connect/{type?}")]
         public IActionResult Connect([FromRoute] IntegrationType type, [FromQuery] string returnPath, [FromQuery] bool isSegmentAuth)
-        {   
-            if(string.IsNullOrEmpty(returnPath))
+        {
+            if (string.IsNullOrEmpty(returnPath))
             {
                 throw new ApplicationException("You have to provide returnPath");
             }
-            
+
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             return Redirect(connector.GetAuthUrl(
                 new OAuthState(TenantProvider.GetTenant().Key, CurrentUser.ProfileId, CurrentSegment.Id, isSegmentAuth, returnPath)));
@@ -54,7 +54,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost, Route("settings/atj")]
-        public ActionResult SetJiraSettings([FromBody]JiraSettingsUpdateDTO dto)
+        public ActionResult SetJiraSettings([FromBody] JiraSettingsUpdateDTO dto)
         {
             IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantKey, dto);
             // SyncIssuesLoader.PullIssuesNew(DbContext, DateTime.UtcNow, TasksService, ProfilesService,
@@ -72,10 +72,10 @@ namespace Tayra.API.Controllers
                 public string ExternalUrl { get; set; }
                 public string Name { get; set; }
                 public string NameWithOwner { get; set; }
-                public int? TeamId { get; set; }
+                public Guid? TeamId { get; set; }
             }
         }
-        
+
         [HttpGet, Route("settings/gh")]
         public ActionResult<GithubSettingsViewDTO> GetGitHubSettings()
         {
@@ -87,9 +87,9 @@ namespace Tayra.API.Controllers
             var externalConfigUrl = targetType == "Organization"
                 ? $"https://github.com/organizations/{targetName}/settings/installations/{installationId}"
                 : $"https://github.com/settings/installations/{installationId}";
-            
+
             var repos = DbContext.Repositories.Where(x => x.IntegrationInstallationId == installationId).ToArray();
-            
+
             return Ok(new GithubSettingsViewDTO
             {
                 Repositories = repos.Select(x => new GithubSettingsViewDTO.Repository

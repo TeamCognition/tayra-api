@@ -6,7 +6,7 @@ namespace Tayra.Services
 {
     public class ShopPurchasesGridDTO
     {
-        public int ShopPurchaseId { get; set; }
+        public Guid ShopPurchaseId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Avatar { get; set; }
@@ -23,7 +23,7 @@ namespace Tayra.Services
 
         public class ItemDTO
         {
-            public int Id { get; set; }
+            public Guid Id { get; set; }
             public string Name { get; set; }
             public string Image { get; set; }
             public ItemRarities Rarity { get; set; }

@@ -20,12 +20,12 @@ namespace Tayra.Analytics
         WorkUnitsCompleted = 6,
         Heat = 7
     }
-    
+
     [JsonConverter(typeof(SmartEnumValueConverter<MetricType, int>))]
-    public abstract class MetricType: SmartEnum<MetricType>
-    {    
+    public abstract class MetricType : SmartEnum<MetricType>
+    {
         #region Tayra Metrics
-        
+
         public static readonly MetricType Impact = new ImpactMetric("Impact", 101);
         public static readonly MetricType Speed = new SpeedMetric("Speed", 102);
         public static readonly MetricType Power = new PowerMetric("Power", 103);
@@ -47,9 +47,9 @@ namespace Tayra.Analytics
         public static readonly MetricType PullRequestSize = new PullRequestSizeMetric(" Pull Request size", 119);
 
         #endregion
-        
+
         #region Task Metrics
-        
+
         public static readonly MetricType TasksCompleted = new WorkUnitsCompletedMetric("Tasks Completed", 201);
         public static readonly MetricType Complexity = new ComplexityMetric("Complexity", 202);
         public static readonly MetricType TimeWorked = new TimeWorkedMetric("Time Worked", 203);
@@ -57,21 +57,21 @@ namespace Tayra.Analytics
         public static readonly MetricType Effort = new EffortMetric("Effort", 205);
         //public static readonly MetricType Errors = new PureType("Errors", 206);
         //public static readonly MetricType Saves = new PureType("Saves", 207);
-        
+
         #endregion
-        
+
         #region Git Metrics
-        
+
         public static readonly MetricType Commits = new CommitsMetric("Commits", 301);
         public static readonly MetricType CommitRate = new CommitRateMetric("Commit Rate", 302);
-        
+
         #endregion
 
         protected MetricType(string name, int value) : base(name, value)
         {
         }
-        
-        
+
+
         public abstract MetricType[] BuildingMetrics { get; }
         public abstract float Calc(MetricShard[] buildingMetrics, DatePeriod datePeriod);
         public abstract float CalcGroup(MetricShard[] buildingMetrics, DatePeriod datePeriod);

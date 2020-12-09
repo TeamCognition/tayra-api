@@ -6,8 +6,8 @@ namespace Tayra.Models.Organizations
 {
     public class LogQueue : ITimeStampedEntity
     {
-        public int ProfileId { get; set; }
-        public int LogDeviceId { get; set; }
+        public Guid ProfileId { get; set; }
+        public Guid LogDeviceId { get; set; }
         public LogEvents LogEvent { get; set; }
         public DateTime DeliverAt { get; set; }
 

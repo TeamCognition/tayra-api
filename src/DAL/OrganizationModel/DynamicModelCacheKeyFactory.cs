@@ -9,7 +9,7 @@ namespace Tayra.Models.Organizations
     {
         public object Create(DbContext dbContext)
         {
-            if(dbContext is OrganizationDbContext dynamicContext)
+            if (dbContext is OrganizationDbContext dynamicContext)
             {
                 return new { dynamicContext.CurrentTenantId };
             }

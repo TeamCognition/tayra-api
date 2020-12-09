@@ -13,28 +13,28 @@ namespace Tayra.SyncServices.Metrics
     {
         public PraisesGivenMetric(string name, int value) : base(name, value)
         {
-            
+
         }
-        public MetricShard Create(ProfilePraise[] praises, int profileId, int dateId) => new MetricShard(praises.Count(x => x.PraiserProfileId == profileId), dateId, this);
-        
-        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, int entityId, EntityTypes entityType)
+        public MetricShard Create(ProfilePraise[] praises, Guid profileId, int dateId) => new MetricShard(praises.Count(x => x.PraiserProfileId == profileId), dateId, this);
+
+        public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType)
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from p in db.ProfilePraises
-                where profileIds.Contains(p.PraiserProfileId)
-                where p.DateId >= period.FromId && p.DateId <= period.ToId
-                select new RawMetric
-                {
-                    Praised = new TableData.Profile($"{p.Profile.FirstName} {p.Profile.LastName}",
-                        p.Profile.Username),
-                    Type = p.Type,
-                    Date =  new TableData.DateInSeconds(p.Created),
-                    Message = p.Message
-                }).ToArray<object>();
+                    where profileIds.Contains(p.PraiserProfileId)
+                    where p.DateId >= period.FromId && p.DateId <= period.ToId
+                    select new RawMetric
+                    {
+                        Praised = new TableData.Profile($"{p.Profile.FirstName} {p.Profile.LastName}",
+                            p.Profile.Username),
+                        Type = p.Type,
+                        Date = new TableData.DateInSeconds(p.Created),
+                        Message = p.Message
+                    }).ToArray<object>();
         }
 
         public override Type TypeOfRawMetric => typeof(RawMetric);
-        
+
         public class RawMetric
         {
             public TableData.Profile Praised { get; set; }

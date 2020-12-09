@@ -8,7 +8,7 @@ namespace Tayra.Models.Organizations
         public int DateId { get; set; }
         public int IterationCount { get; set; }
 
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
         public int TaskCategoryId { get; set; }

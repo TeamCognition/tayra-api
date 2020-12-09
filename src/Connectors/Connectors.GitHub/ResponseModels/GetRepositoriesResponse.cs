@@ -10,12 +10,12 @@ namespace Tayra.Connectors.GitHub
 
         [JsonProperty("installations")]
         public Installation[] Installations { get; set; }
-        
+
         public class Installation
         {
             [JsonProperty("id")]
             public string Id { get; set; }
-            
+
             [JsonProperty("app_id")]
             public string AppId { get; set; }
 

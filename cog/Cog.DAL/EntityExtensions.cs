@@ -3,7 +3,7 @@
     public static class EntityExtensions
     {
         /// <summary>
-        /// Validates if object is null =&gt; throws EntityNotFoundException.
+        ///     Validates if object is null =&gt; throws EntityNotFoundException.
         /// </summary>
         /// <typeparam name="T">Type of object to validate.</typeparam>
         /// <param name="value">Object instance to validate.</param>
@@ -11,15 +11,12 @@
         /// <returns>Object instance if no exception is thrown.</returns>
         public static T EnsureNotNull<T>(this T value, object identifier) where T : class
         {
-            if (value == null)
-            {
-                throw new EntityNotFoundException<T>(identifier);
-            }
+            if (value == null) throw new EntityNotFoundException<T>(identifier);
             return value;
         }
 
         /// <summary>
-        /// Validates if object is null =&gt; throws EntityNotFoundException.
+        ///     Validates if object is null =&gt; throws EntityNotFoundException.
         /// </summary>
         /// <typeparam name="T">Type of object to validate.</typeparam>
         /// <param name="TValue">Object instance to validate.</param>
@@ -30,5 +27,4 @@
             return TValue.EnsureNotNull(string.Join(":", identifiers));
         }
     }
-
 }

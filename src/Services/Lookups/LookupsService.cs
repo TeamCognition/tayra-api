@@ -36,7 +36,7 @@ namespace Tayra.Services
             return typeof(T)
                 .GetMembers()
                 .Where(x => x.CustomAttributes.Any(ca => ca.AttributeType == typeof(DescriptionAttribute)))
-                .Select(x => new LookupDTO((int)(object)Enum.Parse<T>(x.Name), x.GetCustomAttribute<DescriptionAttribute>()?.Description))
+                .Select(x => new LookupDTO((Guid)(object)Enum.Parse<T>(x.Name), x.GetCustomAttribute<DescriptionAttribute>()?.Description))
                 .OrderBy(x => x.Value)
                 .ToList();
         }

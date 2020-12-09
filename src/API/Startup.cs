@@ -4,12 +4,17 @@ using Cog.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using OpenIddict.Validation;
+using OpenIddict.Validation.AspNetCore;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using Tayra.API.Helpers;
 using Tayra.Auth;
@@ -45,7 +50,7 @@ namespace Tayra.API
             //register DBs
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
             services.AddDbContext<OrganizationDbContext>(options => { });
-            
+
             //Add Application services
             services.AddTransient<ILogsService, LogsService>();
             services.AddTransient<IBlobsService, BlobsService>();
@@ -66,16 +71,15 @@ namespace Tayra.API
             services.AddTransient<IIdentitiesService, IdentitiesService>();
             services.AddTransient<IInventoriesService, InventoryService>();
             services.AddTransient<IClaimBundlesService, ClaimBundlesService>();
-            services.AddTransient<ICompetitionsService, CompetitionsService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
-            services.AddTransient<IGithubWebhookService,GithubWebhookServiceService>();
+            services.AddTransient<IGithubWebhookService, GithubWebhookServiceService>();
 
             services.AddTransient<IOrganizationsService, Services.OrganizationsService>();
-            
+
             services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
             services.AddScoped<ITenantProvider, ShardTenantProvider>();
             services.AddScoped<IClaimsPrincipalProvider<TayraPrincipal>, TayraPrincipalProvider>();
-            
+
             services.AddHttpContextAccessor();
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
@@ -92,23 +96,14 @@ namespace Tayra.API
             services.AddControllers();
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            }).AddJwtBearer("Bearer", options =>
-            {
-                options.Authority = Configuration.GetValue<string>("Auth:authority");
-                options.RequireHttpsMetadata = false;
-
-                options.Audience = "tAPI";
+                options.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
             });
 
             services.AddMvcCore()
                 .AddNewtonsoftJson()
                 .AddApiExplorer(); //for swagger
-
-            services.AddIdentityServerServices(Configuration);
+            
+            services.AddTayraAuthServices(Configuration);
             services.AddImagerServices(Configuration);
             ConfigureSwagger(services);
         }
@@ -125,16 +120,16 @@ namespace Tayra.API
                 app.UseMiddleware<ExceptionMiddleware>();
                 app.UseHsts();
             }
-
+            
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(builder => builder
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader());   
+                .AllowAnyHeader());
 
             app.UseSwagger();
-
+            
             app.Use(async (context, next) =>
             {
                 //if(context.Request.Path.Value.Contains("/ws"))
@@ -153,10 +148,7 @@ namespace Tayra.API
                 }
                 await next.Invoke();
             });
-
-            //Tayra.Auth
-            app.UseIdentityServer();
-
+            
             //Tayra.Imager
             string FilePath = "wwwroot";
             Directory.CreateDirectory(FilePath);
@@ -169,7 +161,7 @@ namespace Tayra.API
             {
                 endpoints.MapControllers();
             });
-            
+
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tayra API V1");

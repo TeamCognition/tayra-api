@@ -1,8 +1,6 @@
-﻿using Cog.Core;
-
-namespace Cog.DAL
+﻿namespace Cog.DAL
 {
-    public interface IAuditedEntity : IDTO, ITimeStampedEntity, IUserStampedEntity
+    public interface IAuditedEntity : /*IDTO,*/ ITimeStampedEntity, IUserStampedEntity
     {
     }
 }

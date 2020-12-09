@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Cog.Core
@@ -14,17 +13,17 @@ namespace Cog.Core
         {
             _basicTypes = new Type[6]
             {
-            typeof(string),
-            typeof(Enum),
-            typeof(decimal),
-            typeof(DateTime),
-            typeof(DateTimeOffset),
-            typeof(TimeSpan)
+                typeof(string),
+                typeof(Enum),
+                typeof(decimal),
+                typeof(DateTime),
+                typeof(DateTimeOffset),
+                typeof(TimeSpan)
             };
         }
 
         /// <summary>
-        /// Checks if property type is derived from IEnumerable.
+        ///     Checks if property type is derived from IEnumerable.
         /// </summary>
         /// <param name="pi">PropertyInfo instance.</param>
         /// <returns>True if property is IEnumerable.</returns>
@@ -34,7 +33,7 @@ namespace Cog.Core
         }
 
         /// <summary>
-        /// Checks if property type is derived from IEnumerable of T.
+        ///     Checks if property type is derived from IEnumerable of T.
         /// </summary>
         /// <typeparam name="T">Type of collection element.</typeparam>
         /// <param name="pi">PropertyInfo instance.</param>
@@ -44,5 +43,4 @@ namespace Cog.Core
             return typeof(IEnumerable<T>).IsAssignableFrom(pi.PropertyType);
         }
     }
-
 }
