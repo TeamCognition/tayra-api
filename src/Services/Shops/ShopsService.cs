@@ -33,37 +33,48 @@ namespace Tayra.Services
                            {
                                Name = s.Name,
                                IsClosed = s.ClosedAt.HasValue,
-                               Created = s.Created,
-                               TotalRequests = DbContext.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.PendingApproval || x.Status == ShopPurchaseStatuses.PendingApproval)
+                               Created = s.Created
                            }).FirstOrDefault();
 
             shopDto.EnsureNotNull();
+
+            shopDto.TotalRequests = DbContext.ShopPurchases.Count(x =>
+                x.Status == ShopPurchaseStatuses.PendingApproval || x.Status == ShopPurchaseStatuses.PendingApproval);
+            
             //some of this code can be shared when reports become more generic
             if (role == ProfileRoles.Member)
             {
-                var stats = (from r in DbContext.ProfileReportsDaily
-                             where r.ProfileId == profileId
-                             group r by 1 into total
-                             let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
-                             select new[]
-                             {
-                                new ShopViewDTO.ShopStatisticDTO
-                                {
-                                    Last30 = last30.Sum(x => x.ItemsBoughtChange),
-                                    Total = total.Sum(x => x.ItemsBoughtChange)
-                                },
-                                new ShopViewDTO.ShopStatisticDTO
-                                {
-                                    Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
-                                    Total = total.Sum(x => x.CompanyTokensSpentChange)
-                                }
-                            }).FirstOrDefault();
+                // var stats = (from r in DbContext.ProfileReportsDaily
+                //              where r.ProfileId == profileId
+                //              group r by 1 into total
+                //              let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
+                //              select new[]
+                //              {
+                //                 new ShopViewDTO.ShopStatisticDTO
+                //                 {
+                //                     Last30 = last30.Sum(x => x.ItemsBoughtChange),
+                //                     Total = total.Sum(x => x.ItemsBoughtChange)
+                //                 },
+                //                 new ShopViewDTO.ShopStatisticDTO
+                //                 {
+                //                     Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                //                     Total = total.Sum(x => x.CompanyTokensSpentChange)
+                //                 }
+                //             }).FirstOrDefault();
 
-                if (stats != null)
-                {
-                    shopDto.ItemStats = stats[0];
-                    shopDto.TokenStats = stats[1];
-                }
+                // if (stats != null)
+                // {
+                    shopDto.ItemStats =  new ShopViewDTO.ShopStatisticDTO
+                    {
+                        Last30 = -1,
+                        Total = -1
+                    };
+                    shopDto.TokenStats = new ShopViewDTO.ShopStatisticDTO
+                    {
+                        Last30 = -1,
+                        Total = -1
+                    };
+                // }
             }
             else
             {
@@ -75,28 +86,38 @@ namespace Tayra.Services
                     rQuery = rQuery.Where(x => managersSegmentsIds.Contains(x.SegmentId));
                 }
 
-                var stats = (from r in rQuery
-                             group r by 1 into total
-                             let last30 = total.Where(x => x.DateId >= 100)
-                             select new[]
-                             {
-                                new ShopViewDTO.ShopStatisticDTO
-                                {
-                                    Last30 = last30.Sum(x => x.ItemsBoughtChange),
-                                    Total = total.Sum(x => x.ItemsBoughtChange)
-                                },
-                                new ShopViewDTO.ShopStatisticDTO
-                                {
-                                    Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
-                                    Total = total.Sum(x => x.CompanyTokensSpentChange)
-                                }
-                            }).FirstOrDefault();
-
-                if (stats != null)
+                // var stats = (from r in rQuery
+                //              group r by 1 into total
+                //              let last30 = total.Where(x => x.DateId >= 100)
+                //              select new[]
+                //              {
+                //                 new ShopViewDTO.ShopStatisticDTO
+                //                 {
+                //                     Last30 = last30.Sum(x => x.ItemsBoughtChange),
+                //                     Total = total.Sum(x => x.ItemsBoughtChange)
+                //                 },
+                //                 new ShopViewDTO.ShopStatisticDTO
+                //                 {
+                //                     Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                //                     Total = total.Sum(x => x.CompanyTokensSpentChange)
+                //                 }
+                //             }).FirstOrDefault();
+                //
+                // if (stats != null)
+                // {
+                //     shopDto.ItemStats = stats[0];
+                //     shopDto.TokenStats = stats[1];
+                // }
+                shopDto.ItemStats =  new ShopViewDTO.ShopStatisticDTO
                 {
-                    shopDto.ItemStats = stats[0];
-                    shopDto.TokenStats = stats[1];
-                }
+                    Last30 = -1,
+                    Total = -1
+                };
+                shopDto.TokenStats = new ShopViewDTO.ShopStatisticDTO
+                {
+                    Last30 = -1,
+                    Total = -1
+                };
             }
 
             return shopDto;

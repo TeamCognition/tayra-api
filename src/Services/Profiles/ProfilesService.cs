@@ -88,9 +88,9 @@ namespace Tayra.Services
             Expression<Func<Profile, bool>> byUsername = x => x.Username.Contains(gridParams.UsernameQuery.RemoveAllWhitespaces());
             Expression<Func<Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(gridParams.NameQuery.RemoveAllWhitespaces());
 
-            if (gridParams.segmentIdExclude.HasValue)
+            if (gridParams.SegmentIdExclude.HasValue)
             {
-                var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == gridParams.segmentIdExclude).Select(x => x.ProfileId).ToList();
+                var profileIds = DbContext.ProfileAssignments.Where(x => x.SegmentId == gridParams.SegmentIdExclude).Select(x => x.ProfileId).ToList();
                 scope = scope.Where(x => !profileIds.Contains(x.Id));
             }
 
@@ -279,12 +279,21 @@ namespace Tayra.Services
                                   Avatar = p.Avatar,
                                   Segments = p.Assignments.Select(x => new ProfileViewDTO.SegmentDTO { Id = x.Segment.Id, Key = x.Segment.Key, Name = x.Segment.Name }).ToArray(),
                                   Teams = p.Assignments.Where(x => x.TeamId.HasValue).Select(x => new ProfileViewDTO.TeamDTO { Id = x.Team.Id, Key = x.Team.Key, Name = x.Team.Name }).ToArray(),
-                                  Praises = p.Praises.GroupBy(x => x.Type).Select(x => new ProfileViewDTO.PraiseDTO { Type = x.Key, Count = x.Count() }).ToArray(),
+                                  //Praises = p.Praises.GroupBy(x => x.Type).Select(x => new ProfileViewDTO.PraiseDTO { Type = x.Key, Count = x.Count() }).ToArray(),
                                   AssistantSummary = p.AssistantSummary,
                               }).FirstOrDefault();
 
             profileDto.EnsureNotNull();
 
+            var praises = DbContext.ProfilePraises
+                .Where(x => x.ProfileId == profileDto.ProfileId)
+                .GroupBy(x => x.Type)
+                .Select(x => new ProfileViewDTO.PraiseDTO {Type = x.Key, Count = x.Count()})
+                .ToArray();
+
+            profileDto.Praises = praises;
+                
+            
             var tokens = (from tt in DbContext.TokenTransactions
                           where !tt.ClaimRequired || tt.ClaimedAt.HasValue
                           where tt.ProfileId == profileDto.ProfileId
@@ -331,19 +340,17 @@ namespace Tayra.Services
                 }, profile.Id, EntityTypes.Profile, new DatePeriod(new DateTime(2020, 06, 01), DateTime.UtcNow));
 
 
-            return (from r in DbContext.ProfileMetrics
-                    where r.ProfileId == profile.Id
-                    select new ProfileRawScoreDTO
-                    {
-                        TasksCompleted = (int)metrics[MetricType.TasksCompleted.Value].Value,
-                        AssistsGained = (int)metrics[MetricType.Assists.Value].Value,
-                        TimeWorked = (int)metrics[MetricType.TimeWorked.Value].Value,
-                        TokensEarned = metrics[MetricType.TokensEarned.Value].Value,
-                        TokensSpent = metrics[MetricType.TokensSpent.Value].Value,
-                        ItemsBought = (int)metrics[MetricType.ItemsBought.Value].Value,
-                        QuestsCompleted = 0,
-                        DaysOnTayra = EF.Functions.DateDiffDay(profile.Created, DateTime.UtcNow)
-                    }).LastOrDefault();
+            return new ProfileRawScoreDTO
+            {
+                TasksCompleted = (int) metrics[MetricType.TasksCompleted.Value].Value,
+                AssistsGained = (int) metrics[MetricType.Assists.Value].Value,
+                TimeWorked = (int) metrics[MetricType.TimeWorked.Value].Value,
+                TokensEarned = metrics[MetricType.TokensEarned.Value].Value,
+                TokensSpent = metrics[MetricType.TokensSpent.Value].Value,
+                ItemsBought = (int) metrics[MetricType.ItemsBought.Value].Value,
+                QuestsCompleted = 0,
+                DaysOnTayra = (DateTime.UtcNow - profile.Created).Days
+            };
         }
 
         public void ModifyTokens(ProfileRoles profileRole, ProfileModifyTokensDTO dto)

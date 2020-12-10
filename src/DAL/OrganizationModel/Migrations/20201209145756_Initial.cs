@@ -14,6 +14,9 @@ namespace Tayra.Models.Organizations.Migrations
                     Id = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    isCreateSegmentOnboarding = table.Column<bool>(type: "bit", nullable: false),
+                    isAddSourcesOnboarding = table.Column<bool>(type: "bit", nullable: false),
+                    isInviteUsersOnboarding = table.Column<bool>(type: "bit", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -197,6 +200,7 @@ namespace Tayra.Models.Organizations.Migrations
                     EmployedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     AssistantSummary = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IdentityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    isCreateProfileOnboarding = table.Column<bool>(type: "bit", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -422,6 +426,8 @@ namespace Tayra.Models.Organizations.Migrations
                     ExternalUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AuthorExternalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Additions = table.Column<int>(type: "int", nullable: false),
+                    Deletions = table.Column<int>(type: "int", nullable: false),
                     AuthorProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -667,6 +673,7 @@ namespace Tayra.Models.Organizations.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrganizationId = table.Column<int>(type: "int", nullable: false),
                     ExternalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExternalNumber = table.Column<int>(type: "int", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Body = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -1556,8 +1563,7 @@ namespace Tayra.Models.Organizations.Migrations
                     State = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CommitId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PullRequestId = table.Column<int>(type: "int", nullable: false),
-                    PullRequestId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PullRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReviewExternalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReviewerProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1580,8 +1586,8 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PullRequestReviews_PullRequests_PullRequestId1",
-                        column: x => x.PullRequestId1,
+                        name: "FK_PullRequestReviews_PullRequests_PullRequestId",
+                        column: x => x.PullRequestId,
                         principalTable: "PullRequests",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -2662,9 +2668,9 @@ namespace Tayra.Models.Organizations.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequestReviews_PullRequestId1_OrganizationId",
+                name: "IX_PullRequestReviews_PullRequestId_OrganizationId",
                 table: "PullRequestReviews",
-                columns: new[] { "PullRequestId1", "OrganizationId" });
+                columns: new[] { "PullRequestId", "OrganizationId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PullRequestReviews_ReviewerProfileId_OrganizationId",

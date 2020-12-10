@@ -31,7 +31,7 @@ namespace Tayra.Services
 
             return new AssistantOverviewDTO
             {
-                ActionPoints = (from s in scope
+                ActionPoints = (from s in scope.AsEnumerable()
                                 where s.ConcludedOn == null
                                 group s by s.SegmentId into g
                                 select new AssistantOverviewDTO.ActionPointDTO

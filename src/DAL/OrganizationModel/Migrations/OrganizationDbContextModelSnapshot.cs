@@ -270,6 +270,9 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Additions")
+                        .HasColumnType("int");
+
                     b.Property<string>("AuthorExternalId")
                         .HasColumnType("nvarchar(max)");
 
@@ -278,6 +281,9 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Deletions")
+                        .HasColumnType("int");
 
                     b.Property<string>("ExternalUrl")
                         .HasColumnType("nvarchar(max)");
@@ -754,6 +760,15 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("isAddSourcesOnboarding")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isCreateSegmentOnboarding")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isInviteUsersOnboarding")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("Organizations");
@@ -820,6 +835,9 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<string>("Username")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("isCreateProfileOnboarding")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id", "OrganizationId");
 
@@ -1453,6 +1471,9 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<string>("ExternalId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ExternalNumber")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("ExternalUpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -1507,10 +1528,7 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PullRequestId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("PullRequestId1")
+                    b.Property<Guid>("PullRequestId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ReviewExternalId")
@@ -1529,7 +1547,7 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("PullRequestId1", "OrganizationId");
+                    b.HasIndex("PullRequestId", "OrganizationId");
 
                     b.HasIndex("ReviewerProfileId", "OrganizationId");
 
@@ -3889,9 +3907,10 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.HasOne("Tayra.Models.Organizations.PullRequest", "PullRequest")
                         .WithMany()
-                        .HasForeignKey("PullRequestId1")
+                        .HasForeignKey("PullRequestId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Organizations.Profile", "ReviewerProfile")
                         .WithMany()

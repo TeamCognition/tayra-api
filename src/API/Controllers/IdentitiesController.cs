@@ -45,14 +45,14 @@ namespace Tayra.API.Controllers
             //     TemplateConnectionString = "User ID=sa;Password=strong!Password;Connect Timeout=100;Application Name=Tayra"
             // });
 
-            IdentitiesService.CreateInvitation("deverino.tayra.local", new IdentityInviteDTO
-            {
-                EmailAddress = "androvana+fejkara2@gmail.com",
-                FirstName = "Andrej",
-                LastName = "Kaurin",
-                Role = ProfileRoles.Admin
-            });
-            DbContext.SaveChanges();
+            // IdentitiesService.CreateInvitation("deverino.tayra.local", new IdentityInviteDTO
+            // {
+            //     EmailAddress = "androvana+fejkara@gmail.com",
+            //     FirstName = "Haris",
+            //     LastName = "Botuloza",
+            //     Role = ProfileRoles.Admin
+            // });
+            // DbContext.SaveChanges();
             //
             // IdentitiesService.InternalCreateWithProfile(dto);
             // DbContext.SaveChanges();

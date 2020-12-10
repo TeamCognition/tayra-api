@@ -14,7 +14,6 @@ namespace Tayra.Models.Organizations
         public DateTime SubmittedAt { get; set; }
 
         public Guid PullRequestId { get; set; }
-
         public PullRequest PullRequest { get; set; }
 
         public string ReviewExternalId { get; set; }
