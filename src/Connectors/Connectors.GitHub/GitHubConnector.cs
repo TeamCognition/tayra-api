@@ -123,17 +123,23 @@ namespace Tayra.Connectors.GitHub
             OrganizationContext.SaveChanges();
         }
 
-        public  List<CommitType> GetCommitsByPeriod(Guid integrationId, int period)
+        public  List<CommitType> GetCommitsByPeriod(Guid integrationId, int period,GetRepositoriesResponse.Repository repository)
         {
             var accessToken = ReadAccessToken(integrationId);
             var accessTokenType = ReadAccessTokenType(integrationId);
-            return GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, period, "xxxxx", "xxxxx", "xxxxx");
+            var branches = GitHubService.GetBranchesByRepository(accessToken,repository.Name,repository.Owner.Login);
+            List<CommitType> commitsFromAllBranches = new List<CommitType>();
+            foreach (var branch in branches)
+            {
+               commitsFromAllBranches.AddRange(GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, period,repository.Owner.Login,repository.Name,branch));
+            }
+            return commitsFromAllBranches;
         }
-        public  List<PullRequestType> GetPullRequestsByPeriod(Guid integrationId, int period)
+        public  List<PullRequestType> GetPullRequestsByPeriod(Guid integrationId, int period, string repository)
         {
             var accessToken = ReadAccessToken(integrationId);
             var accessTokenType = ReadAccessTokenType(integrationId);
-            return GitHubService.GetPullRequestsByPeriod(accessTokenType, accessToken, period, "xxxxx");
+            return GitHubService.GetPullRequestsByPeriod(accessTokenType, accessToken, period, repository);
         }
 
         #endregion
