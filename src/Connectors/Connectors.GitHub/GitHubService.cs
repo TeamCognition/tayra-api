@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cog.Core;
 using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using RestSharp;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub.Helper;
+using Tayra.Connectors.GitHub.ResponseModels;
 
 namespace Tayra.Connectors.GitHub
 {
@@ -205,8 +207,8 @@ namespace Tayra.Connectors.GitHub
             {
                 Query = @"
                      
-                query CommitsBySha($repositoryName : String!, $repositoryOwner : String!, $commitSha: GitObjectID!){
-                    repository(name: $repositoryName, owner: $repositoryOwner){
+                query CommitsBySha($repoName : String!, $repoOwner : String!, $commitSha: GitObjectID!){
+                    repository(name: $repoName, owner: $repoOwner){
                     object(oid: $commitSha){
                 ... on Commit{
                 oid,
@@ -220,8 +222,8 @@ namespace Tayra.Connectors.GitHub
                 Variables = new
                 {
                     commitSha = sha,
-                    repositoryOwner = repositoryName,
-                    repositoryName = repositoryName,
+                    repoOwner = repositoryName,
+                    repoName = repositoryName
                 }
             };
             var graphQlResponse = graphQlClient.SendQueryAsync<GetCommitsByShaResponse>(graphQlRequest).GetAwaiter()
@@ -277,5 +279,45 @@ namespace Tayra.Connectors.GitHub
             return client.Execute<List<GetOrganizationsResponse>>(request);
         }
         #endregion
+
+        public static List<string> GetBranchesByRepository(string accessToken, string repositoryName, string repositoryOwner)
+        {
+            var graphQlClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
+            graphQlClient.HttpClient.DefaultRequestHeaders.Add("Authorization", accessToken);
+            var graphQlRequest = new GraphQLRequest
+            {
+                Query = @"
+                        query BranchesByRepository($repoName: !String, $repoOwner: !String) { 
+                          repository(name:$repoName , owner:repoOwner ){
+                                        refs(first:100,refPrefix:""refs/heads/""){edges{
+                                        node{
+                                        name
+                                         }
+                                        }
+                                       }
+                                    }
+                                }
+                        ",
+                OperationName = "BranchesByRepository",
+                Variables = new
+                {
+                    repoOwner = repositoryOwner,
+                    repoName = repositoryName
+                }
+            };
+            var graphQlResponse = graphQlClient.SendQueryAsync<GetBranchesByRepository>(graphQlRequest).GetAwaiter()
+                .GetResult();
+            var graphQlBranches = graphQlResponse.Data?.Repository?.Refs?.Edges;
+            List<string> branches = new List<string>();
+            if (graphQlBranches.IsNullOrEmpty())
+            {
+                return branches;
+            }
+            foreach (var edge in graphQlBranches)
+            {
+                branches.Add(edge.Node.Name);
+            }
+            return branches;
+        }
     }
 }
