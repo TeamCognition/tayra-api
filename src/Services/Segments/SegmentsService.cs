@@ -8,7 +8,7 @@ using MoreLinq;
 using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-using Tayra.Services.Analytics;
+using Tayra.Models.Organizations.Metrics;
 
 
 namespace Tayra.Services
@@ -153,11 +153,11 @@ namespace Tayra.Services
                     }).LastOrDefault();
         }
 
-        public Dictionary<int, AnalyticsMetricWithIterationSplitDto> GetSegmentAverageMetrics(string segmentKey)
+        public Dictionary<int, MetricService.AnalyticsMetricWithIterationSplitDto> GetSegmentAverageMetrics(string segmentKey)
         {
             var segment = DbContext.Segments.FirstOrDefault(x => x.Key == segmentKey);
 
-            var analyticsService = new AnalyticsService(DbContext);
+            var metricService = new MetricService(DbContext);
 
             var metricList = new MetricType[]
             {
@@ -165,14 +165,14 @@ namespace Tayra.Services
                 MetricType.TasksCompleted, MetricType.Complexity
             };
 
-            return analyticsService.GetMetricsWithIterationSplit(
+            return metricService.GetMetricsWithIterationSplit(
                 metricList, segment.Id, EntityTypes.Segment,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
         }
 
         public Dictionary<int, MetricsValueWEntity[]> GetSegmentRankChart(string segmentKey)
         {
-            var analyticsService = new AnalyticsService(DbContext);
+            var metricService = new MetricService(DbContext);
 
             var metricList = new MetricType[]
             {
@@ -183,7 +183,7 @@ namespace Tayra.Services
             var segmentProfiles = DbContext.ProfileAssignments.Where(x => x.Segment.Key == segmentKey && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId)
                 .Distinct().ToArray();
 
-            return analyticsService.GetMetricsRanks(
+            return metricService.GetMetricsRanks(
                 metricList, segmentProfiles, EntityTypes.Profile,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow)
             );
@@ -191,7 +191,7 @@ namespace Tayra.Services
 
         public SegmentStatsDTO GetSegmentStats(Guid segmentId)
         {
-            var analyticsService = new AnalyticsService(DbContext);
+            var metricService = new MetricService(DbContext);
 
             var metricList = new MetricType[]
             {
@@ -199,7 +199,7 @@ namespace Tayra.Services
                 MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
             };
 
-            var segmentMetrics = analyticsService.GetMetricsWithIterationSplit(
+            var segmentMetrics = metricService.GetMetricsWithIterationSplit(
                 metricList, segmentId, EntityTypes.Segment,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
 

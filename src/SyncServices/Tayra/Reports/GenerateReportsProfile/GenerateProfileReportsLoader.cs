@@ -65,11 +65,7 @@ namespace Tayra.SyncServices.Tayra
             {
                 segmentIds = organizationDb.Segments.Where(x => x.IsReportingUnlocked).Select(x => x.Id).ToArray();
             }
-
-            var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
-            if (companyTokenId == default)
-                throw new ApplicationException("COMPANY TOKEN NOT FOUND");
-
+            
             var dateId = DateHelper2.ToDateId(fromDay);
             foreach (var segmentId in segmentIds)
             {
@@ -119,7 +115,7 @@ namespace Tayra.SyncServices.Tayra
 
                 var tokens = (from tt in organizationDb.TokenTransactions
                               where profileIds.Contains(tt.ProfileId)
-                              where tt.TokenId == companyTokenId
+                              where tt.TokenType == TokenType.CompanyToken
                               group tt by tt.ProfileId into total
                               let change = total.Where(x => x.DateId == dateId)
                               select new

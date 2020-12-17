@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cog.Core;
 using Tayra.Common;
 using Tayra.Models.Organizations;
+using Tayra.Models.Organizations.Metrics;
 
 namespace Tayra.Services
 {
@@ -14,7 +15,7 @@ namespace Tayra.Services
         GridData<SegmentTeamGridDTO> GetSegmentTeamsGridData(string segmentKey, SegmentTeamGridParams gridParams);
         SegmentViewDTO GetSegmnetViewDTO(string segmentKey);
         SegmentRawScoreDTO GetSegmentRawScore(string segmentKey);
-        Dictionary<int, AnalyticsMetricWithIterationSplitDto> GetSegmentAverageMetrics(string segmentKey);
+        Dictionary<int, MetricService.AnalyticsMetricWithIterationSplitDto> GetSegmentAverageMetrics(string segmentKey);
         Dictionary<int, MetricsValueWEntity[]> GetSegmentRankChart(string segmentKey);
         SegmentStatsDTO GetSegmentStats(Guid segmentId);
         void Create(Guid profileId, ProfileRoles role, SegmentCreateDTO dto);

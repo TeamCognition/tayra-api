@@ -43,7 +43,7 @@ namespace Tayra.SyncServices
                 // LogService.SetOrganizationId(tenant.Key);
                 using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
                 {
-                    PullIssuesNew(organizationDb, date, new TasksService(organizationDb), new ProfilesService(null, null, null, organizationDb), requestBody);
+                    PullIssuesNew(organizationDb, date, new TasksService(organizationDb), requestBody);
                 }
             }
         }
@@ -51,7 +51,6 @@ namespace Tayra.SyncServices
         public static void PullIssuesNew(OrganizationDbContext organizationDb,
                                          DateTime fromDay,
                                          ITasksService tasksService,
-                                         IProfilesService profilesService,
                                          JObject requestBody)
         {
             var syncReq = requestBody.ToObject<SyncRequest>();
@@ -72,7 +71,7 @@ namespace Tayra.SyncServices
             var tasks = jiraConnector.GetBulkIssuesWithChangelog(integrationId.Value, "status", jiraProjectId);
             foreach (var task in tasks)
             {
-                TaskHelpers.DoStandardStuff(new TaskConverterJira(organizationDb, profilesService, task, TaskConverterMode.BULK), tasksService, null, null, null);
+                TaskHelpers.DoStandardStuff(new TaskConverterJira(organizationDb, task, TaskConverterMode.BULK), tasksService, null, null, null);
             }
             organizationDb.SaveChanges();
         }

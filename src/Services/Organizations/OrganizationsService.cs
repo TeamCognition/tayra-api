@@ -83,7 +83,7 @@ namespace Tayra.Services
 
             CatalogDb.SaveChanges();
 
-            Models.Organizations.OrganizationsService.InsertOrganization(connStrBldr.ConnectionString, new Organization
+            Tayra.Models.Organizations.OrganizationsService.InsertOrganization(connStrBldr.ConnectionString, new Organization
             {
                 Id = shardingKey,
                 Address = "Burch",

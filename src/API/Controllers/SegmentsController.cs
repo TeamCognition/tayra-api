@@ -6,6 +6,7 @@ using Tayra.Analytics;
 using Tayra.Analytics.Metrics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
+using Tayra.Models.Organizations.Metrics;
 using Tayra.Services;
 
 namespace Tayra.API.Controllers
@@ -55,7 +56,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet("{segmentKey}/averageMetrics")]
-        public ActionResult<Dictionary<int, AnalyticsMetricWithIterationSplitDto>> GetSegmentAverageMetrics([FromRoute] string segmentKey)
+        public ActionResult<Dictionary<int, MetricService.AnalyticsMetricWithIterationSplitDto>> GetSegmentAverageMetrics([FromRoute] string segmentKey)
         {
             return SegmentsService.GetSegmentAverageMetrics(segmentKey);
         }

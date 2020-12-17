@@ -36,11 +36,18 @@ namespace Tayra.Services
                                 ).FirstOrDefault();
 
 
-            if (!ProfileRules.CanPraiseProfile(profileId, dto.ProfileId, lastPraisedAt, dto.Message))
+            if (!CanPraiseProfile(profileId, dto.ProfileId, lastPraisedAt, dto.Message))
             {
                 throw new ApplicationException("Profile already praised by same user today");
             }
 
+            bool CanPraiseProfile(Guid upperId, Guid profileToUpId, int? lastUppedAt, string message)
+            {
+                return upperId != profileToUpId
+                       && (!lastUppedAt.HasValue || DateHelper2.ToDateId(DateTime.UtcNow) > lastUppedAt)
+                       && (string.IsNullOrEmpty(message) || message.Length <= 140);
+            }
+            
             DbContext.Add(new ProfilePraise
             {
                 PraiserProfileId = profileId,

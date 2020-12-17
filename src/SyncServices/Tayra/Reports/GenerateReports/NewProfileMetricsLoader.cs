@@ -56,11 +56,7 @@ namespace Tayra.SyncServices.Tayra
         public static List<ProfileMetric> GenerateProfileMetrics(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService)
         {
             var metricsToInsert = new List<ProfileMetric>();
-
-            var companyTokenId = organizationDb.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
-            if (companyTokenId == default)
-                throw new ApplicationException("COMPANY TOKEN NOT FOUND");
-
+            
             var dateId = DateHelper2.ToDateId(fromDay);
 
             var profiles = organizationDb.Profiles.Select(x => new { Id = x.Id }).ToArray();
@@ -74,7 +70,7 @@ namespace Tayra.SyncServices.Tayra
 
             var tokens = (from tt in organizationDb.TokenTransactions
                           where profileIds.Contains(tt.ProfileId)
-                          where tt.TokenId == companyTokenId
+                          where tt.TokenType == TokenType.CompanyToken
                           where tt.DateId == dateId
                           select tt).ToArray();
 

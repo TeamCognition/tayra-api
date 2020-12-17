@@ -3177,46 +3177,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.ToTable("TeamReportsWeekly");
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.Token", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("LastModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SupplyAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Symbol")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("Tokens");
-                });
-
             modelBuilder.Entity("Tayra.Models.Organizations.TokenTransaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3242,9 +3202,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<int>("DateId")
                         .HasColumnType("int");
 
-                    b.Property<double>("FinalBalance")
-                        .HasColumnType("float");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
@@ -3254,8 +3211,8 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<int>("Reason")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("TokenId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("TokenType")
+                        .HasColumnType("int");
 
                     b.Property<string>("TxnHash")
                         .HasColumnType("nvarchar(max)");
@@ -3268,8 +3225,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.HasIndex("ProfileId", "OrganizationId");
-
-                    b.HasIndex("TokenId", "OrganizationId");
 
                     b.ToTable("TokenTransactions");
                 });
@@ -4504,15 +4459,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("Tayra.Models.Organizations.Token", b =>
-                {
-                    b.HasOne("Tayra.Models.Organizations.Organization", null)
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Tayra.Models.Organizations.TokenTransaction", b =>
                 {
                     b.HasOne("Tayra.Models.Organizations.Organization", null)
@@ -4528,16 +4474,7 @@ namespace Tayra.Models.Organizations.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Tayra.Models.Organizations.Token", "Token")
-                        .WithMany()
-                        .HasForeignKey("TokenId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Profile");
-
-                    b.Navigation("Token");
                 });
 
             modelBuilder.Entity("Tayra.Models.Organizations.WebhookEventLog", b =>

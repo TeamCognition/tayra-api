@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
+using Microsoft.EntityFrameworkCore;
+using Tayra.Services.Models.Profiles;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Models.Organizations;
@@ -24,21 +26,21 @@ namespace Tayra.Services.TaskConverters
         private IntegrationField[] _integrationFields;
 
         public TaskAddOrUpdateDTO Data { get; protected set; }
-        protected IProfilesService ProfilesService;
         protected Profile AssigneeProfile;
         protected bool BasicTaskDataUpdated { get; private set; }
         protected double? EffortScoreDiff;
-        public TaskConverterBase(OrganizationDbContext dbContext, IProfilesService profilesService)
+        public TaskConverterBase(OrganizationDbContext dbContext)
         {
             DbContext = dbContext;
-            ProfilesService = profilesService;
         }
         public void UpdateBasicTaskData()
         {
             BasicTaskDataUpdated = true;
             if (GetAssigneeExternalId() != null)
             {
-                AssigneeProfile = ProfilesService.GetProfileByExternalId(GetAssigneeExternalId(), GetIntegrationType());
+                AssigneeProfile = new ProfilesService().GetProfileByExternalId(DbContext,
+                    GetAssigneeExternalId(),
+                    GetIntegrationType());
             }
             Data = new TaskAddOrUpdateDTO
             {

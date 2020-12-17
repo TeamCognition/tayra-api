@@ -31,6 +31,12 @@ namespace Tayra.Models.Organizations
             Status != InvitationStatus.Cancelled &&
             Status != InvitationStatus.Expired;
 
+        //Test if this works in LINQ queries
+        public static System.Linq.Expressions.Expression<Func<Invitation, bool>> IsActive2() =>
+            i => i.Status != InvitationStatus.Accepted &&
+                 i.Status != InvitationStatus.Cancelled &&
+                 i.Status != InvitationStatus.Expired;
+        
         #region IAuditedEntity
 
         public DateTime Created { get; set; }

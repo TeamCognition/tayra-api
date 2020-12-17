@@ -88,9 +88,8 @@ namespace Tayra.Services
         public void PurchaseShopItem(Guid profileId, ShopItemPurchaseDTO dto)
         {
             var shop = DbContext.Shops.FirstOrDefault();
-            var token = DbContext.Tokens.FirstOrDefault(x => x.Type == TokenType.CompanyToken);
             var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs and price*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
-            var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == token.Id).Sum(x => x.Value);
+            var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenType == TokenType.CompanyToken).Sum(x => x.Value);
             var segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => (Guid?)x.SegmentId).FirstOrDefault();
 
             shop.EnsureNotNull(shop.Id);
@@ -103,7 +102,7 @@ namespace Tayra.Services
 
             shopItem.Item.ShopQuantityRemaining--;
 
-            TokensService.CreateTransaction(token.Id, profileId, shopItem.Item.Price * -1, TransactionReason.ShopItemPurchase, null, dto.DemoDate);
+            TokensService.CreateTransaction(TokenType.CompanyToken, profileId, shopItem.Item.Price * -1, TransactionReason.ShopItemPurchase, null, dto.DemoDate);
 
             var purchaseStatus = ItemRules.IsItemTypeTayra(shopItem.Item.Type) ? ShopPurchaseStatuses.Fulfilled : ShopPurchaseStatuses.PendingApproval;
             DbContext.Add(new ShopPurchase

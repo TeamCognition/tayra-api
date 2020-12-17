@@ -114,7 +114,6 @@ namespace Tayra.Models.Organizations
         public DbSet<TeamMetric> TeamMetrics { get; set; }
         public DbSet<TeamReportDaily> TeamReportsDaily { get; set; }
         public DbSet<TeamReportWeekly> TeamReportsWeekly { get; set; }
-        public DbSet<Token> Tokens { get; set; }
         public DbSet<TokenTransaction> TokenTransactions { get; set; }
         public DbSet<WebhookEventLog> WebhookEventLogs { get; set; }
 

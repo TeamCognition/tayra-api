@@ -55,7 +55,6 @@ namespace Tayra.API.Controllers
 
             TaskConverterJira taskConverter = new TaskConverterJira(
                 DbContext,
-                ProfilesService,
                 we);
             if (TaskHelpers.DoStandardStuff(taskConverter, TasksService, TokensService, LogsService, AssistantService))
             {

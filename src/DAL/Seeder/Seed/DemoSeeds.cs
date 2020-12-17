@@ -222,7 +222,6 @@ namespace Tayra.Models.Seeder.DemoSeeds
             Random rnd = new Random();
             ITokensService TokensService = new DemoTokensService(organizationDb);
             ILogsService LogsService = new DemoLogsService(organizationDb);
-            IProfilesService ProfilesService = new ProfilesService(TokensService, LogsService, null, organizationDb);
             ITasksService TasksService = new TasksService(organizationDb);
             IAssistantService AdvisorService = new AssistantService(organizationDb);
             IInventoriesService InventoryService = new InventoryService(LogsService, TokensService, organizationDb);
@@ -241,7 +240,6 @@ namespace Tayra.Models.Seeder.DemoSeeds
 
                 TaskConverterJira taskConverter = new TaskConverterJira(
                     organizationDb,
-                    ProfilesService,
                     new JiraWebhookEvent
                     {
                         JiraIssue = new JiraIssue

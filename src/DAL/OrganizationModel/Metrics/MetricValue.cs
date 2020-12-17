@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Tayra.Analytics;
 using Tayra.Common;
 
-namespace Tayra.Services
+namespace Tayra.Analytics
 {
     public class MetricValue
     {

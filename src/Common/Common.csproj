@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
    <PropertyGroup>
-      <TargetFramework>netcoreapp5.0</TargetFramework>
+      <TargetFramework>net5.0</TargetFramework>
       <RootNamespace>Tayra.Common</RootNamespace>
       <AssemblyName>Tayra.Common</AssemblyName>
    </PropertyGroup>
@@ -9,8 +9,12 @@
      <ProjectReference Include="..\..\cog\Cog.Core\Cog.Core.csproj" />
    </ItemGroup>
 
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+    
    <ItemGroup>
-     <PackageReference Include="Ardalis.SmartEnum.JsonNet" Version="1.0.3" />
+       <PackageReference Include="Ardalis.SmartEnum.JsonNet" Version="1.0.3" />
    </ItemGroup>
     
     <ProjectExtensions>

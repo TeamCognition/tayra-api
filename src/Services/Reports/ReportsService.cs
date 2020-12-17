@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-using Tayra.Services.Analytics;
+using Tayra.Models.Organizations.Metrics;
 
 namespace Tayra.Services
 {
@@ -30,7 +30,7 @@ namespace Tayra.Services
 
         public Dictionary<int, MetricsValueWEntity[]> GetReports(string entityKey, EntityTypes entityType, ReportsType reportType, DatePeriod period)
         {
-            var analyticsService = new AnalyticsService(DbContext);
+            var metricService = new MetricService(DbContext);
 
             MetricType[] metricList = new MetricType[0];
 
@@ -69,7 +69,7 @@ namespace Tayra.Services
             else if (entityType == EntityTypes.Segment)
                 entityMembers = DbContext.ProfileAssignments.Where(x => x.Segment.Key == entityKey && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId).Distinct().ToArray();
 
-            return analyticsService.GetMetricsRanks(metricList, entityMembers, EntityTypes.Profile, period);
+            return metricService.GetMetricsRanks(metricList, entityMembers, EntityTypes.Profile, period);
         }
 
         public ReportStatusDTO[] GetReportStatus(Guid[] segmentIds)

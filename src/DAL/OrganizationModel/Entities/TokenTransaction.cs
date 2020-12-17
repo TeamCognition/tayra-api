@@ -8,7 +8,6 @@ namespace Tayra.Models.Organizations
     public class TokenTransaction : Entity<Guid>, IClaimableEntity, ITimeStampedEntity
     {
         public double Value { get; set; }
-        public double FinalBalance { get; set; }
 
         public string TxnHash { get; set; }
 
@@ -19,9 +18,7 @@ namespace Tayra.Models.Organizations
         public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
-        public Guid TokenId { get; set; }
-        public virtual Token Token { get; set; }
-
+        public TokenType TokenType { get; set; }
         public int DateId { get; set; }
 
         #region IClaimableEntity

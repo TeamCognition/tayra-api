@@ -7,7 +7,7 @@ using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Models.Organizations;
-using Tayra.Services.Analytics;
+using Tayra.Models.Organizations.Metrics;
 using DateRanges = Cog.Core.DateRanges;
 
 namespace Tayra.Services
@@ -67,7 +67,7 @@ namespace Tayra.Services
             var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
             team.EnsureNotNull(teamKey);
 
-            var analyticsService = new AnalyticsService(DbContext);
+            var metricService = new MetricService(DbContext);
 
             var metricList = new MetricType[]
             {
@@ -119,9 +119,9 @@ namespace Tayra.Services
             {
                 LastUpdateDateId = teamStats.Select(x => x.DateId).FirstOrDefault(),
 
-                ProfileMetrics = analyticsService.GetMetricsRanks(metricList, teamProfiless, EntityTypes.Profile,
+                ProfileMetrics = metricService.GetMetricsRanks(metricList, teamProfiless, EntityTypes.Profile,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow)),
-                Averages = analyticsService.GetMetrics(metricList, team.Id, EntityTypes.Team,
+                Averages = metricService.GetMetrics(metricList, team.Id, EntityTypes.Team,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow))
             };
         }
@@ -214,8 +214,7 @@ namespace Tayra.Services
 
         public TeamStatsDTO GetTeamStatsData(Guid teamId)
         {
-
-            var analyticsService = new AnalyticsService(DbContext);
+            var metricService = new MetricService(DbContext);
 
             var metricList = new MetricType[]
             {
@@ -223,12 +222,12 @@ namespace Tayra.Services
                 MetricType.TasksCompleted, MetricType.Complexity, MetricType.CommitRate
             };
 
-            var teamMetrics = analyticsService.GetMetricsWithIterationSplit(
+            var teamMetrics = metricService.GetMetricsWithIterationSplit(
                 metricList, teamId, EntityTypes.Team, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
 
             var teamsSegmentId = DbContext.Teams.FirstOrDefault(x => x.Id == teamId).SegmentId;
 
-            var segmentMetrics = analyticsService.GetMetricsWithIterationSplit(
+            var segmentMetrics = metricService.GetMetricsWithIterationSplit(
                 metricList, teamsSegmentId, EntityTypes.Segment, new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
 
             return new TeamStatsDTO

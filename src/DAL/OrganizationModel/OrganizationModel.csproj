@@ -3,7 +3,7 @@
   <Import Project="..\..\..\build\deps.csproj.props" />
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Tayra.Models.Organizations</RootNamespace>
     <AssemblyName>Tayra.Models.Organizations</AssemblyName>
   </PropertyGroup>
@@ -24,6 +24,10 @@
     <ProjectReference Include="..\..\Connectors\Connectors.Atlassian\Connectors.Atlassian.csproj" />
     <ProjectReference Include="..\..\..\cog\Cog.Core\Cog.Core.csproj" />
     <ProjectReference Include="..\..\..\cog\Cog.DAL\Cog.DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot" />
   </ItemGroup>
 
   <ProjectExtensions>

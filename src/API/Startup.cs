@@ -1,19 +1,16 @@
 ﻿using System.IO;
 using System.Linq;
+using AutoMapper;
 using Cog.Core;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using Tayra.API.Helpers;
@@ -29,7 +26,7 @@ using Tayra.Imager;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
-using Tayra.Services.Analytics;
+using Tayra.Analytics;
 using Tayra.Services.Contracts;
 using Tayra.Services.webhooks;
 
@@ -51,6 +48,10 @@ namespace Tayra.API
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
             services.AddDbContext<OrganizationDbContext>(options => { });
 
+            services.AddAutoMapper(typeof(Startup));
+
+            services.AddMediatR(typeof(Startup));
+            
             //Add Application services
             services.AddTransient<ILogsService, LogsService>();
             services.AddTransient<IBlobsService, BlobsService>();
@@ -63,10 +64,8 @@ namespace Tayra.API
             services.AddTransient<ITokensService, TokensService>();
             services.AddTransient<ILookupsService, LookupsService>();
             services.AddTransient<IReportsService, ReportsService>();
-            services.AddTransient<IProfilesService, ProfilesService>();
             services.AddTransient<ISegmentsService, SegmentsService>();
             services.AddTransient<IShopItemsService, ShopItemsService>();
-            services.AddTransient<IAnalyticsService, AnalyticsService>();
             services.AddTransient<IAssistantService, AssistantService>();
             services.AddTransient<IIdentitiesService, IdentitiesService>();
             services.AddTransient<IInventoriesService, InventoryService>();
@@ -100,7 +99,7 @@ namespace Tayra.API
             });
 
             services.AddMvcCore()
-                .AddNewtonsoftJson()
+                //.AddNewtonsoftJson()
                 .AddApiExplorer(); //for swagger
             
             services.AddTayraAuthServices(Configuration);

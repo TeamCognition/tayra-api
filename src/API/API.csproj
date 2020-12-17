@@ -2,13 +2,18 @@
   <Import Project="..\..\build\shared.csproj.props" />
       
   <PropertyGroup>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Tayra.API</RootNamespace>
     <AssemblyName>Tayra.API</AssemblyName>
     <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
   </PropertyGroup>
     
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
@@ -20,10 +25,6 @@
   
   <ItemGroup>
     <PackageReference Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="1.0.0-rc0002" />
-  </ItemGroup>
-    
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
   </ItemGroup>
     
   <ItemGroup>

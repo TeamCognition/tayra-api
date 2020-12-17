@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Tayra.Services.Models.Profiles;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
@@ -83,13 +85,12 @@ namespace Tayra.SyncServices
                 return;
             }
 
-            var profilesService = new ProfilesService(null, null, null, organizationDb);
             var tasksService = new TasksService(organizationDb);
             
             var logsService = new LogsService(organizationDb);
             var tokensService = new TokensService(organizationDb);
 
-            var assigneProfile = fields?.Assignee == null ? null : profilesService.GetProfileByExternalId(fields.Assignee.AccountId, IntegrationType.ATJ);
+            var assigneProfile = fields?.Assignee == null ? null : new ProfilesService().GetProfileByExternalId(organizationDb, fields.Assignee.AccountId, IntegrationType.ATJ);
             var profileAssignment = assigneProfile == null ? null : organizationDb.ProfileAssignments.FirstOrDefault(x => x.ProfileId == assigneProfile.Id); //TODO: we need to append segmentId to webhooks
             var currentSegmentId = profileAssignment != null ? profileAssignment.SegmentId : (Guid?)null;
             

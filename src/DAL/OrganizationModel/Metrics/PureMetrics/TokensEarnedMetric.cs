@@ -20,14 +20,11 @@ namespace Tayra.SyncServices.Metrics
         public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType)
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
-            var companyTokenId = db.Tokens.Where(x => x.Type == TokenType.CompanyToken).Select(x => x.Id).FirstOrDefault();
-            if (companyTokenId == default)
-                throw new ApplicationException("COMPANY TOKEN NOT FOUND");
 
             return (from tt in db.TokenTransactions
                     where profileIds.Contains(tt.ProfileId)
                     where tt.Value > 0
-                    where tt.TokenId == companyTokenId
+                    where tt.TokenType == TokenType.CompanyToken
                     where tt.DateId >= period.FromId && tt.DateId <= period.ToId
                     select new RawMetric
                     {

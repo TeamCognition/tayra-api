@@ -15,19 +15,17 @@ namespace Tayra.Services.TaskConverters
     {
         protected JiraWebhookEvent We;
         public TaskConverterJira(OrganizationDbContext dbContext,
-                                 IProfilesService profilesService,
                                  JiraWebhookEvent we,
                                  TaskConverterMode mode = TaskConverterMode.NORMAL)
-                                 : base(dbContext, profilesService)
+                                 : base(dbContext)
         {
             Init(we, mode);
         }
 
         public TaskConverterJira(OrganizationDbContext dbContext,
-                                 IProfilesService profilesService,
                                  JiraIssue jiraIssue,
                                  TaskConverterMode mode = TaskConverterMode.NORMAL)
-                                 : base(dbContext, profilesService)
+                                 : base(dbContext)
         {
             Init(new JiraWebhookEvent { JiraIssue = jiraIssue }, mode);
         }

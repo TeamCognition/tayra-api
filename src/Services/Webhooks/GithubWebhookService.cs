@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Tayra.Services.Models.Profiles;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
@@ -15,18 +16,14 @@ namespace Tayra.Services.webhooks
 {
     public class GithubWebhookServiceService : BaseService<OrganizationDbContext>, IGithubWebhookService
     {
-        private readonly IProfilesService ProfilesService;
         private readonly ILogsService LogsService;
         
-        public GithubWebhookServiceService(IProfilesService profilesService, ILogsService logsService,
+        public GithubWebhookServiceService(ILogsService logsService,
             OrganizationDbContext dbContext) : base(dbContext)
         {
-            DbContext = dbContext;
-            ProfilesService = profilesService;
             LogsService = logsService;
         }
 
-        private OrganizationDbContext DbContext { get; }
 
         private void SaveWebhookEventLog(JObject jObject, IntegrationType integrationType)
         {
@@ -90,7 +87,7 @@ namespace Tayra.Services.webhooks
                 string token = ReadAccessToken(integrationId.Value);
                 var commitWithChanges = GitHubService.GetCommitBySha(commit.Id, token, "xxxx", "xxxx");
                 var authorProfile =
-                    ProfilesService.GetProfileByExternalId(commit.Author.Username, IntegrationType.GH);
+                    new ProfilesService().GetProfileByExternalId(DbContext, commit.Author.Username, IntegrationType.GH);
                 DbContext.Add(new GitCommit
                 {
                     SHA = commit.Id,
@@ -123,7 +120,9 @@ namespace Tayra.Services.webhooks
             }
 
             var authorProfile =
-                ProfilesService.GetProfileByExternalId(prPayload.PullRequest.Author.Username, IntegrationType.GH);
+                new ProfilesService().GetProfileByExternalId(DbContext,
+                    prPayload.PullRequest.Author.Username,
+                    IntegrationType.GH);
             if (prPayload.Action == "edited")
             {
                 UpdatePullRequest(prPayload, authorProfile, LogsService);
@@ -147,7 +146,8 @@ namespace Tayra.Services.webhooks
         {
             PullRequsetReviewWebhookPayload prReviewPayload = jObject.ToObject<PullRequsetReviewWebhookPayload>();
             var reviewerProfile =
-                ProfilesService.GetProfileByExternalId(prReviewPayload.PullRequestReview.ReviewedBy.Username,
+                new ProfilesService().GetProfileByExternalId(DbContext,
+                    prReviewPayload.PullRequestReview.ReviewedBy.Username,
                     IntegrationType.GH);
 
             PullRequest pullRequest =
@@ -181,9 +181,9 @@ namespace Tayra.Services.webhooks
             PullRequestReviewCommentPayload prReviewCommentPayload =
                 jObject.ToObject<PullRequestReviewCommentPayload>();
             var commenterProfile =
-                ProfilesService.GetProfileByExternalId(
-                    prReviewCommentPayload.ReviewComment.CommenterProfile.Username,
-                    IntegrationType.GH);
+            new ProfilesService().GetProfileByExternalId(DbContext,
+                prReviewCommentPayload.ReviewComment.CommenterProfile.Username,
+                IntegrationType.GH);
             PullRequest pullRequest =
                 DbContext.PullRequests.FirstOrDefault(x => x.ExternalId == prReviewCommentPayload.PullRequest.Id);
 

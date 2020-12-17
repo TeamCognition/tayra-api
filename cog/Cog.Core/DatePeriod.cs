@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Cog.Core
 {
-    [JsonConverter(typeof(ToStringJsonConverter))]
+    [JsonConverter(typeof(DatePeriodConverter))]
     public class DatePeriod
     {
         public DatePeriod(int fromId, int toId)
@@ -94,4 +95,24 @@ namespace Cog.Core
             return remainingDays - 2;
         }
     }
+    
+    #region JsonConverter
+
+    public class DatePeriodConverter : JsonConverter<DatePeriod>
+    {
+        public override void Write(Utf8JsonWriter writer, DatePeriod value, JsonSerializerOptions options)
+            => writer.WriteStringValue(value.ToString());
+            
+        public override DatePeriod Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.String)
+            {
+                throw new JsonException();
+            }
+
+            return new DatePeriod(reader.GetString());
+        }
+    }
+
+    #endregion
 }

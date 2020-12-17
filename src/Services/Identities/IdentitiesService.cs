@@ -3,6 +3,7 @@ using System.Linq;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
+using Tayra.Services.Models.Profiles;
 using Tayra.Common;
 using Tayra.Mailer;
 using Tayra.Models.Catalog;
@@ -106,8 +107,8 @@ namespace Tayra.Services
             {
                 throw new ApplicationException($"The invitation expired or is not valid anymore");
             }
-
-            if (!ProfilesService.IsUsernameUnique(DbContext, dto.Username))
+            
+            if (!new ProfilesService().IsUsernameUniqueNonAsync(DbContext, dto.Username))
             {
                 throw new ApplicationException($"Username already exists");
             }

@@ -2,7 +2,7 @@
   <Import Project="..\..\build\shared.csproj.props" />
     
   <PropertyGroup>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Tayra.SyncServices</RootNamespace>
     <AssemblyName>Tayra.SyncServices</AssemblyName>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>

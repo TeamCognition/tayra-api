@@ -25,7 +25,6 @@ namespace Tayra.Services
                     .ThenInclude(x => x.Item)
                 .Include(x => x.TokenTxns)
                     .ThenInclude(x => x.TokenTransaction)
-                    .ThenInclude(x => x.Token)
                 .Where(x => x.RewardClaimedAt == null);
 
         #region Public Methods
@@ -130,7 +129,7 @@ namespace Tayra.Services
 
                 ClaimedTokens = claimBundles
                     .SelectMany(x => x.TokenTxns)
-                    .GroupBy(x => x.TokenTransaction.Token.Type)
+                    .GroupBy(x => x.TokenTransaction.TokenType)
                     .Select(x => new ClaimBundleClaimRewardsDTO.Token
                     {
                         Type = x.Key,

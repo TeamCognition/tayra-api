@@ -70,12 +70,6 @@ namespace Tayra.API.Controllers
 
         #region From Database
 
-        [HttpGet, Route(nameof(LookupTypes.Tokens))]
-        public IEnumerable<LookupDTO> GetTokens()
-        {
-            return LookupsService.GetFromOrganizationDb<Token>(x => new LookupDTO(x.Id, x.Name));
-        }
-
         #endregion
 
         #region Bulk Lookup
@@ -88,8 +82,7 @@ namespace Tayra.API.Controllers
             foreach (var type in types)
             {
                 result[type] =
-                    (type == LookupTypes.Tokens) ? GetTokens()
-                    : (type == LookupTypes.ItemTypes) ? GetItemTypes()
+                    (type == LookupTypes.ItemTypes) ? GetItemTypes()
                     : (type == LookupTypes.TokenTypes) ? GetTokenTypes()
                     : (type == LookupTypes.ItemRarities) ? GetItemRarities()
                     : (type == LookupTypes.ProfileRoles) ? GetProfileRoles()
