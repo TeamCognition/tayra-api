@@ -22,7 +22,7 @@ namespace Tayra.Connectors.Atlassian.Jira
         {
         }
 
-        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
+        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, dataContext, catalogDbContext)
         {
         }
 

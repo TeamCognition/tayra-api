@@ -11,7 +11,7 @@ namespace Tayra.Models.Organizations
         {
             if (dbContext is OrganizationDbContext dynamicContext)
             {
-                return new { dynamicContext.CurrentTenantId };
+                return new { dynamicContext.TenantInfo.Id };
             }
 
             throw new Exception("Unknown DbContext type");

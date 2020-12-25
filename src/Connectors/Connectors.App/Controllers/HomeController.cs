@@ -46,13 +46,13 @@ namespace Tayra.Connectors.App.Controllers
             if (setup_action == "update" && string.IsNullOrEmpty(state))
             {
                 var ti = catalogContext.TenantIntegrations.Include(x => x.Tenant).FirstOrDefault(x => x.InstallationId == installation_id);
-                Request.QueryString = Request.QueryString.Add("tenant", ti.Tenant.Key);
+                Request.QueryString = Request.QueryString.Add("tenant", ti.Tenant.Identifier);
                 connector.UpdateAuthentication(installation_id);
 
-                return Redirect($"https://{ti.Tenant.Key}/login");
+                return Redirect($"https://{ti.Tenant.Identifier}/login");
             }
             var oAuthState = new OAuthState(state);
-            Request.QueryString = Request.QueryString.Add("tenant", oAuthState.TenantKey);
+            Request.QueryString = Request.QueryString.Add("tenant", oAuthState.TenantIdentifier);
 
             if (!string.IsNullOrEmpty(error))
             {

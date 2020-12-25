@@ -10,7 +10,7 @@ using Tayra.Models.Catalog;
 namespace Tayra.Models.Catalog.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20201202151853_Initial")]
+    [Migration("20201223150551_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -130,18 +130,21 @@ namespace Tayra.Models.Catalog.Migrations
 
             modelBuilder.Entity("Tayra.Models.Catalog.Tenant", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasMaxLength(128)
-                        .HasColumnType("varbinary(128)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
-                    b.Property<string>("DisplayName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<string>("ConnectionString")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Key")
+                    b.Property<string>("Identifier")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ServicePlan")
                         .IsRequired()
@@ -155,15 +158,16 @@ namespace Tayra.Models.Catalog.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Key");
+                    b.HasIndex("Identifier")
+                        .IsUnique();
 
                     b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("Tayra.Models.Catalog.TenantIdentity", b =>
                 {
-                    b.Property<byte[]>("TenantId")
-                        .HasColumnType("varbinary(128)");
+                    b.Property<string>("TenantId")
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<Guid>("IdentityId")
                         .HasColumnType("uniqueidentifier");
@@ -183,8 +187,8 @@ namespace Tayra.Models.Catalog.Migrations
 
             modelBuilder.Entity("Tayra.Models.Catalog.TenantIntegration", b =>
                 {
-                    b.Property<byte[]>("TenantId")
-                        .HasColumnType("varbinary(128)");
+                    b.Property<string>("TenantId")
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");

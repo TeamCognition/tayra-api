@@ -1,37 +1,28 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Finbuckle.MultiTenant.Stores;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tayra.Models.Catalog
 {
-    public class CatalogDbContext : DbContext
+    public class CatalogDbContext : EFCoreStoreDbContext<Tenant>
     {
         #region Constructor
 
         public CatalogDbContext(DbContextOptions<CatalogDbContext> options) : base(options)
         {
         }
-
-        public CatalogDbContext(string connectionString, DbContextOptions<CatalogDbContext> options) : base(options)
+        
+        public CatalogDbContext(string connectionString): base(new DbContextOptions<CatalogDbContext>())
         {
             ConnectionString = connectionString;
         }
-
-        public CatalogDbContext(string connectionString) : this(connectionString, new DbContextOptions<CatalogDbContext>())
-        {
-        }
-
         #endregion
 
-        #region Properties
-
-        public string ConnectionString { get; set; }
-
-        #endregion
-
+        public string ConnectionString { get; }
+        
         #region Datasets
 
         public DbSet<Identity> Identities { get; set; }
         public DbSet<IdentityEmail> IdentityEmails { get; set; }
-        public DbSet<Tenant> Tenants { get; set; }
         public DbSet<TenantIdentity> TenantIdentities { get; set; }
         public DbSet<TenantIntegration> TenantIntegrations { get; set; }
 
@@ -65,7 +56,7 @@ namespace Tayra.Models.Catalog
             {
                 entity.HasKey(e => e.Id);
 
-                entity.HasIndex(e => e.Key);
+                entity.HasIndex(e => e.Identifier);
 
                 entity.Property(e => e.Id).HasMaxLength(128);
 

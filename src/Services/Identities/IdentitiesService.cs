@@ -56,7 +56,7 @@ namespace Tayra.Services
             CatalogDb.Add(new TenantIdentity
             {
                 Identity = identity,
-                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(DbContext.CurrentTenantId)
+                TenantId = DbContext.TenantInfo.Id
             });
 
             //get identity Id
@@ -139,7 +139,7 @@ namespace Tayra.Services
             CatalogDb.Add(new TenantIdentity
             {
                 Identity = identity,
-                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(DbContext.CurrentTenantId)
+                TenantId = DbContext.TenantInfo.Id
             });
 
             invitation.Status = InvitationStatus.Accepted;

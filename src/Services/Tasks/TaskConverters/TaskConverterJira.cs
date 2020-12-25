@@ -1,13 +1,10 @@
-
 using System;
 using System.Linq;
 using Cog.Core;
-using Microsoft.Azure.SqlDatabase.ElasticScale.Query;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Models.Organizations;
-using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.Services.TaskConverters
 {

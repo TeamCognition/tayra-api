@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
+using Finbuckle.MultiTenant;
 using Newtonsoft.Json.Linq;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
@@ -16,20 +17,12 @@ namespace Tayra.SyncServices
 {
     public class SyncIssuesLoader : BaseLoader
     {
-        #region Private Variables
-
-        private readonly IShardMapProvider _shardMapProvider;
-
-        #endregion
-
         #region Constructor
 
         public SyncIssuesLoader(
-            IShardMapProvider shardMapProvider,
             LogService logService,
             CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
-            _shardMapProvider = shardMapProvider;
         }
 
         #endregion
@@ -41,7 +34,7 @@ namespace Tayra.SyncServices
             foreach (var tenant in tenants)
             {
                 // LogService.SetOrganizationId(tenant.Key);
-                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
+                using (var organizationDb = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null))
                 {
                     PullIssuesNew(organizationDb, date, new TasksService(organizationDb), requestBody);
                 }

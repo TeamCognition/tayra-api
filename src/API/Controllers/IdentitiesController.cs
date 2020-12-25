@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Cog.Core;
+using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Common;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 
@@ -13,24 +15,22 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public IdentitiesController(ITenantProvider tenantProvider, OrganizationDbContext dbContext,
+        public IdentitiesController(OrganizationDbContext dbContext,
             IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            TenantProvider = tenantProvider; 
+        { 
             DbContext = dbContext;
         }
 
         #endregion
 
         #region Properties
-
-        public readonly ITenantProvider TenantProvider;
+        
         public readonly OrganizationDbContext DbContext;
 
         #endregion
 
         #region Action Methods
-
+        
         [AllowAnonymous, HttpPost("create")]
         public ActionResult Create([FromBody] IdentityCreateDTO dto)
         {
@@ -71,7 +71,7 @@ namespace Tayra.API.Controllers
         [HttpPost("invitation")]
         public IActionResult SendInvitation([FromBody] IdentityInviteDTO dto)
         {
-            IdentitiesService.CreateInvitation(TenantProvider.GetTenant().Key, dto);
+            IdentitiesService.CreateInvitation(HttpContext.GetMultiTenantContext<TenantModel>()?.TenantInfo.Identifier, dto);
 
             DbContext.SaveChanges();
             return Ok();
@@ -80,7 +80,7 @@ namespace Tayra.API.Controllers
         [HttpPost("resendInvitation/{invitationId:int}")]
         public IActionResult ResendInvitation([FromRoute] Guid invitationId)
         {
-            IdentitiesService.ResendInvitation(TenantProvider.GetTenant().Key, invitationId);
+            IdentitiesService.ResendInvitation(HttpContext.GetMultiTenantContext<TenantModel>()?.TenantInfo.Identifier, invitationId);
 
             DbContext.SaveChanges();
             return Ok();

@@ -59,10 +59,11 @@ namespace Tayra.Models.Catalog.Migrations
                 name: "Tenants",
                 columns: table => new
                 {
-                    Id = table.Column<byte[]>(type: "varbinary(128)", maxLength: 128, nullable: false),
-                    Key = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    Identifier = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ConnectionString = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Timezone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ServicePlan = table.Column<string>(type: "char(10)", nullable: false, defaultValueSql: "'standard'")
                 },
                 constraints: table =>
@@ -96,7 +97,7 @@ namespace Tayra.Models.Catalog.Migrations
                 name: "TenantIdentities",
                 columns: table => new
                 {
-                    TenantId = table.Column<byte[]>(type: "varbinary(128)", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", nullable: false),
                     IdentityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -122,7 +123,7 @@ namespace Tayra.Models.Catalog.Migrations
                 name: "TenantIntegrations",
                 columns: table => new
                 {
-                    TenantId = table.Column<byte[]>(type: "varbinary(128)", nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     InstallationId = table.Column<string>(type: "nvarchar(125)", maxLength: 125, nullable: true),
@@ -156,9 +157,10 @@ namespace Tayra.Models.Catalog.Migrations
                 column: "InstallationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tenants_Key",
+                name: "IX_Tenants_Identifier",
                 table: "Tenants",
-                column: "Key");
+                column: "Identifier",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -18,17 +18,10 @@ namespace Tayra.SyncServices.Tayra
 {
     public class NewSegmentMetricsLoader : BaseLoader
     {
-        #region Private Variables
-
-        private readonly IShardMapProvider _shardMapProvider;
-
-        #endregion
-
         #region Constructor
 
-        public NewSegmentMetricsLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public NewSegmentMetricsLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
-            _shardMapProvider = shardMapProvider;
         }
 
         #endregion
@@ -38,8 +31,8 @@ namespace Tayra.SyncServices.Tayra
         {
             foreach (var tenant in tenants)
             {
-                LogService.SetOrganizationId(tenant.Key);
-                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
+                LogService.SetOrganizationId(tenant.Identifier);
+                using (var organizationDb = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null))
                 {
                     GenerateSegmentMetrics(organizationDb, date, LogService);
                 }

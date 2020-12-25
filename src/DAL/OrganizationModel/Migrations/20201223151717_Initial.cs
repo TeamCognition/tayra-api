@@ -8,15 +8,15 @@ namespace Tayra.Models.Organizations.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Organizations",
+                name: "LocalTenants",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    isCreateSegmentOnboarding = table.Column<bool>(type: "bit", nullable: false),
-                    isAddSourcesOnboarding = table.Column<bool>(type: "bit", nullable: false),
-                    isInviteUsersOnboarding = table.Column<bool>(type: "bit", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Identifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsCreateSegmentOnboarding = table.Column<bool>(type: "bit", nullable: false),
+                    IsAddSourcesOnboarding = table.Column<bool>(type: "bit", nullable: false),
+                    IsInviteUsersOnboarding = table.Column<bool>(type: "bit", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -24,7 +24,7 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Organizations", x => x.Id);
+                    table.PrimaryKey("PK_LocalTenants", x => x.TenantId);
                 });
 
             migrationBuilder.CreateTable(
@@ -48,7 +48,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Purpose = table.Column<int>(type: "int", nullable: false),
                     Filename = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -61,40 +61,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Blobs", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Blobs", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Blobs_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Blobs_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EntityChangeLogs",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    EntityType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EntityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EntityState = table.Column<int>(type: "int", nullable: false),
-                    AuditType = table.Column<byte>(type: "tinyint", nullable: false),
-                    ChangedValues = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Modified = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedBy = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EntityChangeLogs", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_EntityChangeLogs_Id", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EntityChangeLogs_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Blobs_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -103,7 +76,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -125,13 +98,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Items", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Items", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Items_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Items_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Items_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -140,7 +113,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdentityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClaimsJson = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -150,13 +123,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LoginLogs", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_LoginLogs", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_LoginLogs_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LoginLogs_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_LoginLogs_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -165,7 +138,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Data = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Event = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -173,13 +146,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Logs", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Logs", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Logs_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Logs_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Logs_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -188,7 +161,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Username = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
@@ -209,13 +182,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Profiles", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Profiles", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Profiles_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Profiles_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Profiles_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -224,7 +197,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -233,13 +206,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SegmentAreas", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_SegmentAreas", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_SegmentAreas_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SegmentAreas_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_SegmentAreas_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -248,7 +221,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Key = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Avatar = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
@@ -265,13 +238,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Segments", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Segments", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Segments_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Segments_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Segments_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -280,7 +253,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClosedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -290,40 +263,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Shops", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Shops", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Shops_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Shops_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tokens",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Symbol = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    SupplyAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LastModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tokens", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_Tokens_Id", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tokens_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Shops_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -332,7 +278,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Data = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IntegrationType = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -340,13 +286,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WebhookEventLogs", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_WebhookEventLogs", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_WebhookEventLogs_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WebhookEventLogs_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_WebhookEventLogs_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -355,7 +301,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DiscountPrice = table.Column<float>(type: "real", nullable: true),
                     DiscountEndsAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -370,7 +316,7 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShopItems", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_ShopItems", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_ShopItems_Id", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ShopItems_Items_ItemId",
@@ -379,10 +325,10 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ShopItems_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ShopItems_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -391,7 +337,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     RewardClaimedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -400,13 +346,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClaimBundles", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_ClaimBundles", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_ClaimBundles_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClaimBundles_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ClaimBundles_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ClaimBundles_Profiles_ProfileId",
@@ -421,7 +367,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SHA = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExternalUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -434,13 +380,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GitCommits", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_GitCommits", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_GitCommits_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GitCommits_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_GitCommits_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_GitCommits_Profiles_AuthorProfileId",
@@ -455,7 +401,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DateId = table.Column<int>(type: "int", nullable: false),
@@ -464,7 +410,7 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemDisenchants", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_ItemDisenchants", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_ItemDisenchants_Id", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ItemDisenchants_Items_ItemId",
@@ -473,10 +419,10 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ItemDisenchants_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ItemDisenchants_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ItemDisenchants_Profiles_ProfileId",
@@ -491,7 +437,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SenderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReceiverId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -502,7 +448,7 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemGifts", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_ItemGifts", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_ItemGifts_Id", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ItemGifts_Items_ItemId",
@@ -511,10 +457,10 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ItemGifts_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ItemGifts_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ItemGifts_Profiles_ReceiverId",
@@ -535,7 +481,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -544,13 +490,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LogDevices", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_LogDevices", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_LogDevices_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LogDevices_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_LogDevices_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_LogDevices_Profiles_ProfileId",
@@ -565,7 +511,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
@@ -579,7 +525,7 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfileInventoryItems", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfileInventoryItems", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_ProfileInventoryItems_Id", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ProfileInventoryItems_Items_ItemId",
@@ -588,10 +534,10 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProfileInventoryItems_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ProfileInventoryItems_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProfileInventoryItems_Profiles_ProfileId",
@@ -607,22 +553,22 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Event = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfileLogs", x => new { x.ProfileId, x.LogId, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfileLogs", x => new { x.ProfileId, x.LogId, x.TenantId });
+                    table.ForeignKey(
+                        name: "FK_ProfileLogs_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProfileLogs_Logs_LogId",
                         column: x => x.LogId,
                         principalTable: "Logs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProfileLogs_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -640,7 +586,7 @@ namespace Tayra.Models.Organizations.Migrations
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PraiserProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DateId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(140)", maxLength: 140, nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -651,12 +597,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfilePraises", x => new { x.DateId, x.ProfileId, x.PraiserProfileId, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfilePraises", x => new { x.DateId, x.ProfileId, x.PraiserProfileId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_ProfilePraises_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ProfilePraises_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProfilePraises_Profiles_ProfileId",
@@ -671,7 +617,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ExternalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExternalNumber = table.Column<int>(type: "int", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -692,13 +638,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PullRequests", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_PullRequests", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_PullRequests_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PullRequests_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_PullRequests_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PullRequests_Profiles_AuthorProfileId",
@@ -709,11 +655,47 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TokenTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Value = table.Column<double>(type: "float", nullable: false),
+                    TxnHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Comment = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Reason = table.Column<int>(type: "int", nullable: false),
+                    ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TokenType = table.Column<int>(type: "int", nullable: false),
+                    DateId = table.Column<int>(type: "int", nullable: false),
+                    ClaimRequired = table.Column<bool>(type: "bit", nullable: false),
+                    ClaimedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TokenTransactions", x => new { x.Id, x.TenantId });
+                    table.UniqueConstraint("AK_TokenTransactions_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TokenTransactions_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TokenTransactions_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ActionPoints",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Type = table.Column<int>(type: "int", nullable: false),
@@ -725,13 +707,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActionPoints", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_ActionPoints", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_ActionPoints_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ActionPoints_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ActionPoints_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ActionPoints_Profiles_ProfileId",
@@ -752,7 +734,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Type = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NotifyByEmail = table.Column<bool>(type: "bit", nullable: false),
                     NotifyByPush = table.Column<bool>(type: "bit", nullable: false),
@@ -763,12 +745,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActionPointSettings", x => new { x.Type, x.OrganizationId });
+                    table.PrimaryKey("PK_ActionPointSettings", x => new { x.Type, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_ActionPointSettings_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ActionPointSettings_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ActionPointSettings_Segments_SegmentId",
@@ -783,7 +765,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
@@ -794,13 +776,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Integrations", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Integrations", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Integrations_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Integrations_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Integrations_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Integrations_Profiles_ProfileId",
@@ -823,7 +805,7 @@ namespace Tayra.Models.Organizations.Migrations
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IntegrationType = table.Column<int>(type: "int", nullable: false),
                     ExternalId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -831,12 +813,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfileExternalIds", x => new { x.ExternalId, x.IntegrationType, x.SegmentId, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfileExternalIds", x => new { x.ExternalId, x.IntegrationType, x.SegmentId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_ProfileExternalIds_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ProfileExternalIds_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProfileExternalIds_Profiles_ProfileId",
@@ -859,7 +841,7 @@ namespace Tayra.Models.Organizations.Migrations
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DateId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Value = table.Column<float>(type: "real", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -868,12 +850,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfileMetrics", x => new { x.ProfileId, x.Type, x.DateId, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfileMetrics", x => new { x.ProfileId, x.Type, x.DateId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_ProfileMetrics_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ProfileMetrics_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProfileMetrics_Profiles_ProfileId",
@@ -897,7 +879,7 @@ namespace Tayra.Models.Organizations.Migrations
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TaskCategoryId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IterationCount = table.Column<int>(type: "int", nullable: false),
                     ProfileRole = table.Column<int>(type: "int", nullable: false),
                     ComplexityChange = table.Column<int>(type: "int", nullable: false),
@@ -946,12 +928,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfileReportsDaily", x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfileReportsDaily", x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_ProfileReportsDaily_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ProfileReportsDaily_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProfileReportsDaily_Profiles_ProfileId",
@@ -975,7 +957,7 @@ namespace Tayra.Models.Organizations.Migrations
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TaskCategoryId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IterationCount = table.Column<int>(type: "int", nullable: false),
                     ProfileRole = table.Column<int>(type: "int", nullable: false),
                     ComplexityChange = table.Column<int>(type: "int", nullable: false),
@@ -1029,12 +1011,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfileReportsWeekly", x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfileReportsWeekly", x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_ProfileReportsWeekly_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ProfileReportsWeekly_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProfileReportsWeekly_Profiles_ProfileId",
@@ -1054,9 +1036,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Quests",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -1076,13 +1057,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Quests", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Quests", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Quests_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Quests_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Quests_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Quests_Segments_SegmentId",
@@ -1099,19 +1080,19 @@ namespace Tayra.Models.Organizations.Migrations
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DateId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Value = table.Column<float>(type: "real", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SegmentMetrics", x => new { x.SegmentId, x.Type, x.DateId, x.OrganizationId });
+                    table.PrimaryKey("PK_SegmentMetrics", x => new { x.SegmentId, x.Type, x.DateId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_SegmentMetrics_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_SegmentMetrics_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_SegmentMetrics_Segments_SegmentId",
@@ -1128,7 +1109,7 @@ namespace Tayra.Models.Organizations.Migrations
                     DateId = table.Column<int>(type: "int", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TaskCategoryId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IterationCount = table.Column<int>(type: "int", nullable: false),
                     ComplexityChange = table.Column<int>(type: "int", nullable: false),
                     ComplexityTotal = table.Column<int>(type: "int", nullable: false),
@@ -1170,12 +1151,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SegmentReportsDaily", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
+                    table.PrimaryKey("PK_SegmentReportsDaily", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_SegmentReportsDaily_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_SegmentReportsDaily_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_SegmentReportsDaily_Segments_SegmentId",
@@ -1192,7 +1173,7 @@ namespace Tayra.Models.Organizations.Migrations
                     DateId = table.Column<int>(type: "int", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TaskCategoryId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IterationCount = table.Column<int>(type: "int", nullable: false),
                     ComplexityChange = table.Column<int>(type: "int", nullable: false),
                     ComplexityAverage = table.Column<float>(type: "real", nullable: false),
@@ -1244,12 +1225,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SegmentReportsWeekly", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.OrganizationId });
+                    table.PrimaryKey("PK_SegmentReportsWeekly", x => new { x.DateId, x.SegmentId, x.TaskCategoryId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_SegmentReportsWeekly_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_SegmentReportsWeekly_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_SegmentReportsWeekly_Segments_SegmentId",
@@ -1264,7 +1245,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -1281,7 +1262,7 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShopPurchases", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_ShopPurchases", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_ShopPurchases_Id", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ShopPurchases_Items_ItemId",
@@ -1290,10 +1271,10 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ShopPurchases_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ShopPurchases_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ShopPurchases_Profiles_ProfileId",
@@ -1314,7 +1295,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ExternalProjectId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IntegrationType = table.Column<int>(type: "int", nullable: false),
                     DateId = table.Column<int>(type: "int", nullable: false),
@@ -1324,13 +1305,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaskSyncs", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_TaskSyncs", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_TaskSyncs_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TaskSyncs_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_TaskSyncs_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TaskSyncs_Segments_SegmentId",
@@ -1345,7 +1326,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Key = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -1359,13 +1340,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Teams", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Teams_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Teams_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Teams_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Teams_Segments_SegmentId",
@@ -1381,22 +1362,22 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     ShopId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Event = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShopLogs", x => new { x.ShopId, x.LogId, x.OrganizationId });
+                    table.PrimaryKey("PK_ShopLogs", x => new { x.ShopId, x.LogId, x.TenantId });
+                    table.ForeignKey(
+                        name: "FK_ShopLogs_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ShopLogs_Logs_LogId",
                         column: x => x.LogId,
                         principalTable: "Logs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ShopLogs_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -1408,55 +1389,12 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TokenTransactions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    Value = table.Column<double>(type: "float", nullable: false),
-                    FinalBalance = table.Column<double>(type: "float", nullable: false),
-                    TxnHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Comment = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Reason = table.Column<int>(type: "int", nullable: false),
-                    ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TokenId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DateId = table.Column<int>(type: "int", nullable: false),
-                    ClaimRequired = table.Column<bool>(type: "bit", nullable: false),
-                    ClaimedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TokenTransactions", x => new { x.Id, x.OrganizationId });
-                    table.UniqueConstraint("AK_TokenTransactions_Id", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TokenTransactions_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_TokenTransactions_Profiles_ProfileId",
-                        column: x => x.ProfileId,
-                        principalTable: "Profiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_TokenTransactions_Tokens_TokenId",
-                        column: x => x.TokenId,
-                        principalTable: "Tokens",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ShopItemSegments",
                 columns: table => new
                 {
                     ShopItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DiscountPrice = table.Column<float>(type: "real", nullable: true),
                     DiscountEndsAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     HiddenAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -1465,12 +1403,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShopItemSegments", x => new { x.ShopItemId, x.SegmentId, x.OrganizationId });
+                    table.PrimaryKey("PK_ShopItemSegments", x => new { x.ShopItemId, x.SegmentId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_ShopItemSegments_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ShopItemSegments_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ShopItemSegments_Segments_SegmentId",
@@ -1492,7 +1430,7 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     LogDeviceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LogEvent = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsEnabled = table.Column<bool>(type: "bit", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1501,17 +1439,17 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LogSettings", x => new { x.LogDeviceId, x.LogEvent, x.OrganizationId });
+                    table.PrimaryKey("PK_LogSettings", x => new { x.LogDeviceId, x.LogEvent, x.TenantId });
+                    table.ForeignKey(
+                        name: "FK_LogSettings_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_LogSettings_LogDevices_LogDeviceId",
                         column: x => x.LogDeviceId,
                         principalTable: "LogDevices",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_LogSettings_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -1528,11 +1466,11 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     ClaimBundleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileInventoryItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false)
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClaimBundleItems", x => new { x.ClaimBundleId, x.ProfileInventoryItemId, x.OrganizationId });
+                    table.PrimaryKey("PK_ClaimBundleItems", x => new { x.ClaimBundleId, x.ProfileInventoryItemId, x.TenantId });
                     table.ForeignKey(
                         name: "FK_ClaimBundleItems_ClaimBundles_ClaimBundleId",
                         column: x => x.ClaimBundleId,
@@ -1540,10 +1478,10 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ClaimBundleItems_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ClaimBundleItems_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ClaimBundleItems_ProfileInventoryItems_ProfileInventoryItemId",
@@ -1558,7 +1496,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Body = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CommitId = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -1571,13 +1509,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PullRequestReviews", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_PullRequestReviews", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_PullRequestReviews_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PullRequestReviews_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_PullRequestReviews_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PullRequestReviews_Profiles_ReviewerProfileId",
@@ -1594,11 +1532,42 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClaimBundleTokenTxns",
+                columns: table => new
+                {
+                    ClaimBundleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TokenTransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClaimBundleTokenTxns", x => new { x.ClaimBundleId, x.TokenTransactionId, x.TenantId });
+                    table.ForeignKey(
+                        name: "FK_ClaimBundleTokenTxns_ClaimBundles_ClaimBundleId",
+                        column: x => x.ClaimBundleId,
+                        principalTable: "ClaimBundles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ClaimBundleTokenTxns_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ClaimBundleTokenTxns_TokenTransactions_TokenTransactionId",
+                        column: x => x.TokenTransactionId,
+                        principalTable: "TokenTransactions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "IntegrationFields",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IntegrationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Key = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -1609,7 +1578,7 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IntegrationFields", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_IntegrationFields", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_IntegrationFields_Id", x => x.Id);
                     table.ForeignKey(
                         name: "FK_IntegrationFields_Integrations_IntegrationId",
@@ -1618,10 +1587,10 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_IntegrationFields_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_IntegrationFields_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -1631,19 +1600,19 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     QuestId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestCommits", x => new { x.QuestId, x.ProfileId, x.OrganizationId });
+                    table.PrimaryKey("PK_QuestCommits", x => new { x.QuestId, x.ProfileId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_QuestCommits_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_QuestCommits_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_QuestCommits_Profiles_ProfileId",
@@ -1665,18 +1634,18 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     QuestId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestCompletions", x => new { x.QuestId, x.ProfileId, x.OrganizationId });
+                    table.PrimaryKey("PK_QuestCompletions", x => new { x.QuestId, x.ProfileId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_QuestCompletions_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_QuestCompletions_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_QuestCompletions_Profiles_ProfileId",
@@ -1696,9 +1665,8 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "QuestGoals",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsCommentRequired = table.Column<bool>(type: "bit", nullable: false),
                     QuestId = table.Column<int>(type: "int", nullable: false),
@@ -1707,13 +1675,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestGoals", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_QuestGoals", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_QuestGoals_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_QuestGoals_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_QuestGoals_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_QuestGoals_Quests_QuestId",
@@ -1729,14 +1697,14 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     QuestId = table.Column<int>(type: "int", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestRewards", x => new { x.QuestId, x.ItemId, x.OrganizationId });
+                    table.PrimaryKey("PK_QuestRewards", x => new { x.QuestId, x.ItemId, x.TenantId });
                     table.ForeignKey(
                         name: "FK_QuestRewards_Items_ItemId",
                         column: x => x.ItemId,
@@ -1744,10 +1712,10 @@ namespace Tayra.Models.Organizations.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_QuestRewards_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_QuestRewards_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_QuestRewards_Quests_QuestId",
@@ -1763,18 +1731,18 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     QuestId = table.Column<int>(type: "int", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestSegments", x => new { x.QuestId, x.SegmentId, x.OrganizationId });
+                    table.PrimaryKey("PK_QuestSegments", x => new { x.QuestId, x.SegmentId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_QuestSegments_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_QuestSegments_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_QuestSegments_Quests_QuestId",
@@ -1795,7 +1763,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Code = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
@@ -1811,13 +1779,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Invitations", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Invitations", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Invitations_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Invitations_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Invitations_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Invitations_Segments_SegmentId",
@@ -1838,7 +1806,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -1849,13 +1817,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfileAssignments", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_ProfileAssignments", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_ProfileAssignments_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProfileAssignments_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_ProfileAssignments_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProfileAssignments_Profiles_ProfileId",
@@ -1882,7 +1850,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ExternalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IntegrationInstallationId = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -1897,13 +1865,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Repositories", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Repositories", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Repositories_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Repositories_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Repositories_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Repositories_Teams_TeamId",
@@ -1918,7 +1886,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ExternalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IntegrationType = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -1932,13 +1900,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaskLogs", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_TaskLogs", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_TaskLogs_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TaskLogs_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_TaskLogs_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TaskLogs_Profiles_AssigneeProfileId1",
@@ -1965,7 +1933,7 @@ namespace Tayra.Models.Organizations.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ExternalId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ExternalProjectId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExternalUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -2000,13 +1968,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tasks", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_Tasks", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_Tasks_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tasks_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_Tasks_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Tasks_Profiles_AssigneeProfileId",
@@ -2047,7 +2015,7 @@ namespace Tayra.Models.Organizations.Migrations
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DateId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Value = table.Column<float>(type: "real", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -2055,12 +2023,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TeamMetrics", x => new { x.TeamId, x.Type, x.DateId, x.OrganizationId });
+                    table.PrimaryKey("PK_TeamMetrics", x => new { x.TeamId, x.Type, x.DateId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_TeamMetrics_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_TeamMetrics_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TeamMetrics_Teams_TeamId",
@@ -2077,7 +2045,7 @@ namespace Tayra.Models.Organizations.Migrations
                     DateId = table.Column<int>(type: "int", nullable: false),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TaskCategoryId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IterationCount = table.Column<int>(type: "int", nullable: false),
                     IsUnassigned = table.Column<bool>(type: "bit", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -2120,12 +2088,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TeamReportsDaily", x => new { x.DateId, x.TeamId, x.TaskCategoryId, x.OrganizationId });
+                    table.PrimaryKey("PK_TeamReportsDaily", x => new { x.DateId, x.TeamId, x.TaskCategoryId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_TeamReportsDaily_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_TeamReportsDaily_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TeamReportsDaily_Teams_TeamId",
@@ -2142,7 +2110,7 @@ namespace Tayra.Models.Organizations.Migrations
                     DateId = table.Column<int>(type: "int", nullable: false),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TaskCategoryId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IterationCount = table.Column<int>(type: "int", nullable: false),
                     SegmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ComplexityChange = table.Column<int>(type: "int", nullable: false),
@@ -2191,12 +2159,12 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TeamReportsWeekly", x => new { x.DateId, x.TeamId, x.TaskCategoryId, x.OrganizationId });
+                    table.PrimaryKey("PK_TeamReportsWeekly", x => new { x.DateId, x.TeamId, x.TaskCategoryId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_TeamReportsWeekly_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_TeamReportsWeekly_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TeamReportsWeekly_Teams_TeamId",
@@ -2207,42 +2175,11 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClaimBundleTokenTxns",
-                columns: table => new
-                {
-                    ClaimBundleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TokenTransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClaimBundleTokenTxns", x => new { x.ClaimBundleId, x.TokenTransactionId, x.OrganizationId });
-                    table.ForeignKey(
-                        name: "FK_ClaimBundleTokenTxns_ClaimBundles_ClaimBundleId",
-                        column: x => x.ClaimBundleId,
-                        principalTable: "ClaimBundles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ClaimBundleTokenTxns_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ClaimBundleTokenTxns_TokenTransactions_TokenTransactionId",
-                        column: x => x.TokenTransactionId,
-                        principalTable: "TokenTransactions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PullRequestReviewComments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ExternalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Body = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExternalUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -2256,13 +2193,13 @@ namespace Tayra.Models.Organizations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PullRequestReviewComments", x => new { x.Id, x.OrganizationId });
+                    table.PrimaryKey("PK_PullRequestReviewComments", x => new { x.Id, x.TenantId });
                     table.UniqueConstraint("AK_PullRequestReviewComments_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PullRequestReviewComments_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_PullRequestReviewComments_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PullRequestReviewComments_Profiles_CommenterProfileId",
@@ -2290,19 +2227,19 @@ namespace Tayra.Models.Organizations.Migrations
                 {
                     ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GoalId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestGoalCompletions", x => new { x.GoalId, x.ProfileId, x.OrganizationId });
+                    table.PrimaryKey("PK_QuestGoalCompletions", x => new { x.GoalId, x.ProfileId, x.TenantId });
                     table.ForeignKey(
-                        name: "FK_QuestGoalCompletions_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
+                        name: "FK_QuestGoalCompletions_LocalTenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "LocalTenants",
+                        principalColumn: "TenantId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_QuestGoalCompletions_Profiles_ProfileId",
@@ -2319,557 +2256,552 @@ namespace Tayra.Models.Organizations.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActionPoints_OrganizationId",
+                name: "IX_ActionPoints_ProfileId_TenantId",
                 table: "ActionPoints",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActionPoints_ProfileId_OrganizationId",
+                name: "IX_ActionPoints_SegmentId_TenantId",
                 table: "ActionPoints",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActionPoints_SegmentId_OrganizationId",
+                name: "IX_ActionPoints_TenantId",
                 table: "ActionPoints",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActionPointSettings_OrganizationId",
+                name: "IX_ActionPointSettings_SegmentId_TenantId",
                 table: "ActionPointSettings",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActionPointSettings_SegmentId_OrganizationId",
+                name: "IX_ActionPointSettings_TenantId",
                 table: "ActionPointSettings",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Blobs_OrganizationId",
+                name: "IX_Blobs_TenantId",
                 table: "Blobs",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClaimBundleItems_OrganizationId",
+                name: "IX_ClaimBundleItems_ProfileInventoryItemId_TenantId",
                 table: "ClaimBundleItems",
-                column: "OrganizationId");
+                columns: new[] { "ProfileInventoryItemId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClaimBundleItems_ProfileInventoryItemId_OrganizationId",
+                name: "IX_ClaimBundleItems_TenantId",
                 table: "ClaimBundleItems",
-                columns: new[] { "ProfileInventoryItemId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClaimBundles_OrganizationId",
+                name: "IX_ClaimBundles_ProfileId_TenantId",
                 table: "ClaimBundles",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClaimBundles_ProfileId_OrganizationId",
+                name: "IX_ClaimBundles_TenantId",
                 table: "ClaimBundles",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClaimBundleTokenTxns_OrganizationId",
+                name: "IX_ClaimBundleTokenTxns_TenantId",
                 table: "ClaimBundleTokenTxns",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClaimBundleTokenTxns_TokenTransactionId_OrganizationId",
+                name: "IX_ClaimBundleTokenTxns_TokenTransactionId_TenantId",
                 table: "ClaimBundleTokenTxns",
-                columns: new[] { "TokenTransactionId", "OrganizationId" });
+                columns: new[] { "TokenTransactionId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_EntityChangeLogs_OrganizationId",
-                table: "EntityChangeLogs",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GitCommits_AuthorProfileId_OrganizationId",
+                name: "IX_GitCommits_AuthorProfileId_TenantId",
                 table: "GitCommits",
-                columns: new[] { "AuthorProfileId", "OrganizationId" });
+                columns: new[] { "AuthorProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GitCommits_OrganizationId",
+                name: "IX_GitCommits_TenantId",
                 table: "GitCommits",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IntegrationFields_IntegrationId_OrganizationId",
+                name: "IX_IntegrationFields_IntegrationId_TenantId",
                 table: "IntegrationFields",
-                columns: new[] { "IntegrationId", "OrganizationId" });
+                columns: new[] { "IntegrationId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_IntegrationFields_OrganizationId",
+                name: "IX_IntegrationFields_TenantId",
                 table: "IntegrationFields",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Integrations_OrganizationId",
+                name: "IX_Integrations_ProfileId_SegmentId_TenantId",
                 table: "Integrations",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Integrations_ProfileId_SegmentId_OrganizationId",
+                name: "IX_Integrations_SegmentId_TenantId",
                 table: "Integrations",
-                columns: new[] { "ProfileId", "SegmentId", "OrganizationId" });
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Integrations_SegmentId_OrganizationId",
+                name: "IX_Integrations_TenantId",
                 table: "Integrations",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invitations_OrganizationId",
+                name: "IX_Invitations_SegmentId_TenantId",
                 table: "Invitations",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invitations_SegmentId_OrganizationId",
+                name: "IX_Invitations_TeamId_TenantId",
                 table: "Invitations",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                columns: new[] { "TeamId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invitations_TeamId_OrganizationId",
+                name: "IX_Invitations_TenantId",
                 table: "Invitations",
-                columns: new[] { "TeamId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemDisenchants_ItemId_OrganizationId",
+                name: "IX_ItemDisenchants_ItemId_TenantId",
                 table: "ItemDisenchants",
-                columns: new[] { "ItemId", "OrganizationId" });
+                columns: new[] { "ItemId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemDisenchants_OrganizationId",
+                name: "IX_ItemDisenchants_ProfileId_TenantId",
                 table: "ItemDisenchants",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemDisenchants_ProfileId_OrganizationId",
+                name: "IX_ItemDisenchants_TenantId",
                 table: "ItemDisenchants",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemGifts_ItemId_OrganizationId",
+                name: "IX_ItemGifts_ItemId_TenantId",
                 table: "ItemGifts",
-                columns: new[] { "ItemId", "OrganizationId" });
+                columns: new[] { "ItemId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemGifts_OrganizationId",
+                name: "IX_ItemGifts_ReceiverId_TenantId",
                 table: "ItemGifts",
-                column: "OrganizationId");
+                columns: new[] { "ReceiverId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemGifts_ReceiverId_OrganizationId",
+                name: "IX_ItemGifts_SenderId_TenantId",
                 table: "ItemGifts",
-                columns: new[] { "ReceiverId", "OrganizationId" });
+                columns: new[] { "SenderId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemGifts_SenderId_OrganizationId",
+                name: "IX_ItemGifts_TenantId",
                 table: "ItemGifts",
-                columns: new[] { "SenderId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Items_OrganizationId",
+                name: "IX_Items_TenantId",
                 table: "Items",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogDevices_OrganizationId",
+                name: "IX_LogDevices_ProfileId_TenantId",
                 table: "LogDevices",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogDevices_ProfileId_OrganizationId",
+                name: "IX_LogDevices_TenantId",
                 table: "LogDevices",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoginLogs_OrganizationId",
+                name: "IX_LoginLogs_TenantId",
                 table: "LoginLogs",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Logs_OrganizationId",
+                name: "IX_Logs_TenantId",
                 table: "Logs",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogSettings_OrganizationId",
+                name: "IX_LogSettings_ProfileId_TenantId",
                 table: "LogSettings",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogSettings_ProfileId_OrganizationId",
+                name: "IX_LogSettings_TenantId",
                 table: "LogSettings",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileAssignments_OrganizationId",
+                name: "IX_ProfileAssignments_ProfileId_TenantId",
                 table: "ProfileAssignments",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileAssignments_ProfileId_OrganizationId",
+                name: "IX_ProfileAssignments_SegmentId_ProfileId_TenantId",
                 table: "ProfileAssignments",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                columns: new[] { "SegmentId", "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileAssignments_SegmentId_ProfileId_OrganizationId",
+                name: "IX_ProfileAssignments_SegmentId_TeamId_ProfileId_TenantId",
                 table: "ProfileAssignments",
-                columns: new[] { "SegmentId", "ProfileId", "OrganizationId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProfileAssignments_SegmentId_TeamId_ProfileId_OrganizationId",
-                table: "ProfileAssignments",
-                columns: new[] { "SegmentId", "TeamId", "ProfileId", "OrganizationId" },
+                columns: new[] { "SegmentId", "TeamId", "ProfileId", "TenantId" },
                 unique: true,
                 filter: "[TeamId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileAssignments_TeamId_ProfileId_OrganizationId",
+                name: "IX_ProfileAssignments_TeamId_ProfileId_TenantId",
                 table: "ProfileAssignments",
-                columns: new[] { "TeamId", "ProfileId", "OrganizationId" });
+                columns: new[] { "TeamId", "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileExternalIds_OrganizationId",
+                name: "IX_ProfileAssignments_TenantId",
+                table: "ProfileAssignments",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileExternalIds_ProfileId_TenantId",
                 table: "ProfileExternalIds",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileExternalIds_ProfileId_OrganizationId",
+                name: "IX_ProfileExternalIds_SegmentId_TenantId",
                 table: "ProfileExternalIds",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileExternalIds_SegmentId_OrganizationId",
+                name: "IX_ProfileExternalIds_TenantId",
                 table: "ProfileExternalIds",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileInventoryItems_ItemId_ProfileId_IsActive_OrganizationId",
+                name: "IX_ProfileInventoryItems_ItemId_ProfileId_IsActive_TenantId",
                 table: "ProfileInventoryItems",
-                columns: new[] { "ItemId", "ProfileId", "IsActive", "OrganizationId" });
+                columns: new[] { "ItemId", "ProfileId", "IsActive", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileInventoryItems_OrganizationId",
+                name: "IX_ProfileInventoryItems_ProfileId_IsActive_TenantId",
                 table: "ProfileInventoryItems",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "IsActive", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileInventoryItems_ProfileId_IsActive_OrganizationId",
+                name: "IX_ProfileInventoryItems_TenantId",
                 table: "ProfileInventoryItems",
-                columns: new[] { "ProfileId", "IsActive", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileLogs_LogId_OrganizationId",
+                name: "IX_ProfileLogs_LogId_TenantId",
                 table: "ProfileLogs",
-                columns: new[] { "LogId", "OrganizationId" });
+                columns: new[] { "LogId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileLogs_OrganizationId",
+                name: "IX_ProfileLogs_ProfileId_Event_TenantId",
                 table: "ProfileLogs",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "Event", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileLogs_ProfileId_Event_OrganizationId",
+                name: "IX_ProfileLogs_TenantId",
                 table: "ProfileLogs",
-                columns: new[] { "ProfileId", "Event", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileMetrics_OrganizationId",
+                name: "IX_ProfileMetrics_SegmentId_TenantId",
                 table: "ProfileMetrics",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileMetrics_SegmentId_OrganizationId",
+                name: "IX_ProfileMetrics_TenantId",
                 table: "ProfileMetrics",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfilePraises_OrganizationId",
+                name: "IX_ProfilePraises_ProfileId_TenantId",
                 table: "ProfilePraises",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfilePraises_ProfileId_OrganizationId",
+                name: "IX_ProfilePraises_TenantId",
                 table: "ProfilePraises",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsDaily_OrganizationId",
+                name: "IX_ProfileReportsDaily_ProfileId_TenantId",
                 table: "ProfileReportsDaily",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsDaily_ProfileId_OrganizationId",
+                name: "IX_ProfileReportsDaily_SegmentId_TenantId",
                 table: "ProfileReportsDaily",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsDaily_SegmentId_OrganizationId",
+                name: "IX_ProfileReportsDaily_TenantId",
                 table: "ProfileReportsDaily",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsWeekly_OrganizationId",
+                name: "IX_ProfileReportsWeekly_ProfileId_TenantId",
                 table: "ProfileReportsWeekly",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsWeekly_ProfileId_OrganizationId",
+                name: "IX_ProfileReportsWeekly_SegmentId_TenantId",
                 table: "ProfileReportsWeekly",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfileReportsWeekly_SegmentId_OrganizationId",
+                name: "IX_ProfileReportsWeekly_TenantId",
                 table: "ProfileReportsWeekly",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Profiles_IdentityId_OrganizationId",
+                name: "IX_Profiles_IdentityId_TenantId",
                 table: "Profiles",
-                columns: new[] { "IdentityId", "OrganizationId" });
+                columns: new[] { "IdentityId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Profiles_OrganizationId",
+                name: "IX_Profiles_TenantId",
                 table: "Profiles",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Profiles_Username_OrganizationId",
+                name: "IX_Profiles_Username_TenantId",
                 table: "Profiles",
-                columns: new[] { "Username", "OrganizationId" },
+                columns: new[] { "Username", "TenantId" },
                 unique: true,
                 filter: "[Username] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequestReviewComments_CommenterProfileId_OrganizationId",
+                name: "IX_PullRequestReviewComments_CommenterProfileId_TenantId",
                 table: "PullRequestReviewComments",
-                columns: new[] { "CommenterProfileId", "OrganizationId" });
+                columns: new[] { "CommenterProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequestReviewComments_OrganizationId",
+                name: "IX_PullRequestReviewComments_PullRequestId_TenantId",
                 table: "PullRequestReviewComments",
-                column: "OrganizationId");
+                columns: new[] { "PullRequestId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequestReviewComments_PullRequestId_OrganizationId",
+                name: "IX_PullRequestReviewComments_PullRequestReviewId_TenantId",
                 table: "PullRequestReviewComments",
-                columns: new[] { "PullRequestId", "OrganizationId" });
+                columns: new[] { "PullRequestReviewId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequestReviewComments_PullRequestReviewId_OrganizationId",
+                name: "IX_PullRequestReviewComments_TenantId",
                 table: "PullRequestReviewComments",
-                columns: new[] { "PullRequestReviewId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequestReviews_OrganizationId",
+                name: "IX_PullRequestReviews_PullRequestId_TenantId",
                 table: "PullRequestReviews",
-                column: "OrganizationId");
+                columns: new[] { "PullRequestId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequestReviews_PullRequestId_OrganizationId",
+                name: "IX_PullRequestReviews_ReviewerProfileId_TenantId",
                 table: "PullRequestReviews",
-                columns: new[] { "PullRequestId", "OrganizationId" });
+                columns: new[] { "ReviewerProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequestReviews_ReviewerProfileId_OrganizationId",
+                name: "IX_PullRequestReviews_TenantId",
                 table: "PullRequestReviews",
-                columns: new[] { "ReviewerProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequests_AuthorProfileId_OrganizationId",
+                name: "IX_PullRequests_AuthorProfileId_TenantId",
                 table: "PullRequests",
-                columns: new[] { "AuthorProfileId", "OrganizationId" });
+                columns: new[] { "AuthorProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PullRequests_OrganizationId",
+                name: "IX_PullRequests_TenantId",
                 table: "PullRequests",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestCommits_OrganizationId",
+                name: "IX_QuestCommits_ProfileId_TenantId",
                 table: "QuestCommits",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestCommits_ProfileId_OrganizationId",
+                name: "IX_QuestCommits_TenantId",
                 table: "QuestCommits",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestCompletions_OrganizationId",
+                name: "IX_QuestCompletions_ProfileId_TenantId",
                 table: "QuestCompletions",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestCompletions_ProfileId_OrganizationId",
+                name: "IX_QuestCompletions_TenantId",
                 table: "QuestCompletions",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestGoalCompletions_OrganizationId",
+                name: "IX_QuestGoalCompletions_ProfileId_TenantId",
                 table: "QuestGoalCompletions",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestGoalCompletions_ProfileId_OrganizationId",
+                name: "IX_QuestGoalCompletions_TenantId",
                 table: "QuestGoalCompletions",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestGoals_OrganizationId",
+                name: "IX_QuestGoals_QuestId_TenantId",
                 table: "QuestGoals",
-                column: "OrganizationId");
+                columns: new[] { "QuestId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestGoals_QuestId_OrganizationId",
+                name: "IX_QuestGoals_TenantId",
                 table: "QuestGoals",
-                columns: new[] { "QuestId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestRewards_ItemId_OrganizationId",
+                name: "IX_QuestRewards_ItemId_TenantId",
                 table: "QuestRewards",
-                columns: new[] { "ItemId", "OrganizationId" });
+                columns: new[] { "ItemId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestRewards_OrganizationId",
+                name: "IX_QuestRewards_TenantId",
                 table: "QuestRewards",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Quests_OrganizationId",
+                name: "IX_Quests_SegmentId_TenantId",
                 table: "Quests",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Quests_SegmentId_OrganizationId",
+                name: "IX_Quests_TenantId",
                 table: "Quests",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestSegments_OrganizationId",
+                name: "IX_QuestSegments_SegmentId_TenantId",
                 table: "QuestSegments",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestSegments_SegmentId_OrganizationId",
+                name: "IX_QuestSegments_TenantId",
                 table: "QuestSegments",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Repositories_OrganizationId",
+                name: "IX_Repositories_TeamId_TenantId",
                 table: "Repositories",
-                column: "OrganizationId");
+                columns: new[] { "TeamId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Repositories_TeamId_OrganizationId",
+                name: "IX_Repositories_TenantId",
                 table: "Repositories",
-                columns: new[] { "TeamId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SegmentAreas_Name_OrganizationId",
+                name: "IX_SegmentAreas_Name_TenantId",
                 table: "SegmentAreas",
-                columns: new[] { "Name", "OrganizationId" },
+                columns: new[] { "Name", "TenantId" },
                 unique: true,
                 filter: "[Name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SegmentAreas_OrganizationId",
+                name: "IX_SegmentAreas_TenantId",
                 table: "SegmentAreas",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SegmentMetrics_OrganizationId",
+                name: "IX_SegmentMetrics_TenantId",
                 table: "SegmentMetrics",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SegmentReportsDaily_OrganizationId",
+                name: "IX_SegmentReportsDaily_SegmentId_TenantId",
                 table: "SegmentReportsDaily",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SegmentReportsDaily_SegmentId_OrganizationId",
+                name: "IX_SegmentReportsDaily_TenantId",
                 table: "SegmentReportsDaily",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SegmentReportsWeekly_OrganizationId",
+                name: "IX_SegmentReportsWeekly_SegmentId_TenantId",
                 table: "SegmentReportsWeekly",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SegmentReportsWeekly_SegmentId_OrganizationId",
+                name: "IX_SegmentReportsWeekly_TenantId",
                 table: "SegmentReportsWeekly",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Segments_Key_ArchivedAt_OrganizationId",
+                name: "IX_Segments_Key_ArchivedAt_TenantId",
                 table: "Segments",
-                columns: new[] { "Key", "ArchivedAt", "OrganizationId" },
+                columns: new[] { "Key", "ArchivedAt", "TenantId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Segments_OrganizationId",
+                name: "IX_Segments_TenantId",
                 table: "Segments",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopItems_ItemId_OrganizationId",
+                name: "IX_ShopItems_ItemId_TenantId",
                 table: "ShopItems",
-                columns: new[] { "ItemId", "OrganizationId" },
+                columns: new[] { "ItemId", "TenantId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopItems_OrganizationId",
+                name: "IX_ShopItems_TenantId",
                 table: "ShopItems",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopItemSegments_OrganizationId",
+                name: "IX_ShopItemSegments_SegmentId_TenantId",
                 table: "ShopItemSegments",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopItemSegments_SegmentId_OrganizationId",
+                name: "IX_ShopItemSegments_TenantId",
                 table: "ShopItemSegments",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopLogs_LogId_OrganizationId",
+                name: "IX_ShopLogs_LogId_TenantId",
                 table: "ShopLogs",
-                columns: new[] { "LogId", "OrganizationId" });
+                columns: new[] { "LogId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopLogs_OrganizationId",
+                name: "IX_ShopLogs_TenantId",
                 table: "ShopLogs",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopPurchases_ItemId_OrganizationId",
+                name: "IX_ShopPurchases_ItemId_TenantId",
                 table: "ShopPurchases",
-                columns: new[] { "ItemId", "OrganizationId" });
+                columns: new[] { "ItemId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopPurchases_OrganizationId",
+                name: "IX_ShopPurchases_ProfileId_Status_TenantId",
                 table: "ShopPurchases",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "Status", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopPurchases_ProfileId_Status_OrganizationId",
+                name: "IX_ShopPurchases_SegmentId_TenantId",
                 table: "ShopPurchases",
-                columns: new[] { "ProfileId", "Status", "OrganizationId" });
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopPurchases_SegmentId_OrganizationId",
+                name: "IX_ShopPurchases_TenantId",
                 table: "ShopPurchases",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Shops_OrganizationId",
+                name: "IX_Shops_TenantId",
                 table: "Shops",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskCategories_Name",
@@ -2879,138 +2811,128 @@ namespace Tayra.Models.Organizations.Migrations
                 filter: "[Name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskLogs_AssigneeProfileId1_OrganizationId",
+                name: "IX_TaskLogs_AssigneeProfileId1_TenantId",
                 table: "TaskLogs",
-                columns: new[] { "AssigneeProfileId1", "OrganizationId" });
+                columns: new[] { "AssigneeProfileId1", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskLogs_OrganizationId",
+                name: "IX_TaskLogs_SegmentId_TenantId",
                 table: "TaskLogs",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskLogs_SegmentId_OrganizationId",
+                name: "IX_TaskLogs_TeamId_TenantId",
                 table: "TaskLogs",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                columns: new[] { "TeamId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskLogs_TeamId_OrganizationId",
+                name: "IX_TaskLogs_TenantId",
                 table: "TaskLogs",
-                columns: new[] { "TeamId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_AssigneeProfileId_OrganizationId",
+                name: "IX_Tasks_AssigneeProfileId_TenantId",
                 table: "Tasks",
-                columns: new[] { "AssigneeProfileId", "OrganizationId" });
+                columns: new[] { "AssigneeProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_ExternalId_IntegrationType_OrganizationId",
+                name: "IX_Tasks_ExternalId_IntegrationType_SegmentId_TenantId",
                 table: "Tasks",
-                columns: new[] { "ExternalId", "IntegrationType", "OrganizationId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_ExternalId_IntegrationType_SegmentId_OrganizationId",
-                table: "Tasks",
-                columns: new[] { "ExternalId", "IntegrationType", "SegmentId", "OrganizationId" },
+                columns: new[] { "ExternalId", "IntegrationType", "SegmentId", "TenantId" },
                 unique: true,
                 filter: "[ExternalId] IS NOT NULL AND [SegmentId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_OrganizationId",
+                name: "IX_Tasks_ExternalId_IntegrationType_TenantId",
                 table: "Tasks",
-                column: "OrganizationId");
+                columns: new[] { "ExternalId", "IntegrationType", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_SegmentAreaId1_OrganizationId",
+                name: "IX_Tasks_SegmentAreaId1_TenantId",
                 table: "Tasks",
-                columns: new[] { "SegmentAreaId1", "OrganizationId" });
+                columns: new[] { "SegmentAreaId1", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_SegmentId_OrganizationId",
+                name: "IX_Tasks_SegmentId_TenantId",
                 table: "Tasks",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TaskCategoryId1_OrganizationId",
+                name: "IX_Tasks_TaskCategoryId1_TenantId",
                 table: "Tasks",
-                columns: new[] { "TaskCategoryId1", "OrganizationId" });
+                columns: new[] { "TaskCategoryId1", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TeamId_OrganizationId",
+                name: "IX_Tasks_TeamId_TenantId",
                 table: "Tasks",
-                columns: new[] { "TeamId", "OrganizationId" });
+                columns: new[] { "TeamId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskSyncs_OrganizationId",
+                name: "IX_Tasks_TenantId",
+                table: "Tasks",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskSyncs_SegmentId_TenantId",
                 table: "TaskSyncs",
-                column: "OrganizationId");
+                columns: new[] { "SegmentId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskSyncs_SegmentId_OrganizationId",
+                name: "IX_TaskSyncs_TenantId",
                 table: "TaskSyncs",
-                columns: new[] { "SegmentId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamMetrics_OrganizationId",
+                name: "IX_TeamMetrics_TenantId",
                 table: "TeamMetrics",
-                column: "OrganizationId");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsDaily_OrganizationId",
+                name: "IX_TeamReportsDaily_TeamId_TenantId",
                 table: "TeamReportsDaily",
-                column: "OrganizationId");
+                columns: new[] { "TeamId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsDaily_TeamId_OrganizationId",
+                name: "IX_TeamReportsDaily_TenantId",
                 table: "TeamReportsDaily",
-                columns: new[] { "TeamId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsWeekly_OrganizationId",
+                name: "IX_TeamReportsWeekly_TeamId_TenantId",
                 table: "TeamReportsWeekly",
-                column: "OrganizationId");
+                columns: new[] { "TeamId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamReportsWeekly_TeamId_OrganizationId",
+                name: "IX_TeamReportsWeekly_TenantId",
                 table: "TeamReportsWeekly",
-                columns: new[] { "TeamId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Teams_OrganizationId",
+                name: "IX_Teams_SegmentId_Key_ArchivedAt_TenantId",
                 table: "Teams",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Teams_SegmentId_Key_ArchivedAt_OrganizationId",
-                table: "Teams",
-                columns: new[] { "SegmentId", "Key", "ArchivedAt", "OrganizationId" },
+                columns: new[] { "SegmentId", "Key", "ArchivedAt", "TenantId" },
                 unique: true,
                 filter: "[Key] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tokens_OrganizationId",
-                table: "Tokens",
-                column: "OrganizationId");
+                name: "IX_Teams_TenantId",
+                table: "Teams",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TokenTransactions_OrganizationId",
+                name: "IX_TokenTransactions_ProfileId_TenantId",
                 table: "TokenTransactions",
-                column: "OrganizationId");
+                columns: new[] { "ProfileId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TokenTransactions_ProfileId_OrganizationId",
+                name: "IX_TokenTransactions_TenantId",
                 table: "TokenTransactions",
-                columns: new[] { "ProfileId", "OrganizationId" });
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TokenTransactions_TokenId_OrganizationId",
-                table: "TokenTransactions",
-                columns: new[] { "TokenId", "OrganizationId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WebhookEventLogs_OrganizationId",
+                name: "IX_WebhookEventLogs_TenantId",
                 table: "WebhookEventLogs",
-                column: "OrganizationId");
+                column: "TenantId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -3029,9 +2951,6 @@ namespace Tayra.Models.Organizations.Migrations
 
             migrationBuilder.DropTable(
                 name: "ClaimBundleTokenTxns");
-
-            migrationBuilder.DropTable(
-                name: "EntityChangeLogs");
 
             migrationBuilder.DropTable(
                 name: "GitCommits");
@@ -3175,9 +3094,6 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Teams");
 
             migrationBuilder.DropTable(
-                name: "Tokens");
-
-            migrationBuilder.DropTable(
                 name: "PullRequests");
 
             migrationBuilder.DropTable(
@@ -3193,7 +3109,7 @@ namespace Tayra.Models.Organizations.Migrations
                 name: "Segments");
 
             migrationBuilder.DropTable(
-                name: "Organizations");
+                name: "LocalTenants");
         }
     }
 }

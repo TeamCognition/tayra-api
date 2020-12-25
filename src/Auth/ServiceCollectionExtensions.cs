@@ -84,8 +84,6 @@ namespace Tayra.Auth
                 });
             
             services.AddHttpContextAccessor();
-            services.AddSingleton<IShardMapProvider>(new ShardMapProvider(configuration));
-            services.AddScoped<ITenantProvider, ShardTenantProvider>();
             services.AddTransient<IIdentitiesService, IdentitiesService>();
             services.AddTransient<ITokensService, TokensService>();
             services.AddTransient<ILogsService, LogsService>();

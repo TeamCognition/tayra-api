@@ -28,7 +28,7 @@ namespace Tayra.API.Controllers
         public IActionResult OnboardingSteps([FromBody] OnboardingStepIds step)
         {
             
-            var o = OrganizationContext.Organizations.FirstOrDefault();
+            var o = OrganizationContext.LocalTenants.FirstOrDefault();
             var p = OrganizationContext.Profiles.Where(x => x.Id == CurrentUser.ProfileId).FirstOrDefault();
             MarkStepAsCompleted(step, o, p);
             OrganizationContext.SaveChanges();
@@ -44,7 +44,7 @@ namespace Tayra.API.Controllers
         }
         
         [NonAction]
-        public void MarkStepAsCompleted(OnboardingStepIds s, Organization o, Profile p)
+        public void MarkStepAsCompleted(OnboardingStepIds s, LocalTenant o, Profile p)
         {
             switch (s)
             {
@@ -52,13 +52,13 @@ namespace Tayra.API.Controllers
                     p.isCreateProfileOnboarding = true;
                     break;
                 case OnboardingStepIds.CreateSegment:
-                    o.isCreateSegmentOnboarding = true;
+                    o.IsCreateSegmentOnboarding = true;
                     break;
                 case OnboardingStepIds.AddSources:
-                    o.isAddSourcesOnboarding = true;
+                    o.IsAddSourcesOnboarding = true;
                     break;
                 case OnboardingStepIds.InviteUsers:
-                    o.isInviteUsersOnboarding = true;
+                    o.IsInviteUsersOnboarding = true;
                     break;
             }
         }
@@ -76,12 +76,12 @@ namespace Tayra.API.Controllers
                     x.isCreateProfileOnboarding
                 ).FirstOrDefault();
             
-            var completedOnboardingSteps = OrganizationContext.Organizations
+            var completedOnboardingSteps = OrganizationContext.LocalTenants
                 .Select(x => new 
                 {
-                    IsCreateSegmentCompleted = x.isCreateSegmentOnboarding,
-                    IsAddSourcesCompleted = x.isAddSourcesOnboarding,
-                    IsInviteUsersCompleted = x.isAddSourcesOnboarding
+                    IsCreateSegmentCompleted = x.IsCreateSegmentOnboarding,
+                    IsAddSourcesCompleted = x.IsAddSourcesOnboarding,
+                    IsInviteUsersCompleted = x.IsAddSourcesOnboarding
                 }).FirstOrDefault();
 
 

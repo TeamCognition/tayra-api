@@ -11,7 +11,6 @@ namespace Tayra.Models.Seeder
             Console.WriteLine("Seed started!");
 
             var config = LoadSettings();
-            var shardMapProvider = new ShardMapProvider(config);
 
             if (args.Length == 0)
             {
@@ -27,7 +26,7 @@ namespace Tayra.Models.Seeder
 
             if (args[0] == "all")
             {
-                Seeder.SeedAll(shardMapProvider, config);
+                Seeder.SeedAll(config);
             }
             else if (args[0] == "single")
             {
@@ -36,16 +35,7 @@ namespace Tayra.Models.Seeder
                     Console.WriteLine("Enter tenant name: ");
                     args = new string[2] { args[0], Console.ReadLine() };
                 }
-                Seeder.Seed(shardMapProvider, args[1]);
-            }
-            else if (args[0] == "tasks")
-            {
-                if (args.Length == 1)
-                {
-                    Console.WriteLine("Enter tenant name: ");
-                    args = new string[2] { args[0], Console.ReadLine() };
-                }
-                Seeder.SeedTasksFromTxt(shardMapProvider, args[1]);
+                Seeder.Seed(args[1]);
             }
             Console.WriteLine("Seed finished!");
         }

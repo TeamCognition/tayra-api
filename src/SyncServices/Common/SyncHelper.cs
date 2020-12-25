@@ -70,32 +70,31 @@ namespace Tayra.SyncServices.Common
         {
             var config = LoadSettings(context);
             //var logger = CreateApplicationInsightsLogger($"{serviceType}Loader", config["ApplicationInsights:InstrumentationKey"]);
-            var shardMapProvider = new ShardMapProvider(config);
             var logService = new LogService(logger);
             var coreDatabase = new CatalogDbContext(ConnectionStringUtilities.GetCatalogDbConnStr(config));
 
             switch (jobTypes)
             {
                 case JobTypes.GenerateReports:
-                    return new GenerateReportsLoader(shardMapProvider, logService, coreDatabase);
+                    return new GenerateReportsLoader(logService, coreDatabase);
 
                 case JobTypes.GenerateReportProfile:
-                    return new GenerateProfileReportsLoader(shardMapProvider, logService, coreDatabase);
+                    return new GenerateProfileReportsLoader(logService, coreDatabase);
 
                 case JobTypes.GenerateReportSegment:
-                    return new GenerateSegmentReportsLoader(shardMapProvider, logService, coreDatabase);
+                    return new GenerateSegmentReportsLoader(logService, coreDatabase);
 
                 case JobTypes.GenerateReportTeam:
-                    return new GenerateTeamReportsLoader(shardMapProvider, logService, coreDatabase);
+                    return new GenerateTeamReportsLoader(logService, coreDatabase);
 
                 case JobTypes.MakeActionPoints:
-                    return new MakeActionPointsLoader(shardMapProvider, logService, coreDatabase);
+                    return new MakeActionPointsLoader(logService, coreDatabase);
 
                 case JobTypes.SyncIssues:
-                    return new SyncIssuesLoader(shardMapProvider, logService, coreDatabase);
+                    return new SyncIssuesLoader(logService, coreDatabase);
 
                 case JobTypes.WebHookATJIssueUpdate:
-                    return new ATJIssueUpdateLoader(shardMapProvider, logService, coreDatabase);
+                    return new ATJIssueUpdateLoader(logService, coreDatabase);
             }
 
             throw new NotSupportedException($"{jobTypes} integration are not supported");

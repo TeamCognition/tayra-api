@@ -3,10 +3,10 @@ using Tayra.Common;
 
 namespace Tayra.API.Features.Profile
 {
-    public partial class ProfilesController: TayraBaseController
+    public partial class ProfilesController : TayraBaseController
     {
-        private readonly IMediator _mediator;
+        private readonly ISender _mediator;
         
-        public ProfilesController(IMediator mediator) => _mediator = mediator;
+        public ProfilesController(ISender mediator) => _mediator = mediator;
     }
 }

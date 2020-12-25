@@ -15,6 +15,7 @@
     
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="6.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.6" />
     <PackageReference Include="LINQKit.Core" Version="1.1.21" />
