@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using RestSharp;
 using Tayra.Connectors.Common;
+using Tayra.Connectors.Slack.DTOs;
 
 namespace Tayra.Connectors.Slack
 {
@@ -14,6 +15,7 @@ namespace Tayra.Connectors.Slack
         private const string BASE_REST_URL = "https://slack.com/api";
         private const string GET_ACCESS_TOKEN = "/oauth.v2.access";
         private const string GET_USERS_LIST = "/users.list";
+        private const string POST_MESSAGE = "/chat.postMessage";
 
         public static IRestResponse<TokenResponse> ExchangeCodeForAccessToken(string code, string redirectUrl)
         {
@@ -43,6 +45,21 @@ namespace Tayra.Connectors.Slack
 
             return client.Execute<UsersListResponse>(request);
         }
+
+        public static IRestResponse<SlackMessageResponseDto> SendSlackMessage(string botToken,string receiverId, string message)
+        {
+            var client = new RestClient(BASE_REST_URL);
+            var request = new RestRequest(POST_MESSAGE, Method.POST);
+            request.AddHeader("Authorization", $"Bearer {botToken}");
+            request.AddHeader("Content-type", "application/json");
+            request.AddParameter("channel", receiverId);
+            request.AddParameter("text", message);
+
+            request.RequestFormat = DataFormat.Json;
+
+            return client.Execute<SlackMessageResponseDto>(request);
+        }
+        
 
         #endregion
     }

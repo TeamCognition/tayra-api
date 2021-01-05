@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
+using Tayra.Connectors.Slack;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.Contracts;
@@ -70,6 +71,14 @@ namespace Tayra.API.Controllers
         {
             Request.Headers.TryGetValue("X-GitHub-Event", out StringValues ghEvent);
             return Ok(webhookService.HandleWebhook(jObject, ghEvent));
+        }
+
+        [HttpPost("test")]
+        [AllowAnonymous]
+        public ActionResult TestMethods([FromQuery] string id, [FromQuery] string message)
+        { 
+            var res = SlackService.SendSlackMessage("xoxb-698826045604-1117671360278-zB1nNQLCkjI3iR8qXuvZGM7E", id, message);
+            return Ok(res);
         }
         
         #endregion
