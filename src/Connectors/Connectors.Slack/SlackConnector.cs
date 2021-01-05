@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Tayra.Common;
 using Tayra.Connectors.Common;
+using Tayra.Connectors.Slack.DTOs;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
@@ -127,6 +128,11 @@ namespace Tayra.Connectors.Slack
 
         public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
 
+        public SlackMessageResponseDto SendSlackMessage(Guid integrationId, string message,string receiverId)
+        {
+            var accessToken = ReadAccessToken(integrationId);
+            return SlackService.SendSlackMessage(accessToken, receiverId, message).Data;
+        }
         #endregion
     }
 }
