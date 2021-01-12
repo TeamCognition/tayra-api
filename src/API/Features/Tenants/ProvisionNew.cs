@@ -37,11 +37,9 @@ namespace Tayra.API.Features.Tenants
         {
             private readonly CatalogDbContext _catalogDb;
             private readonly IConfiguration _config;
-            private readonly SegmentsService _segmentsService;
-            public Handler(CatalogDbContext catalogDb, SegmentsService segmentsService, IConfiguration config)
+            public Handler(CatalogDbContext catalogDb, IConfiguration config)
             {
-                _catalogDb = catalogDb;
-                _segmentsService = segmentsService;
+                _catalogDb = catalogDb; 
                 _config = config;
             }
 
@@ -67,13 +65,13 @@ namespace Tayra.API.Features.Tenants
                     ConnectionString = newDbSqlConnection
                 };
                 
-                await EnsureTenantCreatedAndInvitedAsync(_catalogDb, newDbSqlConnection, tenant, msg.EmailAddress, _segmentsService, token);
+                await EnsureTenantCreatedAndInvitedAsync(_catalogDb, newDbSqlConnection, tenant, msg.EmailAddress, token);
 
                 _catalogDb.Add(tenant);
                 await _catalogDb.SaveChangesAsync(token);
             }
 
-            private static async Task EnsureTenantCreatedAndInvitedAsync(CatalogDbContext catalogDb, string connectionString, Tenant tenant, string emailAddress, SegmentsService segmentsService, CancellationToken token)
+            private static async Task EnsureTenantCreatedAndInvitedAsync(CatalogDbContext catalogDb, string connectionString, Tenant tenant, string emailAddress, CancellationToken token)
             {
                 await using var newDb = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(connectionString), null);
                 await newDb.Database.MigrateAsync(token);
@@ -98,7 +96,7 @@ namespace Tayra.API.Features.Tenants
                 await tenantDb.SaveChangesAsync(token);
                 
                 EssentialSeeds.AddEssentialSeeds(tenantDb);
-                segmentsService.Create(null, ProfileRoles.Admin, new SegmentCreateDTO
+                new SegmentsService(null, tenantDb).Create(null, ProfileRoles.Admin, new SegmentCreateDTO
                 {
                     Name = "Segment 1",
                     Key = "S1"
