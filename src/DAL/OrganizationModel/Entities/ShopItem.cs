@@ -7,7 +7,7 @@ namespace Tayra.Models.Organizations
     /// <summary>
     /// Shop Inventory Items
     /// </summary>
-    public class ShopItem : Entity<Guid>, IAuditedEntity, IArchivableEntity
+    public class ShopItem : EntityGuidId, IAuditedEntity, IArchivableEntity
     {
         public Guid ItemId { get; set; }
         public virtual Item Item { get; set; }

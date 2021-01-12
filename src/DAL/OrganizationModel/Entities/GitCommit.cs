@@ -3,7 +3,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class GitCommit : Entity<Guid>, ITimeStampedEntity
+    public class GitCommit : EntityGuidId, ITimeStampedEntity
     {
         public string SHA { get; set; }
 

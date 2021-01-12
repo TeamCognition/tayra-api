@@ -3,7 +3,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class Shop : Entity<Guid>, IAuditedEntity
+    public class Shop : EntityGuidId, IAuditedEntity
     {
         public string Name { get; set; }
 

@@ -4,7 +4,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ActionPoint : Entity<Guid>, ITimeStampedEntity
+    public class ActionPoint : EntityGuidId, ITimeStampedEntity
     {
         public Guid? SegmentId { get; set; }
         public virtual Segment Segment { get; set; }

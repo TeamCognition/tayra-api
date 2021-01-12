@@ -45,7 +45,7 @@ namespace Tayra.SyncServices.Tayra
 
             var dateId = DateHelper2.ToDateId(fromDay);
 
-            var teams = organizationDb.Teams.Where(x => x.Key != null).Select(x => new { x.Id, x.SegmentId }).ToArray();
+            var teams = organizationDb.Teams.Select(x => new { x.Id, x.SegmentId }).ToArray();
 
             foreach (var team in teams)
             {

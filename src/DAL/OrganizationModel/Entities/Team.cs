@@ -5,15 +5,12 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class Team : Entity<Guid>, IAuditedEntity, IArchivableEntity
+    public class Team : EntityGuidId, IAuditedEntity, IArchivableEntity
     {
         public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
-
-        /// <summary>
-        /// null key means it's a team for unassigned memebers of a segment
-        /// </summary>
-        [MaxLength(50)]
+        
+        [Required, MaxLength(50)]
         public string Key { get; set; }
 
         [Required]

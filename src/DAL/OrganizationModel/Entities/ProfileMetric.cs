@@ -5,7 +5,7 @@ using Tayra.Analytics;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfileMetric : Entity<Guid>, ITimeStampedEntity
+    public class ProfileMetric : EntityGuidId, ITimeStampedEntity
     {
         public Guid ProfileId { get; private set; }
         public Profile Profile { get; set; }

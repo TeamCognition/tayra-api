@@ -5,7 +5,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Integration : Entity<Guid>, ITimeStampedEntity, IUserStampedEntity
+    public class Integration : EntityGuidId, ITimeStampedEntity, IUserStampedEntity
     {
         public Guid? ProfileId { get; set; }
         public virtual Profile Profile { get; set; }

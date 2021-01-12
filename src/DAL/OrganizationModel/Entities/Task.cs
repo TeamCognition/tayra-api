@@ -4,7 +4,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Task : Entity<Guid>, ITimeStampedEntity
+    public class Task : EntityGuidId, ITimeStampedEntity
     {
         public string ExternalId { get; set; }
         /// <summary>

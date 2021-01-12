@@ -17,7 +17,7 @@ namespace Tayra.API.Features.Profile
     {
         [HttpGet("sessionCache")]
         public async Task<GetSessionCache.Result> GetSessionCache()
-            => await _mediator.Send(new GetSessionCache.Query { IdentityId = CurrentUser.IdentityId, CurrentTenantKey = CurrentUser.CurrentTenantKey});
+            => await _mediator.Send(new GetSessionCache.Query { IdentityId = CurrentUser.IdentityId, CurrentTenantKey = CurrentUser.CurrentTenantIdentifier});
     }
     
     public class GetSessionCache
@@ -102,7 +102,7 @@ namespace Tayra.API.Features.Profile
                     Name = t.Name,
                     AvatarColor = t.AvatarColor,
                     SegmentId = t.SegmentId
-                }).ToArray().Where(x => x.Key != null).ToArray();
+                }).ToArray().ToArray();
 
                 var activeItems = new ProfilesService().GetProfileActiveItems(_db, cache.ProfileId);
 

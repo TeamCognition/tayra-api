@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Cog.Core;
 using Cog.DAL;
@@ -140,6 +141,7 @@ namespace Tayra.Services
 
             return (from r in DbContext.SegmentReportsDaily
                     where r.SegmentId == segment.Id
+                    orderby r.DateId descending
                     select new SegmentRawScoreDTO
                     {
                         TasksCompleted = r.TasksCompletedTotal,
@@ -149,8 +151,8 @@ namespace Tayra.Services
                         TokensSpent = r.CompanyTokensSpentTotal,
                         ItemsBought = r.ItemsBoughtTotal,
                         QuestsCompleted = 0,
-                        DaysOnTayra = EF.Functions.DateDiffDay(segment.Created, DateTime.UtcNow)
-                    }).LastOrDefault();
+                        DaysOnTayra = (DateTime.UtcNow - segment.Created).Days
+                    }).FirstOrDefault();
         }
 
         public Dictionary<int, MetricService.AnalyticsMetricWithIterationSplitDto> GetSegmentAverageMetrics(string segmentKey)
@@ -282,7 +284,7 @@ namespace Tayra.Services
             DbContext.Remove(DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == dto.ProfileId && x.TeamId == dto.TeamId));
         }
 
-        public void Create(Guid profileId, ProfileRoles role, SegmentCreateDTO dto)
+        public void Create(Guid? profileId, ProfileRoles role, SegmentCreateDTO dto)
         {
             if (!IsSegmentKeyUnique(dto.Key))
             {
@@ -299,15 +301,15 @@ namespace Tayra.Services
             var team = DbContext.Add(new Team
             {
                 Segment = segment,
-                Name = "Unassigned",
-                Key = null
+                Name = "Team 1",
+                Key = "T1"
             }).Entity;
 
-            if (role != ProfileRoles.Admin)
+            if (profileId != null && role != ProfileRoles.Admin)
             {
                 DbContext.Add(new ProfileAssignment
                 {
-                    ProfileId = profileId,
+                    ProfileId = profileId.Value,
                     SegmentId = segment.Id,
                     Team = team,
                 });

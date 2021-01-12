@@ -3,7 +3,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfileAssignment : Entity<Guid>, ITimeStampedEntity, IUserStampedEntity
+    public class ProfileAssignment : EntityGuidId, ITimeStampedEntity, IUserStampedEntity
     {
         public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }

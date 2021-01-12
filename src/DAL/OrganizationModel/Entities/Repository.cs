@@ -5,7 +5,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class Repository : Entity<Guid>, IAuditedEntity
+    public class Repository : EntityGuidId, IAuditedEntity
     {
         public Guid? TeamId { get; set; }
         public virtual Team Team { get; set; }

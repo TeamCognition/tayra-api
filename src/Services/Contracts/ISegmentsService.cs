@@ -18,7 +18,7 @@ namespace Tayra.Services
         Dictionary<int, MetricService.AnalyticsMetricWithIterationSplitDto> GetSegmentAverageMetrics(string segmentKey);
         Dictionary<int, MetricsValueWEntity[]> GetSegmentRankChart(string segmentKey);
         SegmentStatsDTO GetSegmentStats(Guid segmentId);
-        void Create(Guid profileId, ProfileRoles role, SegmentCreateDTO dto);
+        void Create(Guid? profileId, ProfileRoles role, SegmentCreateDTO dto);
         void Update(Guid segmentId, SegmentCreateDTO dto);
         void AddMember(SegmentMemberAddRemoveDTO dto);
         void RemoveMember(SegmentMemberAddRemoveDTO dto);

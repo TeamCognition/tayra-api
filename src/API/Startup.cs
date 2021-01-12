@@ -48,11 +48,18 @@ namespace Tayra.API
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
             services.AddMultiTenant<Tenant>()
                 .WithEFCoreStore<CatalogDbContext, Tenant>()
-                .WithStrategy<TenantStrategy>(ServiceLifetime.Singleton)
+                //.WithStrategy<TenantStrategy>(ServiceLifetime.Singleton)
                 .WithDelegateStrategy(context =>
                 {
                     if (!(context is Microsoft.AspNetCore.Http.HttpContext httpContext))
                         return null;
+
+                    var tenantIdentifierFromAccessToken = new CogPrincipal(httpContext?.User)?.CurrentTenantIdentifier;
+                    if (tenantIdentifierFromAccessToken is not null)
+                    {
+                        return System.Threading.Tasks.Task.FromResult(
+                            tenantIdentifierFromAccessToken);
+                    }
 
                     httpContext.Request.Query.TryGetValue("tenant", out var identifier);
 
@@ -136,8 +143,6 @@ namespace Tayra.API
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-
-            app.UseMultiTenant();
             
             app.UseSwagger();
 
@@ -168,6 +173,8 @@ namespace Tayra.API
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMultiTenant();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
@@ -180,7 +187,7 @@ namespace Tayra.API
             });
 
             //orgService.EnsureOrganizationsAreCreatedAndMigrated();
-            catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
+            //catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
         }
 
         #region Private Methods

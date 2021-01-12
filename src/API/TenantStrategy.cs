@@ -14,7 +14,7 @@ namespace Tayra.API
                 throw new MultiTenantException(null,
                     new ArgumentException($@"""{nameof(context)}"" type must be of type HttpContext", nameof(context)));
 
-            var tenantIdentifier = new CogPrincipal(httpContext?.User)?.CurrentTenantKey;
+            var tenantIdentifier = new CogPrincipal(httpContext?.User)?.CurrentTenantIdentifier;
 
             return await Task.FromResult(tenantIdentifier);
         }

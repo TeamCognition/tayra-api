@@ -4,7 +4,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class ItemGift : Entity<Guid>, ITimeStampedEntity
+    public class ItemGift : EntityGuidId, ITimeStampedEntity
     {
         public Guid ItemId { get; set; }
         public virtual Item Item { get; set; }

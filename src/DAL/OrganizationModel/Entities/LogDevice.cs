@@ -5,7 +5,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class LogDevice : Entity<Guid>, ITimeStampedEntity
+    public class LogDevice : EntityGuidId, ITimeStampedEntity
     {
         public virtual Guid? ProfileId { get; set; }
         public virtual Profile Profile { get; set; }

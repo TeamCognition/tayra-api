@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
+using Tayra.Models.Seeder;
 using Tayra.Services;
 using Task = System.Threading.Tasks.Task;
 
@@ -36,10 +37,11 @@ namespace Tayra.API.Features.Tenants
         {
             private readonly CatalogDbContext _catalogDb;
             private readonly IConfiguration _config;
-
-            public Handler(CatalogDbContext catalogDb, IConfiguration config)
+            private readonly SegmentsService _segmentsService;
+            public Handler(CatalogDbContext catalogDb, SegmentsService segmentsService, IConfiguration config)
             {
                 _catalogDb = catalogDb;
+                _segmentsService = segmentsService;
                 _config = config;
             }
 
@@ -65,13 +67,13 @@ namespace Tayra.API.Features.Tenants
                     ConnectionString = newDbSqlConnection
                 };
                 
-                await EnsureTenantCreatedAndInvitedAsync(_catalogDb, newDbSqlConnection, tenant, msg.EmailAddress, token);
+                await EnsureTenantCreatedAndInvitedAsync(_catalogDb, newDbSqlConnection, tenant, msg.EmailAddress, _segmentsService, token);
 
                 _catalogDb.Add(tenant);
                 await _catalogDb.SaveChangesAsync(token);
             }
 
-            private static async Task EnsureTenantCreatedAndInvitedAsync(CatalogDbContext catalogDb, string connectionString, Tenant tenant, string emailAddress, CancellationToken token)
+            private static async Task EnsureTenantCreatedAndInvitedAsync(CatalogDbContext catalogDb, string connectionString, Tenant tenant, string emailAddress, SegmentsService segmentsService, CancellationToken token)
             {
                 await using var newDb = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(connectionString), null);
                 await newDb.Database.MigrateAsync(token);
@@ -93,6 +95,14 @@ namespace Tayra.API.Features.Tenants
                         EmailAddress = emailAddress
                     });
                 
+                await tenantDb.SaveChangesAsync(token);
+                
+                EssentialSeeds.AddEssentialSeeds(tenantDb);
+                segmentsService.Create(null, ProfileRoles.Admin, new SegmentCreateDTO
+                {
+                    Name = "Segment 1",
+                    Key = "S1"
+                });
                 await tenantDb.SaveChangesAsync(token);
             }
         }      

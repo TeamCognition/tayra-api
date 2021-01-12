@@ -5,7 +5,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Catalog
 {
-    public class Identity: Entity<Guid>, IAuditedEntity
+    public class Identity: EntityGuidId, IAuditedEntity
     {
         [MaxLength(50)]
         public string FirstName { get; set; }

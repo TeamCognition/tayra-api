@@ -4,7 +4,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ShopPurchase : Entity<Guid>, ITimeStampedEntity
+    public class ShopPurchase : EntityGuidId, ITimeStampedEntity
     {
         public Guid ItemId { get; set; }
         public virtual Item Item { get; set; }

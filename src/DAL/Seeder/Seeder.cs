@@ -46,7 +46,6 @@ namespace Tayra.Models.Seeder
         public static void SeedNoSave(OrganizationDbContext organizationDb)
         {
             EssentialSeeds.AddEssentialSeeds(organizationDb);
-            ItemSeeds.AddShopItemSeeds(organizationDb);
         }
     }
 }

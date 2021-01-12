@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using Castle.DynamicProxy.Internal;
 using Cog.Core;
 using Cog.DAL;
 using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Tayra.Analytics;
 using Tayra.Models.Catalog;
 
@@ -25,7 +23,7 @@ namespace Tayra.Models.Organizations
         public OrganizationDbContext(ITenantInfo tenantInfo, IHttpContextAccessor httpContext)
             : base(httpContext)
         {
-            TenantInfo = tenantInfo;
+            TenantInfo = tenantInfo ?? throw new ApplicationException("unknown identifier");
             this.Database.Migrate();
         }
         
@@ -272,34 +270,30 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Ignore<Date>();
 
-            var orgEntity = modelBuilder.Model.FindEntityType(typeof(LocalTenant));
-            var orgPKey = orgEntity.FindPrimaryKey();
+            var localTenantEntity = modelBuilder.Model.FindEntityType(typeof(LocalTenant));
+            var localTenantPk = localTenantEntity.FindPrimaryKey();
             foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
             {
                 //modelBuilder.Entity(entityType.ClrType).IsMultiTenant();
-                
+                //not needed because we have custom EnforceMultiTenantOnLocalTenant
                 if (entityType.FindPrimaryKey() == null)
                     continue;
 
                 //TenantId
-                var id = entityType.FindPrimaryKey().Properties.FirstOrDefault(x => x.Name == nameof(LocalTenant.TenantId));
-                if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;
-
-                var localTenantHack = new LocalTenant();
-                var tenantId = entityType.AddProperty(TenantIdFK, localTenantHack.TenantId.GetType());
-                tenantId.IsNullable = false;
-                entityType.AddForeignKey(tenantId, orgPKey, orgEntity);
+                var tenantIdProp = entityType.AddProperty(TenantIdFK, new LocalTenant().TenantId.GetType());
+                tenantIdProp.IsNullable = false;
+                entityType.AddForeignKey(tenantIdProp, localTenantPk, localTenantEntity);
                 var pk = entityType.FindPrimaryKey().Properties;
-                entityType.SetPrimaryKey(pk.Append(tenantId).ToArray());
+                entityType.SetPrimaryKey(pk.Append(tenantIdProp).ToArray());
 
                 //remove alternatePrimaryKey
-                if (pk.Count() > 1 || pk[0].Name != nameof(Entity<object>.Id))
+                if (pk.Count > 1 || pk[0].Name != nameof(Entity<object>.Id))
                     entityType.RemoveKey(pk);
 
-                var idxs = entityType.GetIndexes().Where(x => x.Properties.Count() > 1 || x.Properties[0] != tenantId).ToArray();
-                foreach (var idx in idxs)
+                var indexes = entityType.GetIndexes().Where(x => x.Properties.Count > 1 || x.Properties[0] != tenantIdProp).ToArray();
+                foreach (var idx in indexes)
                 {
-                    var newIndex = entityType.AddIndex(idx.Properties.Append(tenantId).ToArray());
+                    var newIndex = entityType.AddIndex(idx.Properties.Append(tenantIdProp).ToArray());
                     newIndex.IsUnique = idx.IsUnique;
                     entityType.RemoveIndex(idx.Properties);
                 }
@@ -338,14 +332,14 @@ namespace Tayra.Models.Organizations
         public override int SaveChanges()
         {
             //this.EnforceMultiTenant();
-            this.EnforceMultiTenantOnLocalTenants();
+            this.EnforceMultiTenantOnLocalTenant();
             return base.SaveChanges();
         }
         
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
             //this.EnforceMultiTenant();
-            this.EnforceMultiTenantOnLocalTenants();
+            this.EnforceMultiTenantOnLocalTenant();
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
@@ -353,15 +347,15 @@ namespace Tayra.Models.Organizations
         public override async System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             //this.EnforceMultiTenant();
-            this.EnforceMultiTenantOnLocalTenants();
+            this.EnforceMultiTenantOnLocalTenant();
             return await base.SaveChangesAsync(cancellationToken);
         }
-        
+
         public override async System.Threading.Tasks.Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             //this.EnforceMultiTenant();
-            this.EnforceMultiTenantOnLocalTenants();
+            this.EnforceMultiTenantOnLocalTenant();
             return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
         

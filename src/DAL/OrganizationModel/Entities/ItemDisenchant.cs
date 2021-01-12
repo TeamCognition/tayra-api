@@ -3,7 +3,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class ItemDisenchant : Entity<Guid>, ITimeStampedEntity
+    public class ItemDisenchant : EntityGuidId, ITimeStampedEntity
     {
         public Guid ItemId { get; set; }
         public virtual Item Item { get; set; }

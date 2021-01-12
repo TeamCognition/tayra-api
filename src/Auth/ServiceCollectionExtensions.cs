@@ -87,7 +87,6 @@ namespace Tayra.Auth
             services.AddTransient<IIdentitiesService, IdentitiesService>();
             services.AddTransient<ITokensService, TokensService>();
             services.AddTransient<ILogsService, LogsService>();
-            
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Cog.DAL
         protected const string AuditLastModifiedProp = nameof(ITimeStampedEntity.LastModified);
         protected const string AuditLastModifiedByProp = nameof(IUserStampedEntity.LastModifiedBy);
         
-        protected const string TenantIdFK = "TenantId";
+        protected const string TenantIdFK = "TenantId"; //nameof(LocalTenant)
         protected const string ArchivedAtProp = "ArchivedAt";
 
         public CogDbContext() : this(null)

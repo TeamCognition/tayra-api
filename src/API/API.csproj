@@ -32,6 +32,7 @@
     <ProjectReference Include="..\Connectors\Connectors.Slack\Connectors.Slack.csproj" />
     <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
     <ProjectReference Include="..\DAL\CatalogModel\CatalogModel.csproj" />
+    <ProjectReference Include="..\DAL\Seeder\Seeder.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
     <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />

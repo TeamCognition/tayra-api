@@ -1,3 +1,5 @@
 dotnet ef migrations add Initial --project="../DAL/OrganizationModel" --context="OrganizationDbContext"
 
-dotnet ef migrations remove --project="../DAL/OrganizationModel" --context="OrganizationDbContext" //DOESNT WORK
+dotnet ef migrations add Initial --project="../DAL/OrganizationModel" --context="OrganizationDbContext"
+
+dotnet ef database update --project="../Auth" --context="OpeniddictDbContext"

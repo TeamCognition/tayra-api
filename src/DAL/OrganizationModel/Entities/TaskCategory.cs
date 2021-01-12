@@ -4,7 +4,7 @@ using Cog.DAL;
 namespace Tayra.Models.Organizations
 {
     [TenantSharedEntity]
-    public class TaskCategory : Entity<Guid>, IAuditedEntity
+    public class TaskCategory : EntityGuidId, IAuditedEntity
     {
         public string Name { get; set; }
 

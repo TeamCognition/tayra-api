@@ -127,7 +127,7 @@ namespace Tayra.Auth.Controllers
                 claims.AddClaim(OpenIddictConstants.Claims.Subject,
                     identity.Id.ToString(),
                     OpenIddictConstants.Destinations.AccessToken);
-                claims.AddClaim(CogClaimTypes.CurrentTenantKey, tenant.Identifier,
+                claims.AddClaim(CogClaimTypes.CurrentTenantIdentifier, tenant.Identifier,
                     OpenIddictConstants.Destinations.AccessToken);
                 claims.AddClaim(CogClaimTypes.ProfileId, profile.Id.ToString(),
                     OpenIddictConstants.Destinations.AccessToken);

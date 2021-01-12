@@ -13,7 +13,7 @@ namespace Cog.DAL
         /// Checks the TenantId on entities taking into account
         /// TenantNotSetMode and TenantMismatchMode.
         /// </summary>
-        public static void EnforceMultiTenantOnLocalTenants<TContext>(this TContext context) where TContext : DbContext, IMultiTenantDbContext
+        public static void EnforceMultiTenantOnLocalTenant<TContext>(this TContext context) where TContext : DbContext, IMultiTenantDbContext
         {
             var changeTracker = context.ChangeTracker;
             var tenantInfo = context.TenantInfo;

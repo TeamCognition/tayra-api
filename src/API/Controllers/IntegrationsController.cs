@@ -53,13 +53,13 @@ namespace Tayra.API.Controllers
         [HttpGet, Route("settings/atj")]
         public ActionResult<JiraSettingsViewDTO> GetJiraSettings()
         {
-            return IntegrationsService.GetJiraSettingsViewDTO("api.tayra.io", CurrentUser.CurrentTenantKey, CurrentSegment.Id);
+            return IntegrationsService.GetJiraSettingsViewDTO("api.tayra.io", CurrentUser.CurrentTenantIdentifier, CurrentSegment.Id);
         }
 
         [HttpPost, Route("settings/atj")]
         public ActionResult SetJiraSettings([FromBody] JiraSettingsUpdateDTO dto)
         {
-            IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantKey, dto);
+            IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantIdentifier, dto);
             // SyncIssuesLoader.PullIssuesNew(DbContext, DateTime.UtcNow, TasksService, ProfilesService,
             //     JObject.FromObject(new { tenantKey = CurrentUser.CurrentTenantKey, @params = new { jiraProjectId = dto.ActiveProjects.FirstOrDefault().ProjectId }}));
             DbContext.SaveChanges();

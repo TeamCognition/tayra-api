@@ -4,7 +4,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfileInventoryItem : Entity<Guid>, IClaimableEntity, ITimeStampedEntity
+    public class ProfileInventoryItem : EntityGuidId, IClaimableEntity, ITimeStampedEntity
     {
         public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }

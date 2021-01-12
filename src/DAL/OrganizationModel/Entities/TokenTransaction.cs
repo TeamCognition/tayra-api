@@ -5,7 +5,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class TokenTransaction : Entity<Guid>, IClaimableEntity, ITimeStampedEntity
+    public class TokenTransaction : EntityGuidId, IClaimableEntity, ITimeStampedEntity
     {
         public double Value { get; set; }
 

@@ -6,7 +6,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class TeamMetric : Entity<Guid>, ITimeStampedEntity
+    public class TeamMetric : EntityGuidId, ITimeStampedEntity
     {
         public Guid TeamId { get; private set; }
         public Team Team { get; private set; }

@@ -4,7 +4,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class LogSetting : Entity<Guid>, ITimeStampedEntity
+    public class LogSetting : EntityGuidId, ITimeStampedEntity
     {
         //CompositeKey
         public Guid LogDeviceId { get; set; }

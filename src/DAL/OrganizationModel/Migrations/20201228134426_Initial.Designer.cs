@@ -10,7 +10,7 @@ using Tayra.Models.Organizations;
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    [Migration("20201223151717_Initial")]
+    [Migration("20201228134426_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

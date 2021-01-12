@@ -24,7 +24,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public TeamViewDTO GetTeamViewDTO(string teamKey)
+        public TeamViewDTO GetTeamViewDTO(string segmentKey, string teamKey)
         {
             var teamDto = (from t in DbContext.Teams
                            where t.Key == teamKey
@@ -42,13 +42,15 @@ namespace Tayra.Services
 
             return teamDto;
         }
-        public TeamRawScoreDTO GetTeamRawScoreDTO(string teamKey)
+        public TeamRawScoreDTO GetTeamRawScoreDTO(Guid teamId)
         {
-            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
-            team.EnsureNotNull(teamKey);
-
+            var team = DbContext.Teams.FirstOrDefault(x => x.Id == teamId);
+            
+            team.EnsureNotNull(team, teamId);
+            
             return (from r in DbContext.TeamReportsDaily
-                    where r.TeamId == team.Id
+                    where r.TeamId == teamId
+                    orderby r.DateId descending 
                     select new TeamRawScoreDTO
                     {
                         TasksCompleted = r.TasksCompletedTotal,
@@ -58,14 +60,14 @@ namespace Tayra.Services
                         TokensSpent = r.CompanyTokensSpentTotal,
                         ItemsBought = r.ItemsBoughtTotal,
                         QuestsCompleted = r.QuestsCompletedTotal,
-                        DaysOnTayra = EF.Functions.DateDiffDay(team.Created, DateTime.UtcNow)
-                    }).LastOrDefault();
+                        DaysOnTayra = (DateTime.UtcNow - team.Created).Days 
+                    }).FirstOrDefault();
         }
 
-        public TeamSwarmPlotDTO GetTeamSwarmPloteDTO(string teamKey)
+        public TeamSwarmPlotDTO GetTeamSwarmPloteDTO(Guid teamId)
         {
-            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
-            team.EnsureNotNull(teamKey);
+            var team = DbContext.Teams.FirstOrDefault(x => x.Id == teamId);
+            team.EnsureNotNull(teamId);
 
             var metricService = new MetricService(DbContext);
 
@@ -75,7 +77,7 @@ namespace Tayra.Services
                 MetricType.TasksCompleted, MetricType.Complexity
             };
 
-            var teamProfiless = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId)
+            var teamProfiles = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id && x.Profile.IsAnalyticsEnabled).Select(x => x.ProfileId)
                 .ToArray();
 
             var teamStats = (from r in DbContext.TeamReportsWeekly
@@ -96,9 +98,7 @@ namespace Tayra.Services
                 return null;
 
             var p = DateHelper.FindPeriod(DateRanges.Last4Week);
-
-            var teamProfiles = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId).ToArray();
-
+            
             var profileStats = (from r in DbContext.ProfileReportsWeekly
                                 where teamProfiles.Contains(r.ProfileId)
                                 where r.DateId >= p.FromId
@@ -119,7 +119,7 @@ namespace Tayra.Services
             {
                 LastUpdateDateId = teamStats.Select(x => x.DateId).FirstOrDefault(),
 
-                ProfileMetrics = metricService.GetMetricsRanks(metricList, teamProfiless, EntityTypes.Profile,
+                ProfileMetrics = metricService.GetMetricsRanks(metricList, teamProfiles, EntityTypes.Profile,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow)),
                 Averages = metricService.GetMetrics(metricList, team.Id, EntityTypes.Team,
                 new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow))
@@ -133,7 +133,7 @@ namespace Tayra.Services
                                                 select new TeamViewGridDTO
                                                 {
                                                     SegmentId = s.Id,
-                                                    Teams = s.Teams.Where(x => x.Key != null).Select(x => new TeamViewGridDTO.TeamDTO
+                                                    Teams = s.Teams.Select(x => new TeamViewGridDTO.TeamDTO
                                                     {
                                                         TeamId = x.Id,
                                                         Key = x.Key,
@@ -198,11 +198,11 @@ namespace Tayra.Services
             team.AvatarColor = dto.AvatarColor;
         }
 
-        public void Archive(Guid profileId, string teamKey)
+        public void Archive(Guid profileId, Guid teamId)
         {
-            var team = DbContext.Teams.Include(x => x.Members).FirstOrDefault(x => x.Key == teamKey);
+            var team = DbContext.Teams.Include(x => x.Members).FirstOrDefault(x => x.Id == teamId);
 
-            team.EnsureNotNull(team.Key);
+            team.EnsureNotNull(teamId);
 
             DbContext.Remove(team);
 
@@ -238,11 +238,11 @@ namespace Tayra.Services
             };
         }
 
-        public TeamPulseDTO GetTeamPulse(string teamKey)
+        public TeamPulseDTO GetTeamPulse(Guid teamId)
         {
-            var team = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey);
+            var team = DbContext.Teams.FirstOrDefault(x => x.Id == teamId);
 
-            team.EnsureNotNull(teamKey);
+            team.EnsureNotNull(teamId);
 
             var teamMembers = DbContext.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId)
                 .ToArray();
@@ -250,7 +250,7 @@ namespace Tayra.Services
             var yesterdayDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-1));
 
             string jiraBoardUrl = null;
-            var segmentId = DbContext.Teams.FirstOrDefault(x => x.Key == teamKey)?.SegmentId;
+            var segmentId = DbContext.Teams.FirstOrDefault(x => x.Id == teamId)?.SegmentId;
             if (segmentId != null)
             {
                 var sFields = DbContext.Integrations
