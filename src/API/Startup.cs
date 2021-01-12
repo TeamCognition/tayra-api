@@ -2,6 +2,7 @@
 using System.Linq;
 using AutoMapper;
 using Cog.Core;
+using Finbuckle.MultiTenant;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MoreLinq;
 using OpenIddict.Validation.AspNetCore;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using Tayra.API.Helpers;
@@ -26,7 +28,6 @@ using Tayra.Imager;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
-using Tayra.Analytics;
 using Tayra.Services.Contracts;
 using Tayra.Services.webhooks;
 
@@ -44,9 +45,29 @@ namespace Tayra.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //register DBs
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
-            services.AddDbContext<OrganizationDbContext>(options => { });
+            services.AddMultiTenant<Tenant>()
+                .WithEFCoreStore<CatalogDbContext, Tenant>()
+                //.WithStrategy<TenantStrategy>(ServiceLifetime.Singleton)
+                .WithDelegateStrategy(context =>
+                {
+                    if (!(context is Microsoft.AspNetCore.Http.HttpContext httpContext))
+                        return null;
+
+                    var tenantIdentifierFromAccessToken = new CogPrincipal(httpContext?.User)?.CurrentTenantIdentifier;
+                    if (tenantIdentifierFromAccessToken is not null)
+                    {
+                        return System.Threading.Tasks.Task.FromResult(
+                            tenantIdentifierFromAccessToken);
+                    }
+
+                    httpContext.Request.Query.TryGetValue("tenant", out var identifier);
+
+                    return System.Threading.Tasks.Task.FromResult(identifier.FirstOrDefault());
+                });
+            
+            
+            services.AddDbContext<OrganizationDbContext>();
 
             services.AddAutoMapper(typeof(Startup));
 
@@ -72,11 +93,7 @@ namespace Tayra.API
             services.AddTransient<IClaimBundlesService, ClaimBundlesService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
             services.AddTransient<IGithubWebhookService, GithubWebhookServiceService>();
-
-            services.AddTransient<IOrganizationsService, Services.OrganizationsService>();
-
-            services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
-            services.AddScoped<ITenantProvider, ShardTenantProvider>();
+            
             services.AddScoped<IClaimsPrincipalProvider<TayraPrincipal>, TayraPrincipalProvider>();
 
             services.AddHttpContextAccessor();
@@ -108,7 +125,7 @@ namespace Tayra.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOrganizationsService orgService)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CatalogDbContext catalogDbContext)
         {
             if (env.IsDevelopment())
             {
@@ -126,9 +143,9 @@ namespace Tayra.API
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-
-            app.UseSwagger();
             
+            app.UseSwagger();
+
             app.Use(async (context, next) =>
             {
                 //if(context.Request.Path.Value.Contains("/ws"))
@@ -156,6 +173,8 @@ namespace Tayra.API
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMultiTenant();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
@@ -167,7 +186,8 @@ namespace Tayra.API
                 c.RoutePrefix = string.Empty;
             });
 
-            orgService.EnsureOrganizationsAreCreatedAndMigrated();
+            //orgService.EnsureOrganizationsAreCreatedAndMigrated();
+            //catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
         }
 
         #region Private Methods
@@ -191,7 +211,7 @@ namespace Tayra.API
                             type.Name.Substring(0, type.Name.Length - 2),
                             string.Join(',', type.GenericTypeArguments.Select(x => x.Name)));
                     }
-                    return type.Name;
+                    return type.FullName;
                 });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -199,19 +219,8 @@ namespace Tayra.API
                     Description =
                         "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
-                    In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey
                 });
-                //c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                //{
-                //    {
-                //        new OpenApiSecurityScheme
-                //        {
-                //            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
-                //        },
-                //        new[] { "readAccess", "writeAccess" }
-                //    }
-                //});
             });
         }
 

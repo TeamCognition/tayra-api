@@ -14,12 +14,4 @@ namespace Tayra.Models.Catalog
             return new CatalogDbContext(optionsBuilder.Options);
         }
     }
-
-    public static class CatalogContextFactoryForTests
-    {
-        public static CatalogDbContext CreateDbContext(DbContextOptions<CatalogDbContext> options)
-        {
-            return new CatalogDbContext(options);
-        }
-    }
 }

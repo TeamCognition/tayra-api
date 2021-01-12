@@ -5,7 +5,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class Segment : Entity<Guid>, IAuditedEntity, IArchivableEntity
+    public class Segment : EntityGuidId, IAuditedEntity, IArchivableEntity
     {
         [Required, MaxLength(50)]
         public string Key { get; set; }

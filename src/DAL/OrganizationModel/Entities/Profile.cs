@@ -6,7 +6,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Profile : Entity<Guid>, IAuditedEntity, IArchivableEntity
+    public class Profile : EntityGuidId, IAuditedEntity, IArchivableEntity
     {
 
         [MaxLength(50)]
@@ -37,7 +37,7 @@ namespace Tayra.Models.Organizations
         public string AssistantSummary { get; set; }
 
         public Guid IdentityId { get; set; }
-        public bool isCreateProfileOnboarding { get; set; }
+        public bool IsProfileOnboardingCompleted { get; set; }
 
         public virtual ICollection<ProfilePraise> Praises { get; set; }
         public virtual ICollection<Integration> Integrations { get; set; }

@@ -23,7 +23,7 @@ namespace Tayra.Connectors.Slack
         {
         }
 
-        public SlackConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
+        public SlackConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, dataContext, catalogDbContext)
         {
         }
 
@@ -96,24 +96,24 @@ namespace Tayra.Connectors.Slack
                 throw new ApplicationException("could not fetch slack users");
             }
 
-            var tenantShardingKey = dbContext.CurrentTenantId;
-            var tenantIdentities = CatalogContext.TenantIdentities
-                .Where(x => TenantUtilities.ConvertShardingKeyToTenantId(tenantShardingKey) == x.TenantId)
-                .Select(x => x.IdentityId).ToArray();
-
-            var identityEmails = CatalogContext.IdentityEmails.Where(x => tenantIdentities.Contains(x.IdentityId))
-                .AsNoTracking().ToArray();
-
-            foreach (var u in slackUsers.Members)
-            {
-                if (u.Deleted == false && u.IsBot == false)
-                {
-                    var identity = identityEmails.FirstOrDefault(x => x.Email.ToLower() == u.Profile.Email.ToLower());
-                    // dbContext.Profiles.FirstOrDefault(x => x.IdentityId == i)
-                    // CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields,
-                    //     profileIntegration);
-                }
-            }
+            // var tenantShardingKey = dbContext.CurrentTenantId;
+            // var tenantIdentities = CatalogContext.TenantIdentities
+            //     .Where(x => TenantUtilities.ConvertShardingKeyToTenantId(tenantShardingKey) == x.TenantId)
+            //     .Select(x => x.IdentityId).ToArray();
+            //
+            // var identityEmails = CatalogContext.IdentityEmails.Where(x => tenantIdentities.Contains(x.IdentityId))
+            //     .AsNoTracking().ToArray();
+            //
+            // foreach (var u in slackUsers.Members)
+            // {
+            //     if (u.Deleted == false && u.IsBot == false)
+            //     {
+            //         var identity = identityEmails.FirstOrDefault(x => x.Email.ToLower() == u.Profile.Email.ToLower());
+            //         // dbContext.Profiles.FirstOrDefault(x => x.IdentityId == i)
+            //         // CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields,
+            //         //     profileIntegration);
+            //     }
+            // }
         }
 
         public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();

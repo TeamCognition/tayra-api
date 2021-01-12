@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Cog.Core;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Newtonsoft.Json;
@@ -83,11 +84,10 @@ namespace Tayra.Models.Seeder.DemoSeeds
         public static void AddOrganization(OrganizationDbContext organizationDb)
         {
             Console.WriteLine("Seeding demo account");
-            organizationDb.Add(new Organization
+            organizationDb.Add(new LocalTenant
             {
-                Name = "Demo organization",
-                Address = "Street demo 123",
-                Id = TenantUtilities.GenerateShardingKey(Seeder.DemoKey)
+                DisplayName = "Demo organization",
+                TenantId = Guid.Parse(organizationDb.TenantInfo.Id)
             });
             organizationDb.SaveChanges();
         }

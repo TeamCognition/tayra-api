@@ -9,6 +9,7 @@
   </PropertyGroup>
     
   <ItemGroup>
+    <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="6.1.0" />
     <PackageReference Include="GraphQL.Client" Version="3.1.3" />
     <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(DotnetPackagesVersion)" />
@@ -16,7 +17,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(DotnetPackagesVersion)" />
-    <PackageReference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>

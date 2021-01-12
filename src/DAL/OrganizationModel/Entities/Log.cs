@@ -4,7 +4,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Log : Entity<Guid>, ITimeStampedEntity
+    public class Log : EntityGuidId, ITimeStampedEntity
     {
         public string Data { get; set; }
 

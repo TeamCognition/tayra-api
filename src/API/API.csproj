@@ -18,9 +18,9 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.4.1" />
-    <PackageReference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="OpenIddict.Validation" Version="3.0.0-rc2.20607.88" />
+    <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="6.1.0" />
   </ItemGroup>
   
   <ItemGroup>
@@ -32,6 +32,7 @@
     <ProjectReference Include="..\Connectors\Connectors.Slack\Connectors.Slack.csproj" />
     <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
     <ProjectReference Include="..\DAL\CatalogModel\CatalogModel.csproj" />
+    <ProjectReference Include="..\DAL\Seeder\Seeder.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
     <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />

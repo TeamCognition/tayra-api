@@ -18,17 +18,10 @@ namespace Tayra.SyncServices
 {
     public class ATJIssueUpdateLoader : BaseLoader
     {
-        #region Private Variables
-
-        private readonly IShardMapProvider _shardMapProvider;
-
-        #endregion
-
         #region Constructor
 
-        public ATJIssueUpdateLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public ATJIssueUpdateLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
-            _shardMapProvider = shardMapProvider;
         }
 
         #endregion
@@ -39,8 +32,8 @@ namespace Tayra.SyncServices
         {
             foreach (var tenant in tenants)
             {
-                LogService.SetOrganizationId(tenant.Key);
-                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
+                LogService.SetOrganizationId(tenant.Identifier);
+                using (var organizationDb = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null))
                 {
                     IssueUpdate(organizationDb, date, LogService, requestBody);
                 }

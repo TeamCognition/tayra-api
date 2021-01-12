@@ -4,7 +4,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Blob : Entity<Guid>, ITimeStampedEntity, IUserStampedEntity
+    public class Blob : EntityGuidId, ITimeStampedEntity, IUserStampedEntity
     {
         public BlobTypes Type { get; set; }
         public BlobPurposes Purpose { get; set; }

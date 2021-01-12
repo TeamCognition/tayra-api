@@ -3,7 +3,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class PullRequestReview : Entity<Guid>, ITimeStampedEntity
+    public class PullRequestReview : EntityGuidId, ITimeStampedEntity
     {
         public string Body { get; set; }
 

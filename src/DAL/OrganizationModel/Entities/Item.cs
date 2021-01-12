@@ -5,7 +5,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Item : Entity<Guid>, IAuditedEntity, IArchivableEntity
+    public class Item : EntityGuidId, IAuditedEntity, IArchivableEntity
     {
         [MaxLength(100)]
         public string Name { get; set; }

@@ -41,14 +41,14 @@ namespace Tayra.API.Controllers
             if (setup_action == "update" && string.IsNullOrEmpty(state))
             {
                 var ti = catalogContext.TenantIntegrations.Include(x => x.Tenant).FirstOrDefault(x => x.InstallationId == installation_id);
-                Request.QueryString = Request.QueryString.Add("tenant", ti.Tenant.Key);
+                Request.QueryString = Request.QueryString.Add("tenant", ti.Tenant.Identifier);
                 connector = ConnectorResolver.Get<IOAuthConnector>(type);
                 connector.UpdateAuthentication(installation_id);
 
-                return Redirect($"https://{ti.Tenant.Key}/segments");
+                return Redirect($"https://{ti.Tenant.Identifier}/segments");
             }
             var oauthState = new OAuthState(state);
-            Request.QueryString = Request.QueryString.Add("tenant", oauthState.TenantKey);
+            Request.QueryString = Request.QueryString.Add("tenant", oauthState.TenantIdentifier);
             connector = ConnectorResolver.Get<IOAuthConnector>(type);
 
             if (!string.IsNullOrEmpty(error))

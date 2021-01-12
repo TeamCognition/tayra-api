@@ -21,22 +21,22 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpGet("{teamKey}")]
-        public ActionResult<TeamViewDTO> GetTeam([FromRoute] string teamKey)
+        [HttpGet("{segmentKey}/{teamKey}")]
+        public ActionResult<TeamViewDTO> GetTeam([FromRoute] string segmentKey, [FromRoute] string teamKey)
         {
-            return Ok(TeamsService.GetTeamViewDTO(teamKey));
+            return Ok(TeamsService.GetTeamViewDTO(segmentKey, teamKey));
         }
 
-        [HttpGet("{teamKey}/rawScore")]
-        public ActionResult<TeamRawScoreDTO> GetTeamRawScore([FromRoute] string teamKey)
+        [HttpGet("{teamId}/rawScore")]
+        public ActionResult<TeamRawScoreDTO> GetTeamRawScore([FromRoute] Guid teamId)
         {
-            return Ok(TeamsService.GetTeamRawScoreDTO(teamKey));
+            return Ok(TeamsService.GetTeamRawScoreDTO(teamId));
         }
 
-        [HttpGet("{teamKey}/swarmPlot")]
-        public ActionResult<TeamSwarmPlotDTO> GetTeamSwarmPlot([FromRoute] string teamKey)
+        [HttpGet("{teamId}/swarmPlot")]
+        public ActionResult<TeamSwarmPlotDTO> GetTeamSwarmPlot([FromRoute] Guid teamId)
         {
-            return Ok(TeamsService.GetTeamSwarmPloteDTO(teamKey));
+            return Ok(TeamsService.GetTeamSwarmPloteDTO(teamId));
         }
 
         [HttpPost("search")]
@@ -69,10 +69,10 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("{teamKey}")]
-        public IActionResult Delete([FromRoute] string teamKey)
+        [HttpDelete("{teamId}")]
+        public IActionResult Delete([FromRoute] Guid teamId)
         {
-            TeamsService.Archive(CurrentUser.ProfileId, teamKey);
+            TeamsService.Archive(CurrentUser.ProfileId, teamId);
             OrganizationContext.SaveChanges();
 
             return Ok();
@@ -84,10 +84,10 @@ namespace Tayra.API.Controllers
             return TeamsService.GetTeamStatsData(teamId);
         }
 
-        [HttpGet("{teamKey}/pulse")]
-        public ActionResult<TeamPulseDTO> GetTeamPulse([FromRoute] string teamKey)
+        [HttpGet("{teamId}/pulse")]
+        public ActionResult<TeamPulseDTO> GetTeamPulse([FromRoute] Guid teamId)
         {
-            return TeamsService.GetTeamPulse(teamKey);
+            return TeamsService.GetTeamPulse(teamId);
         }
 
         #endregion

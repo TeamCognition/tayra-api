@@ -23,7 +23,7 @@ namespace Tayra.Connectors.GitHub
         {
         }
 
-        public GitHubConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
+        public GitHubConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, dataContext, catalogDbContext)
         {
         }
 
@@ -182,7 +182,7 @@ namespace Tayra.Connectors.GitHub
 
                 if (repo == null)
                 {
-                    GitHubService.CreateRepositoryWebhook(installationToken, r.Owner.Login, r.Name, Tenant.Key);
+                    GitHubService.CreateRepositoryWebhook(installationToken, r.Owner.Login, r.Name, TenantInfo.Identifier);
                 }
 
                 //update here if needed

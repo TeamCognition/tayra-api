@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Cog.Core;
@@ -14,21 +13,16 @@ namespace Cog.DAL
         protected const string AuditCreatedByProp = nameof(IUserStampedEntity.CreatedBy);
         protected const string AuditLastModifiedProp = nameof(ITimeStampedEntity.LastModified);
         protected const string AuditLastModifiedByProp = nameof(IUserStampedEntity.LastModifiedBy);
-
-        protected const string TenantIdFK = "OrganizationId";
+        
+        protected const string TenantIdFK = "TenantId"; //nameof(LocalTenant)
         protected const string ArchivedAtProp = "ArchivedAt";
 
         public CogDbContext() : this(null)
         {
         }
-
-        public CogDbContext(IHttpContextAccessor httpContext) : this(null, httpContext)
+        
+        public CogDbContext(IHttpContextAccessor httpContext)
         {
-        }
-
-        public CogDbContext(TenantDTO tenant, IHttpContextAccessor httpContext)
-        {
-            CurrentTenant = tenant;
             Instantiated = DateTime.UtcNow;
             if (httpContext?.HttpContext?.User != null) UserPrincipal = new CogPrincipal(httpContext.HttpContext.User);
         }
@@ -61,15 +55,7 @@ namespace Cog.DAL
                     entry.Property(AuditCreatedByProp).CurrentValue = userSession.ProfileId;
             }
         }
-
-        private void HandleTenantEntities()
-        {
-            foreach (var entry in ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added
-                            && !e.Entity.GetType().HasAttribute<TenantSharedEntityAttribute>()))
-                entry.Property(TenantIdFK).CurrentValue = CurrentTenantId;
-        }
-
+        
         private void HandleSoftDelete()
         {
             foreach (var entry in ChangeTracker.Entries<IArchivableEntity>())
@@ -83,25 +69,20 @@ namespace Cog.DAL
         public override int SaveChanges()
         {
             SetTimeStamps();
-            HandleTenantEntities();
             HandleSoftDelete();
 
             if (UserPrincipal != null) SetUserStamps(UserPrincipal);
-
-            if (CurrentTenant != null) HandleTenantEntities();
-
+            
             return base.SaveChanges();
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             SetTimeStamps();
-            HandleTenantEntities();
             HandleSoftDelete();
 
             if (UserPrincipal != null) SetUserStamps(UserPrincipal);
 
-            if (CurrentTenant != null) HandleTenantEntities();
             return base.SaveChangesAsync(cancellationToken);
         }
 
@@ -111,18 +92,6 @@ namespace Cog.DAL
         public DateTime Instantiated { get; }
 
         public CogPrincipal UserPrincipal { get; set; }
-
-        protected TenantDTO CurrentTenant { get; set; }
-
-        public int CurrentTenantId
-        {
-            get
-            {
-                if (CurrentTenant == null) return -1;
-
-                return CurrentTenant.ShardingKey;
-            }
-        }
 
         #endregion
     }

@@ -4,17 +4,17 @@ using Cog.DAL;
 namespace Tayra.Models.Organizations
 {
     [TenantSharedEntity]
-    public class Organization : Entity<int>, IAuditedEntity
+    public class LocalTenant : IAuditedEntity
     {
-        public string Name { get; set; }
-        public string Address { get; set; }
+        public Guid TenantId { get; set; }
+        public string Identifier { get; set; }
+        public string DisplayName { get; set; }
         
-        public bool isCreateSegmentOnboarding { get; set; }
+        public bool IsSegmentOnboardingCompleted { get; set; }
         
-        public bool isAddSourcesOnboarding { get; set; }
+        public bool IsAppsOnboardingCompleted { get; set; }
         
-        public bool isInviteUsersOnboarding { get; set; }
-        
+        public bool IsMembersOnboardingCompleted { get; set; }
 
         #region IAuditedEntity
 

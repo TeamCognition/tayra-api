@@ -19,17 +19,10 @@ namespace Tayra.SyncServices.Tayra
 {
     public class NewProfileMetricsLoader : BaseLoader
     {
-        #region Private Variables
-
-        private readonly IShardMapProvider _shardMapProvider;
-
-        #endregion
-
         #region Constructor
 
-        public NewProfileMetricsLoader(IShardMapProvider shardMapProvider, LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public NewProfileMetricsLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
         {
-            _shardMapProvider = shardMapProvider;
         }
 
         #endregion
@@ -40,8 +33,8 @@ namespace Tayra.SyncServices.Tayra
         {
             foreach (var tenant in tenants)
             {
-                LogService.SetOrganizationId(tenant.Key);
-                using (var organizationDb = new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider))
+                LogService.SetOrganizationId(tenant.Identifier);
+                using (var organizationDb = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null))
                 {
                     GenerateProfileMetrics(organizationDb, date, LogService);
                 }

@@ -42,7 +42,7 @@ namespace Tayra.SyncServices.Common
         {
             var timezones = timezoneInfo.Select(t => t.Id).ToList();
 
-            var tenants = CatalogDbContext.Tenants
+            var tenants = CatalogDbContext.TenantInfo
                 .AsNoTracking();
 
             if (timezones.Count > 0)
@@ -53,12 +53,12 @@ namespace Tayra.SyncServices.Common
             return tenants.ToArray();
         }
 
-        protected Tenant GetTenant(string tenantKey)
+        protected Tenant GetTenant(string tenantIdentifier)
         {
-            var t = CatalogDbContext.Tenants.AsNoTracking().FirstOrDefault(x => x.Key == tenantKey);
+            var t = CatalogDbContext.TenantInfo.AsNoTracking().FirstOrDefault(x => x.Identifier == tenantIdentifier);
 
             if (t == null)
-                throw new ApplicationException("Tenant not found with key: " + tenantKey);
+                throw new ApplicationException("Tenant not found with key: " + tenantIdentifier);
 
             return t;
         }

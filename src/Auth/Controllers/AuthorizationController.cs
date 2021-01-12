@@ -25,22 +25,18 @@ namespace Tayra.Auth.Controllers
         private readonly IOpenIddictAuthorizationManager _authorizationManager;
         private readonly IOpenIddictScopeManager _scopeManager;
         private readonly CatalogDbContext _catalogContext;
-        private readonly IShardMapProvider _shardMapProvider;
         
         public AuthorizationController(
             
             IOpenIddictApplicationManager applicationManager,
             IOpenIddictAuthorizationManager authorizationManager,
             IOpenIddictScopeManager scopeManager,
-            CatalogDbContext catalogContext,
-            IShardMapProvider shardMapProvider)
+            CatalogDbContext catalogContext)
         {
             _applicationManager = applicationManager;
             _authorizationManager = authorizationManager;
             _scopeManager = scopeManager;
             _catalogContext = catalogContext;
-            _shardMapProvider = shardMapProvider;
-
         }
         
 
@@ -91,9 +87,7 @@ namespace Tayra.Auth.Controllers
                 .Select(x => x.Tenant)
                 .FirstOrDefault();
 
-            using (var orgContext =
-                new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider)
-            ) //TODO: check if passing httpAccessor will change anything
+            using (var orgContext = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null))
             {
                 var profile = orgContext.Profiles
                     .FirstOrDefault(x => x.IdentityId == identity.Id);
@@ -133,7 +127,7 @@ namespace Tayra.Auth.Controllers
                 claims.AddClaim(OpenIddictConstants.Claims.Subject,
                     identity.Id.ToString(),
                     OpenIddictConstants.Destinations.AccessToken);
-                claims.AddClaim(CogClaimTypes.CurrentTenantKey, tenant.Key,
+                claims.AddClaim(CogClaimTypes.CurrentTenantIdentifier, tenant.Identifier,
                     OpenIddictConstants.Destinations.AccessToken);
                 claims.AddClaim(CogClaimTypes.ProfileId, profile.Id.ToString(),
                     OpenIddictConstants.Destinations.AccessToken);

@@ -6,7 +6,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Invitation : Entity<Guid>, IAuditedEntity
+    public class Invitation : EntityGuidId, IAuditedEntity
     {
         [Required]
         public Guid Code { get; set; }

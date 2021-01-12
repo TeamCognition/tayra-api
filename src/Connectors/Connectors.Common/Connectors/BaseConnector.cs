@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cog.DAL;
+using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,10 +17,10 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : this(logger, dataContext, catalogDbContext)
+        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : this(logger, dataContext, catalogDbContext)
         {
             HttpContext = httpContext?.HttpContext;
-            Tenant = tenantProvider.GetTenant();
+            TenantInfo = HttpContext.GetMultiTenantContext<TenantModel>()?.TenantInfo;
         }
 
         protected BaseConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext)
@@ -27,6 +28,7 @@ namespace Tayra.Connectors.Common
             Logger = logger;
             OrganizationContext = dataContext;
             CatalogContext = catalogDbContext;
+            TenantInfo = dataContext.TenantInfo;
         }
 
         #endregion
@@ -38,7 +40,7 @@ namespace Tayra.Connectors.Common
         protected ILogger Logger { get; }
 
         protected HttpContext HttpContext { get; }
-        protected TenantDTO Tenant { get; }
+        protected ITenantInfo TenantInfo { get; }
         protected OrganizationDbContext OrganizationContext { get; }
         protected CatalogDbContext CatalogContext { get; }
 
@@ -86,8 +88,7 @@ namespace Tayra.Connectors.Common
                 if (oldIntegration.ProfileId == null)
                 {
                     var x = CatalogContext.TenantIntegrations.FirstOrDefault(x =>
-                        x.Type == oldIntegration.Type && x.SegmentId == oldIntegration.SegmentId && x.TenantId ==
-                        TenantUtilities.ConvertShardingKeyToTenantId(Tenant.ShardingKey));
+                        x.Type == oldIntegration.Type && x.SegmentId == oldIntegration.SegmentId && x.TenantId == TenantInfo.Id);
 
                     if (x != null) CatalogContext.TenantIntegrations.Remove(x);
                 }
@@ -124,7 +125,7 @@ namespace Tayra.Connectors.Common
             {
                 CatalogContext.TenantIntegrations.Add(new TenantIntegration
                 {
-                    TenantId = TenantUtilities.ConvertShardingKeyToTenantId(Tenant.ShardingKey),
+                    TenantId = TenantInfo.Id,
                     Type = Type,
                     SegmentId = segmentId,
                     InstallationId = installationId,

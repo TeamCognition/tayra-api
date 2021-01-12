@@ -18,7 +18,6 @@ namespace Cog.Core
             .DefaultIfEmpty("00000000-0000-0000-0000-000000000000"));
 
         public string EmailAddress => this.FindFirstOrDefault(CogClaimTypes.EmailAddress);
-
-        public string CurrentTenantKey => this.FindFirstOrDefault(CogClaimTypes.CurrentTenantKey).DefaultIfEmpty("-1");
+        public string CurrentTenantIdentifier => this.FindFirstOrDefault(CogClaimTypes.CurrentTenantIdentifier).DefaultIfEmpty(null);
     }
 }

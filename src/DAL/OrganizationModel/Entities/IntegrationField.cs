@@ -4,7 +4,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class IntegrationField : Entity<Guid>, ITimeStampedEntity, IUserStampedEntity
+    public class IntegrationField : EntityGuidId, ITimeStampedEntity, IUserStampedEntity
     {
         public Integration Integration { get; set; }
         public Guid IntegrationId { get; set; }

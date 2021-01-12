@@ -4,7 +4,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class TaskSync : Entity<Guid>, ITimeStampedEntity
+    public class TaskSync : EntityGuidId, ITimeStampedEntity
     {
         public string ExternalProjectId { get; set; }
 

@@ -5,7 +5,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfileExternalId : Entity<Guid>, ITimeStampedEntity
+    public class ProfileExternalId : EntityGuidId, ITimeStampedEntity
     {
         //Composite Key
         public Guid ProfileId { get; set; }

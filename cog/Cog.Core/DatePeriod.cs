@@ -102,7 +102,7 @@ namespace Cog.Core
     {
         public override void Write(Utf8JsonWriter writer, DatePeriod value, JsonSerializerOptions options)
             => writer.WriteStringValue(value.ToString());
-            
+        
         public override DatePeriod Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.String)

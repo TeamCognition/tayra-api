@@ -3,7 +3,7 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class LoginLog : Entity<Guid>, ITimeStampedEntity
+    public class LoginLog : EntityGuidId, ITimeStampedEntity
     {
         public Guid ProfileId { get; set; }
         public Guid IdentityId { get; set; }

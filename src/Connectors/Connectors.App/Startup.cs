@@ -34,17 +34,11 @@ namespace Tayra.Connectors.App
             services.AddTransient<ILogger, Models.DebugLogger>();
 
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
-            services.AddDbContext<OrganizationDbContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("org-mop")));
-            services.AddDbContext<ATJiraDataContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("org-mop")));
 
             services.AddTransient<IConnectorResolver, ConnectorResolver>();
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
             services.AddTransient<IOAuthConnector, GitHubConnector>();
             services.AddTransient<IOAuthConnector, SlackConnector>();
-            services.AddSingleton<IShardMapProvider>(new ShardMapProvider(Configuration));
-            services.AddScoped<ITenantProvider, FakeTenantProvider>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

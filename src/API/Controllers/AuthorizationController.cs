@@ -22,15 +22,11 @@ namespace Tayra.API.Controllers
     public class AuthorizationController : Controller
     {
         private readonly CatalogDbContext _catalogContext;
-        private readonly IShardMapProvider _shardMapProvider;
         
         public AuthorizationController(
-            CatalogDbContext catalogContext,
-            IShardMapProvider shardMapProvider)
+            CatalogDbContext catalogContext)
         {
             _catalogContext = catalogContext;
-            _shardMapProvider = shardMapProvider;
-
         }
 
         #region Password, authorization code, device and refresh token flows
@@ -102,7 +98,7 @@ namespace Tayra.API.Controllers
                 .FirstOrDefault();
 
             using (var orgContext =
-                new OrganizationDbContext(null, new ShardTenantProvider(tenant.Key), _shardMapProvider)
+                new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null)
             ) //TODO: check if passing httpAccessor will change anything
             {
                 var profile = orgContext.Profiles
@@ -143,7 +139,7 @@ namespace Tayra.API.Controllers
                 claims.AddClaim(OpenIddictConstants.Claims.Subject,
                     identityId.ToString(),
                     OpenIddictConstants.Destinations.AccessToken);
-                claims.AddClaim(CogClaimTypes.CurrentTenantKey, tenant.Key,
+                claims.AddClaim(CogClaimTypes.CurrentTenantIdentifier, tenant.Identifier,
                     OpenIddictConstants.Destinations.AccessToken);
                 claims.AddClaim(CogClaimTypes.ProfileId, profile.Id.ToString(),
                     OpenIddictConstants.Destinations.AccessToken);

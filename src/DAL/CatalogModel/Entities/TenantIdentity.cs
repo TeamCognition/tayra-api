@@ -6,7 +6,7 @@ namespace Tayra.Models.Catalog
     public class TenantIdentity : ITimeStampedEntity
     {
         //Composite Key
-        public byte[] TenantId { get; set; }
+        public string TenantId { get; set; }
         public virtual Tenant Tenant { get; set; }
 
         public Guid IdentityId { get; set; }

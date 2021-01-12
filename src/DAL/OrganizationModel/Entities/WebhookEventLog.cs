@@ -4,7 +4,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class WebhookEventLog : Entity<Guid>, ITimeStampedEntity
+    public class WebhookEventLog : EntityGuidId, ITimeStampedEntity
     {
         public string Data { get; set; }
 

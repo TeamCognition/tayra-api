@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Linq;
 using Cog.Core;
+using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using RestSharp;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.SyncServices;
@@ -18,16 +21,14 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public IntegrationsController(IServiceProvider serviceProvider, IConnectorResolver connectorResolver, ITenantProvider tenantProvider, OrganizationDbContext context) : base(serviceProvider, context)
+        public IntegrationsController(IServiceProvider serviceProvider, IConnectorResolver connectorResolver, OrganizationDbContext context) : base(serviceProvider, context)
         {
             ConnectorResolver = connectorResolver;
             DbContext = context;
-            TenantProvider = tenantProvider;
         }
 
         #endregion
 
-        public ITenantProvider TenantProvider { get; set; }
         OrganizationDbContext DbContext { get; set; }
 
         public IConnectorResolver ConnectorResolver { get; }
@@ -42,21 +43,23 @@ namespace Tayra.API.Controllers
                 throw new ApplicationException("You have to provide returnPath");
             }
 
+            var tenantInfo = HttpContext.GetMultiTenantContext<TenantModel>()?.TenantInfo;
+            
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             return Redirect(connector.GetAuthUrl(
-                new OAuthState(TenantProvider.GetTenant().Key, CurrentUser.ProfileId, CurrentSegment.Id, isSegmentAuth, returnPath)));
+                new OAuthState(tenantInfo.Identifier, CurrentUser.ProfileId, CurrentSegment.Id, isSegmentAuth, returnPath)));
         }
 
         [HttpGet, Route("settings/atj")]
         public ActionResult<JiraSettingsViewDTO> GetJiraSettings()
         {
-            return IntegrationsService.GetJiraSettingsViewDTO("api.tayra.io", CurrentUser.CurrentTenantKey, CurrentSegment.Id);
+            return IntegrationsService.GetJiraSettingsViewDTO("api.tayra.io", CurrentUser.CurrentTenantIdentifier, CurrentSegment.Id);
         }
 
         [HttpPost, Route("settings/atj")]
         public ActionResult SetJiraSettings([FromBody] JiraSettingsUpdateDTO dto)
         {
-            IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantKey, dto);
+            IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantIdentifier, dto);
             // SyncIssuesLoader.PullIssuesNew(DbContext, DateTime.UtcNow, TasksService, ProfilesService,
             //     JObject.FromObject(new { tenantKey = CurrentUser.CurrentTenantKey, @params = new { jiraProjectId = dto.ActiveProjects.FirstOrDefault().ProjectId }}));
             DbContext.SaveChanges();

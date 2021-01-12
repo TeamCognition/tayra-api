@@ -13,13 +13,9 @@ namespace Tayra.Models.Seeder
             {
                 new Shop { Name = "Employee Shop" }
             };
-
-            var taskCategorySeed = new List<TaskCategory> //this entity is shared between tenants/orgs
-            {
-                new TaskCategory { Name = "Undefined" }
-            };
-            dbContext.AddRange(taskCategorySeed);
-
+            
+            ItemSeeds.AddShopItemSeeds(dbContext);
+            
             dbContext.AddRange(shopsSeed);
 
             Console.WriteLine("Added essentials");

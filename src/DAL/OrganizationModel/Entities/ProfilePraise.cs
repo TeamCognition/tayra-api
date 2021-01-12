@@ -5,7 +5,7 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfilePraise : Entity<Guid>, ITimeStampedEntity, IUserStampedEntity
+    public class ProfilePraise : EntityGuidId, ITimeStampedEntity, IUserStampedEntity
     {
         //Composite Key
         public Guid ProfileId { get; set; }

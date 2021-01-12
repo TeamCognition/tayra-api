@@ -9,6 +9,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="6.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(DotnetPackagesVersion)" />

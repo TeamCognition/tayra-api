@@ -25,7 +25,7 @@ namespace Tayra.Analytics
     public abstract class MetricType : SmartEnum<MetricType>
     {
         #region Tayra Metrics
-
+        
         public static readonly MetricType Impact = new ImpactMetric("Impact", 101);
         public static readonly MetricType Speed = new SpeedMetric("Speed", 102);
         public static readonly MetricType Power = new PowerMetric("Power", 103);

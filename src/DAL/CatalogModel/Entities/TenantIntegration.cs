@@ -6,7 +6,7 @@ namespace Tayra.Models.Catalog
 {
     public class TenantIntegration
     {
-        public byte[] TenantId { get; set; }
+        public string TenantId { get; set; }
         public Guid SegmentId { get; set; }
         public IntegrationType Type { get; set; }
 

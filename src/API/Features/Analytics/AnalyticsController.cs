@@ -5,8 +5,8 @@ namespace Tayra.API.Features.Analytics
 {
     public partial class AnalyticsController : TayraBaseController
     {
-        private readonly IMediator _mediator;
+        private readonly ISender _mediator;
         
-        public AnalyticsController(IMediator mediator) => _mediator = mediator;
+        public AnalyticsController(ISender mediator) => _mediator = mediator;
     }
 }

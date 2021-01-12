@@ -11,7 +11,7 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseOAuthConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
+        protected BaseOAuthConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, dataContext, catalogDbContext)
         {
         }
 
@@ -35,8 +35,8 @@ namespace Tayra.Connectors.Common
 
         public virtual string GetAuthDoneUrl(string returnPath, bool isSuccessful)
         {
-            string protocol = Tenant.Key.StartsWith("localhost:", StringComparison.InvariantCulture) || Tenant.Key.EndsWith("local") ? "http" : "https";
-            return $"{protocol}://{Tenant.Key}/{returnPath}/?i={Type.ToString().ToLower()}&success={isSuccessful}";
+            string protocol = TenantInfo.Identifier.StartsWith("localhost:", StringComparison.InvariantCulture) || TenantInfo.Identifier.EndsWith("local") ? "http" : "https";
+            return $"{protocol}://{TenantInfo.Identifier}/{returnPath}/?i={Type.ToString().ToLower()}&success={isSuccessful}";
         }
 
         #endregion

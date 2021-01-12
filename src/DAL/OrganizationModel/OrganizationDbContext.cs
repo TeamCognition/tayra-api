@@ -1,53 +1,32 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Reflection;
+using System.Threading;
 using Cog.Core;
 using Cog.DAL;
+using Finbuckle.MultiTenant;
+using Finbuckle.MultiTenant.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Tayra.Analytics;
-using Tayra.Common;
+using Tayra.Models.Catalog;
 
 namespace Tayra.Models.Organizations
 {
-    public class OrganizationDbContext : CogDbContext, IAuditPersistenceStore
+    public class OrganizationDbContext : CogDbContext, IMultiTenantDbContext
     {
+        public ITenantInfo TenantInfo { get; }
+        public TenantMismatchMode TenantMismatchMode { get; } = TenantMismatchMode.Overwrite;
+        public TenantNotSetMode TenantNotSetMode { get; } = TenantNotSetMode.Throw;
+        
         #region Constructor
-
-        // C'tor to deploy schema and migrations to a new shard
-        /// <summary>
-        /// Use the protected c'tor with the connection string parameter
-        /// to intialize a new shard. 
-        /// </summary>
-        protected internal OrganizationDbContext(string connectionString)
+        
+        public OrganizationDbContext(ITenantInfo tenantInfo, IHttpContextAccessor httpContext)
+            : base(httpContext)
         {
-            DirectConnectionString = connectionString;
-        }
-
-
-        // C'tor for data dependent routing. This call will open a validated connection routed to the proper
-        // shard by the shard map manager. Note that the base class c'tor call will fail for an open connection
-        // if migrations need to be done and SQL credentials are used. This is the reason for the 
-        // separation of c'tors into the DDR case (this c'tor) and the internal c'tor for new shards.
-        /// <summary>
-        /// Use this public c'tor with the shard map parameter in
-        // the regular application calls with a tenant id.
-        /// </summary>
-        public OrganizationDbContext(IHttpContextAccessor httpContext, ITenantProvider tenantProvider, IShardMapProvider shardMapProvider)
-            : base(tenantProvider.GetTenant(), httpContext)
-        {
-            ShardMapProvider = shardMapProvider;
+            TenantInfo = tenantInfo ?? throw new ApplicationException("unknown identifier");
             this.Database.Migrate();
         }
-
-        public string DirectConnectionString { get; set; }
-        protected IShardMapProvider ShardMapProvider { get; set; }
-
+        
         #endregion
 
         #region Db Sets
@@ -85,7 +64,7 @@ namespace Tayra.Models.Organizations
         public DbSet<LogDevice> LogDevices { get; set; }
         public DbSet<LoginLog> LoginLogs { get; set; }
         public DbSet<LogSetting> LogSettings { get; set; }
-        public DbSet<Organization> Organizations { get; set; }
+        public DbSet<LocalTenant> LocalTenants { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<ProfileAssignment> ProfileAssignments { get; set; }
         public DbSet<ProfileExternalId> ProfileExternalIds { get; set; }
@@ -118,13 +97,7 @@ namespace Tayra.Models.Organizations
         public DbSet<WebhookEventLog> WebhookEventLogs { get; set; }
 
         #endregion
-
-        #region IAuditPersistenceStore
-
-        public DbSet<EntityChangeLog> EntityChangeLogs { get; set; }
-
-        #endregion
-
+        
         #region Protected Methods
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -136,6 +109,7 @@ namespace Tayra.Models.Organizations
                     entityType.AddProperty(ArchivedAtProp, typeof(long));
                 }
             }
+            modelBuilder.ApplyGlobalFilters<IArchivableEntity>(e => EF.Property<long>(e, ArchivedAtProp) == 0);
 
             modelBuilder.Entity<ActionPointSetting>(entity =>
             {
@@ -173,10 +147,10 @@ namespace Tayra.Models.Organizations
                 entity.HasKey(x => new { x.LogDeviceId, x.LogEvent });
             });
 
-            modelBuilder.Entity<Organization>(entity =>
+            modelBuilder.Entity<LocalTenant>(entity =>
             {
-                entity.HasKey(x => x.Id);
-                entity.Property(x => x.Id).ValueGeneratedNever();
+                entity.HasKey(x => x.TenantId);
+                entity.Property(x => x.TenantId).ValueGeneratedNever();
             });
 
             modelBuilder.Entity<Profile>(entity =>
@@ -296,38 +270,33 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Ignore<Date>();
 
-            var orgEntity = modelBuilder.Model.FindEntityType(typeof(Organization));
-            var orgPKey = orgEntity.FindPrimaryKey();
+            var localTenantEntity = modelBuilder.Model.FindEntityType(typeof(LocalTenant));
+            var localTenantPk = localTenantEntity.FindPrimaryKey();
             foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => !x.ClrType.HasAttribute<TenantSharedEntityAttribute>()))
             {
+                //modelBuilder.Entity(entityType.ClrType).IsMultiTenant();
+                //not needed because we have custom EnforceMultiTenantOnLocalTenant
                 if (entityType.FindPrimaryKey() == null)
                     continue;
 
-                //OrganizationId
-                var id = entityType.FindPrimaryKey().Properties.FirstOrDefault(x => x.Name == "Id");
-                if (id != null) id.ValueGenerated = ValueGenerated.OnAdd;
-
-                var orgId = entityType.AddProperty(TenantIdFK, typeof(int));
-                entityType.AddForeignKey(orgId, orgPKey, orgEntity);
+                //TenantId
+                var tenantIdProp = entityType.AddProperty(TenantIdFK, new LocalTenant().TenantId.GetType());
+                tenantIdProp.IsNullable = false;
+                entityType.AddForeignKey(tenantIdProp, localTenantPk, localTenantEntity);
                 var pk = entityType.FindPrimaryKey().Properties;
-                entityType.SetPrimaryKey(pk.Append(orgId).ToArray());
+                entityType.SetPrimaryKey(pk.Append(tenantIdProp).ToArray());
 
                 //remove alternatePrimaryKey
-                if (pk.Count() > 1 || pk[0].Name != "Id")
+                if (pk.Count > 1 || pk[0].Name != nameof(Entity<object>.Id))
                     entityType.RemoveKey(pk);
 
-                var idxs = entityType.GetIndexes().Where(x => x.Properties.Count() > 1 || x.Properties[0] != orgId).ToArray();
-                foreach (var idx in idxs)
+                var indexes = entityType.GetIndexes().Where(x => x.Properties.Count > 1 || x.Properties[0] != tenantIdProp).ToArray();
+                foreach (var idx in indexes)
                 {
-                    var newIndex = entityType.AddIndex(idx.Properties.Append(orgId).ToArray());
+                    var newIndex = entityType.AddIndex(idx.Properties.Append(tenantIdProp).ToArray());
                     newIndex.IsUnique = idx.IsUnique;
                     entityType.RemoveIndex(idx.Properties);
                 }
-
-                //Set Global Query
-                var clrType = entityType.ClrType;
-                var method = SetGlobalQueryMethod.MakeGenericMethod(clrType);
-                method.Invoke(this, new object[] { modelBuilder });
             }
 
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
@@ -347,96 +316,56 @@ namespace Tayra.Models.Organizations
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!string.IsNullOrEmpty(DirectConnectionString))
+            if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(DirectConnectionString, b => b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                optionsBuilder.UseSqlServer(TenantInfo.ConnectionString);
             }
-            else
-            {
-                SqlConnection sqlConn = null;
-                try
-                {
-                    // Ask shard map to broker a validated connection for the given key
-                    sqlConn = ShardMapProvider.ShardMap.OpenConnectionForKey(CurrentTenant.ShardingKey, ShardMapProvider.TemplateConnectionString);
-                    sqlConn.Close(); //this lets ef core handle connection instead of manual
 
-                    optionsBuilder.UseSqlServer(sqlConn);
-
-                    optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>(); //TODO: this goes to CogDB as well?
-                }
-                catch (Exception e)
-                {
-                    if (sqlConn != null)
-                        sqlConn?.Close();
-                    throw new CogSecurityException(e.Message, "OrganizationDbcontext.CreateDDRConnection");
-                }
-            }
             base.OnConfiguring(optionsBuilder);
         }
 
         #endregion
 
-        static readonly MethodInfo SetGlobalQueryMethod = typeof(OrganizationDbContext).GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                                                                                      .Single(t => t.IsGenericMethod && t.Name == "SetGlobalQuery");
 
-        public void SetGlobalQuery<T>(ModelBuilder builder) where T : class
+        #region SaveChanges
+        
+        public override int SaveChanges()
         {
-            //if (CurrentTenantId <= 0)//uncomment for tests
-            //    return;
-
-            if (typeof(IArchivableEntity).IsAssignableFrom(typeof(T)))
-            {
-                builder.Entity<T>().HasQueryFilter(e =>
-                    EF.Property<long>(e, ArchivedAtProp) == 0 &&
-                    EF.Property<int>(e, TenantIdFK) == CurrentTenant.ShardingKey);
-            }
-            else
-            {
-                builder.Entity<T>().HasQueryFilter(e => EF.Property<int>(e, TenantIdFK) == CurrentTenant.ShardingKey);
-            }
+            //this.EnforceMultiTenant();
+            this.EnforceMultiTenantOnLocalTenant();
+            return base.SaveChanges();
+        }
+        
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            //this.EnforceMultiTenant();
+            this.EnforceMultiTenantOnLocalTenant();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
-        /// <summary>
-        /// Creates the DDR (Data Dependent Routing) connection.
-        /// </summary>
-        /// <param name="shardMap">The shard map.</param>
-        /// <param name="shardingKey">The sharding key.</param>
-        /// <param name="connectionStr">The Template connection string.</param>
-        /// <returns></returns>
-        // Only static methods are allowed in calls into base class c'tors
-        private static DbContextOptions CreateDDRConnection(ShardMap shardMap, int shardingKey, string connectionStr)
+        
+        public override async System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                // Ask shard map to broker a validated connection for the given key
-                SqlConnection sqlConn = shardMap.OpenConnectionForKey(shardingKey, connectionStr);
-
-
-                //// Set TenantId in SESSION_CONTEXT to shardingKey to enable Row-Level Security filtering
-                //SqlCommand cmd = sqlConn.CreateCommand();
-                //cmd.CommandText = @"exec sp_set_session_context @key=N'OrganizationId', @value=@shardingKey";
-                //cmd.Parameters.AddWithValue("@shardingKey", shardingKey);
-                //cmd.ExecuteNonQuery();
-
-                var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
-                var options = optionsBuilder.UseSqlServer(sqlConn).Options;
-                optionsBuilder.ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactory>(); //TODO: this goes to CogDB as well?
-
-                return options;
-            }
-            catch (Exception e)
-            {
-                throw new CogSecurityException(e.Message, "OrganizationDbcontext.CreateDDRConnection");
-            }
+            //this.EnforceMultiTenant();
+            this.EnforceMultiTenantOnLocalTenant();
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
-        private static DbContextOptions ConfigureDbContextOptions(string connectionString)
+        public override async System.Threading.Tasks.Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            var optionsBuilder = new DbContextOptionsBuilder<OrganizationDbContext>();
-            return optionsBuilder
-                .UseSqlServer(connectionString,
-                    b => b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)).Options;
+            //this.EnforceMultiTenant();
+            this.EnforceMultiTenantOnLocalTenant();
+            return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
-        //TODO: convert these two to use OnConfiguring, what will happen to migrations
+        
+        #endregion
+
+        public static void DatabaseEnsureCreatedAndMigrated(string connectionString)
+        {
+            using var context =
+                new OrganizationDbContext(TenantModel.WithConnectionStringOnly(connectionString), null);
+            context.Database.Migrate();
+        }
     }
 }
