@@ -86,21 +86,27 @@ namespace Tayra.API.Features.Tenants
                     Identifier = tenant.Identifier
                 }, token);
 
-                await new Tayra.Services._Models.Identities.IdentitiesService().SendInvitation(tenantDb, catalogDb,
-                    tenant.Identifier, new IdentityInviteDTO
-                    {
-                        Role = ProfileRoles.Admin,
-                        EmailAddress = emailAddress
-                    });
-                
-                await tenantDb.SaveChangesAsync(token);
-                
                 EssentialSeeds.AddEssentialSeeds(tenantDb);
                 new SegmentsService(null, tenantDb).Create(null, ProfileRoles.Admin, new SegmentCreateDTO
                 {
                     Name = "Segment 1",
                     Key = "S1"
                 });
+                
+                await tenantDb.SaveChangesAsync(token);
+
+                var segmentId = tenantDb.Segments.Select(x => x.Id).FirstOrDefault();
+                var teamId = tenantDb.Teams.Select(x => x.Id).FirstOrDefault();
+                
+                await new Tayra.Services._Models.Identities.IdentitiesService().SendInvitation(tenantDb, catalogDb,
+                    tenant.Identifier, new IdentityInviteDTO
+                    {
+                        Role = ProfileRoles.Admin,
+                        EmailAddress = emailAddress,
+                        SegmentId = segmentId,
+                        TeamId = teamId
+                    });
+
                 await tenantDb.SaveChangesAsync(token);
             }
         }      
