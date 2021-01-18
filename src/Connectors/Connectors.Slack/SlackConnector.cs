@@ -118,10 +118,10 @@ namespace Tayra.Connectors.Slack
 
         public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
 
-        public SlackMessageResponseDto SendSlackMessage(Guid integrationId, string message,string receiverId)
+        public SlackMessageResponseDto SendSlackMessage(Guid integrationId, SlackMessageRequestDto slackMessageRequestDto)
         {
             var accessToken = ReadAccessToken(integrationId);
-            return SlackService.SendSlackMessage(accessToken, receiverId, message).Data;
+            return SlackService.SendSlackMessage(accessToken, slackMessageRequestDto).Data;
         }
         #endregion
     }
