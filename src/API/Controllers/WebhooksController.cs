@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Slack;
+using Tayra.Connectors.Slack.DTOs;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.Contracts;
@@ -74,10 +75,11 @@ namespace Tayra.API.Controllers
 
         [HttpPost("test")]
         [AllowAnonymous]
-        public ActionResult TestMethods([FromQuery] string id, [FromQuery] string message)
+        public ActionResult TestMethods([FromQuery] string id, [FromBody] SlackMessageRequestDto requestDto)
         { 
-            var res = SlackService.SendSlackMessage("xoxb-698826045604-1117671360278-zB1nNQLCkjI3iR8qXuvZGM7E", id, message);
-            return Ok(res);
+            var res = SlackService.SendSlackMessage("xoxb-698826045604-1117671360278-zB1nNQLCkjI3iR8qXuvZGM7E",requestDto);
+            Console.WriteLine(res.Data);
+            return Ok(res.Data);
         }
         
         #endregion

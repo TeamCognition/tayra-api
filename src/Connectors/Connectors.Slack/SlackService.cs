@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RestSharp;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.Slack.DTOs;
@@ -43,17 +44,15 @@ namespace Tayra.Connectors.Slack
             return client.Execute<UsersListResponse>(request);
         }
 
-        public static IRestResponse<SlackMessageResponseDto> SendSlackMessage(string botToken,string receiverId, string message)
+        public static IRestResponse<SlackMessageResponseDto> SendSlackMessage(string botToken,SlackMessageRequestDto requestDto)
         {
-            var client = new RestClient(BASE_REST_URL);
+            Console.WriteLine(" hej before any thing");
+            var client = new RestClient(BASE_REST_URL).UseSerializer((() => new JsonNetSerializer()));
             var request = new RestRequest(POST_MESSAGE, Method.POST);
             request.AddHeader("Authorization", $"Bearer {botToken}");
-            request.AddHeader("Content-type", "application/json");
-            request.AddParameter("channel", receiverId);
-            request.AddParameter("text", message);
-
-            request.RequestFormat = DataFormat.Json;
-
+            request.AddHeader("Content-type", "application/json;charset=UTF-8");
+            request.AddJsonBody(requestDto);
+            request.RequestFormat = DataFormat.Json; 
             return client.Execute<SlackMessageResponseDto>(request);
         }
         
