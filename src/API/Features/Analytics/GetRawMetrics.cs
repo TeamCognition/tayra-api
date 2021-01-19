@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Cog.Core;
@@ -15,12 +16,12 @@ namespace Tayra.API.Features.Analytics
     public partial class AnalyticsController
     {
         [HttpGet("rawMetrics")]
-        public async Task<GetRawMetrics.Result> GetRawMetrics([FromQuery] int m, [FromQuery]string period, [FromQuery] GetRawMetrics.Query query)
+        public async Task<GetRawMetrics.Result> GetRawMetrics([FromQuery] int m, [FromQuery]string period, [FromQuery] Guid entityId, EntityTypes entityType)
         {
             var metricType = MetricType.FromValue(m) as PureMetric;
             var datePeriod = new DatePeriod(period);
             
-            return await _mediator.Send(query with {MetricType = metricType, Period = datePeriod});
+            return await _mediator.Send(new GetRawMetrics.Query() with {MetricType = metricType, Period = datePeriod, EntityId = entityId, EntityType = entityType});
         }
     }
     
@@ -28,9 +29,11 @@ namespace Tayra.API.Features.Analytics
     {
         public record Query : IRequest<Result>
         {
+            [JsonIgnore]
             public PureMetric MetricType { get; init; }
             public Guid EntityId { get; init; }
             public EntityTypes EntityType { get; init; }
+            [JsonIgnore]
             public DatePeriod Period { get; init; }
         }
 

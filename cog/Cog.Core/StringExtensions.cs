@@ -103,5 +103,11 @@ namespace Cog.Core
 
             return char.ToLowerInvariant(input[0]) + input.Substring(1);
         }
+        
+        public static string ToCamelCase(this string value)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return char.ToLowerInvariant(value[0]) + value.Substring(1);
+        }
     }
 }

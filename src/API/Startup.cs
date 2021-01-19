@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using AutoMapper;
 using Cog.Core;
 using Finbuckle.MultiTenant;
@@ -169,7 +170,7 @@ namespace Tayra.API
             string FilePath = "wwwroot";
             Directory.CreateDirectory(FilePath);
             app.UseImageSharp();
-
+            
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -179,13 +180,13 @@ namespace Tayra.API
             {
                 endpoints.MapControllers();
             });
-
+            
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tayra API V1");
                 c.RoutePrefix = string.Empty;
             });
-
+            
             //orgService.EnsureOrganizationsAreCreatedAndMigrated();
             //catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
         }
@@ -194,11 +195,9 @@ namespace Tayra.API
 
         private static void ConfigureSwagger(IServiceCollection services)
         {
-            services.AddSwaggerGenNewtonsoftSupport();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Tayra API", Version = "v1" });
-
                 c.CustomSchemaIds(type =>
                 {
                     if (type.IsNested)
