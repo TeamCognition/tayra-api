@@ -79,7 +79,7 @@ namespace Tayra.API.Controllers
         [HttpPost("invitation")]
         public IActionResult SendInvitation([FromBody] IdentityInviteDTO dto)
         {
-            IdentitiesService.CreateInvitation(HttpContext.GetMultiTenantContext<TenantModel>()?.TenantInfo.Identifier, dto);
+            IdentitiesService.CreateInvitation(HttpContext.GetMultiTenantContext<Tenant>()?.TenantInfo.Identifier, dto);
 
             DbContext.SaveChanges();
             return Ok();
@@ -88,7 +88,7 @@ namespace Tayra.API.Controllers
         [HttpPost("resendInvitation/{invitationId:int}")]
         public IActionResult ResendInvitation([FromRoute] Guid invitationId)
         {
-            IdentitiesService.ResendInvitation(HttpContext.GetMultiTenantContext<TenantModel>()?.TenantInfo.Identifier, invitationId);
+            IdentitiesService.ResendInvitation(HttpContext.GetMultiTenantContext<Tenant>()?.TenantInfo.Identifier, invitationId);
 
             DbContext.SaveChanges();
             return Ok();

@@ -20,7 +20,7 @@ namespace Tayra.Connectors.Common
         protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : this(logger, dataContext, catalogDbContext)
         {
             HttpContext = httpContext?.HttpContext;
-            TenantInfo = HttpContext.GetMultiTenantContext<TenantModel>()?.TenantInfo;
+            TenantInfo = HttpContext.GetMultiTenantContext<Tenant>()?.TenantInfo;
         }
 
         protected BaseConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext)

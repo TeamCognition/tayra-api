@@ -62,6 +62,7 @@ namespace Tayra.Services
                 {
                     Id = x.Id,
                     SegmentId = x.SegmentId,
+                    Status = x.Status,
                     Type = x.Type,
                     ExternalId = x.ProfileId != null ? x.Fields.Where(e => e.Key == Constants.PROFILE_EXTERNAL_ID).Select(e => e.Value).FirstOrDefault() : null
                 })
@@ -86,6 +87,7 @@ namespace Tayra.Services
                 {
                     Type = x.Type,
                     Created = x.Created,
+                    Status = x.Status,
                     LastModified = x.LastModified ?? x.Created,
                     MembersCount = DbContext.Integrations.Where(y => y.Type == x.Type && y.SegmentId == segment.Id && x.ProfileId != null).GroupBy(y => y.ProfileId).Count()
                 })
@@ -166,8 +168,10 @@ namespace Tayra.Services
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + project.Id, Value = rewardStatus });
             }
 
+            integration.Status = integration.Fields.Any(x => x.Key == ATConstants.ATJ_PROJECT_ID) ? IntegrationStatuses.Connected : IntegrationStatuses.NeedsConfiguration;
+            
             DbContext.SaveChanges();
-
+            
             if (dto.PullTasksForNewProjects)
             {
                 using (HttpClient client = new HttpClient())

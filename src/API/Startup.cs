@@ -187,8 +187,7 @@ namespace Tayra.API
                 c.RoutePrefix = string.Empty;
             });
             
-            //orgService.EnsureOrganizationsAreCreatedAndMigrated();
-            //catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
+            catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
         }
 
         #region Private Methods

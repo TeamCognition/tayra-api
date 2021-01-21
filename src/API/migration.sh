@@ -1,4 +1,4 @@
-dotnet ef migrations add TenantOnboarding --project="../DAL/OrganizationModel" --context="OrganizationDbContext"
+dotnet ef migrations add AddIntegrationStatus --project="../DAL/OrganizationModel" --context="OrganizationDbContext"
 
 dotnet ef migrations add Initial --project="../DAL/OrganizationModel" --context="OrganizationDbContext"
 

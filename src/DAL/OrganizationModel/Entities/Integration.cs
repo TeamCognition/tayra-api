@@ -14,6 +14,7 @@ namespace Tayra.Models.Organizations
         public virtual Segment Segment { get; set; }
 
         public IntegrationType Type { get; set; }
+        public IntegrationStatuses Status { get; set; }
 
         public virtual ICollection<IntegrationField> Fields { get; set; }
 

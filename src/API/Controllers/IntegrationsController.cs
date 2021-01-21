@@ -43,7 +43,7 @@ namespace Tayra.API.Controllers
                 throw new ApplicationException("You have to provide returnPath");
             }
 
-            var tenantInfo = HttpContext.GetMultiTenantContext<TenantModel>()?.TenantInfo;
+            var tenantInfo = HttpContext.GetMultiTenantContext<Tenant>()?.TenantInfo;
             
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             return Redirect(connector.GetAuthUrl(
