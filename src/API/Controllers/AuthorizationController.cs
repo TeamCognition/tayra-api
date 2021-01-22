@@ -148,11 +148,17 @@ namespace Tayra.API.Controllers
                 claims.AddClaim(TayraClaimTypes.Role, profile.Role.ToString(),
                     OpenIddictConstants.Destinations.AccessToken);
 
-                claims.AddClaims(qs.Select(s => new Claim(TayraClaimTypes.Segment, s.Id.ToString(),
-                    OpenIddictConstants.Destinations.AccessToken)));
-                claims.AddClaims(qt.Select(t =>
-                    new Claim(TayraClaimTypes.Team, t.Id.ToString(), OpenIddictConstants.Destinations.AccessToken)));
-
+                foreach (var segment in qs)
+                {
+                    claims.AddClaim(TayraClaimTypes.Segment, segment.Id.ToString(),
+                        OpenIddictConstants.Destinations.AccessToken);
+                }
+                foreach (var team in qt)
+                {
+                    claims.AddClaim(TayraClaimTypes.Team, team.Id.ToString(),
+                        OpenIddictConstants.Destinations.AccessToken);
+                }
+                
                 try
                 {
                     orgContext.Add(new LoginLog

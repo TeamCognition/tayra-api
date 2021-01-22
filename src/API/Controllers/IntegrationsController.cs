@@ -4,6 +4,7 @@ using Cog.Core;
 using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using Tayra.API.Helpers;
@@ -51,15 +52,15 @@ namespace Tayra.API.Controllers
         }
 
         [HttpGet, Route("settings/atj")]
-        public ActionResult<JiraSettingsViewDTO> GetJiraSettings()
+        public ActionResult<JiraSettingsViewDTO> GetJiraSettings([FromServices]IConfiguration config)
         {
-            return IntegrationsService.GetJiraSettingsViewDTO("api.tayra.io", CurrentUser.CurrentTenantIdentifier, CurrentSegment.Id);
+            return IntegrationsService.GetJiraSettingsViewDTO("api.tayra.io", CurrentUser.CurrentTenantIdentifier, CurrentSegment.Id, config);
         }
 
         [HttpPost, Route("settings/atj")]
-        public ActionResult SetJiraSettings([FromBody] JiraSettingsUpdateDTO dto)
+        public ActionResult SetJiraSettings([FromBody] JiraSettingsUpdateDTO dto, [FromServices]IConfiguration config)
         {
-            IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantIdentifier, dto);
+            IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantIdentifier, dto, config);
             // SyncIssuesLoader.PullIssuesNew(DbContext, DateTime.UtcNow, TasksService, ProfilesService,
             //     JObject.FromObject(new { tenantKey = CurrentUser.CurrentTenantKey, @params = new { jiraProjectId = dto.ActiveProjects.FirstOrDefault().ProjectId }}));
             DbContext.SaveChanges();

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -48,14 +49,12 @@ namespace Tayra.API.Controllers
 
         [HttpPost("atjissueupdate")]
         [AllowAnonymous]
-        public ActionResult JiraIssueUpdate([FromBody] JObject jObject)
+        public ActionResult JiraIssueUpdate([FromBody] JObject jObject, [FromServices]IConfiguration config)
         {
             SaveWebhookEventLog(jObject, IntegrationType.ATJ);
             JiraWebhookEvent we = jObject.ToObject<JiraWebhookEvent>();
 
-            TaskConverterJira taskConverter = new TaskConverterJira(
-                DbContext,
-                we);
+            TaskConverterJira taskConverter = new TaskConverterJira(DbContext, we, config);
             if (TaskHelpers.DoStandardStuff(taskConverter, TasksService, TokensService, LogsService, AssistantService))
             {
                 DbContext.SaveChanges();

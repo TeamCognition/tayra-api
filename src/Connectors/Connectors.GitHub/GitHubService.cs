@@ -4,6 +4,7 @@ using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using Microsoft.Extensions.Configuration;
 using RestSharp;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub.Helper;
@@ -29,7 +30,7 @@ namespace Tayra.Connectors.GitHub
         private const string CREATE_REPOSITORY_WEBHOOK = "/repos/{0}/{1}/hooks";
         private const string GET_LIST_ORGANIZATIONS = "/organizations";
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
-        public static IRestResponse<TokenResponse> GetUserAccessToken(string authorizationCode, string redirectUrl)
+        public static IRestResponse<TokenResponse> GetUserAccessToken(IConfiguration config, string authorizationCode, string redirectUrl)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
             request.AddParameter("client_id", CLIENT_ID);

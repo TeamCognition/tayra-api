@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tayra.Services.Models.Profiles;
@@ -20,12 +21,15 @@ namespace Tayra.SyncServices
     {
         #region Constructor
 
-        public ATJIssueUpdateLoader(LogService logService, CatalogDbContext catalogDb) : base(logService, catalogDb)
+        public ATJIssueUpdateLoader(LogService logService, CatalogDbContext catalogDb, IConfiguration config) : base(logService, catalogDb)
         {
+            Config = config;
         }
 
         #endregion
 
+        protected IConfiguration Config;
+        
         #region Public Methods
 
         public override void Execute(DateTime date, JObject requestBody, params Tenant[] tenants)
@@ -35,7 +39,7 @@ namespace Tayra.SyncServices
                 LogService.SetOrganizationId(tenant.Identifier);
                 using (var organizationDb = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null))
                 {
-                    IssueUpdate(organizationDb, date, LogService, requestBody);
+                    IssueUpdate(organizationDb, date, LogService, requestBody, Config);
                 }
             }
         }
@@ -46,7 +50,7 @@ namespace Tayra.SyncServices
             organizationDb.SaveChanges();
         }
 
-        public static void IssueUpdate(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, JObject requestBody)
+        public static void IssueUpdate(OrganizationDbContext organizationDb, DateTime fromDay, LogService logService, JObject requestBody, IConfiguration config)
         {
             SaveWebhookEventLog(organizationDb, requestBody);
             JiraWebhookEvent we = requestBody.ToObject<JiraWebhookEvent>();
@@ -70,7 +74,7 @@ namespace Tayra.SyncServices
                             .IntegrationFields
                             .LastOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
 
-            var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null);
+            var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null, config);
             var statusChangelogs = jiraConnector.GetIssueChangelog(rewardStatusField.IntegrationId, we.JiraIssue.Key, "status");
 
             if (statusChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(we.Timestamp))

@@ -7,6 +7,7 @@ using System.Text;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using MoreLinq;
 using Newtonsoft.Json;
 using Tayra.Common;
@@ -96,7 +97,7 @@ namespace Tayra.Services
                 .ToList();
         }
 
-        public JiraSettingsViewDTO GetJiraSettingsViewDTO(string webhookServerUrl, string tenantKey, Guid segmentId)
+        public JiraSettingsViewDTO GetJiraSettingsViewDTO(string webhookServerUrl, string tenantKey, Guid segmentId, IConfiguration config)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
@@ -107,7 +108,7 @@ namespace Tayra.Services
                 throw new ApplicationException("No Jira integration associated with segment " + segmentId);
             }
 
-            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, config);
 
             var allProjects = jiraConnector.GetProjects(integration.Id);
             foreach (var x in allProjects)
@@ -134,7 +135,7 @@ namespace Tayra.Services
             };
         }
 
-        public async void UpdateJiraSettingsWithSaveChanges(Guid segmentId, string organizationKey, JiraSettingsUpdateDTO dto)
+        public async void UpdateJiraSettingsWithSaveChanges(Guid segmentId, string organizationKey, JiraSettingsUpdateDTO dto, IConfiguration config)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
@@ -152,7 +153,7 @@ namespace Tayra.Services
 
             fields.ToList().ForEach(x => DbContext.Remove(x));
 
-            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, config);
             var allProjects = jiraConnector.GetProjects(integration.Id);
 
             foreach (var s in dto.ActiveProjects)

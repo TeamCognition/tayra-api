@@ -5,6 +5,7 @@ using Cog.DAL;
 using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 using Tayra.Common;
@@ -17,18 +18,19 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : this(logger, dataContext, catalogDbContext)
+        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : this(logger, dataContext, catalogDbContext, config)
         {
             HttpContext = httpContext?.HttpContext;
             TenantInfo = HttpContext.GetMultiTenantContext<Tenant>()?.TenantInfo;
         }
 
-        protected BaseConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext)
+        protected BaseConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config)
         {
             Logger = logger;
             OrganizationContext = dataContext;
             CatalogContext = catalogDbContext;
             TenantInfo = dataContext.TenantInfo;
+            Config = config;
         }
 
         #endregion
@@ -43,6 +45,7 @@ namespace Tayra.Connectors.Common
         protected ITenantInfo TenantInfo { get; }
         protected OrganizationDbContext OrganizationContext { get; }
         protected CatalogDbContext CatalogContext { get; }
+        protected IConfiguration Config { get; }
 
         #endregion
 

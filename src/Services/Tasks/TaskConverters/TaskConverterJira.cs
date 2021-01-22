@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Cog.Core;
+using Microsoft.Extensions.Configuration;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
@@ -13,31 +14,31 @@ namespace Tayra.Services.TaskConverters
         protected JiraWebhookEvent We;
         public TaskConverterJira(OrganizationDbContext dbContext,
                                  JiraWebhookEvent we,
+                                 IConfiguration config,
                                  TaskConverterMode mode = TaskConverterMode.NORMAL)
                                  : base(dbContext)
         {
-            Init(we, mode);
+            We = we;
+            Mode = mode;
+            Config = config;
         }
 
         public TaskConverterJira(OrganizationDbContext dbContext,
                                  JiraIssue jiraIssue,
+                                 IConfiguration config,
                                  TaskConverterMode mode = TaskConverterMode.NORMAL)
                                  : base(dbContext)
         {
-            Init(new JiraWebhookEvent { JiraIssue = jiraIssue }, mode);
-        }
-
-        private void Init(JiraWebhookEvent we, TaskConverterMode mode)
-        {
-            We = we;
+            We = new JiraWebhookEvent { JiraIssue = jiraIssue };
             Mode = mode;
+            Config = config;
         }
-
+        
         public override bool ShouldBeProcessed()
         {
             if (Mode == TaskConverterMode.NORMAL)
             {
-                var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
+                var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, Config);
                 var issueChangelogs = jiraConnector.GetIssueChangelog(GetRewardStatus().IntegrationId, GetExternalId(), "status");
                 //maybe not needed anymore
                 if (issueChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(We.Timestamp))
@@ -128,7 +129,7 @@ namespace Tayra.Services.TaskConverters
             if (Mode == TaskConverterMode.TEST)
                 return (DateHelper2.ToDateId(We.JiraIssue.Fields.StatusCategoryChangeDate), (int?)null);
 
-            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, Config);
             Guid? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
             if (!integrationId.HasValue)
             {

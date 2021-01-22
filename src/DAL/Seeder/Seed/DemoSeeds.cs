@@ -267,9 +267,10 @@ namespace Tayra.Models.Seeder.DemoSeeds
                                 Timespent = t.TimeSpentInMinutes * 60,
                                 Assignee = new JiraUser
                                 {
-                                    AccountId = "External-" + demoData.Profiles[rnd.Next(demoData.Profiles.Length)].Id // lenght-1??
+                                    AccountId = "External-" +
+                                                demoData.Profiles[rnd.Next(demoData.Profiles.Length)].Id // lenght-1??
                                 },
-                                Labels = new string[] { "label-1", "label-2" },
+                                Labels = new string[] {"label-1", "label-2"},
                                 StatusCategoryChangeDate = DateHelper2.ParseDate(t.LastModifiedDateId),
                                 Priority = new JiraPriority
                                 {
@@ -283,6 +284,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                             Self = "https://jira.com/filler_because_we_need_characters"
                         }
                     },
+                    config: null,
                     TaskConverterMode.TEST
                 );
                 TaskHelpers.DoStandardStuff(taskConverter, TasksService, TokensService, LogsService, AdvisorService);

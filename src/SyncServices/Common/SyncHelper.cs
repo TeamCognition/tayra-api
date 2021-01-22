@@ -91,10 +91,10 @@ namespace Tayra.SyncServices.Common
                     return new MakeActionPointsLoader(logService, coreDatabase);
 
                 case JobTypes.SyncIssues:
-                    return new SyncIssuesLoader(logService, coreDatabase);
+                    return new SyncIssuesLoader(logService, coreDatabase, config);
 
                 case JobTypes.WebHookATJIssueUpdate:
-                    return new ATJIssueUpdateLoader(logService, coreDatabase);
+                    return new ATJIssueUpdateLoader(logService, coreDatabase, config);
             }
 
             throw new NotSupportedException($"{jobTypes} integration are not supported");

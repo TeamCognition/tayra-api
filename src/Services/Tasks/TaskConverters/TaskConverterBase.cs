@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Tayra.Services.Models.Profiles;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
@@ -20,6 +21,7 @@ namespace Tayra.Services.TaskConverters
     public abstract class TaskConverterBase
     {
         protected TaskConverterMode Mode;
+        protected IConfiguration Config;
         protected OrganizationDbContext DbContext;
         protected ProfileAssignment CachedProfileAssignment;
         protected Guid? IntegrationIdCache;
