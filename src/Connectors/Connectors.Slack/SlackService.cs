@@ -49,14 +49,19 @@ namespace Tayra.Connectors.Slack
 
         public static IRestResponse<SlackMessageResponseDto> SendSlackMessage(string botToken,SlackMessageRequestDto requestDto)
         {
-            Console.WriteLine(" hej before any thing");
             var client = new RestClient(BASE_REST_URL).UseSerializer((() => new JsonNetSerializer()));
             var request = new RestRequest(POST_MESSAGE, Method.POST);
             request.AddHeader("Authorization", $"Bearer {botToken}");
             request.AddHeader("Content-type", "application/json;charset=UTF-8");
             request.AddJsonBody(requestDto);
-            request.RequestFormat = DataFormat.Json; 
-            return client.Execute<SlackMessageResponseDto>(request);
+            request.RequestFormat = DataFormat.Json;
+            var response = client.Execute<SlackMessageResponseDto>(request);
+            if (response.Data.Ok == false)
+            {
+                throw new ApplicationException(response.Data.Error);
+            }
+
+            return response;
         }
         
 
