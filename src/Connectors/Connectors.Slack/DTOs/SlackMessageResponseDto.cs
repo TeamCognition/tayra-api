@@ -10,11 +10,13 @@ namespace Tayra.Connectors.Slack.DTOs
         public string Channel { get; set; }
         
         [JsonProperty("message")]
-        public Message ResMessage { get; set; }
+        public ResMessage Message { get; set; }
         
-        public class Message
+        public class ResMessage
         {
-            public string Username { get; set; }
+            [JsonProperty("user")]
+            public string User { get; set; }
+            [JsonProperty("text")]
             public string Text { get; set; }
 
         }
