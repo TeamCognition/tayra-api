@@ -15,6 +15,10 @@ namespace Tayra.Connectors.GitHub
 {
     public class GitHubConnector : BaseOAuthConnector
     {
+        private const string CONFIG_APP_ID = "Connectors.Github.AppId";
+        private const string CONFIG_APP_RSAKEY = "Connectors.Github.AppRsaKey";
+        private const string CONFIG_CLIENT_ID = "Connectors.Github.ClientId";
+        private const string CONFIG_CLIENT_SECRET = "Connectors.Github.ClientSecret";
         private const string SEGMENT_AUTH_URL = "https://github.com/apps/tayra-app/installations/new";
         private const string PROFILE_AUTH_URL = "https://github.com/login/oauth/authorize";
 
@@ -34,7 +38,7 @@ namespace Tayra.Connectors.GitHub
         {
             return state.IsSegmentAuth
                 ? $"{SEGMENT_AUTH_URL}?state={state}"
-                : $"{PROFILE_AUTH_URL}?client_id={GitHubService.CLIENT_ID}&state={state}";
+                : $"{PROFILE_AUTH_URL}?client_id={Config[CONFIG_CLIENT_ID]}&state={state}";
         }
 
         public override Integration Authenticate(OAuthState state)
@@ -48,7 +52,7 @@ namespace Tayra.Connectors.GitHub
                     throw new ApplicationException(errorDescription);
                 }
 
-                var userTokenData = GitHubService.GetUserAccessToken(Config, code, GetCallbackUrl(state.ToString()))?.Data;
+                var userTokenData = GitHubService.GetUserAccessToken(Config[CONFIG_CLIENT_ID], Config[CONFIG_CLIENT_SECRET], code, GetCallbackUrl(state.ToString()))?.Data;
                 var loggedInUser = GitHubService.GetLoggedInUser(userTokenData.TokenType, userTokenData.AccessToken);
 
                 var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
@@ -71,9 +75,9 @@ namespace Tayra.Connectors.GitHub
                 if (state.IsSegmentAuth && userTokenData != null)
                 {
                     var installations = GitHubService.GetUserInstallations(userTokenData.TokenType, userTokenData.AccessToken);
-                    var installation = Utils.FindTayraAppInstallation(installations?.Data.Installations, Config["Connectors.Github.AppId"]);
+                    var installation = Utils.FindTayraAppInstallation(installations?.Data.Installations, Config[CONFIG_APP_ID]);
                     var installationId = installation.Id;
-                    var installationToken = GitHubService.GetInstallationAccessToken(installationId, Config["Connectors.Github.AppId"], Config["Connectors.Github.AppRsaKey"])?.Data.AccessToken;
+                    var installationToken = GitHubService.GetInstallationAccessToken(installationId, Config[CONFIG_APP_ID], Config[CONFIG_APP_RSAKEY])?.Data.AccessToken;
 
                     var repositories = GitHubService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
 
@@ -112,7 +116,7 @@ namespace Tayra.Connectors.GitHub
 
         public override void UpdateAuthentication(string installationId)
         {
-            var installationToken = GitHubService.GetInstallationAccessToken(installationId, Config["Connectors.Github.AppId"], Config["Connectors.Github.AppRsaKey"])?.Data.AccessToken; ;
+            var installationToken = GitHubService.GetInstallationAccessToken(installationId, Config[CONFIG_APP_ID], Config[CONFIG_APP_RSAKEY])?.Data.AccessToken; ;
 
             var repositories = GitHubService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
 

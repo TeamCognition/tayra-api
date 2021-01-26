@@ -17,7 +17,7 @@ namespace Tayra.API.Features.Profile
 {
     public partial class ProfilesController
     {
-        [HttpGet("heatStream/{profileId:int}")]
+        [HttpGet("heatStream/{profileId}")]
         public async Task<GetHeatStream.Result> GetProfileHeatStream([FromUri]Guid profileId)
             => await _mediator.Send(new GetHeatStream.Query { ProfileId = profileId});
     }

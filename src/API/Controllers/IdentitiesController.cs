@@ -85,7 +85,7 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPost("resendInvitation/{invitationId:int}")]
+        [HttpPost("resendInvitation/{invitationId}")]
         public IActionResult ResendInvitation([FromRoute] Guid invitationId)
         {
             IdentitiesService.ResendInvitation(HttpContext.GetMultiTenantContext<Tenant>()?.TenantInfo.Identifier, invitationId);
@@ -109,7 +109,7 @@ namespace Tayra.API.Controllers
             return invitation;
         }
 
-        [HttpDelete("invitation/{invitationId:int}")]
+        [HttpDelete("invitation/{invitationId}")]
         public IActionResult DeleteInvitation([FromRoute] Guid invitationId)
         {
             IdentitiesService.DeleteInvitation(invitationId);
@@ -172,7 +172,7 @@ namespace Tayra.API.Controllers
             return IdentitiesService.GetIdentityManageGridData(CurrentUser.ProfileId, CurrentUser.Role, gridParams);
         }
 
-        [HttpGet("manage/assigns/{profileId:int}")]
+        [HttpGet("manage/assigns/{profileId}")]
         public ActionResult<IdentityManageAssignsDTO> GetManageTeamAssignData([FromRoute] Guid profileId)
         {
             if (profileId == CurrentUser.ProfileId)
@@ -183,7 +183,7 @@ namespace Tayra.API.Controllers
             return IdentitiesService.GetIdentityManageAssignsData(CurrentUser.SegmentsIds, profileId);
         }
 
-        [HttpPut("manage/changeRole/{profileId:int}")]
+        [HttpPut("manage/changeRole/{profileId}")]
         public IActionResult ChangeProfile([FromRoute] Guid profileId, [FromBody] ProfileRoles toRole)
         {
             IdentitiesService.ChangeProfileRole(CurrentUser.Role, profileId, toRole);
@@ -192,7 +192,7 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("manage/archive/{profileId:int}")]
+        [HttpDelete("manage/archive/{profileId}")]
         public IActionResult ArchiveProfile([FromRoute] Guid profileId)
         {
             IdentitiesService.ArchiveProfile(CurrentUser.Role, profileId);

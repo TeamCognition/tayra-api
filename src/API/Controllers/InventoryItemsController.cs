@@ -21,7 +21,7 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpGet("{inventoryItemId:int}")]
+        [HttpGet("{inventoryItemId}")]
         public ActionResult<InventoryItemViewDTO> GetInventoryItem([FromRoute] Guid inventoryItemId)
         {
             return Ok(InventoriesService.GetInventoryItemViewDTO(inventoryItemId));

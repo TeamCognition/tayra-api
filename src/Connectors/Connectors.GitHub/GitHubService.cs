@@ -14,9 +14,6 @@ namespace Tayra.Connectors.GitHub
     public static class GitHubService
     {
         #region Constants
-        public const string CLIENT_ID = "Iv1.8aa19d523bcef4dd";
-        public const string CLIENT_SECRET = "24bbd04c4a071a1298f1dd96b547d3054ef4534a";
-
         private const string BASE_AUTH_URL = "https://github.com/login/oauth";
         private const string ACCESS_TOKEN_URL = "/access_token";
 
@@ -30,11 +27,11 @@ namespace Tayra.Connectors.GitHub
         private const string CREATE_REPOSITORY_WEBHOOK = "/repos/{0}/{1}/hooks";
         private const string GET_LIST_ORGANIZATIONS = "/organizations";
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
-        public static IRestResponse<TokenResponse> GetUserAccessToken(IConfiguration config, string authorizationCode, string redirectUrl)
+        public static IRestResponse<TokenResponse> GetUserAccessToken(string clientId, string clientSecret, string authorizationCode, string redirectUrl)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", CLIENT_ID);
-            request.AddParameter("client_secret", CLIENT_SECRET);
+            request.AddParameter("client_id", clientId);
+            request.AddParameter("client_secret", clientSecret);
             request.AddParameter("code", authorizationCode);
             request.AddParameter("redirect_uri", redirectUrl);
             //request.AddParameter("state", The unguessable random string you provided in Step 1.);
@@ -59,11 +56,11 @@ namespace Tayra.Connectors.GitHub
             return client.Execute<InstallationTokenResponse>(request);
         }
         //developer.github.com/apps/building-github-apps/refreshing-user-to-server-access-tokens/
-        public static IRestResponse<TokenResponse> RefreshAccessToken(string refreshToken)
+        public static IRestResponse<TokenResponse> RefreshAccessToken(string clientId, string clientSecret, string refreshToken)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", CLIENT_ID);
-            request.AddParameter("client_secret", CLIENT_SECRET);
+            request.AddParameter("client_id", clientId);
+            request.AddParameter("client_secret", clientSecret);
             request.AddParameter("refresh_token", refreshToken);
             request.AddParameter("grant_type", "refresh_token");
 

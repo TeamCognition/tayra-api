@@ -36,7 +36,7 @@ namespace Tayra.API.Controllers
             return ReportsService.GetReportStatus(CurrentUser.SegmentsIds);
         }
 
-        [HttpPost("unlock/{segmentId:int}")]
+        [HttpPost("unlock/{segmentId}")]
         public IActionResult UnlockReporting(Guid segmentId)
         {
             ReportsService.UnlockReporting(CurrentUser.CurrentTenantIdentifier, segmentId);

@@ -60,7 +60,7 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPut("{teamId:int}/update")]
+        [HttpPut("{teamId}/update")]
         public IActionResult UpdateTeam([FromRoute] Guid teamId, [FromBody] TeamUpdateDTO dto)
         {
             TeamsService.Update(teamId, dto);

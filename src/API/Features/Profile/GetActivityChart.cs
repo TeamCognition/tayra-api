@@ -15,7 +15,7 @@ namespace Tayra.API.Features.Profile
 {
     public partial class ProfilesController
     {
-        [HttpGet("activityChart/{profileId:int}")]
+        [HttpGet("activityChart/{profileId}")]
         public async Task<GetActivityChart.Result[]> GetActivityChart([FromUri] Guid profileId)
             => await _mediator.Send(new GetActivityChart.Query { ProfileId = CurrentUser.ProfileId});
     }

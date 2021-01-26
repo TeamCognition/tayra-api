@@ -21,7 +21,7 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpGet("{itemId:int}")]
+        [HttpGet("{itemId}")]
         public ActionResult<ItemViewDTO> GetItem([FromRoute] Guid itemId)
         {
             return Ok(ItemsService.GetItemViewDTO(CurrentUser.Role, itemId));
@@ -51,7 +51,7 @@ namespace Tayra.API.Controllers
             return Ok(new { Id = item.Id });
         }
 
-        [HttpDelete("{itemId:int}")]
+        [HttpDelete("{itemId}")]
         public IActionResult DeleteItem([FromRoute] Guid itemId)
         {
             ItemsService.DeleteItem(itemId);

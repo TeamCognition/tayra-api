@@ -132,7 +132,7 @@ namespace Tayra.API.Controllers
             return new TableData(metricType.TypeOfRawMetric, metricType.GetRawMetrics(DbContext, datePeriod, entityId, EntityTypes.Segment));
         }
 
-        [HttpGet("statsWidget/{segmentId:int}")]
+        [HttpGet("statsWidget/{segmentId}")]
         public ActionResult<SegmentStatsDTO> GetSegmentStats(Guid segmentId)
         {
             return SegmentsService.GetSegmentStats(segmentId);

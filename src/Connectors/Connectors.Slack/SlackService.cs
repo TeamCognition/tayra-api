@@ -7,19 +7,16 @@ namespace Tayra.Connectors.Slack
     public static class SlackService
     {
         #region Constants
-
-        public const string CLIENT_ID = "698826045604.1130569857540";
-        public const string CLIENT_SECRET = "14642ab9d50d2c898ef0720b4072c7ab";
-
+        
         private const string BASE_REST_URL = "https://slack.com/api";
         private const string GET_ACCESS_TOKEN = "/oauth.v2.access";
         private const string GET_USERS_LIST = "/users.list";
 
-        public static IRestResponse<TokenResponse> ExchangeCodeForAccessToken(string code, string redirectUrl)
+        public static IRestResponse<TokenResponse> ExchangeCodeForAccessToken(string clientId, string clientSecret, string code, string redirectUrl)
         {
             var request = new RestRequest(GET_ACCESS_TOKEN, Method.POST);
-            request.AddParameter("client_id", CLIENT_ID);
-            request.AddParameter("client_secret", CLIENT_SECRET);
+            request.AddParameter("client_id", clientId);
+            request.AddParameter("client_secret", clientSecret);
             request.AddParameter("code", code);
             request.AddParameter("redirect_uri", redirectUrl);
 

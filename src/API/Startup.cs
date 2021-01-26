@@ -46,6 +46,9 @@ namespace Tayra.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var c = Configuration;
+            var xx = c["Connectors:Atlassian:Jira:AppId"];
+            var xx2 = c["Connectors:Github:AppId"];
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
             services.AddMultiTenant<Tenant>()
                 .WithEFCoreStore<CatalogDbContext, Tenant>()
@@ -187,7 +190,7 @@ namespace Tayra.API
                 c.RoutePrefix = string.Empty;
             });
             
-            catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
+            //catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
         }
 
         #region Private Methods

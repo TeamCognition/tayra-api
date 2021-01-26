@@ -15,6 +15,8 @@ namespace Tayra.Connectors.Atlassian.Jira
 {
     public class AtlassianJiraConnector : BaseOAuthConnector
     {
+        private const string CONFIG_APP_ID = "Connectors:Atlassian:Jira:AppId";
+        private const string CONFIG_APP_SECRET = "Connectors:Atlassian:Jira:AppSecret";
         private const string AUTH_URL = "https://auth.atlassian.com/authorize";
         private const string AUDIENCE = "api.atlassian.com";
         private const string SCOPE = "read%3Ajira-user%20read%3Ajira-work%20offline_access";
@@ -33,7 +35,7 @@ namespace Tayra.Connectors.Atlassian.Jira
 
         public override string GetAuthUrl(OAuthState state)
         {
-            return $"{AUTH_URL}?audience={AUDIENCE}&client_id={AtlassianJiraService.APP_ID}&state={state}&scope={SCOPE}&redirect_uri={GetCallbackUrl(state.ToString())}&response_type=code&prompt=consent";
+            return $"{AUTH_URL}?audience={AUDIENCE}&client_id={Config[CONFIG_APP_ID]}&state={state}&scope={SCOPE}&redirect_uri={GetCallbackUrl(state.ToString())}&response_type=code&prompt=consent";
         }
 
         public override Integration Authenticate(OAuthState state)
@@ -47,7 +49,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                     throw new ApplicationException(errorDescription);
                 }
 
-                var tokenData = AtlassianJiraService.GetAccessToken(code, GetCallbackUrl(state.ToString()))?.Data;
+                var tokenData = AtlassianJiraService.GetAccessToken(Config[CONFIG_APP_ID], Config[CONFIG_APP_SECRET], code, GetCallbackUrl(state.ToString()))?.Data;
                 var accResData = AtlassianJiraService.GetAccessibleResources(tokenData.TokenType, tokenData.AccessToken)?.Data?.FirstOrDefault();
                 var loggedInUser = AtlassianJiraService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
 
@@ -119,7 +121,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                 throw new ApplicationException("Unable to refresh this account because it does not have a refresh token.");
             }
 
-            var response = AtlassianJiraService.RefreshAccessToken(refreshCode.Value);
+            var response = AtlassianJiraService.RefreshAccessToken(Config[CONFIG_APP_ID], Config[CONFIG_APP_SECRET], refreshCode.Value);
             if (response?.Data != null)
             {
                 void Update(string key, string value)

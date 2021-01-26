@@ -17,7 +17,7 @@ namespace Tayra.API.Features.Profile
 {
     public partial class ProfilesController
     {
-        [HttpGet("statsWidget/{profileId:int}")]
+        [HttpGet("statsWidget/{profileId}")]
         public async Task<GetStatsWidget.Result> GetProfileStatsData([FromUri] Guid profileId)
             => await _mediator.Send(new GetStatsWidget.Query { ProfileId = profileId});
     }

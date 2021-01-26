@@ -15,8 +15,10 @@ namespace Tayra.Connectors.Slack
 {
     public class SlackConnector : BaseOAuthConnector
     {
+        private const string CONFIG_APP_ID = "Connectors.Slack.AppId";
+        private const string CONFIG_CLIENT_ID = "Connectors.Slack.ClientId";
+        private const string CONFIG_CLIENT_SECRET = "Connectors.Slack.ClientSecret";
         private const string AUTH_URL = "https://slack.com/oauth/v2/authorize";
-        private const string SLAPP_ID = "A013UGRR7FW";
         private const string SCOPE = "commands,incoming-webhook,app_mentions:read,channels:history,channels:join,channels:read,chat:write,chat:write.public,chat:write.customize,groups:history,groups:read,groups:write,im:history,im:read,im:write,mpim:history,mpim:read,mpim:write,usergroups:read,users.profile:read,users:read,users:read.email";
 
         public SlackConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, dataContext, catalogDbContext, config)
@@ -33,7 +35,7 @@ namespace Tayra.Connectors.Slack
 
         public override string GetAuthUrl(OAuthState state)
         {
-            return $"{AUTH_URL}?scope={SCOPE}&client_id={SlackService.CLIENT_ID}&state={state}&redirect_uri={GetCallbackUrl(state.ToString())}";
+            return $"{AUTH_URL}?scope={SCOPE}&client_id={Config[CONFIG_CLIENT_ID]}&state={state}&redirect_uri={GetCallbackUrl(state.ToString())}";
         }
 
         public override Integration Authenticate(OAuthState state)
@@ -47,7 +49,7 @@ namespace Tayra.Connectors.Slack
                     throw new ApplicationException(errorDescription);
                 }
 
-                var accessToken = SlackService.ExchangeCodeForAccessToken(code, GetCallbackUrl(state.ToString()))?.Data;
+                var accessToken = SlackService.ExchangeCodeForAccessToken(Config[CONFIG_CLIENT_ID], Config[CONFIG_CLIENT_SECRET], code, GetCallbackUrl(state.ToString()))?.Data;
 
                 if (accessToken == null)
                     return null;

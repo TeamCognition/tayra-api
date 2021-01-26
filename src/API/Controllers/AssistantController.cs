@@ -31,19 +31,19 @@ namespace Tayra.API.Controllers
             return Ok(AssistantService.GetActionPointOverview(segmentId));
         }
 
-        [HttpPost("{profileId:int}/searchMemberActionPoints")]
+        [HttpPost("{profileId}/searchMemberActionPoints")]
         public ActionResult<GridData<AssistantMemberGridDTO>> GetMemberActionPointGrid([FromRoute] Guid profileId, GridParams gridParams)
         {
             return AssistantService.GetMemberActionPointGrid(gridParams, profileId);
         }
 
-        [HttpPost("{segmentId:int}/searchSegmentActionPoints")]
+        [HttpPost("{segmentId}/searchSegmentActionPoints")]
         public ActionResult<GridData<AssistantSegmentGridDTO>> GetSegmentActionPointGrid([FromRoute] Guid segmentId, GridParams gridParams)
         {
             return AssistantService.GetSegmentActionPointGrid(gridParams, segmentId);
         }
 
-        [HttpPut("{segmentId:int}/concludeActionPoints")]
+        [HttpPut("{segmentId}/concludeActionPoints")]
         public IActionResult ConcludeActionPoints([FromRoute] Guid segmentId, [FromQuery] Guid[] apIds, [FromQuery] ActionPointTypes? apType)
         {
             AssistantService.ConcludeActionPoints(segmentId, apIds, apType);
