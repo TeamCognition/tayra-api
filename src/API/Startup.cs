@@ -1,9 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Text.Json.Serialization;
 using AutoMapper;
 using Cog.Core;
-using Finbuckle.MultiTenant;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using MoreLinq;
 using OpenIddict.Validation.AspNetCore;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using Tayra.API.Helpers;
@@ -120,7 +117,7 @@ namespace Tayra.API
             });
 
             services.AddMvcCore()
-                //.AddNewtonsoftJson()
+                .AddNewtonsoftJson()
                 .AddApiExplorer(); //for swagger
             
             services.AddTayraAuthServices(Configuration);

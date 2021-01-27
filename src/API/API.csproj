@@ -20,6 +20,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="OpenIddict.Validation" Version="3.0.0-rc2.20607.88" />
     <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="6.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(DotnetPackagesVersion)" />
   </ItemGroup>
   
   <ItemGroup>

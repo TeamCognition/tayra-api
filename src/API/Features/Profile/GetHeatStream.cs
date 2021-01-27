@@ -46,9 +46,9 @@ namespace Tayra.API.Features.Profile
                     MetricType.Heat
                 };
                 await Task.Delay(1, token);
-                return (Result)metricService.GetMetricsWithIterationSplit(
+                return metricService.GetMetricsWithIterationSplit(
                     metricList, msg.ProfileId, EntityTypes.Profile,
-                    new DatePeriod(DateTime.UtcNow.AddDays(-1 * (8 * 7 - 1)), DateTime.UtcNow));
+                    new DatePeriod(DateTime.UtcNow.AddDays(-1 * (8 * 7 - 1)), DateTime.UtcNow)) as Result;
             }
         }
     }
