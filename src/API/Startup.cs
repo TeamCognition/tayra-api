@@ -23,6 +23,8 @@ using Tayra.Connectors.Slack;
 using Tayra.DAL;
 using Tayra.Helpers;
 using Tayra.Imager;
+using Tayra.Mailer;
+using Tayra.Mailer.Contracts;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -108,7 +110,8 @@ namespace Tayra.API
             services.AddTransient<IClaimBundlesService, ClaimBundlesService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
             services.AddTransient<IGithubWebhookService, GithubWebhookServiceService>();
-            
+            services.AddTransient<IMailerService, MailerServiceNew>();
+
             services.AddScoped<IClaimsPrincipalProvider<TayraPrincipal>, TayraPrincipalProvider>();
 
             services.AddHttpContextAccessor();

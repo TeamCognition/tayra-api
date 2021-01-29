@@ -24,8 +24,8 @@ namespace Tayra.Mailer
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(sender, "Tayra Admin");
             var to = new EmailAddress(recipient, "CTO Haris");
-            var plainTextContent = body;
-            var htmlContent = $"<strong>{body}</strong>";
+            var plainTextContent = "body";
+            var htmlContent = body;
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             return client.SendEmailAsync(msg).GetAwaiter().GetResult();
         }
