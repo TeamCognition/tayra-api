@@ -9,6 +9,8 @@ using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Slack;
 using Tayra.Connectors.Slack.DTOs;
+using Tayra.Mailer.Contracts;
+using Tayra.Mailer.MailerTemplateModels;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.Contracts;
@@ -77,9 +79,20 @@ namespace Tayra.API.Controllers
         [AllowAnonymous]
         public ActionResult TestMethods([FromQuery] string id, [FromBody] SlackMessageRequestDto requestDto)
         { 
+            
             var res = SlackService.SendSlackMessage("xoxb-698826045604-1117671360278-zB1nNQLCkjI3iR8qXuvZGM7E",requestDto);
             Console.WriteLine(res.Data);
             return Ok(res.Data);
+        }
+        
+        [HttpPost("testMailer")]
+        [AllowAnonymous]
+        public ActionResult TestMailer([FromQuery] string id,[FromQuery]string firsName,[FromQuery] string sender,[FromServices]IMailerService mailerService)
+        {
+            var res = mailerService.SendEmail("e.f.i_cet@hotmail.com",sender,
+                new GiftReceivedTemplateModel(firsName,sender,"https://www.w3schools.com/"));
+            Console.WriteLine(res);
+            return Ok(res);
         }
         
         #endregion
