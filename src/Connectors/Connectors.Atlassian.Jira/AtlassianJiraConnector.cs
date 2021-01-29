@@ -15,8 +15,8 @@ namespace Tayra.Connectors.Atlassian.Jira
 {
     public class AtlassianJiraConnector : BaseOAuthConnector
     {
-        private const string CONFIG_APP_ID = "Connectors:Atlassian:Jira:AppId";
-        private const string CONFIG_APP_SECRET = "Connectors:Atlassian:Jira:AppSecret";
+        private const string CONFIG_APP_ID = "Connectors:Atlassian:Jira:ClientId";
+        private const string CONFIG_APP_SECRET = "Connectors:Atlassian:Jira:ClientSecret";
         private const string AUTH_URL = "https://auth.atlassian.com/authorize";
         private const string AUDIENCE = "api.atlassian.com";
         private const string SCOPE = "read%3Ajira-user%20read%3Ajira-work%20offline_access";
