@@ -12,8 +12,10 @@ namespace Tayra.Mailer
 
         public object SendSlackMessage(string recipient, ISlackMessageTemplate slackMessageTemplate)
         {
-            return SlackService.SendSlackMessage("", new SlackMessageRequestDto{
+            Console.WriteLine();
+            return SlackService.SendSlackMessage("xoxb-698826045604-1117671360278-zB1nNQLCkjI3iR8qXuvZGM7E", new SlackMessageRequestDto{
                 Attachments = slackMessageTemplate.GetSlackTemplate(),
+                Text = "Gift",
                 Channel = recipient
             });
         }

@@ -89,8 +89,8 @@ namespace Tayra.API.Controllers
         [AllowAnonymous]
         public ActionResult TestMailer([FromQuery] string id,[FromQuery]string firsName,[FromQuery] string sender,[FromServices]IMailerService mailerService)
         {
-            var res = mailerService.SendEmail("e.f.i_cet@hotmail.com",sender,
-                new GiftReceivedTemplateModel(firsName,sender,"https://www.w3schools.com/"));
+            var res = mailerService.SendSlackMessage("U01BP2UAUEP",
+                new GiftReceivedTemplateModel("U01BP2UAUEP", "https://github.com/toddams/RazorLight"));
             Console.WriteLine(res);
             return Ok(res);
         }
