@@ -1,0 +1,39 @@
+﻿{
+  "attachments": [
+    {
+      "blocks": [
+        {
+          "type": "divider"
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "Some say, to love is to share and to give. So @Model.SlackUserId decided to share this gift with you."
+          }
+        },
+        {
+          "type": "image",
+          "image_url": "https://tayrafiles.blob.core.windows.net/images/icon-gift-received.png",
+          "alt_text": "inspiration"
+        },
+        {
+          "type": "actions",
+          "elements": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": ":telescope: Unwrap your Gift",
+                "emoji": true
+              },
+              "value": "click_me_123",
+              "url": "@Model.GiftLink",
+              "action_id": "actionId-1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
