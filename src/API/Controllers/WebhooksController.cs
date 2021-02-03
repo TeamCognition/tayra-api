@@ -81,8 +81,8 @@ namespace Tayra.API.Controllers
         { 
             
             var res = SlackService.SendSlackMessage("xoxb-698826045604-1117671360278-zB1nNQLCkjI3iR8qXuvZGM7E",requestDto);
-            Console.WriteLine(res.Data);
-            return Ok(res.Data);
+            Console.WriteLine(res);
+            return Ok(res);
         }
         
         [HttpPost("testMailer")]
@@ -90,7 +90,12 @@ namespace Tayra.API.Controllers
         public ActionResult TestMailer([FromQuery] string id,[FromQuery]string firsName,[FromQuery] string sender,[FromServices]IMailerService mailerService)
         {
             var res = mailerService.SendSlackMessage("U01BP2UAUEP",
-                new GiftReceivedTemplateModel("U01BP2UAUEP", "https://github.com/toddams/RazorLight"));
+                new GiftReceivedTemplateModel("U01BP2UAUEP", "https://github.com/toddams/RazorLight",
+                    "You received a gift"));
+            mailerService.SendEmail("eficet89@gmail.com", "faykohamad@gmail.com",
+                new GiftReceivedTemplateModel("Fayiz", "Hamad",
+                    "https://docs.microsoft.com/en-us/dotnet/api/system.io.path.combine?view=net-5.0",
+                    "Gift Received"));
             Console.WriteLine(res);
             return Ok(res);
         }

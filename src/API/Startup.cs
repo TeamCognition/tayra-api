@@ -110,7 +110,7 @@ namespace Tayra.API
             services.AddTransient<IClaimBundlesService, ClaimBundlesService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
             services.AddTransient<IGithubWebhookService, GithubWebhookServiceService>();
-            services.AddTransient<IMailerService, MailerServiceNew>();
+            services.AddTransient<IMailerService, MailerService>();
 
             services.AddScoped<IClaimsPrincipalProvider<TayraPrincipal>, TayraPrincipalProvider>();
 

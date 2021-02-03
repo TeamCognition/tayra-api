@@ -64,7 +64,7 @@ namespace Tayra.Services
 
             foreach (var d in devices)
             {
-                MailerService.SendEmail(d.Address, dto);
+                EmailService.SendEmail(d.Address, dto);
             }
         }
 

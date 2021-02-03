@@ -84,7 +84,7 @@ namespace Tayra.API.Controllers
         {
             try
             {
-                MailerService.SendEmail(dto.Email, new EmailTryForFreeDTO());
+                EmailService.SendEmail(dto.Email, new EmailTryForFreeDTO());
 
                 _catalogContext.LandingPageTry.Add(new LandingPageTry
                 {
@@ -93,7 +93,7 @@ namespace Tayra.API.Controllers
 
                 _catalogContext.SaveChanges();
 
-                MailerService.SendEmail("haris.botic96@gmail.com",
+                EmailService.SendEmail("haris.botic96@gmail.com",
                     "haris@tayra.io",
                     "New Try Submitted (Landing Page Try for free)",
                     JsonConvert.SerializeObject(dto));
@@ -128,12 +128,12 @@ namespace Tayra.API.Controllers
 
             try
             {
-                MailerService.SendEmail("haris.botic96@gmail.com",
+                EmailService.SendEmail("haris.botic96@gmail.com",
                     "haris@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));
 
-                MailerService.SendEmail("haris.botic96@gmail.com",
+                EmailService.SendEmail("haris.botic96@gmail.com",
                     "ejub@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));

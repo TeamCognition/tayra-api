@@ -223,7 +223,7 @@ namespace Tayra.Services
             //invitation.TeamId = invitation.TeamId ?? DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
             //invitation.TeamId ??= DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
 
-            var resp = MailerService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            var resp = EmailService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
             if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 throw new ApplicationException(dto.EmailAddress + " email not sent");
@@ -243,7 +243,7 @@ namespace Tayra.Services
                 throw new ApplicationException("Invitation already accepted.");
             }
 
-            var resp = MailerService.SendEmail(invitation.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            var resp = EmailService.SendEmail(invitation.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
             if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 throw new ApplicationException(invitation.EmailAddress + " email not sent");

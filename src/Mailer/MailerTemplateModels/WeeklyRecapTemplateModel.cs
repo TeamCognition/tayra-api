@@ -6,6 +6,7 @@ namespace Tayra.Mailer.MailerTemplateModels
     {
         public string TemplateKey { get; set; }
         public string RecipientId { get; set; }
+        public string Title { get; set; }
         public string GetEmailTemplate()
         {
             throw new System.NotImplementedException();
