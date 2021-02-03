@@ -39,16 +39,19 @@ namespace Tayra.Mailer.MailerTemplateModels
        
        public  string GetEmailTemplate()
         {
-           
             var result = MailerUtils.BuildTemplateForEmail( this, EmailTemplateFileName);
             return result;
         }
 
         public string GetSlackTemplate()
         {
-          
             var result = MailerUtils.BuildTemplateForSlack(this, TemplateKey, SlackTemplateFileName);
             return result;
         }
+    }
+
+    public class SlackAttachments
+    {
+        public object[] Attachments { get; set; }
     }
 }

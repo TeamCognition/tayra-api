@@ -1,5 +1,4 @@
 ﻿{
-  
   "blocks": [
     {
       "type": "divider"
@@ -8,7 +7,7 @@
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": "Some say, to love is to share and to give. So @Model.SlackUserId decided to share this gift with you."
+        "text": "Some say, to love is to share and to give. So * @Model.SlackUserId * decided to share this gift with you."
       }
     },
     {

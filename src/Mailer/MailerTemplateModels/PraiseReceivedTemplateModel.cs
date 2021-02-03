@@ -48,6 +48,8 @@ namespace Tayra.Mailer.MailerTemplateModels
             return result;
         }
 
+       
+
         public string GetSlackTemplate()
         {
             throw new System.NotImplementedException();
