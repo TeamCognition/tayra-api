@@ -56,7 +56,7 @@ namespace Tayra.Services._Models.Identities
             //invitation.TeamId = invitation.TeamId ?? DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
             //invitation.TeamId ??= DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
 
-            var resp = MailerService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            var resp = EmailService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
             if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 throw new ApplicationException(dto.EmailAddress + " email not sent");

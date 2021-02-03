@@ -44,7 +44,7 @@ namespace Tayra.Connectors.Slack
             return client.Execute<UsersListResponse>(request);
         }
 
-        public static IRestResponse<SlackMessageResponseDto> SendSlackMessage(string botToken,SlackMessageRequestDto requestDto)
+        public static SlackMessageResponseDto SendSlackMessage(string botToken,SlackMessageRequestDto requestDto)
         {
             var client = new RestClient(BASE_REST_URL).UseSerializer((() => new JsonNetSerializer()));
             var request = new RestRequest(POST_MESSAGE, Method.POST);
@@ -57,8 +57,8 @@ namespace Tayra.Connectors.Slack
             {
                 throw new ApplicationException(response.Data.Error);
             }
-
-            return response;
+            
+            return response.Data;
         }
         
 

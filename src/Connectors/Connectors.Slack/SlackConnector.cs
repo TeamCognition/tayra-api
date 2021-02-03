@@ -131,7 +131,7 @@ namespace Tayra.Connectors.Slack
         public SlackMessageResponseDto SendSlackMessage(Guid integrationId, SlackMessageRequestDto slackMessageRequestDto)
         {
             var accessToken = ReadAccessToken(integrationId);
-            return SlackService.SendSlackMessage(accessToken, slackMessageRequestDto).Data;
+            return SlackService.SendSlackMessage(accessToken, slackMessageRequestDto);
         }
         #endregion
     }

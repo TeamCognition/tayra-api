@@ -10,50 +10,57 @@ namespace Tayra.Mailer.MailerTemplateModels
         
         public string SenderName { get; set; }
         
+        public string Title { get; set; }
+        
         public string GiftLink { get; set; }
         
         public string SlackUserId { get; set; }
 
-       public GiftReceivedTemplateModel(string firstName, string senderName,string giftLink)
+       public GiftReceivedTemplateModel(string firstName, string senderName, string giftLink, string title)
         {
             FirstName = firstName;
             SenderName = senderName;
             GiftLink = giftLink;
+            Title = title;
         }
 
-       public GiftReceivedTemplateModel(string slackUserId, string giftLink)
+       public GiftReceivedTemplateModel(string slackUserId, string giftLink, string title)
        {
-           SlackUserId = $"*<@{slackUserId}>*";
+           SlackUserId = $@"<@{slackUserId}>";
            GiftLink = giftLink;
+           Title = title;
        }
         public  string GetEmailTemplate()
         {
+            string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,$@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
+
             // string path =Path.(@"TemplatesFiles");
             // Console.WriteLine(path);
-            var engine = new RazorLightEngineBuilder().UseFileSystemProject("C:/Users/TAYRA/Documents/GitHub/tayra-api/src/Mailer/TemplatesFiles/EmailTemplates")
+            var engine = new RazorLightEngineBuilder().UseFileSystemProject(path)
                 .UseMemoryCachingProvider().Build();
             GiftReceivedTemplateModel model = this;
             string result =engine.CompileRenderAsync("GiftReceivedTemplate.cshtml", model).GetAwaiter().GetResult();
-            Console.WriteLine(AppContext.BaseDirectory);
             return result;
         }
 
         public string GetSlackTemplate()
         {
-            string template = File.ReadAllText(
-                "C:/Users/TAYRA/Documents/GitHub/tayra-api/src/Mailer/TemplatesFiles/SlackTemplates/GiftReceivedTemplate.json");
-            Console.WriteLine(template);
+            string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,$@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","SlackTemplates","GiftReceivedTemplate.json");
+            
+            string json = File.ReadAllText(path);
+            string template = $"[{json}]";
             var engine = new RazorLightEngineBuilder()
-                // required to have a default RazorLightProject type,
-                // but not required to create a template from string.
                 .UseEmbeddedResourcesProject(typeof(GiftReceivedTemplateModel))
                 .UseMemoryCachingProvider()
-                .Build(); 
-            //string newString = " hejjjjjjjjjj @UserSlackId and @GiftLink";
+                .Build();
             GiftReceivedTemplateModel model = this;
             string result =  engine.CompileRenderStringAsync("templateKey", template, model).GetAwaiter().GetResult();
-            Console.WriteLine($"the result is{result}");
             return result;
         }
+    }
+
+    public class SlackAttachments
+    {
+        public object[] Attachments { get; set; }
     }
 }
