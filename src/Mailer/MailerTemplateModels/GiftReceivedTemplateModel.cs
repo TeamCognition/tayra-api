@@ -9,7 +9,8 @@ namespace Tayra.Mailer.MailerTemplateModels
         public  string FirstName { get; set; }
         
         public string SenderName { get; set; }
-        
+
+        public string TemplateKey => "gift-received";
         public string Title { get; set; }
         
         public string GiftLink { get; set; }
@@ -32,35 +33,19 @@ namespace Tayra.Mailer.MailerTemplateModels
        }
         public  string GetEmailTemplate()
         {
-            string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,$@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
-
-            // string path =Path.(@"TemplatesFiles");
-            // Console.WriteLine(path);
-            var engine = new RazorLightEngineBuilder().UseFileSystemProject(path)
-                .UseMemoryCachingProvider().Build();
-            GiftReceivedTemplateModel model = this;
-            string result =engine.CompileRenderAsync("GiftReceivedTemplate.cshtml", model).GetAwaiter().GetResult();
+            var path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
+                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
+            var result = MailerUtils.BuildTemplateForEmail(path, this, "GiftReceivedTemplate.cshtml");
             return result;
         }
 
         public string GetSlackTemplate()
         {
-            string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,$@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","SlackTemplates","GiftReceivedTemplate.json");
-            
-            string json = File.ReadAllText(path);
-            string template = $"[{json}]";
-            var engine = new RazorLightEngineBuilder()
-                .UseEmbeddedResourcesProject(typeof(GiftReceivedTemplateModel))
-                .UseMemoryCachingProvider()
-                .Build();
-            GiftReceivedTemplateModel model = this;
-            string result =  engine.CompileRenderStringAsync("templateKey", template, model).GetAwaiter().GetResult();
+            var path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
+                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","SlackTemplates","GiftReceivedTemplate.json");
+            var json = File.ReadAllText(path);
+            var result = MailerUtils.BuildTemplateForSlack(this, json, TemplateKey);
             return result;
         }
-    }
-
-    public class SlackAttachments
-    {
-        public object[] Attachments { get; set; }
     }
 }

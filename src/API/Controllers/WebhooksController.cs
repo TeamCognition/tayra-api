@@ -10,6 +10,7 @@ using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Slack;
 using Tayra.Connectors.Slack.DTOs;
 using Tayra.Mailer.Contracts;
+using Tayra.Mailer.Enums;
 using Tayra.Mailer.MailerTemplateModels;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -93,9 +94,8 @@ namespace Tayra.API.Controllers
                 new GiftReceivedTemplateModel("U01BP2UAUEP", "https://github.com/toddams/RazorLight",
                     "You received a gift"));
             mailerService.SendEmail("eficet89@gmail.com", "faykohamad@gmail.com",
-                new GiftReceivedTemplateModel("Fayiz", "Hamad",
-                    "https://docs.microsoft.com/en-us/dotnet/api/system.io.path.combine?view=net-5.0",
-                    "Gift Received"));
+                new PraiseReceivedTemplateModel(" Received A Praise", "Fayiz",
+                    "Bota","https://github.com/toddams/RazorLight",PraiseReceivedType.HardWorker));
             Console.WriteLine(res);
             return Ok(res);
         }
