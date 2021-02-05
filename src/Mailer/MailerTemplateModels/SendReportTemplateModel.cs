@@ -6,27 +6,29 @@ namespace Tayra.Mailer.MailerTemplateModels
 {
     public class SendReportTemplateModel : IEmailTemplate
     {
+        private const string FileName = "SendReport.cshtml";
         public string FirstName { get; set; }
+        
         public string SegmentName { get; set; }
+        
         public string ReportType { get; set; }
 
         public string ReportLink { get; set; }
-        public string Title { get; set; }
+        
+        public string Subject { get; set; }
 
-        public SendReportTemplateModel(string firstName, string segmentName, string reportType,string reportLink, string title)
+        public SendReportTemplateModel(string firstName, string segmentName, string reportType,string reportLink, string subject)
         {
             FirstName = firstName;
             SegmentName = segmentName;
             ReportType = reportType;
-            Title = title;
+            Subject = subject;
             ReportLink = reportLink;
         }
 
         public string GetEmailTemplate()
         {
-            var path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
-                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
-            var result = MailerUtils.BuildTemplateForEmail(path, this,"SendReport.cshtml");
+            var result = MailerUtils.BuildTemplateForEmail( this,FileName);
             return result;
         }
     }

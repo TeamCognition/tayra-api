@@ -6,19 +6,22 @@ namespace Tayra.Mailer.MailerTemplateModels
 {
     public class JoinTayraTemplateModel : IEmailTemplate
     {
-        public string Title { get; set; }
+        public string Subject { get; set; }
+        
         public string Sender { get; set; }
+        
         public string Link { get; set; }
-
+        
         public JoinTayraType JoinTayraType { get; set; }
 
-        public JoinTayraTemplateModel(string title, string sender, string link,JoinTayraType joinTayraType)
+        public JoinTayraTemplateModel(string subject, string sender, string link, JoinTayraType joinTayraType)
         {
-            Title = title;
+            Subject = subject;
             Sender = sender;
             Link = link;
             JoinTayraType = joinTayraType;
         }
+        
         public string GetEmailTemplate()
         {
             var fileName = "JoinTayraDefault.cshtml";
@@ -26,9 +29,8 @@ namespace Tayra.Mailer.MailerTemplateModels
             {
                 fileName = "JoinTayraFirstAdmin.cshtml";
             }
-            var path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
-                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
-            var result = MailerUtils.BuildTemplateForEmail(path, this,fileName);
+            
+            var result = MailerUtils.BuildTemplateForEmail( this, fileName);
             return result;
 
         }
