@@ -6,43 +6,48 @@ namespace Tayra.Mailer.MailerTemplateModels
 {
     public class GiftReceivedTemplateModel : ISlackMessageTemplate , IEmailTemplate
     {
+        
+        private const string TemplateKey = "gift-received";
+        
+        private const string EmailTemplateFileName = "GiftReceivedTemplate.cshtml";
+
+        private const string SlackTemplateFileName = "GiftReceivedTemplate.json";
         public  string FirstName { get; set; }
         
         public string SenderName { get; set; }
-
-        public string TemplateKey => "gift-received";
-        public string Title { get; set; }
+        
+        public string Subject { get; set; }
         
         public string GiftLink { get; set; }
         
         public string SlackUserId { get; set; }
 
-       public GiftReceivedTemplateModel(string firstName, string senderName, string giftLink, string title)
+       public GiftReceivedTemplateModel(string firstName, string senderName, string giftLink, string subject)
         {
             FirstName = firstName;
             SenderName = senderName;
             GiftLink = giftLink;
-            Title = title;
+            Subject =subject ;
         }
 
-       public GiftReceivedTemplateModel(string slackUserId, string giftLink, string title)
+       public GiftReceivedTemplateModel(string slackUserId, string giftLink, string subject)
        {
            SlackUserId = $@"<@{slackUserId}>";
            GiftLink = giftLink;
-           Title = title;
+           Subject = subject;
        }
-        public  string GetEmailTemplate()
+       
+       public  string GetEmailTemplate()
         {
-            var path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
-                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
-            var result = MailerUtils.BuildTemplateForEmail(path, this, "GiftReceivedTemplate.cshtml");
+           
+            var result = MailerUtils.BuildTemplateForEmail( this,EmailTemplateFileName);
             return result;
         }
 
         public string GetSlackTemplate()
         {
             var path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
-                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","SlackTemplates","GiftReceivedTemplate.json");
+                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","SlackTemplates",SlackTemplateFileName);
             var json = File.ReadAllText(path);
             var result = MailerUtils.BuildTemplateForSlack(this, json, TemplateKey);
             return result;

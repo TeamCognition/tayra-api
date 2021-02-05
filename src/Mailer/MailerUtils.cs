@@ -1,4 +1,5 @@
-﻿using RazorLight;
+﻿using System.IO;
+using RazorLight;
 using Tayra.Mailer.MailerTemplateModels;
 
 namespace Tayra.Mailer
@@ -6,8 +7,10 @@ namespace Tayra.Mailer
     public class MailerUtils
     {
 
-        public static string BuildTemplateForEmail<T>(string folderPath, T model,string fileName )
+        public static string BuildTemplateForEmail<T>(T model,string fileName )
         {
+            var folderPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
+                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
             var engine = new RazorLightEngineBuilder().UseFileSystemProject(folderPath)
                 .UseMemoryCachingProvider().Build();
             return engine.CompileRenderAsync(fileName, model).GetAwaiter().GetResult();

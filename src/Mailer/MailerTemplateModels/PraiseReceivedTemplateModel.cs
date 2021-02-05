@@ -9,16 +9,17 @@ namespace Tayra.Mailer.MailerTemplateModels
     public class PraiseReceivedTemplateModel : ISlackMessageTemplate , IEmailTemplate
     {
         public string TemplateKey => "praise-received";
+        
         public string RecipientId { get; set; }
-        public string Title { get; set; }
+        public string Subject { get; set; }
         public string FirstName { get; set; }
         public string SenderName { get; set; }
         public string Link { get; set; }
         public PraiseReceivedType PraiseReceivedType { get; set; }
 
-        public PraiseReceivedTemplateModel(string title, string firstName, string senderName, string link, PraiseReceivedType praiseReceivedType)
+        public PraiseReceivedTemplateModel(string subject, string firstName, string senderName, string link, PraiseReceivedType praiseReceivedType)
         {
-            Title = title;
+            Subject = subject;
             FirstName = firstName;
             SenderName = senderName;
             Link = link;
@@ -42,13 +43,9 @@ namespace Tayra.Mailer.MailerTemplateModels
                 default:
                     throw new ApplicationException("Praise received type not supported");
             }
-            var path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
-                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
-            var result = MailerUtils.BuildTemplateForEmail(path, this,fileName);
+            var result = MailerUtils.BuildTemplateForEmail(this,fileName);
             return result;
         }
-
-       
 
         public string GetSlackTemplate()
         {

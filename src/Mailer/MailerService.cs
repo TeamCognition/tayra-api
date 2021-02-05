@@ -16,17 +16,16 @@ namespace Tayra.Mailer
         {
             
             var message = slackMessageTemplate.GetSlackTemplate();
-            string decodedMessage = HttpUtility.UrlDecode(message);
             return SlackService.SendSlackMessage("xoxb-698826045604-1117671360278-zB1nNQLCkjI3iR8qXuvZGM7E", new SlackMessageRequestDto{
-                Attachments = decodedMessage,
-                Text = slackMessageTemplate.Title,
+                Attachments = message,
+                Text = slackMessageTemplate.Subject,
                 Channel = recipient
             });
         }
 
         public object SendEmail(string recipient, string sender, IEmailTemplate emailTemplate)
         {
-           return EmailService.SendEmail(sender, recipient, emailTemplate.Title,
+           return EmailService.SendEmail(sender, recipient, emailTemplate.Subject,
                 emailTemplate.GetEmailTemplate());
         }
     }
