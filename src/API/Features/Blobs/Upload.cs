@@ -35,7 +35,6 @@ namespace Tayra.API.Features.Blobs
             public string Id { get; init; }
         }
 
-        //IRequestHandler
         public class Handler : IRequestHandler<Command, Result>
         {
             private readonly OrganizationDbContext _db;
