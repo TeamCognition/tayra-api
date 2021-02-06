@@ -32,7 +32,7 @@ namespace Tayra.API.Features.Blobs
 
         public record Result
         {
-            public string Id { get; init; }
+            public Uri Url { get; init; }
         }
 
         public class Handler : IRequestHandler<Command, Result>
@@ -46,26 +46,21 @@ namespace Tayra.API.Features.Blobs
                 _config = config;
             }
 
-            public async Task<Result> Handle(Command command, CancellationToken token)
+            public async Task<Result> Handle(Command msg, CancellationToken token)
             {
                 var isImage = ImageFileExtensions.Any(ex =>
-                    command.File.FileName.EndsWith(ex, StringComparison.OrdinalIgnoreCase));
+                    msg.File.FileName.EndsWith(ex, StringComparison.OrdinalIgnoreCase));
                 if (!isImage)
                 {
                     throw new ApplicationException("File has to be an image");
                 }
 
-                var blob = new BlobsService(_config, _db).UploadToAzure(new BlobUploadDTO
-                {
-                    File = command.File,
-                    BlobType = command.BlobType,
-                    BlobPurpose = command.BlobPurpose
-                });
+                var blob = new BlobsService(_config, _db).UploadToAzure(msg.File, msg.BlobType, msg.BlobPurpose);
                 await _db.SaveChangesAsync(token);
 
                 return new Result
                 {
-                    Id = $"{_config["ImagerServer"]}{_config["BlobContainerImages"]}/{blob.Id}.{blob.Extension}"
+                    Url = new Uri($"{_config["ImagerServer"]}{_config["BlobContainerImages"]}/{blob.Id}.{blob.Extension}")
                 };
             }
         }
