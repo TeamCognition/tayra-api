@@ -96,7 +96,7 @@ namespace Tayra.API.Controllers
 
                 _catalogContext.SaveChanges();
 
-                EmailService.SendEmail("haris.botic96@gmail.com",
+                MailerService.SendEmail("haris.botic96@gmail.com",
                     "haris@tayra.io",
                     "New Try Submitted (Landing Page Try for free)",
                     JsonConvert.SerializeObject(dto));
@@ -131,12 +131,12 @@ namespace Tayra.API.Controllers
 
             try
             {
-                EmailService.SendEmail("haris.botic96@gmail.com",
+                MailerService.SendEmail("haris.botic96@gmail.com",
                     "haris@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));
 
-                EmailService.SendEmail("haris.botic96@gmail.com",
+                MailerService.SendEmail("haris.botic96@gmail.com",
                     "ejub@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));
