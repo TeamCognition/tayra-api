@@ -16,8 +16,11 @@ namespace Tayra.Mailer
             return engine.CompileRenderAsync(fileName, model).GetAwaiter().GetResult();
         }
 
-        public static string BuildTemplateForSlack<T>(T model,string templateJson,string templateKey)
+        public static string BuildTemplateForSlack<T>(T model,string templateKey,string fileName)
         {
+            var path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
+                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","SlackTemplates",fileName);
+            var templateJson = File.ReadAllText(path);
             string template = $"[{templateJson}]";
             var engine = new RazorLightEngineBuilder()
                 .UseEmbeddedResourcesProject(typeof(T))

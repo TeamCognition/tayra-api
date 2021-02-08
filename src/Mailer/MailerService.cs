@@ -28,5 +28,11 @@ namespace Tayra.Mailer
            return EmailService.SendEmail(sender, recipient, emailTemplate.Subject,
                 emailTemplate.GetEmailTemplate());
         }
+
+        public object SendEmail(string recipient, string sender,string subject, string message)
+        {
+            return EmailService.SendEmail(sender, recipient, subject, message);
+        }
+        
     }
 }

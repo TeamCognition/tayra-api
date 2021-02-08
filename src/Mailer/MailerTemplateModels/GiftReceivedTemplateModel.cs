@@ -40,16 +40,14 @@ namespace Tayra.Mailer.MailerTemplateModels
        public  string GetEmailTemplate()
         {
            
-            var result = MailerUtils.BuildTemplateForEmail( this,EmailTemplateFileName);
+            var result = MailerUtils.BuildTemplateForEmail( this, EmailTemplateFileName);
             return result;
         }
 
         public string GetSlackTemplate()
         {
-            var path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
-                $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","SlackTemplates",SlackTemplateFileName);
-            var json = File.ReadAllText(path);
-            var result = MailerUtils.BuildTemplateForSlack(this, json, TemplateKey);
+          
+            var result = MailerUtils.BuildTemplateForSlack(this, TemplateKey, SlackTemplateFileName);
             return result;
         }
     }

@@ -5,6 +5,7 @@ using Cog.DAL;
 using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.Contracts;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -66,7 +67,7 @@ namespace Tayra.Services
             }
         }
 
-        public void SendLog(Guid profileId, LogEvents logEvent, ITemplateEmailDTO dto)
+        public void SendLog(Guid profileId, LogEvents logEvent, IEmailTemplate dto)
         {
             return;
         }

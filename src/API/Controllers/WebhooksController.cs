@@ -95,7 +95,7 @@ namespace Tayra.API.Controllers
                     "You received a gift"));
             mailerService.SendEmail("eficet89@gmail.com", "faykohamad@gmail.com",
                 new PraiseReceivedTemplateModel(" Received A Praise", "Fayiz",
-                    "Bota","https://github.com/toddams/RazorLight",PraiseReceivedType.HardWorker));
+                    "Bota","https://github.com/toddams/RazorLight",PraiseTypes.HardWorker));
             Console.WriteLine(res);
             return Ok(res);
         }

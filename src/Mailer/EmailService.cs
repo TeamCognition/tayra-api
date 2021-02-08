@@ -5,7 +5,7 @@ namespace Tayra.Mailer
 {
     public static class EmailService// : IEmailService
     {
-        private static string noReplyAddress = "noreply@tayra.io";
+        public const string noReplyAddress = "noreply@tayra.io";
 
         //private const string apiKey = "e2b4ffc49b9667cc448decd2841058fa"; mailchimp
         private const string apiKey = "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";

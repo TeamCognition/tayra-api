@@ -13,6 +13,7 @@ using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.Contracts;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
@@ -23,16 +24,18 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public ExternalController(CatalogDbContext catalogDb, IServiceProvider serviceProvider, IConnectorResolver connectorResolver) : base(serviceProvider)
+        public ExternalController(CatalogDbContext catalogDb, IServiceProvider serviceProvider, IConnectorResolver connectorResolver, IMailerService mailerService) : base(serviceProvider)
         {
             ConnectorResolver = connectorResolver;
             _catalogContext = catalogDb;
+            MailerService = mailerService;
         }
 
         #endregion
 
         public IConnectorResolver ConnectorResolver { get; }
 
+        private IMailerService MailerService { get; }
         private CatalogDbContext _catalogContext { get; }
 
         #region Public Methods
@@ -93,7 +96,7 @@ namespace Tayra.API.Controllers
 
                 _catalogContext.SaveChanges();
 
-                EmailService.SendEmail("haris.botic96@gmail.com",
+                MailerService.SendEmail("haris.botic96@gmail.com",
                     "haris@tayra.io",
                     "New Try Submitted (Landing Page Try for free)",
                     JsonConvert.SerializeObject(dto));
@@ -128,12 +131,12 @@ namespace Tayra.API.Controllers
 
             try
             {
-                EmailService.SendEmail("haris.botic96@gmail.com",
+                MailerService.SendEmail("haris.botic96@gmail.com",
                     "haris@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));
 
-                EmailService.SendEmail("haris.botic96@gmail.com",
+                MailerService.SendEmail("haris.botic96@gmail.com",
                     "ejub@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));

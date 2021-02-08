@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Mime;
+using Tayra.Common;
 using Tayra.Mailer.Contracts;
 using Tayra.Mailer.Enums;
 
@@ -15,29 +16,29 @@ namespace Tayra.Mailer.MailerTemplateModels
         public string FirstName { get; set; }
         public string SenderName { get; set; }
         public string Link { get; set; }
-        public PraiseReceivedType PraiseReceivedType { get; set; }
+        public PraiseTypes PraiseType { get; set; }
 
-        public PraiseReceivedTemplateModel(string subject, string firstName, string senderName, string link, PraiseReceivedType praiseReceivedType)
+        public PraiseReceivedTemplateModel(string subject, string firstName, string senderName, string link, PraiseTypes praiseType)
         {
             Subject = subject;
             FirstName = firstName;
             SenderName = senderName;
             Link = link;
-            PraiseReceivedType = praiseReceivedType;
+            PraiseType = praiseType;
         }
 
         public string GetEmailTemplate()
         {
             string fileName;
-            switch (PraiseReceivedType)
+            switch (PraiseType)
             {
-                case PraiseReceivedType.Helper:
+                case PraiseTypes.Helper:
                     fileName = "PraiseReceived-Helper.cshtml";
                     break;
-                case PraiseReceivedType.TeamPlayer:
+                case PraiseTypes.TeamPlayer:
                     fileName = "PraiseReceived-TeamPlayer.cshtml";
                     break;
-                case PraiseReceivedType.HardWorker:
+                case PraiseTypes.HardWorker:
                    fileName = "PraiseReceived-HardWorker.cshtml";
                     break;
                 default:
