@@ -10,6 +10,7 @@ using Tayra.Services.Models.Profiles;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
+using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -86,7 +87,7 @@ namespace Tayra.SyncServices
 
             var tasksService = new TasksService(organizationDb);
             
-            var logsService = new LogsService(organizationDb);
+            var logsService = new LogsService(organizationDb,new MailerService());
             var tokensService = new TokensService(organizationDb);
 
             var assigneProfile = fields?.Assignee == null ? null : new ProfilesService().GetProfileByExternalId(organizationDb, fields.Assignee.AccountId, IntegrationType.ATJ);

@@ -5,6 +5,7 @@ using Cog.DAL;
 using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.Contracts;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -13,12 +14,14 @@ namespace Tayra.Services
     {
         #region Constructor
 
-        public LogsService(OrganizationDbContext dbContext) : base(dbContext)
+        public LogsService(OrganizationDbContext dbContext,IMailerService mailerService) : base(dbContext)
         {
+            MailerService = mailerService;
         }
 
         #endregion
 
+        private IMailerService MailerService { get; }
         #region Public Methods
 
         public void LogEvent(LogCreateDTO dto)
@@ -53,7 +56,7 @@ namespace Tayra.Services
 
         }
 
-        public void SendLog(Guid profileId, LogEvents logEvent, ITemplateEmailDTO dto)
+        public void SendLog(Guid profileId, LogEvents logEvent, IEmailTemplate template)
         {
             var devices = DbContext.LogDevices.Where(x => x.ProfileId == profileId).Select(x => new
             {
@@ -64,7 +67,7 @@ namespace Tayra.Services
 
             foreach (var d in devices)
             {
-                EmailService.SendEmail(d.Address, dto);
+                MailerService.SendEmail(d.Address,EmailService.noReplyAddress,template);
             }
         }
 

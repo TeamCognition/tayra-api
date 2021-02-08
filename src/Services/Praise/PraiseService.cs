@@ -5,6 +5,7 @@ using Cog.Core;
 using Cog.DAL;
 using Tayra.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.MailerTemplateModels;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -90,7 +91,11 @@ namespace Tayra.Services
                 profileId: profileId
             ));
 
-            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiver?.Username));
+            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, 
+                new PraiseReceivedTemplateModel("Praise Recieved",
+                    praiseReceiver?.Username,
+                    praiseGiver?.Username, "put link here",
+                    dto.Type));
         }
 
         public GridData<PraiseSearchGridDTO> SearchPraises(PraiseGridParams gridParams)

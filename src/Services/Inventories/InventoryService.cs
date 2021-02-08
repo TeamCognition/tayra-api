@@ -6,6 +6,7 @@ using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.MailerTemplateModels;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -201,8 +202,9 @@ namespace Tayra.Services
                 },
                 profileId: dto.ReceiverId
             ));
-
-            LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifter?.Username));
+            //gift link is missing
+            LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted,
+                new GiftReceivedTemplateModel(receiver?.Username, gifter?.Username, "Gift Link", "You received a Gift"));
         }
 
         public void Disenchant(Guid profileId, InventoryItemDisenchantDTO dto)
@@ -264,7 +266,9 @@ namespace Tayra.Services
             {
                 DbContext.GetTrackedClaimBundle(receiverId, ClaimBundleTypes.GiftFromAdmin).AddItems(givenItem);
             }
-            LogsService.SendLog(receiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername));
+            LogsService.SendLog(receiverId, LogEvents.InventoryItemGifted,
+                new GiftReceivedTemplateModel(dto.ReceiverUsername,gifterUsername,
+                    "gif link","You received a gift"));
         }
         #endregion
     }
