@@ -6,6 +6,6 @@ namespace Tayra.Services
 {
     public interface IBlobsService
     {
-        Blob UploadToAzure(IFormFile file,BlobTypes blobType, BlobPurposes blobPurpose);
+        Blob UploadToAzure(BlobUpload msg);
     }
 }

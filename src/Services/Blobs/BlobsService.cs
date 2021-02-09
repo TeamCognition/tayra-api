@@ -29,23 +29,23 @@ namespace Tayra.Services
             _imageContainer = _storageClient.GetContainerReference("imgs");
         }
 
-        public Blob UploadToAzure(IFormFile file,BlobTypes blobType, BlobPurposes blobPurpose)
+        public Blob UploadToAzure(BlobUpload msg)
         {
             var blob = new Blob
             {
                 Id = Guid.NewGuid(),
-                Filesize = file.Length,
-                Extension = GetExtension(file.FileName),
-                Filename = Path.GetFileNameWithoutExtension(file.FileName),
-                Type = blobType,
-                Purpose = blobPurpose
+                Filesize = msg.File.Length,
+                Extension = GetExtension(msg.File.FileName),
+                Filename = Path.GetFileNameWithoutExtension(msg.File.FileName),
+                Type = msg.BlobType,
+                Purpose = msg.BlobPurpose
             };
 
             CloudBlockBlob blockBlob = _imageContainer.GetBlockBlobReference($"{blob.Id.ToString()}.{blob.Extension}");
-            blockBlob.Properties.ContentType = file.ContentType;
-            blockBlob.Properties.ContentDisposition = $"attachment;filename=\"{blobPurpose}-{blob.Id}\"";
+            blockBlob.Properties.ContentType = msg.File.ContentType;
+            blockBlob.Properties.ContentDisposition = $"attachment;filename=\"{msg.BlobPurpose}-{blob.Id}\"";
 
-            using (Stream stream = file.OpenReadStream())
+            using (Stream stream = msg.File.OpenReadStream())
             {
                 stream.Position = 0;
                 blockBlob.UploadFromStream(stream);

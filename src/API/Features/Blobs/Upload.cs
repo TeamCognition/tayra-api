@@ -23,12 +23,7 @@ namespace Tayra.API.Features.Blobs
     {
         private static readonly string[] ImageFileExtensions = {".jpg", ".jpeg", ".gif", ".png"};
 
-        public record Command : IRequest<Result>
-        {
-            public BlobTypes BlobType { get; init; }
-            public BlobPurposes BlobPurpose { get; init; }
-            public IFormFile File { get; init; }
-        }
+        public record Command : BlobUpload, IRequest<Result> { }
 
         public record Result
         {
@@ -55,7 +50,7 @@ namespace Tayra.API.Features.Blobs
                     throw new ApplicationException("File has to be an image");
                 }
 
-                var blob = new BlobsService(_config, _db).UploadToAzure(msg.File, msg.BlobType, msg.BlobPurpose);
+                var blob = new BlobsService(_config, _db).UploadToAzure(msg);
                 await _db.SaveChangesAsync(token);
 
                 return new Result
