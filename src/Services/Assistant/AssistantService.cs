@@ -61,7 +61,7 @@ namespace Tayra.Services
 
         public GridData<AssistantSegmentGridDTO> GetSegmentActionPointGrid(GridParams gridParams, Guid segmentId)
         {
-            var q = from ap in DbContext.ActionPoints
+            var q = from ap in DbContext.ActionPoints.AsEnumerable()
                     where ap.SegmentId == segmentId
                     where ap.ConcludedOn == null
                     group ap by ap.Type into g

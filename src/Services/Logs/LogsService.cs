@@ -79,29 +79,26 @@ namespace Tayra.Services
             }
             else
             {
-                query = from l in query
-                    join pl in DbContext.ProfileLogs on l.Log.Id equals pl.LogId
+                query = from pl in query
                     where gridParams.ProfileIds.Contains(pl.ProfileId)
-                    select l;
+                    select pl;
  
             }
             if (gridParams.TeamIds.Length > 0)
             {
                 var tm = DbContext.ProfileAssignments.Where(x => gridParams.TeamIds.Contains(x.TeamId.Value)).Select(x => x.ProfileId).ToArray();
  
-                query = from l in query
-                    join pl in DbContext.ProfileLogs on l.Log.Id equals pl.LogId
+                query = from pl in query
                     where tm.Contains(pl.ProfileId)
-                    select l;
+                    select pl;
             }
             if (gridParams.SegmentIds.Length > 0)
             {
                 var sm = DbContext.ProfileAssignments.Where(x => gridParams.SegmentIds.Contains(x.SegmentId)).Select(x => x.ProfileId).ToArray();
  
-                query = from l in query
-                    join pl in DbContext.ProfileLogs on l.Log.Id equals pl.LogId
+                query = from pl in query
                     where sm.Contains(pl.ProfileId)
-                    select l;
+                    select pl;
             }
             // if (gridParams.ShopLogs.HasValue && gridParams.ShopLogs.Value)
             // {
@@ -113,20 +110,18 @@ namespace Tayra.Services
             //             select sl;
             // }
 
-            IQueryable<Log> logsQuery= from l in DbContext.Logs
-                join pl in query on l.Id equals pl.LogId
-                select l; 
-            GridData<LogGridDTO> gridData= logsQuery.Select(l=> new LogGridDTO
+            
+            GridData<LogGridDTO> gridData= query.Select(l=> new LogGridDTO
             {
-                Data = JsonConvert.DeserializeObject(l.Data),
+                Data = JsonConvert.DeserializeObject(l.Log.Data),
                 Event = l.Event,
-                Created = l.Created,
-                Description = l.Description,
-                DescriptionLink = l.DescriptionLink,
-                AuthorAvatar = l.AuthorAvatar,
-                AuthorName = l.AuthorName,
-                AuthorUsername = l.AuthorUsername,
-                IsGuidedByTayra = l.IsGuidedByTayra
+                Created = l.Log.Created,
+                Description = l.Log.Description,
+                DescriptionLink = l.Log.DescriptionLink,
+                AuthorAvatar = l.Log.AuthorAvatar,
+                AuthorName = l.Log.AuthorName,
+                AuthorUsername = l.Log.AuthorUsername,
+                IsGuidedByTayra = l.Log.IsGuidedByTayra
             }).GetGridData(gridParams);
 
             return gridData;

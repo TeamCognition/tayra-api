@@ -138,21 +138,26 @@ namespace Tayra.Services
         {
             var segment = DbContext.Segments.FirstOrDefault(x => x.Key == segmentKey);
             segment.EnsureNotNull(segmentKey);
+            Console.WriteLine((DateTime.UtcNow - segment.Created).Days);
+            var result = (from r in DbContext.SegmentReportsDaily
+                where r.SegmentId == segment.Id
+                orderby r.DateId descending
+                select new SegmentRawScoreDTO
+                {
+                    TasksCompleted = r.TasksCompletedTotal,
+                    AssistsGained = r.AssistsTotal,
+                    TimeWorked = r.TasksCompletionTimeTotal,
+                    TokensEarned = r.CompanyTokensEarnedTotal,
+                    TokensSpent = r.CompanyTokensSpentTotal,
+                    ItemsBought = r.ItemsBoughtTotal,
+                    QuestsCompleted = 0
+                }).FirstOrDefault();
+            if (result != null)
+            {
+                result.DaysOnTayra = (DateTime.UtcNow - segment.Created).Days;
+            }
 
-            return (from r in DbContext.SegmentReportsDaily
-                    where r.SegmentId == segment.Id
-                    orderby r.DateId descending
-                    select new SegmentRawScoreDTO
-                    {
-                        TasksCompleted = r.TasksCompletedTotal,
-                        AssistsGained = r.AssistsTotal,
-                        TimeWorked = r.TasksCompletionTimeTotal,
-                        TokensEarned = r.CompanyTokensEarnedTotal,
-                        TokensSpent = r.CompanyTokensSpentTotal,
-                        ItemsBought = r.ItemsBoughtTotal,
-                        QuestsCompleted = 0,
-                        DaysOnTayra = (DateTime.UtcNow - segment.Created).Days
-                    }).FirstOrDefault();
+            return result;
         }
 
         public Dictionary<int, MetricService.AnalyticsMetricWithIterationSplitDto> GetSegmentAverageMetrics(string segmentKey)
