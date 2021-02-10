@@ -118,6 +118,13 @@ namespace Tayra.Connectors.Slack
             // }
         }
 
+        public UsersListResponse GetUsersList(Guid integrationId)
+        {
+            var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.Id == integrationId && x.ProfileId == null);
+            var botToken = segmentIntegration.Fields.FirstOrDefault(x => x.Key == Constants.ACCESS_TOKEN).Value;
+            return SlackService.GetUsersList(botToken).Data;
+        }
+
         public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
 
         #endregion
