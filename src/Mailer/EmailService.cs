@@ -1,4 +1,6 @@
-﻿using SendGrid;
+﻿using System;
+using System.IO;
+using SendGrid;
 using SendGrid.Helpers.Mail;
 
 namespace Tayra.Mailer
@@ -27,6 +29,20 @@ namespace Tayra.Mailer
             var plainTextContent = "body";
             var htmlContent = body;
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            return client.SendEmailAsync(msg).GetAwaiter().GetResult();
+        }
+        
+        public static Response SendEmailWithAttachment(string sender, string recipient, string subject, string body)
+        {
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress(sender, "Tayra Admin");
+            var to = new EmailAddress(recipient, "CTO Haris");
+            var plainTextContent = "body";
+            var htmlContent = body;
+            var pathOfGeneratedPdf = MailerUtils.GeneratePdfFromHtml(body);
+            var pdfFile = File.ReadAllBytes(pathOfGeneratedPdf);
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            msg.AddAttachment(DateTime.UtcNow.ToShortDateString(),Convert.ToBase64String(pdfFile));
             return client.SendEmailAsync(msg).GetAwaiter().GetResult();
         }
     }

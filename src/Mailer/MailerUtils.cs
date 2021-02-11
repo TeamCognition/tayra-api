@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using PhantomJs.NetCore;
 using RazorLight;
 using Tayra.Mailer.MailerTemplateModels;
 
@@ -27,6 +28,13 @@ namespace Tayra.Mailer
                 .UseMemoryCachingProvider()
                 .Build();
             return engine.CompileRenderStringAsync(templateKey, template, model).GetAwaiter().GetResult();
+        }
+
+        public static string GeneratePdfFromHtml(string htmlToConvert)
+        {
+            var generator = new PdfGenerator();
+            var pathOfGeneratedPdf = generator.GeneratePdf(htmlToConvert, Directory.GetCurrentDirectory());
+            return pathOfGeneratedPdf;
         }
     }
 }
