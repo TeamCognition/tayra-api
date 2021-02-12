@@ -13,9 +13,9 @@ namespace Tayra.API.Features.Teams
 {
     public partial class TeamsController
     {
-        [HttpGet("{teamKey}")]
-        public async Task<GetTeam.Result> GetTeam([FromUri] string teamKey)
-            => await _mediator.Send(new GetTeam.Query {TeamKey = teamKey});
+        [HttpGet("{segmentKey}/{teamKey}")]
+        public async Task<GetTeam.Result> GetTeam([FromUri] string segmentKey, [FromUri] string teamKey)
+            => await _mediator.Send(new GetTeam.Query {SegmentKey = segmentKey, TeamKey = teamKey});
     }
 
     public class GetTeam
@@ -23,6 +23,8 @@ namespace Tayra.API.Features.Teams
         public record Query : IRequest<Result>
         {
             public string TeamKey { get; init; }
+            public string SegmentKey { get; init; }
+
         }
 
         public record Result
@@ -44,7 +46,7 @@ namespace Tayra.API.Features.Teams
             public async Task<Result> Handle(Query msg, CancellationToken token)
             {
                 var team = await _db.Teams
-                    .Where(x => x.Key == msg.TeamKey)
+                    .Where(x => x.Segment.Key == msg.SegmentKey && x.Key == msg.TeamKey)
                     .Select(x => new Result
                     {
                         TeamId = x.Id,
