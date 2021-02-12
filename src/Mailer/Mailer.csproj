@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Connectors\Connectors.Slack\Connectors.Slack.csproj" />
+    <ProjectReference Include="..\ToPdfConvertor\ToPdfConvertor.csproj" />
   </ItemGroup>
 
   <ProjectExtensions>
