@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cog.DAL", "cog\Cog.DAL\Cog.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.Slack", "src\Connectors\Connectors.Slack\Connectors.Slack.csproj", "{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToPdfConvertor", "src\ToPdfConvertor\ToPdfConvertor.csproj", "{C86B2BCB-714B-463F-97A5-CD5710EAF55C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +130,10 @@ Global
 		{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C86B2BCB-714B-463F-97A5-CD5710EAF55C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C86B2BCB-714B-463F-97A5-CD5710EAF55C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C86B2BCB-714B-463F-97A5-CD5710EAF55C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C86B2BCB-714B-463F-97A5-CD5710EAF55C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{92F6BEEC-DFF8-4649-87D9-C0C91FED33EF} = {5E95A6E4-610B-481F-8AE0-932224E8F436}
