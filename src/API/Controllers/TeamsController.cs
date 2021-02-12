@@ -21,12 +21,6 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpGet("{segmentKey}/{teamKey}")]
-        public ActionResult<TeamViewDTO> GetTeam([FromRoute] string segmentKey, [FromRoute] string teamKey)
-        {
-            return Ok(TeamsService.GetTeamViewDTO(segmentKey, teamKey));
-        }
-
         [HttpGet("{teamId}/rawScore")]
         public ActionResult<TeamRawScoreDTO> GetTeamRawScore([FromRoute] Guid teamId)
         {
