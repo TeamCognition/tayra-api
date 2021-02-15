@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services;
+using Tayra.Services._Services.Auth;
 using Tayra.Services.Models.Profiles;
 
 namespace Tayra.API.Features.Profile
@@ -85,7 +86,7 @@ namespace Tayra.API.Features.Profile
                         IsAnalyticsEnabled = p.IsAnalyticsEnabled
                     }).FirstOrDefaultAsync(token);
 
-                (IQueryable<Segment> qs, IQueryable<Team> qt) = Auth.Controllers.AuthorizationController.GetSegmentAndTeamQueries(_db, cache.ProfileId, cache.Role);
+                (IQueryable<Segment> qs, IQueryable<Team> qt) = AuthService.GetSegmentAndTeamQueries(_db, cache.ProfileId, cache.Role);
 
                 cache.Segments = qs.Select(s => new Result.Segment
                 {

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Cog.Core;
 using Cog.DAL;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpenIddict.Validation.AspNetCore;
 using Tayra.Models.Organizations;
 using Result = Cog.Core.GridData<Tayra.API.Features.Profile.SearchProfiles.ResultDto>;
 
@@ -14,6 +16,7 @@ namespace Tayra.API.Features.Profile
 {
     public partial class ProfilesController
     {
+        [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
         [HttpPost("search")]
         public async Task<Result> Search([FromBody] SearchProfiles.Query gridParams)
         {
