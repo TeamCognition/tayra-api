@@ -52,8 +52,8 @@ namespace Tayra.API.Features.Teams
 
                 team.EnsureNotNull(msg.TeamId);
 
-                var teamMembers = _db.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId)
-                    .ToArray();
+                var teamMembers = await  _db.ProfileAssignments.Where(x => x.TeamId == team.Id).Select(x => x.ProfileId)
+                    .ToArrayAsync(token);
 
                 var yesterdayDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-1));
 
