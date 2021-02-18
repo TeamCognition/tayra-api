@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Cog.Core;
 using Cog.DAL;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Models.Organizations;
