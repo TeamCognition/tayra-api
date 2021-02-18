@@ -250,18 +250,18 @@ namespace Tayra.Services
                 Comment = dto.Comment
             });
 
-            LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.QuestGoalCompleted,
-                Data = new Dictionary<string, string>
-                {
-                    { "timestamp", DateTime.UtcNow.ToString() },
-                    { "profileUsername", profile.Username },
-                    { "questName", goal.Quest.Name },
-                    { "goalTitle", goal.Title }
-                },
-                ProfileId = profile.Id,
-            });
+            // LogsService.LogEvent(new LogCreateDTO
+            // {
+            //     Event = LogEvents.QuestGoalCompleted,
+            //     Data = new Dictionary<string, string>
+            //     {
+            //         { "timestamp", DateTime.UtcNow.ToString() },
+            //         { "profileUsername", profile.Username },
+            //         { "questName", goal.Quest.Name },
+            //         { "goalTitle", goal.Title }
+            //     },
+            //     ProfileId = profile.Id,
+            // });
         }
 
         public void CommitToQuest(Guid profileId, QuestCommitDTO dto)
@@ -306,18 +306,18 @@ namespace Tayra.Services
             }
             questCommit.CompletedAt = DateTime.UtcNow;
 
-            LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.QuestCompleted,
-                Data = new Dictionary<string, string>
-                {
-                    { "timestamp", DateTime.UtcNow.ToString() },
-                    { "profileUsername", profile.Username },
-                    { "questName", quest.Name },
-                    { "questRewardValue", quest.RewardValue.ToString() }
-                },
-                ProfileId = profile.Id,
-            });
+            // LogsService.LogEvent(new LogCreateDTO
+            // {
+            //     Event = LogEvents.QuestCompleted,
+            //     Data = new Dictionary<string, string>
+            //     {
+            //         { "timestamp", DateTime.UtcNow.ToString() },
+            //         { "profileUsername", profile.Username },
+            //         { "questName", quest.Name },
+            //         { "questRewardValue", quest.RewardValue.ToString() }
+            //     },
+            //     ProfileId = profile.Id,
+            // });
         }
 
         public void EndQuest(Guid profileId, int questId)

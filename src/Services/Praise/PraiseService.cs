@@ -59,32 +59,34 @@ namespace Tayra.Services
 
             var praiseGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
             var praiseReceiverUsername = DbContext.Profiles.Where(x => x.Id == dto.ProfileId).Select(x => x.Username).FirstOrDefault();
-
+            
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.ProfilePraiseGiven,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.ProfilePraiseGiven,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", praiseGiverUsername },
                     { "receiverUsername", praiseReceiverUsername },
-                    { "type", dto.Type.ToString() }
+                    { "praiseType", dto.Type.ToString() }
                 },
-                ProfileId = profileId,
-            });
-
+                profileId: profileId
+            ));
+            
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.ProfilePraiseReceived,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.ProfilePraiseReceived,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", praiseReceiverUsername },
                     { "giverUsername", praiseGiverUsername },
-                    { "type", dto.Type.ToString() }
+                    { "praiseType", dto.Type.ToString() }
                 },
-                ProfileId = dto.ProfileId,
-            });
+                profileId: profileId
+            ));
 
             LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
         }

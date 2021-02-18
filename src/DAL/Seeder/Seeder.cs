@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Tayra.Common;
 using Tayra.DAL;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
@@ -18,19 +12,20 @@ namespace Tayra.Models.Seeder
         {
             using (var catalogDbContext = new CatalogDbContext(ConnectionStringUtilities.GetCatalogDbConnStr(config)))
             {
-                var tenantKeys = catalogDbContext.TenantInfo.Where(x => x.Identifier != DemoKey).Select(x => x.ConnectionString).ToArray();
-                Seed(tenantKeys);
+                var tenantConnStrs = catalogDbContext.TenantInfo.Where(x => x.Identifier != DemoKey).Select(x => x.ConnectionString).ToArray();
+                Seed(false, tenantConnStrs);
             }
         }
 
-        public static void Seed(params string[] tenantConnectionStrings)
+        public static void Seed(bool shouldDemoSeed = false, params string[] tenantConnectionStrings)
         {
             foreach (var connStr in tenantConnectionStrings)
             {
                 var tenantInfo = TenantModel.WithConnectionStringOnly(connStr);
                 using (var organizationDb = new OrganizationDbContext(tenantInfo, null))
                 {
-                    if (connStr == DemoKey)
+                    tenantInfo.Id = organizationDb.LocalTenants.FirstOrDefault()?.TenantId.ToString();
+                    if (connStr == DemoKey || shouldDemoSeed)
                     {
                         DemoSeeds.DemoSeeds.SeedDemo(organizationDb);
                     }

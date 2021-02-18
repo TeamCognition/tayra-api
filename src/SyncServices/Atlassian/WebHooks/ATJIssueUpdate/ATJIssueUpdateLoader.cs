@@ -118,21 +118,21 @@ namespace Tayra.SyncServices
                 if (assigneProfile != null)
                 {
                     logsService.LogEvent(new LogCreateDTO
-                    {
-                        Event = LogEvents.IssueStatusChange,
-                        Data = new Dictionary<string, string>
-                    {
-                        { "timestamp", DateTime.UtcNow.ToString() },
-                        { "issueUrl", jiraBaseUrl + "/browse/" + we.JiraIssue.Key },
-                        { "issueKey", we.JiraIssue.Key },
-                        { "issueSummary", fields.Summary },
-                        { "issueStatus", fields.Status.Name },
-                        { "profileUsername", assigneProfile.Username },
-                        { "competitorName", assigneProfile.Username }, //prev: activeCompetitions.FirstOrDefault()?.CompetitorName
-                        { "timespent", fields.Timespent.ToString()}
-                    },
-                        ProfileId = assigneProfile.Id
-                    });
+                    (
+                        eventType: LogEvents.IssueStatusChange,
+                        timestamp: DateTime.UtcNow,
+                        description: fields.Summary,
+                        externalUrl: jiraBaseUrl + "/browse/" + we.JiraIssue.Key,
+                        data: new Dictionary<string, string>
+                        {
+                            { "issueKey", we.JiraIssue.Key },
+                            { "issueStatus", fields.Status.Name },
+                            { "timespent", fields.Timespent.ToString()}
+                        
+                        },
+                        profileId: assigneProfile.Id
+                    ));
+                    
                 }
 
                 organizationDb.SaveChanges();
@@ -228,21 +228,20 @@ namespace Tayra.SyncServices
             });
 
             logsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.StatusChangeToCompleted,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.StatusChangeToCompleted,
+                timestamp: DateTime.UtcNow,
+                description: fields.Summary,
+                externalUrl: jiraBaseUrl + "/browse/" + we.JiraIssue.Key,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", DateTime.UtcNow.ToString() },
-                    { "issueUrl", jiraBaseUrl + "/browse/" + we.JiraIssue.Key },
                     { "issueKey", we.JiraIssue.Key },
-                    { "issueSummary", fields.Summary },
                     { "issueStatus", fields.Status.Name },
                     { "effortScore", Math.Round(effortScoreDiff, 2).ToString() },
-                    { "profileUsername", assigneProfile.Username },
-                    { "timespent", TayraEffortCalculator.GetEffectiveTimeSpent(fields.Timespent, autoTimeSpent).ToString()}
+                    { "timeSpent", TayraEffortCalculator.GetEffectiveTimeSpent(fields.Timespent, autoTimeSpent).ToString()}
                 },
-                ProfileId = assigneProfile.Id
-            });
+                profileId: assigneProfile.Id
+            ));
 
             var aps = organizationDb.ActionPoints.Where(x => x.ProfileId == assigneProfile.Id && x.ConcludedOn == null && (x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn1Week || x.Type == ActionPointTypes.ProfilesNoCompletedTasksIn2Week)).ToArray();
             foreach (var ap in aps)

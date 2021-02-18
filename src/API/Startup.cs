@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MoreLinq.Extensions;
 using OpenIddict.Validation.AspNetCore;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using Tayra.API.Helpers;
@@ -187,7 +188,7 @@ namespace Tayra.API
                 c.RoutePrefix = string.Empty;
             });
             
-            //catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
+            // catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
         }
 
         #region Private Methods

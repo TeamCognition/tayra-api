@@ -59,7 +59,7 @@ namespace Tayra.Services
             {
                 LogDeviceType = x.Type,
                 Address = x.Address,
-                IsEnabled = x.Settings.Where(s => s.LogEvent == logEvent && s.IsEnabled == false).Any()
+                IsEnabled = x.Settings.Any(s => s.LogEvent == logEvent && s.IsEnabled == false)
             }).ToList();
 
             foreach (var d in devices)
@@ -111,17 +111,17 @@ namespace Tayra.Services
             // }
 
             
-            GridData<LogGridDTO> gridData= query.Select(l=> new LogGridDTO
+            GridData<LogGridDTO> gridData = query.Select(pl=> new LogGridDTO
             {
-                Data = JsonConvert.DeserializeObject(l.Log.Data),
-                Event = l.Event,
-                Created = l.Log.Created,
-                Description = l.Log.Description,
-                DescriptionLink = l.Log.DescriptionLink,
-                AuthorAvatar = l.Log.AuthorAvatar,
-                AuthorName = l.Log.AuthorName,
-                AuthorUsername = l.Log.AuthorUsername,
-                IsGuidedByTayra = l.Log.IsGuidedByTayra
+                Data = JsonConvert.DeserializeObject(pl.Log.Data),
+                Event = pl.Event,
+                Created = pl.Log.Created,
+                Message = pl.Log.Description,
+                Uri = pl.Log.ExternalUrl,
+                ProfileAvatar = pl.Profile.Avatar,
+                ProfileFullName = pl.Profile.FirstName + " " + pl.Profile.LastName,
+                ProfileUsername = pl.Profile.Username,
+                IsAssistedByTayra = pl.Log.IsAssistedByTayra
             }).GetGridData(gridParams);
 
             return gridData;

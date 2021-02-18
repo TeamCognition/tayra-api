@@ -8,18 +8,12 @@ namespace Tayra.Models.Organizations
     {
         public string Data { get; set; }
         
-        public bool IsGuidedByTayra { get; set; }
+        public bool IsAssistedByTayra { get; set; }
 
         public string Description { get; set; } 
         
-        public string DescriptionLink { get; set; } 
+        public string ExternalUrl { get; set; } 
         
-        public string AuthorAvatar { get; set; }
-
-        public string AuthorName { get; set; }
-
-        public string AuthorUsername { get; set; }
-
         public LogEvents Event { get; set; }
 
         #region ITimeStampedEntity
