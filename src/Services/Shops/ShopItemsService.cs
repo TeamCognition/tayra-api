@@ -91,8 +91,7 @@ namespace Tayra.Services
             var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs and price*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
             var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenType == TokenType.CompanyToken).Sum(x => x.Value);
             var segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => (Guid?)x.SegmentId).FirstOrDefault();
-
-            shop.EnsureNotNull(shop.Id);
+            
             shopItem.EnsureNotNull(shop.Id, dto.ItemId);
 
             if (!dto.DemoDate.HasValue && !ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Item.Price, shopItem.Item.ShopQuantityRemaining))
@@ -132,24 +131,23 @@ namespace Tayra.Services
                     Created = dto.DemoDate ?? DateTime.UtcNow
                 });
             }
-
-            var buyerUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
+            
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.ShopItemPurchased,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.ShopItemPurchased,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", buyerUsername },
                     { "itemPrice", shopItem.DiscountPrice?.ToString() ?? shopItem.Item.Price.ToString() },
                     { "itemId", shopItem.ItemId.ToString() },
+                    { "itemName", shopItem.Item.Name },
                     { "purchaseStatus", purchaseStatus.ToString() },
-                    { "segmentId", segmentId.ToString()},
-                    { "itemName", shopItem.Item.Name }
                 },
-                ProfileId = profileId,
-                ShopId = shop.Id
-            });
+                profileId: profileId,
+                shopId: shop.Id
+            ));
         }
 
         public void EnableShopItem(Guid itemId)

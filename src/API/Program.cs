@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Tayra.API
 {
@@ -14,7 +15,13 @@ namespace Tayra.API
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
+                .ConfigureLogging(logging =>
+                {
+                    //logging.ClearProviders();
+                    logging.AddDebug();
+                    logging.AddConsole();
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.ConfigureAppConfiguration(SharedAppConfiguration);
                 webBuilder.UseStartup<Startup>();

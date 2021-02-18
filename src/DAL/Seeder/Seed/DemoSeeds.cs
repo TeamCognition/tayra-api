@@ -47,10 +47,10 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 {
                     foreach (IDataRecord row in result)
                     {
-                        string TableName = row.GetString(0);
-                        if (!TableName.StartsWith("_") && row.GetInt32(1) == 1)
+                        string tableName = row.GetString(0);
+                        if (!tableName.StartsWith("_") && row.GetInt32(1) == 1)
                         {
-                            tables.Add(TableName);
+                            tables.Add(tableName);
                         }
                     }
                 }
@@ -69,7 +69,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     Console.WriteLine("Deleting " + tableName);
                     try
                     {
-                        context.Database.ExecuteSqlInterpolated($"DELETE FROM {tableName}");
+                        context.Database.ExecuteSqlRaw($"DELETE FROM {tableName}");
                         //context.Database.ExecuteSqlCommand($"DELETE FROM {tableName}", tableName);
                         finishedTables.Add(tableName);
                     }
@@ -81,14 +81,20 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 }
             }
         }
-        public static void AddOrganization(OrganizationDbContext organizationDb)
+        public static void AddOrganization(OrganizationDbContext organizationDb, LocalTenant existingLocalTenant = null)
         {
             Console.WriteLine("Seeding demo account");
-            organizationDb.Add(new LocalTenant
+            var localTenant = existingLocalTenant ?? new LocalTenant
             {
                 DisplayName = "Demo organization",
-                TenantId = Guid.Parse(organizationDb.TenantInfo.Id)
-            });
+                TenantId = Guid.NewGuid(),
+                Identifier = "demo.tayra.io",
+                IsAppsOnboardingCompleted = true,
+                IsMembersOnboardingCompleted = true,
+                IsSegmentOnboardingCompleted = true,
+            };
+            
+            organizationDb.Add(localTenant);
             organizationDb.SaveChanges();
         }
 
@@ -96,26 +102,34 @@ namespace Tayra.Models.Seeder.DemoSeeds
         {
             var demoData = JsonConvert.DeserializeObject<DemoSeedData>(File.ReadAllText("input/demo.json"));
             var demoTaskNames = File.ReadAllLines("input/demo-task-names.txt");
-
+            var existingProfilesInDb = organizationDb.Profiles.ToArray();
+            var existingLocalTenant = organizationDb.LocalTenants.FirstOrDefault();
+            
             UnseedDemo(organizationDb);
 
             //Essentials
             Seeder.SeedNoSave(organizationDb);
-            AddOrganization(organizationDb);
+            AddOrganization(organizationDb, existingLocalTenant);
             organizationDb.SaveChanges();
 
 
             Console.WriteLine("Seeding Profiles ...");
-            demoData.Profiles.ForEach(x =>
+            for (int i = 0; i < demoData.Profiles.Length; i++)
             {
-                if (x.Role == ProfileRoles.Member)
-                    x.IsAnalyticsEnabled = true;
-            });
+                if (demoData.Profiles[i].Role == ProfileRoles.Member)
+                    demoData.Profiles[i].IsAnalyticsEnabled = true;
+
+                if (existingProfilesInDb.Length > i)
+                {
+                    demoData.Profiles[i] = existingProfilesInDb[i];
+                }
+            }
+
             organizationDb.Profiles.AddRange(demoData.Profiles);
-            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
             //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] ON");
             organizationDb.SaveChanges();
-            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
             //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Profiles] OFF");
             demoData.Profiles = demoData.Profiles.Where(x => x.Role == ProfileRoles.Member).ToArray();
 
@@ -132,7 +146,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                         Type = IntegrationType.ATJ,
                         Fields = new List<IntegrationField>() {
                             new IntegrationField {
-                                Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + "DemoProject-" + segment.Id,
+                                Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + "DemoProject-" + segment.Id.ToString().Substring(0,5),
                                 Value = "REWARDING_ID"
                             },
                             new IntegrationField {
@@ -162,26 +176,26 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     Type = IntegrationType.ATJ,
                     Fields = new List<IntegrationField>() {
                             new IntegrationField {
-                                Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + "DemoProject-" + segment.Id,
+                                Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + "DemoProject-" + segment.ToString().Substring(0,5),
                                 Value = "REWARDING_ID"
                             }
                         }
                 });
             }
 
-            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
             //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] ON");
             organizationDb.SaveChanges();
-            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
             //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Segments] OFF");
 
             Console.WriteLine("Seeding Teams ...");
             organizationDb.Teams.AddRange(demoData.Teams);
 
-            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
             //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] ON");
             organizationDb.SaveChanges();
-            organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
+            //organizationDb.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
             //organizationDb.Database.ExecuteSqlCommand(@"SET IDENTITY_INSERT [dbo].[Teams] OFF");
 
             Console.WriteLine("Seeding ProfileAssignments ...");
@@ -237,6 +251,9 @@ namespace Tayra.Models.Seeder.DemoSeeds
                 t.Priority = TaskPriorities.Medium;
                 t.Status = TaskStatuses.Done;
                 t.Type = TaskTypes.Task;
+                var team = demoData.Teams[rnd.Next(0, demoData.Teams.Length-1)];
+                t.TeamId = team.Id;
+                t.SegmentId = team.SegmentId;
 
                 TaskConverterJira taskConverter = new TaskConverterJira(
                     organizationDb,
@@ -259,7 +276,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                                 },
                                 Project = new JiraProject
                                 {
-                                    Id = "DemoProject-" + t.SegmentId
+                                    Id = "DemoProject-" + t.SegmentId.ToString().Substring(0,5)
                                 },
                                 StoryPointsCF = t.StoryPoints,
                                 Summary = demoTaskNames[taskCounter % demoTaskNames.Length],

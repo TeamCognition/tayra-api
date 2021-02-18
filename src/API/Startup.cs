@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using AutoMapper;
 using Cog.Core;
@@ -10,11 +11,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MoreLinq.Extensions;
 using OpenIddict.Validation.AspNetCore;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using Tayra.API.Helpers;
-using Tayra.Auth;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Common;
@@ -43,9 +46,6 @@ namespace Tayra.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var c = Configuration;
-            var xx = c["Connectors:Atlassian:Jira:AppId"];
-            var xx2 = c["Connectors:Github:AppId"];
             services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
             services.AddMultiTenant<Tenant>()
                 .WithEFCoreStore<CatalogDbContext, Tenant>()
@@ -73,6 +73,25 @@ namespace Tayra.API
             services.AddAutoMapper(typeof(Startup));
 
             services.AddMediatR(typeof(Startup));
+            
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            });
+            
+            // Register the OpenIddict validation components.
+            services.AddOpenIddict()
+                .AddValidation(options =>
+                {
+                    options.SetIssuer(new Uri("https://localhost:4000/"));
+                    options.AddAudiences("resource_server-api");
+                    
+                    // Register the System.Net.Http integration.
+                    options.UseSystemNetHttp();
+
+                    // Register the ASP.NET Core host.
+                    options.UseAspNetCore();
+                });
             
             //Add Application services
             services.AddTransient<ILogsService, LogsService>();
@@ -111,16 +130,11 @@ namespace Tayra.API
             services.AddCors();
 
             services.AddControllers();
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-            });
-
+            
             services.AddMvcCore()
                 .AddNewtonsoftJson()
                 .AddApiExplorer(); //for swagger
             
-            services.AddTayraAuthServices(Configuration);
             services.AddImagerServices(Configuration);
             ConfigureSwagger(services);
         }
@@ -187,7 +201,7 @@ namespace Tayra.API
                 c.RoutePrefix = string.Empty;
             });
             
-            //catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
+            // catalogDbContext.TenantInfo.AsNoTracking().ToArray().ForEach(x => OrganizationDbContext.DatabaseEnsureCreatedAndMigrated(x.ConnectionString));
         }
 
         #region Private Methods

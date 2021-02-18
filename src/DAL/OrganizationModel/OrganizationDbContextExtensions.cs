@@ -18,6 +18,7 @@ namespace Tayra.Models.Organizations
             {
                 trackedClaimBundle = dbContext.Add(new ClaimBundle
                 {
+                    Id = Guid.NewGuid(),
                     ProfileId = profileId,
                     Type = claimBundleType
                 });

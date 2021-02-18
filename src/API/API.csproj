@@ -16,9 +16,10 @@
 
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(DotnetPackagesVersion)" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(DotnetPackagesVersion)" />
+    <PackageReference Include="OpenIddict.Validation.AspNetCore" Version="3.0.1" />
+    <PackageReference Include="OpenIddict.Validation.SystemNetHttp" Version="3.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(DotnetPackagesVersion)" />
-    <PackageReference Include="OpenIddict.Validation" Version="3.0.0-rc2.20607.88" />
     <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="6.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(DotnetPackagesVersion)" />
   </ItemGroup>
@@ -36,7 +37,6 @@
     <ProjectReference Include="..\Services\Services.csproj" />
     <ProjectReference Include="..\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\Auth\Auth.csproj" />
     <ProjectReference Include="..\Imager\Imager.csproj" />
     <ProjectReference Include="..\SyncServices\SyncServices.csproj" />
     <ProjectReference Include="..\..\cog\Cog.DAL\Cog.DAL.csproj" />

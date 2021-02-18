@@ -170,33 +170,35 @@ namespace Tayra.Services
                 DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.Gift).AddItems(giftedItem);
             }
 
-            var gifterUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
-            var receiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId).Username;
+            var gifterUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId)?.Username;
+            var receiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId)?.Username;
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.InventoryItemGifted,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.InventoryItemGifted,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", gifterUsername },
                     { "receiverUsername", receiverUsername },
                     { "itemName", invItem.Item.Name }
                 },
-                ProfileId = profileId,
-            });
+                profileId: profileId
+            ));
 
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.InventoryItemGiftReceived,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.InventoryItemGiftReceived,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", receiverUsername },
                     { "gifterUsername", gifterUsername },
                     { "itemName", invItem.Item.Name }
                 },
-                ProfileId = dto.ReceiverId,
-            });
+                profileId: dto.ReceiverId
+            ));
 
             LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername));
         }
@@ -219,20 +221,19 @@ namespace Tayra.Services
 
             var disenchantValue = Math.Round(invItem.Item.Price * 0.90, 2);
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.InventoryItemDisenchanted,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.InventoryItemDisenchanted,
+                timestamp: DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "profileId", profileId.ToString() },
-                    { "profileUsername", invItem.Profile.Username },
                     { "itemId", invItem.ItemId.ToString() },
                     { "ItemName", invItem.Item.Name},
                     { "disenchantValue", disenchantValue.ToString() },
-                    { "timestamp", DateTime.UtcNow.ToString() }
                 },
-
-                ProfileId = profileId,
-            });
+                profileId: profileId
+            ));
 
             DbContext.Remove(claimBundleItem);
             DbContext.Remove(invItem);

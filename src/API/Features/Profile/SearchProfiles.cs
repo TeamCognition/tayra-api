@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Cog.Core;
 using Cog.DAL;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Tayra.Models.Organizations;
 using Result = Cog.Core.GridData<Tayra.API.Features.Profile.SearchProfiles.ResultDto>;
 
@@ -28,7 +30,7 @@ namespace Tayra.API.Features.Profile
         {
             public Guid ProfileId { get; set; }
             
-            public Guid? SegmentIdExclude { get; set; }
+            public Guid[] SegmentIdsToInclude { get; set; }
             public string UsernameQuery { get; set; } = string.Empty; //prevent null reference exception
             public string NameQuery { get; set; } = string.Empty; //prevent null reference exception
             public bool? AnalyticsEnabledOnly { get; set; }
@@ -62,10 +64,10 @@ namespace Tayra.API.Features.Profile
                 Expression<Func<Models.Organizations.Profile, bool>> byUsername = x => x.Username.Contains(msg.UsernameQuery.RemoveAllWhitespaces());
                 Expression<Func<Models.Organizations.Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(msg.NameQuery.RemoveAllWhitespaces());
 
-                if (msg.SegmentIdExclude.HasValue)
+                if (msg.SegmentIdsToInclude.Any())
                 {
-                    var profileIds = _db.ProfileAssignments.Where(x => x.SegmentId == msg.SegmentIdExclude).Select(x => x.ProfileId).ToList();
-                    scope = scope.Where(x => !profileIds.Contains(x.Id));
+                    var profileIds = await _db.ProfileAssignments.Where(x => msg.SegmentIdsToInclude.Contains(x.SegmentId)).Select(x => x.ProfileId).ToArrayAsync(token);
+                    scope = scope.Where(x => profileIds.Contains(x.Id));
                 }
 
                 if (msg.AnalyticsEnabledOnly.HasValue)

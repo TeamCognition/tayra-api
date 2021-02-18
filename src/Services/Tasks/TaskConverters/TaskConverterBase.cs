@@ -225,20 +225,20 @@ namespace Tayra.Services.TaskConverters
                 }
                 LogEvents eventType = IsCompleted() ? LogEvents.StatusChangeToCompleted : LogEvents.IssueStatusChange;
                 var logData = new LogCreateDTO
-                {
-                    Event = eventType,
-                    Data = new Dictionary<string, string>
+                (
+                    eventType: eventType,
+                    timestamp: timestamp,
+                    description: GetSummary(),
+                    externalUrl: GetIssueUrl(),
+                    data: new Dictionary<string, string>
                     {
-                        { "timestamp", timestamp.ToString() },
-                        { "issueUrl", GetIssueUrl() },
-                        { "issueKey", GetExternalId() },
-                        { "issueSummary", GetSummary() },
-                        { "issueStatus", GetIssueStatusName() },
-                        { "profileUsername", AssigneeProfile.Username },
-                        { "timespent", TayraEffortCalculator.GetEffectiveTimeSpent(Data.TimeSpentInMinutes, Data.AutoTimeSpentInMinutes).ToString() }
+                        {"issueKey", GetExternalId()},
+                        {"issueStatus", GetIssueStatusName()},
+                        {"timespent", TayraEffortCalculator.GetEffectiveTimeSpent(Data.TimeSpentInMinutes, Data.AutoTimeSpentInMinutes).ToString()}
                     },
-                    ProfileId = AssigneeProfile.Id
-                };
+                    profileId: AssigneeProfile.Id
+                );
+
                 if (IsCompleted() && EffortScoreDiff.HasValue)
                 {
                     logData.Data.Add("effortScore", Math.Round(EffortScoreDiff.Value, 2).ToString());

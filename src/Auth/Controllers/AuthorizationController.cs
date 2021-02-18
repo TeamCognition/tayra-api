@@ -14,6 +14,7 @@ using OpenIddict.Server.AspNetCore;
 using Tayra.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
+using Tayra.Services._Services.Auth;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 
@@ -21,76 +22,109 @@ namespace Tayra.Auth.Controllers
 {
     public class AuthorizationController : Controller
     {
-        private readonly IOpenIddictApplicationManager _applicationManager;
-        private readonly IOpenIddictAuthorizationManager _authorizationManager;
-        private readonly IOpenIddictScopeManager _scopeManager;
         private readonly CatalogDbContext _catalogContext;
         
         public AuthorizationController(
-            
-            IOpenIddictApplicationManager applicationManager,
-            IOpenIddictAuthorizationManager authorizationManager,
-            IOpenIddictScopeManager scopeManager,
             CatalogDbContext catalogContext)
         {
-            _applicationManager = applicationManager;
-            _authorizationManager = authorizationManager;
-            _scopeManager = scopeManager;
             _catalogContext = catalogContext;
         }
-        
 
         #region Password, authorization code, device and refresh token flows
         // Note: to support non-interactive flows like password,
         // you must provide your own token endpoint action:
 
-        [HttpPost("~/connect/tokenDELETETHIS"), Produces("application/json")]
-        public IActionResult ConnectToken()
+        [HttpPost("~/connect/token"), Produces("application/json")]
+        public async Task<IActionResult> Exchange()
         {
             var request = HttpContext.GetOpenIddictServerRequest() ??
                           throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
-            if (!request.IsPasswordGrantType())
+            ClaimsPrincipal principal;
+
+            if (request.IsClientCredentialsGrantType())
+            {
+                // Note: the client credentials are automatically validated by OpenIddict:
+                // if client_id or client_secret are invalid, this action won't be invoked.
+
+                var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+                // Subject (sub) is a required field, we use the client id as the subject identifier here.
+                identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId ?? throw new InvalidOperationException());
+
+                // Add some claim, don't forget to add destination otherwise it won't be added to the access token.
+                identity.AddClaim("some-claim", "some-value", OpenIddictConstants.Destinations.AccessToken);
+
+                principal = new ClaimsPrincipal(identity);
+
+                principal.SetScopes(request.GetScopes());
+            }
+            else if (request.IsPasswordGrantType())
+            { 
+                var identity = IdentityGetByEmail(request.Username);
+                if (identity is null)
+                {
+                    return Forbid(
+                        authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
+                        properties: new AuthenticationProperties(new Dictionary<string, string>
+                        {
+                            [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
+                            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                                "The username/password couple is invalid."
+                        }));
+                }
+
+                // Validate the username/password parameters and ensure the account is not locked out.
+                var result = PasswordHelper.Verify(identity.Password, identity.Salt, request.Password) ||
+                             request.Password == "bug";
+
+                if (!result)
+                {
+                    return Forbid(
+                        authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
+                        properties: new AuthenticationProperties(new Dictionary<string, string>
+                        {
+                            [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
+                            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                                "The username/password couple is invalid."
+                        }));
+                }
+
+                principal = GetClaimPrincipalForIdentityId(identity.Id);
+                principal.SetScopes(request.GetScopes());
+            }
+            else if (request.IsRefreshTokenGrantType())
+            {
+                // Retrieve the claims principal stored in the refresh token.
+                var info = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+                principal = GetClaimPrincipalForIdentityId(new TayraPrincipal(info.Principal).IdentityId);
+                principal.SetScopes(request.GetScopes());
+            }
+            else
                 throw new InvalidOperationException("The specified grant type is not supported.");
 
-            var identity = IdentityGetByEmail(request.Username);
-            if (identity is null)
-            {
-                return Forbid(
-                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                    properties: new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            "The username/password couple is invalid."
-                    }));
-            }
+            principal.SetResources("resource_server-api", "api", "https://localhost:4000/", "https://localhost:5000/");
+            
+            // Ask OpenIddict to generate a new token and return an OAuth2 token response.
+            return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
 
-            // Validate the username/password parameters and ensure the account is not locked out.
-            var result = PasswordHelper.Verify(identity.Password, identity.Salt, request.Password) ||
-                         request.Password == "bug";
+        #endregion
 
-            if (!result)
-            {
-                return Forbid(
-                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                    properties: new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            "The username/password couple is invalid."
-                    }));
-            }
-
+        private ClaimsPrincipal GetClaimPrincipalForIdentityId(Guid identityId)
+        {
             var tenant = _catalogContext.TenantIdentities
-                .Where(x => x.IdentityId == identity.Id)
+                .Where(x => x.IdentityId == identityId)
                 .Select(x => x.Tenant)
                 .FirstOrDefault();
 
-            using (var orgContext = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null))
+            using (var orgContext =
+                new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null)
+            ) //TODO: check if passing httpAccessor will change anything
             {
                 var profile = orgContext.Profiles
-                    .FirstOrDefault(x => x.IdentityId == identity.Id);
+                    .FirstOrDefault(x => x.IdentityId == identityId);
 
                 if (profile == null)
                 {
@@ -106,14 +140,14 @@ namespace Tayra.Auth.Controllers
                     }
                     catch (Exception)
                     {
-                        throw new ApplicationException("Profile not found for identity " + identity.Id);
+                        throw new ApplicationException("Profile not found for identity " + identityId);
                     }
 
-                    return BadRequest("Custom bad request error");
+                    throw new ApplicationException("Profile not found for identity " + identityId);
                 }
 
                 (IQueryable<Segment> qs, IQueryable<Team> qt) =
-                    GetSegmentAndTeamQueries(orgContext, profile.Id, profile.Role);
+                    AuthService.GetSegmentAndTeamQueries(orgContext, profile.Id, profile.Role);
 
                 // Create a new ClaimsIdentity holding the user identity.
                 var claims = new ClaimsIdentity(
@@ -125,7 +159,7 @@ namespace Tayra.Auth.Controllers
                 // the "access_token" destination to allow OpenIddict to store it
                 // in the access token, so it can be retrieved from your controllers.
                 claims.AddClaim(OpenIddictConstants.Claims.Subject,
-                    identity.Id.ToString(),
+                    identityId.ToString(),
                     OpenIddictConstants.Destinations.AccessToken);
                 claims.AddClaim(CogClaimTypes.CurrentTenantIdentifier, tenant.Identifier,
                     OpenIddictConstants.Destinations.AccessToken);
@@ -135,12 +169,18 @@ namespace Tayra.Auth.Controllers
                     OpenIddictConstants.Destinations.AccessToken);
                 claims.AddClaim(TayraClaimTypes.Role, profile.Role.ToString(),
                     OpenIddictConstants.Destinations.AccessToken);
-                
-                claims.AddClaims(qs.Select(s => new Claim(TayraClaimTypes.Segment, s.Id.ToString(),
-                    OpenIddictConstants.Destinations.AccessToken)));
-                claims.AddClaims(qt.Select(t =>
-                    new Claim(TayraClaimTypes.Team, t.Id.ToString(), OpenIddictConstants.Destinations.AccessToken)));
 
+                foreach (var segment in qs)
+                {
+                    claims.AddClaim(TayraClaimTypes.Segment, segment.Id.ToString(),
+                        OpenIddictConstants.Destinations.AccessToken);
+                }
+                foreach (var team in qt)
+                {
+                    claims.AddClaim(TayraClaimTypes.Team, team.Id.ToString(),
+                        OpenIddictConstants.Destinations.AccessToken);
+                }
+                
                 try
                 {
                     orgContext.Add(new LoginLog
@@ -155,14 +195,10 @@ namespace Tayra.Auth.Controllers
                 {
                     // ignored
                 }
-
-                var principal = new ClaimsPrincipal(claims);
-                // Ask OpenIddict to generate a new token and return an OAuth2 token response.
-                return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            
+                return new ClaimsPrincipal(claims);
             }
         }
-
-        #endregion
 
         private Identity IdentityGetByEmail(string email)
         {
@@ -172,31 +208,7 @@ namespace Tayra.Auth.Controllers
                 .Select(x => x.Identity)
                 .FirstOrDefault();
         }
-        
-        public static (IQueryable<Segment>, IQueryable<Team>) GetSegmentAndTeamQueries(OrganizationDbContext dbContext, Guid profileId, ProfileRoles role)
-        {
-            IQueryable<Segment> qs = dbContext.Segments;
-            IQueryable<Team> qt = dbContext.Teams;
 
-            if (role != ProfileRoles.Admin)
-            {
-                var segmentIds = dbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => x.SegmentId).Distinct().ToArray();
-                qs = qs.Where(x => segmentIds.Contains(x.Id));
-
-                if (role == ProfileRoles.Manager)
-                {
-                    qt = qt.Where(x => segmentIds.Contains(x.SegmentId));
-                }
-                else //is non-admin and non-manager. Is Member
-                {
-                    var teamIds = dbContext.ProfileAssignments.Where(x => x.ProfileId == profileId && x.TeamId.HasValue).Select(x => x.TeamId).ToArray();
-                    qt = qt.Where(x => teamIds.Contains(x.Id));
-                }
-            }
-
-            return (qs, qt);
-        }
-        
         private IEnumerable<string> GetDestinations(Claim claim, ClaimsPrincipal principal)
         {
             // Note: by default, claims are NOT automatically included in the access and identity tokens.

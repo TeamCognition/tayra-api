@@ -99,15 +99,13 @@ namespace Tayra.Services.webhooks
                     Deletions = commitWithChanges.Deletions
                 });
 
-                CreateLog(new Dictionary<string, string>
-                {
-                    {"timestamp", DateTime.UtcNow.ToString()},
-                    {"committedAt", commit.Timestamp.ToString()},
-                    {"externalUrl", commit.Url},
-                    {"externalAuthorUsername", commit.Author.Username},
-                    {"sha", commit.Id},
-                    {"message", commit.Message},
-                }, LogEvents.CodeCommitted, authorProfile, LogsService);
+                CreateLog(LogsService, LogEvents.CodeCommitted, authorProfile, commit.Message, commit.Url,
+                    new Dictionary<string, string>
+                    {
+                        {"committedAt", commit.Timestamp.ToString()},
+                        {"externalAuthorUsername", commit.Author.Username},
+                        {"sha", commit.Id},
+                    });
             }
         }
 
@@ -131,15 +129,12 @@ namespace Tayra.Services.webhooks
 
             PullRequestWebhookPayload.PullRequestDTO pullRequest = prPayload.PullRequest;
             CreatePullRequest(pullRequest, authorProfile);
-            CreateLog(new Dictionary<string, string>
-            {
-                {"timestamp", DateTime.UtcNow.ToString()},
-                {"created_at", pullRequest.CreatedAt.ToString()},
-                {"externalUrl", pullRequest.Url},
-                {"externalAuthorUsername", pullRequest.Author.Username},
-                {"externalId", pullRequest.Id},
-                {"title", pullRequest.Title},
-            }, LogEvents.PullRequestCreated, authorProfile, LogsService);
+            CreateLog(LogsService, LogEvents.PullRequestCreated, authorProfile, pullRequest.Title, pullRequest.Url,
+                new Dictionary<string, string>
+                {
+                    {"externalAuthorUsername", pullRequest.Author.Username},
+                    {"externalId", pullRequest.Id}
+                });
         }
 
         private void HandlePullRequestReview(JObject jObject)
@@ -166,14 +161,13 @@ namespace Tayra.Services.webhooks
 
             PullRequsetReviewWebhookPayload.PullRequestReviewDTO pullRequestReview = prReviewPayload.PullRequestReview;
             CreatePullRequestReview(pullRequestReview, reviewerProfile, pullRequest);
-            CreateLog(new Dictionary<string, string>
-            {
-                {"timestamp", DateTime.UtcNow.ToString()},
-                {"submitted_at", pullRequestReview.SubmittedAt.ToString()},
-                {"externalReviewerUsername", pullRequestReview.ReviewedBy.Username},
-                {"externalId", pullRequestReview.Id},
-                {"title", pullRequestReview.Title},
-            }, LogEvents.PullRequestReviewCreated, reviewerProfile, LogsService);
+            
+            CreateLog(LogsService, LogEvents.PullRequestReviewCreated, reviewerProfile, pullRequest.Title, pullRequest.ExternalUrl,
+                new Dictionary<string, string>
+                {
+                    {"externalReviewerUsername", pullRequestReview.ReviewedBy.Username},
+                    {"externalId", pullRequestReview.Id},
+                });
         }
 
         private void HandlePullRequestReviewComment(JObject jObject)
@@ -211,17 +205,13 @@ namespace Tayra.Services.webhooks
 
             CreatePullRequestReviewComment(pullRequestReviewComment, commenterProfile,
                 pullRequestReview, pullRequest);
-            CreateLog(new Dictionary<string, string>
-            {
-                {"timestamp", DateTime.UtcNow.ToString()},
-                {"created_at", pullRequestReviewComment.CreatedAt.ToString()},
+
+            CreateLog(LogsService, LogEvents.PullRequestReviewCommentCreated, commenterProfile, pullRequestReviewComment.Body, pullRequestReviewComment.Url,
+                new Dictionary<string, string>
                 {
-                    "externalReviewerUsername",
-                    pullRequestReviewComment.CommenterProfile.Username
-                },
-                {"externalId", pullRequestReviewComment.Id},
-                {"external_url", pullRequestReviewComment.Url},
-            }, LogEvents.PullRequestReviewCommentCreated, commenterProfile, LogsService);
+                    {"externalReviewerUsername", pullRequestReviewComment.CommenterProfile.Username},
+                    {"externalId", pullRequestReviewComment.Id},
+                });
         }
 
 
@@ -253,15 +243,13 @@ namespace Tayra.Services.webhooks
             pullRequestReviewComment.Body = pullRequestReviewCommentDto.Body;
             pullRequestReviewComment.ExternalUpdatedAt = pullRequestReviewCommentDto.UpdatedAt;
             DbContext.Update(pullRequestReviewCommentDto);
-            CreateLog(new Dictionary<string, string>
-            {
-                {"timestamp", DateTime.UtcNow.ToString()},
-                {"created_at", pullRequestReviewCommentDto.CreatedAt.ToString()},
-                {"externalReviewerUsername", pullRequestReviewComment.CommenterProfile.Username},
-                {"externalId", pullRequestReviewCommentDto.Id},
-                {"external_url", pullRequestReviewCommentDto.Url},
-            }, LogEvents.PullRequestReviewCommentUpdated, commenterProfile, logsService);
-
+            
+            CreateLog(LogsService, LogEvents.PullRequestReviewCommentUpdated, commenterProfile, pullRequestReviewCommentDto.Body, pullRequestReviewCommentDto.Url,
+                new Dictionary<string, string>
+                {
+                    {"externalReviewerUsername", pullRequestReviewComment.CommenterProfile.Username},
+                    {"externalId", pullRequestReviewCommentDto.Id},
+                });
         }
 
         private void CreatePullRequestReview(PullRequsetReviewWebhookPayload.PullRequestReviewDTO pullRequestReview,
@@ -291,14 +279,13 @@ namespace Tayra.Services.webhooks
             pullRequestReview.State = pullRequestReviewDto.State;
             pullRequestReview.SubmittedAt = pullRequestReviewDto.SubmittedAt;
             DbContext.Update(pullRequestReview);
-            CreateLog(new Dictionary<string, string>
-            {
-                {"timestamp", DateTime.UtcNow.ToString()},
-                {"submitted_at", pullRequestReviewDto.SubmittedAt.ToString()},
-                {"externalReviewerUsername", pullRequestReviewDto.ReviewedBy.Username},
-                {"externalId", pullRequestReviewDto.Id},
-                {"title", pullRequestReviewDto.Title},
-            }, LogEvents.PullRequestReviewUpdated, reviewerProfile, logsService);
+            
+            CreateLog(LogsService, LogEvents.PullRequestReviewUpdated, reviewerProfile, pullRequestReviewDto.Title, "FIX ME FEZA",
+                new Dictionary<string, string>
+                {
+                    {"externalReviewerUsername", pullRequestReviewDto.ReviewedBy.Username},
+                    {"externalId", pullRequestReviewDto.Id},
+                });
         }
 
         private void CreatePullRequest(PullRequestWebhookPayload.PullRequestDTO pullRequest, Profile authorProfile)
@@ -336,28 +323,27 @@ namespace Tayra.Services.webhooks
             pullRequest.ClosedAt = pullRequestDto.ClosedAt;
             pullRequest.State = pullRequestDto.State;
             DbContext.Update(pullRequest);
-            CreateLog(new Dictionary<string, string>
-            {
-                {"timestamp", DateTime.UtcNow.ToString()},
-                {"created_at", pullRequestDto.CreatedAt.ToString()},
-                {"externalUrl", pullRequestDto.Url},
-                {"externalAuthorUsername", pullRequestDto.Author.Username},
-                {"externalId", pullRequestDto.Id},
-                {"title", pullRequestDto.Title},
-            }, LogEvents.PullRequestUpdated, authorProfile, logsService);
+            
+            CreateLog(LogsService, LogEvents.PullRequestUpdated, authorProfile, pullRequestDto.Title, pullRequestDto.Url,
+                new Dictionary<string, string>
+                {
+                    {"externalAuthorUsername", pullRequestDto.Author.Username},
+                    {"externalId", pullRequestDto.Id},
+                    {"prState", pullRequestDto.State},
+                });
         }
 
-        private void CreateLog(Dictionary<string, string> log, LogEvents events, Profile profile,
-            ILogsService logsService)
+        private void CreateLog(ILogsService logsService, LogEvents eventType, Profile profile, string description, string externalUrl, Dictionary<string, string> data, DateTime? timestamp = null)
         {
-            var logData = new LogCreateDTO { Event = events, Data = log };
-            if (profile != null)
-            {
-                logData.Data.Add("profileUsername", profile.Username);
-                logData.ProfileId = profile.Id;
-            }
-
-            logsService.LogEvent(logData);
+           logsService.LogEvent(new LogCreateDTO
+            (
+                eventType: eventType,
+                timestamp: timestamp ?? DateTime.UtcNow,
+                description: description,
+                externalUrl: externalUrl,
+                data: data,
+                profileId: profile?.Id
+            ));
         }
         
         private string ReadAccessToken(Guid integrationId)
