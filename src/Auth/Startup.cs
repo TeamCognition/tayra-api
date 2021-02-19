@@ -29,9 +29,9 @@ namespace Tayra.Auth
 
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Auth", Version = "v1"}); });
-
+            services.AddCors();
+            
             services.AddTayraAuthServices(Configuration);
-
             services.AddHostedService<OpenIdSeedWorker>();
         }
 
@@ -47,6 +47,12 @@ namespace Tayra.Auth
             
             app.UseHttpsRedirection();
 
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
+            
             app.UseRouting();
 
             app.UseAuthentication();
