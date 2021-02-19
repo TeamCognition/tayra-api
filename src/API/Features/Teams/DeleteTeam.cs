@@ -12,7 +12,7 @@ namespace Tayra.API.Features.Teams
 {
     public partial class TeamsController
     {
-        [HttpPut("{teamId}/update")]
+        [HttpDelete("{teamId}")]
         public async Task<Unit> DeleteTeam([FromRoute] Guid teamId)
             => await _mediator.Send(new DeleteTeam.Command  {TeamId = teamId, ProfileId = CurrentUser.ProfileId});
     }

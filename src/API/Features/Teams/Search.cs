@@ -7,7 +7,7 @@ using Cog.DAL;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Models.Organizations;
-using Result = Cog.Core.GridData<Tayra.API.Features.Teams.Search.ResultDto>;
+using Result = Cog.Core.GridData<Tayra.API.Features.Teams.Search.ResultTeamsSearch>;
 using Task = System.Threading.Tasks.Task;
 
 
@@ -22,7 +22,7 @@ namespace Tayra.API.Features.Teams
             return await _mediator.Send(gridParams);
         }
     }
-
+    
     public class Search
     {
         public class Query : GridParams, IRequest<Result>
@@ -30,7 +30,8 @@ namespace Tayra.API.Features.Teams
             public Guid[] SegmentIds { get; set; }
         }
 
-        public record ResultDto
+        //'TeamsSearch' is a workaround for swagger bug
+        public record ResultTeamsSearch
         {
             public Guid SegmentId { get; init; }
             public Team[] Teams { get; init; }
@@ -59,10 +60,10 @@ namespace Tayra.API.Features.Teams
                 await Task.Delay(1, token);
                 var query = from s in _db.Segments
                     where msg.SegmentIds.Contains(s.Id)
-                    select new ResultDto
+                    select new ResultTeamsSearch
                     {
                         SegmentId = s.Id,
-                        Teams = s.Teams.Select(x => new ResultDto.Team
+                        Teams = s.Teams.Select(x => new ResultTeamsSearch.Team
                         {
                             TeamId = x.Id,
                             Key = x.Key,

@@ -9,16 +9,16 @@ services:
       SA_PASSWORD: "strong!Password"
       ACCEPT_EULA: "Y"
 
-  auth:
-    container_name: tayra-auth
-    build:
-      context: .
-      dockerfile: src/Auth/Dockerfile
-    ports:
-      - 443:4000
-    restart: on-failure
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443
-    depends_on:
-      - sql-server-db
+  # auth:
+  #   container_name: tayra-auth
+  #   build:
+  #     context: .
+  #     dockerfile: src/Auth/Dockerfile
+  #   ports:
+  #     - 443:4000
+  #   restart: on-failure
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=https://+:443
+  #   depends_on:
+  #     - sql-server-db

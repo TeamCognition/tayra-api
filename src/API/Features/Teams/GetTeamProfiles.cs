@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Models.Organizations;
-using Result = Cog.Core.GridData<Tayra.API.Features.Teams.GetTeamProfiles.ResultDto>;
+using Result = Cog.Core.GridData<Tayra.API.Features.Teams.GetTeamProfiles.ResultTeamProfilesDto>;
 
 
 namespace Tayra.API.Features.Teams
@@ -29,7 +29,8 @@ namespace Tayra.API.Features.Teams
             public string TeamKey { get; init; }
         }
 
-        public record ResultDto
+        //'TeamProfile' is a workaround for swagger bug
+        public record ResultTeamProfilesDto
         {
             public Guid ProfileId { get; init; }
             public string Name { get; init; }
@@ -63,7 +64,7 @@ namespace Tayra.API.Features.Teams
                 var query = from t in scope
                     let ws = t.Profile.StatsWeekly.OrderByDescending(x => x.DateId)
                         .Where(x => x.SegmentId == team.SegmentId)
-                    select new ResultDto
+                    select new ResultTeamProfilesDto
                     {
                         ProfileId = t.ProfileId,
                         Name = t.Profile.FirstName + " " + t.Profile.LastName,
