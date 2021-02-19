@@ -21,8 +21,6 @@
     <PackageReference Include="OpenIddict.AspNetCore" Version="3.0.1" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="3.0.1" />
     <PackageReference Include="OpenIddict.Abstractions" Version="3.0.1" />
-
-
   </ItemGroup>
 
   <ItemGroup>

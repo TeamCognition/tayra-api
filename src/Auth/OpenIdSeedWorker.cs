@@ -73,48 +73,10 @@ namespace Tayra.Auth
                         OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
                         
                         OpenIddictConstants.Permissions.Prefixes.Scope + "api",
-                        OpenIddictConstants.Permissions.Prefixes.Scope + "email",
-                        OpenIddictConstants.Permissions.ResponseTypes.Code
-                    }
-                }, cancellationToken);
-            }
-            if (await manager.FindByClientIdAsync("web2", cancellationToken) is null)
-            {
-                await manager.CreateAsync(new OpenIddictApplicationDescriptor
-                {
-                    ClientId = "web2",
-                    ClientSecret = "web-secret",
-                    DisplayName = "Web Client",
-                    Permissions =
-                    {
-                        OpenIddictConstants.Permissions.Endpoints.Authorization,
-                        OpenIddictConstants.Permissions.Endpoints.Token,
-                        
-                        OpenIddictConstants.Permissions.GrantTypes.Password,
-                        OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
-                        OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
-                        
-                        OpenIddictConstants.Permissions.Prefixes.Scope + "api",
                         OpenIddictConstants.Permissions.Prefixes.Scope + "email"
                     }
                 }, cancellationToken);
             }
-            
-            if (await manager.FindByClientIdAsync("resource_server_1", cancellationToken) is null)
-            {
-                var descriptor = new OpenIddictApplicationDescriptor
-                {
-                    ClientId = "resource_server_1",
-                    ClientSecret = "846B62D0-DEF9-4215-A99D-86E6B8DAB342",
-                    Permissions =
-                    {
-                        OpenIddictConstants.Permissions.Endpoints.Introspection
-                    }
-                };
-
-                await manager.CreateAsync(descriptor, cancellationToken);
-            }
-            
         }
         
         private static async Task CreateScopesAsync(IServiceScope scope, CancellationToken cancellationToken)

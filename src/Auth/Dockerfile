@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/sdk:5.0
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -11,29 +11,23 @@ COPY ./cog/Cog.DAL/*.csproj ./cog/Cog.DAL/
 COPY ./src/DAL/CatalogModel/*.csproj ./src/DAL/CatalogModel/
 COPY ./src/DAL/OrganizationModel/*.csproj ./src/DAL/OrganizationModel/
 
-#Connector dependencies
-COPY ./src/Connectors/Connectors.Common/*.csproj ./src/Connectors/Connectors.Common/
-COPY ./src/Connectors/Connectors.Atlassian/*.csproj ./src/Connectors/Connectors.Atlassian/
-COPY ./src/Connectors/Connectors.Atlassian.Jira/*.csproj ./src/Connectors/Connectors.Atlassian.Jira/
-
 #Project dependencies
-COPY src/API/*.csproj ./src/API/
+COPY src/Auth/*.csproj ./src/Auth/
 COPY src/Services/*.csproj ./src/Services/
 COPY src/Common/*.csproj ./src/Common/
-COPY src/Mailer/*.csproj ./src/Mailer/
 
 #restore
-RUN dotnet restore ./src/API/
+RUN dotnet restore ./src/Auth/
 
 #copy everything else and build app
 COPY /cog/. ./cog
 COPY /src/. ./src
-WORKDIR /app/src/API/
+WORKDIR /app/src/Auth/
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
-COPY --from=0 /app/src/API/out ./  
+COPY --from=0 /app/src/Auth/out ./  
 RUN mkdir -p wwwroot
 EXPOSE 80 443
-ENTRYPOINT ["dotnet", "Tayra.API.dll"]
+ENTRYPOINT ["dotnet", "Tayra.Auth.dll"]
