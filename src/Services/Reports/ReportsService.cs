@@ -236,7 +236,7 @@ namespace Tayra.Services
 
         public ReportDeliverySegmentMetricsDTO GetDeliverySegmentMetricsReport(ReportParams reportParams)
         {
-            var teamIds = DbContext.TeamsScopeOfSegment(reportParams.SegmentId).Select(x => x.Id);
+            var teamIds = DbContext.Teams.Where(x => x.SegmentId == reportParams.SegmentId).Select(x => x.Id);
 
             var wr = (from trw in DbContext.TeamReportsWeekly
                       where trw.DateId >= reportParams.From && trw.DateId <= reportParams.To

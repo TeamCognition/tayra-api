@@ -87,7 +87,7 @@ namespace Tayra.API.Features.Tenants
                 }, token);
 
                 EssentialSeeds.AddEssentialSeeds(tenantDb);
-                new SegmentsService(null, tenantDb).Create(null, ProfileRoles.Admin, new SegmentCreateDTO
+                new SegmentsService(tenantDb).Create(null, ProfileRoles.Admin, new SegmentCreateDTO
                 {
                     Name = "Segment 1",
                     Key = "S1"

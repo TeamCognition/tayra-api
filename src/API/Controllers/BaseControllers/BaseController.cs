@@ -18,7 +18,6 @@ namespace Tayra.API.Controllers
         private IItemsService _itemsService;
         private IShopsService _shopsService;
         private ITasksService _tasksService;
-        private ITeamsService _teamsService;
         private IQuestsService _questsService;
         private IPraiseService _praiseService;
         private ITokensService _tokensService;
@@ -59,7 +58,6 @@ namespace Tayra.API.Controllers
         protected IItemsService ItemsService => _itemsService ?? (_itemsService = Resolve<IItemsService>());
         protected IShopsService ShopsService => _shopsService ?? (_shopsService = Resolve<IShopsService>());
         protected ITasksService TasksService => _tasksService ?? (_tasksService = Resolve<ITasksService>());
-        protected ITeamsService TeamsService => _teamsService ?? (_teamsService = Resolve<ITeamsService>());
         protected IPraiseService PraiseService => _praiseService ?? (_praiseService = Resolve<IPraiseService>());
         protected ITokensService TokensService => _tokensService ?? (_tokensService = Resolve<ITokensService>());
         protected IQuestsService QuestsService => _questsService ?? (_questsService = Resolve<IQuestsService>());

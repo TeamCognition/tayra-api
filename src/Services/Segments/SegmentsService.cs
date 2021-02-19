@@ -18,15 +18,12 @@ namespace Tayra.Services
     {
         #region Constructor
 
-        public SegmentsService(ITeamsService teamsService, OrganizationDbContext dbContext) : base(dbContext)
+        public SegmentsService(OrganizationDbContext dbContext) : base(dbContext)
         {
-            TeamsService = teamsService;
         }
 
         #endregion
-
-        public ITeamsService TeamsService { get; set; }
-
+        
         #region Public Methods
 
         public Segment Get(string segmentKey)
@@ -96,7 +93,7 @@ namespace Tayra.Services
 
             segment.EnsureNotNull(segmentKey);
 
-            IQueryable<SegmentTeamGridDTO> query = from t in DbContext.TeamsScopeOfSegment(segment.Id)
+            IQueryable<SegmentTeamGridDTO> query = from t in DbContext.Teams.Where(x => x.SegmentId == segment.Id)
                                                    select new SegmentTeamGridDTO
                                                    {
                                                        Name = t.Name,
