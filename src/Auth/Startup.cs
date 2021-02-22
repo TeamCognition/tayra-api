@@ -44,8 +44,8 @@ namespace Tayra.Auth
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth v1"));
             }
-            
-            app.UseHttpsRedirection();
+            else
+                app.UseHttpsRedirection();
 
             app.UseCors(builder => builder
                 .AllowAnyOrigin()

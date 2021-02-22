@@ -57,8 +57,8 @@ namespace Tayra.Services
                 Message = dto.Message
             });
 
-            var praiseGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
-            var praiseReceiverUsername = DbContext.Profiles.Where(x => x.Id == dto.ProfileId).Select(x => x.Username).FirstOrDefault();
+            var praiseGiver = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);
+            var praiseReceiver = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId);
             
             LogsService.LogEvent(new LogCreateDTO
             (
@@ -68,7 +68,8 @@ namespace Tayra.Services
                 externalUrl: null,
                 data: new Dictionary<string, string>
                 {
-                    { "receiverUsername", praiseReceiverUsername },
+                    { "receiverUsername", praiseReceiver?.Username },
+                    { "receiverName", praiseReceiver?.FirstName + " " + praiseReceiver?.LastName},
                     { "praiseType", dto.Type.ToString() }
                 },
                 profileId: profileId
@@ -82,13 +83,14 @@ namespace Tayra.Services
                 externalUrl: null,
                 data: new Dictionary<string, string>
                 {
-                    { "giverUsername", praiseGiverUsername },
+                    { "giverUsername", praiseGiver?.Username },
+                    { "giverName", praiseGiver?.FirstName + " " + praiseGiver?.LastName},
                     { "praiseType", dto.Type.ToString() }
                 },
                 profileId: profileId
             ));
 
-            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
+            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiver?.Username));
         }
 
         public GridData<PraiseSearchGridDTO> SearchPraises(PraiseGridParams gridParams)

@@ -170,8 +170,8 @@ namespace Tayra.Services
                 DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.Gift).AddItems(giftedItem);
             }
 
-            var gifterUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId)?.Username;
-            var receiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId)?.Username;
+            var gifter = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);
+            var receiver = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId);
             LogsService.LogEvent(new LogCreateDTO
             (
                 eventType: LogEvents.InventoryItemGifted,
@@ -180,7 +180,8 @@ namespace Tayra.Services
                 externalUrl: null,
                 data: new Dictionary<string, string>
                 {
-                    { "receiverUsername", receiverUsername },
+                    { "receiverUsername", receiver?.Username },
+                    { "receiverName", receiver?.FirstName + " " + receiver?.LastName },
                     { "itemName", invItem.Item.Name }
                 },
                 profileId: profileId
@@ -194,13 +195,14 @@ namespace Tayra.Services
                 externalUrl: null,
                 data: new Dictionary<string, string>
                 {
-                    { "gifterUsername", gifterUsername },
+                    { "gifterUsername", gifter?.Username },
+                    { "gifterName", gifter?.FirstName + " " + gifter?.LastName },
                     { "itemName", invItem.Item.Name }
                 },
                 profileId: dto.ReceiverId
             ));
 
-            LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername));
+            LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifter?.Username));
         }
 
         public void Disenchant(Guid profileId, InventoryItemDisenchantDTO dto)

@@ -67,7 +67,7 @@ namespace Tayra.Auth
                     options.AllowPasswordFlow();
                     options.AllowRefreshTokenFlow();
                     options.AllowClientCredentialsFlow();
-
+                    
                     // Register the encryption credentials. This sample uses a symmetric
                     // encryption key that is shared between the server and the Api2 sample
                     // (that performs local token validation instead of using introspection).
@@ -87,7 +87,8 @@ namespace Tayra.Auth
                         .EnableTokenEndpointPassthrough()
                         .EnableAuthorizationEndpointPassthrough()
                         .EnableUserinfoEndpointPassthrough()
-                        .EnableStatusCodePagesIntegration();
+                        .EnableStatusCodePagesIntegration()
+                        .DisableTransportSecurityRequirement(); //disable https requirements
                 })
                 // Register the OpenIddict validation components.
                 .AddValidation(options =>
