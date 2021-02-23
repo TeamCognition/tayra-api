@@ -64,7 +64,7 @@ namespace Tayra.API.Features.Profile
                 Expression<Func<Models.Organizations.Profile, bool>> byUsername = x => x.Username.Contains(msg.UsernameQuery.RemoveAllWhitespaces());
                 Expression<Func<Models.Organizations.Profile, bool>> byName = x => (x.FirstName + x.LastName).Contains(msg.NameQuery.RemoveAllWhitespaces());
 
-                if (msg.SegmentIdsToInclude.Any())
+                if (msg.SegmentIdsToInclude != null && msg.SegmentIdsToInclude.Any())
                 {
                     var profileIds = await _db.ProfileAssignments.Where(x => msg.SegmentIdsToInclude.Contains(x.SegmentId)).Select(x => x.ProfileId).ToArrayAsync(token);
                     scope = scope.Where(x => profileIds.Contains(x.Id));

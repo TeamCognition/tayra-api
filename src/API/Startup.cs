@@ -83,7 +83,7 @@ namespace Tayra.API
             services.AddOpenIddict()
                 .AddValidation(options =>
                 {
-                    options.SetIssuer(new Uri("https://localhost:4000/"));
+                    options.SetIssuer(Configuration["AuthIssuer"]);
                     options.AddAudiences("resource_server-api");
                     
                     // Register the System.Net.Http integration.

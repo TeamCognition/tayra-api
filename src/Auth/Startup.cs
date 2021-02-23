@@ -26,7 +26,7 @@ namespace Tayra.Auth
         {
             services.AddDbContext<CatalogDbContext>(options =>
                 options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
-
+                        
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Auth", Version = "v1"}); });
             services.AddCors();

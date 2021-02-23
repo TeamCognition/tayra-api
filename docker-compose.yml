@@ -9,9 +9,11 @@ services:
       - 4000:80
     restart: on-failure
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings:OpeniddictDatabase=Data Source=tcp:mssql,1433;Initial Catalog=tayra-auth;User ID=sa;Password=strong!Password;Connect Timeout=10;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=true
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings:OpeniddictDatabase: Data Source=tcp:mssql,1433;Initial Catalog=tayra-auth;User ID=sa;Password=strong!Password;Connect Timeout=10;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=true
+      CatalogServer: mssql
+      AuthRunOnDockerCompose: "true"
     depends_on:
       - mssql
 

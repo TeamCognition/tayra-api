@@ -26,10 +26,6 @@
     <ProjectReference Include="..\..\..\cog\Cog.DAL\Cog.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot" />
-  </ItemGroup>
-
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

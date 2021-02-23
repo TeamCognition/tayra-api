@@ -8,6 +8,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
@@ -23,11 +24,13 @@ namespace Tayra.Auth.Controllers
     public class AuthorizationController : Controller
     {
         private readonly CatalogDbContext _catalogContext;
-        
+        private readonly IConfiguration _config;
+
         public AuthorizationController(
-            CatalogDbContext catalogContext)
+            CatalogDbContext catalogContext, IConfiguration config)
         {
             _catalogContext = catalogContext;
+            _config = config;
         }
 
         #region Password, authorization code, device and refresh token flows
@@ -117,8 +120,14 @@ namespace Tayra.Auth.Controllers
             var tenant = _catalogContext.TenantIdentities
                 .Where(x => x.IdentityId == identityId)
                 .Select(x => x.Tenant)
+                .AsNoTracking()
                 .FirstOrDefault();
 
+
+            if (_config["AuthRunOnDockerCompose"] == "true")
+            {
+                tenant.ConnectionString = tenant.ConnectionString.Replace("localhost", _config["CatalogServer"]);
+            }
             using (var orgContext =
                 new OrganizationDbContext(TenantModel.WithConnectionStringOnly(tenant.ConnectionString), null)
             ) //TODO: check if passing httpAccessor will change anything
