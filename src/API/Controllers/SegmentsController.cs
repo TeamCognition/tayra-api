@@ -109,33 +109,11 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("removeMember")]
-        public IActionResult RemoveMember([FromQuery] SegmentMemberAddRemoveDTO dto)
-        {
-            SegmentsService.RemoveMember(dto);
-            DbContext.SaveChanges();
-            return Ok();
-        }
 
         [HttpGet, Route("{segmentKey}/integrations")]
         public ActionResult<List<IntegrationSegmentViewDTO>> GetSegmentIntegrations([FromRoute] string segmentKey)
         {
             return IntegrationsService.GetSegmentIntegrations(segmentKey);
-        }
-
-        [HttpGet("rawMetrics")]
-        public TableData GetRawMetrics([FromQuery] int m, [FromQuery] Guid entityId, [FromQuery] string period)
-        {
-            var datePeriod = new DatePeriod(period);
-            var metricType = MetricType.FromValue(m) as PureMetric;
-
-            return new TableData(metricType.TypeOfRawMetric, metricType.GetRawMetrics(DbContext, datePeriod, entityId, EntityTypes.Segment));
-        }
-
-        [HttpGet("statsWidget/{segmentId}")]
-        public ActionResult<SegmentStatsDTO> GetSegmentStats(Guid segmentId)
-        {
-            return SegmentsService.GetSegmentStats(segmentId);
         }
 
         #endregion
