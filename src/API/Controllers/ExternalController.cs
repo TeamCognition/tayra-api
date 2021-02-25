@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RestSharp;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
@@ -48,9 +51,12 @@ namespace Tayra.API.Controllers
                 return Redirect($"https://{ti.Tenant.Identifier}/segments");
             }
             var oauthState = new OAuthState(state);
+            
             Request.QueryString = Request.QueryString.Add("tenant", oauthState.TenantIdentifier);
+            var tenant = catalogContext.TenantInfo.FirstOrDefault(x => x.Identifier == oauthState.TenantIdentifier);
+            HttpContext.TrySetTenantInfo(tenant, false);
+            
             connector = ConnectorResolver.Get<IOAuthConnector>(type);
-
             if (!string.IsNullOrEmpty(error))
             {
                 return Redirect(connector.GetAuthDoneUrl(oauthState.ReturnPath, false));
