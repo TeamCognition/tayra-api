@@ -2,6 +2,7 @@
 using System.Linq;
 using Cog.Core;
 using Finbuckle.MultiTenant;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
+using Tayra.Connectors.Slack;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -107,6 +109,14 @@ namespace Tayra.API.Controllers
             });
         }
 
+        [HttpGet, Route("sl/users")]
+        [AllowAnonymous]
+        public ActionResult GetSlackUsers()
+        {
+            var integrationId = DbContext.Integrations.Where(x => x.Type == IntegrationType.GH && x.SegmentId == CurrentSegment.Id && x.ProfileId == null).Select(x => x.Id).FirstOrDefault();
+            var slackConnector =(SlackConnector) ConnectorResolver.Get<IOAuthConnector>(IntegrationType.SL);
+            return Ok(slackConnector.GetUsersList(integrationId));
+        }
         #endregion
     }
 }
