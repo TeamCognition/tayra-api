@@ -43,13 +43,13 @@ namespace Tayra.API
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddJsonFile(
                     Path.Combine(connectorsFolder, "Connectors.Atlassian.Jira", $"appsettings.{env.EnvironmentName}.json"),
-                    optional: true)
+                    optional: false)
                 .AddJsonFile(
                     Path.Combine(connectorsFolder, "Connectors.GitHub", $"appsettings.{env.EnvironmentName}.json"),
-                    optional: true)
+                    optional: false)
                 .AddJsonFile(
                     Path.Combine(connectorsFolder, "Connectors.Slack", $"appsettings.{env.EnvironmentName}.json"),
-                    optional: true);
+                    optional: false);
 
             config.AddEnvironmentVariables();
         }

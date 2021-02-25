@@ -15,9 +15,9 @@ namespace Tayra.Connectors.Slack
 {
     public class SlackConnector : BaseOAuthConnector
     {
-        private const string CONFIG_APP_ID = "Connectors.Slack.AppId";
-        private const string CONFIG_CLIENT_ID = "Connectors.Slack.ClientId";
-        private const string CONFIG_CLIENT_SECRET = "Connectors.Slack.ClientSecret";
+        private const string CONFIG_APP_ID = "Connectors:Slack:AppId";
+        private const string CONFIG_CLIENT_ID = "Connectors:Slack:ClientId";
+        private const string CONFIG_CLIENT_SECRET = "Connectors:Slack:ClientSecret";
         private const string AUTH_URL = "https://slack.com/oauth/v2/authorize";
         private const string SCOPE = "commands,incoming-webhook,app_mentions:read,channels:history,channels:join,channels:read,chat:write,chat:write.public,chat:write.customize,groups:history,groups:read,groups:write,im:history,im:read,im:write,mpim:history,mpim:read,mpim:write,usergroups:read,users.profile:read,users:read,users:read.email";
 

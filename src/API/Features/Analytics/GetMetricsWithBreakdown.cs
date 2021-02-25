@@ -11,13 +11,14 @@ using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Models.Organizations.Metrics;
+using Result = System.Collections.Generic.Dictionary<int, Tayra.Models.Organizations.Metrics.MetricService.AnalyticsMetricWithBreakdownDto>;
 
 namespace Tayra.API.Features.Analytics
 {
     public partial class AnalyticsController
     {
         [HttpGet("metricsWithBreakdown")]
-        public async Task<GetMetricsWithBreakdown.Result> GetAnalyticsWithBreakdown([FromQuery] int[] m, [FromQuery]string period, [FromQuery] GetMetricsWithBreakdown.Query query)
+        public async Task<Result> GetAnalyticsWithBreakdown([FromQuery] int[] m, [FromQuery]string period, [FromQuery] GetMetricsWithBreakdown.Query query)
         {
             var metricTypes = m.Select(MetricType.FromValue).ToArray();
             var datePeriod = new DatePeriod(period);
@@ -35,8 +36,6 @@ namespace Tayra.API.Features.Analytics
             public EntityTypes EntityType { get; init; }
             public DatePeriod Period { get; init; }
         }
-        
-        public class Result : Dictionary<int, MetricService.AnalyticsMetricWithBreakdownDto> { }
         
         public class Handler : IRequestHandler<Query, Result>
         {
@@ -98,7 +97,7 @@ namespace Tayra.API.Features.Analytics
                 var lastRefreshAt = await _db.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created)
                     .FirstOrDefaultAsync(token);
 
-                return (Result)metricTypesToUse.ToDictionary(type => type.Value,
+                return metricTypesToUse.ToDictionary(type => type.Value,
                     type => new MetricService.AnalyticsMetricWithBreakdownDto(type, msg.Period, metrics, lastRefreshAt, msg.EntityType));
             }
         }

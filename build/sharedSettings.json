@@ -1,7 +1,4 @@
 ﻿{
-    "Auth": {
-        "authority": "https://api.tayra.io"
-    },
     "Logging": {
         "LogLevel": {
             "Default": "Warning"

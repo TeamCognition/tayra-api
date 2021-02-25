@@ -10,13 +10,14 @@ using Microsoft.EntityFrameworkCore;
 using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
+using Result = System.Collections.Generic.Dictionary<int, Tayra.Analytics.MetricValue>;
 
 namespace Tayra.API.Features.Analytics
 {
     public partial class AnalyticsController
     {
         [HttpGet("metrics")]
-        public async Task<GetMetrics.Result> GetMetrics([FromQuery] int[] m, [FromQuery]string period, [FromQuery] GetMetrics.Query query)
+        public async Task<Result> GetMetrics([FromQuery] int[] m, [FromQuery]string period, [FromQuery] GetMetrics.Query query)
         {
             var metricTypes = m.Select(MetricType.FromValue).ToArray();
             var datePeriod = new DatePeriod(period);
@@ -34,8 +35,6 @@ namespace Tayra.API.Features.Analytics
             public EntityTypes EntityType { get; init; }
             public DatePeriod Period { get; init; }
         }
-        
-        public class Result : Dictionary<int, MetricValue> { }
         
         public class Handler : IRequestHandler<Query, Result>
         {
@@ -78,7 +77,7 @@ namespace Tayra.API.Features.Analytics
                         break;
                 }
 
-                return (Result) msg.MetricTypes.ToDictionary(type => type.Value,
+                return msg.MetricTypes.ToDictionary(type => type.Value,
                     type => new MetricValue(type, msg.Period, metrics, msg.EntityType));
             }
         }

@@ -11,10 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MoreLinq.Extensions;
 using OpenIddict.Validation.AspNetCore;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using Tayra.API.Helpers;
@@ -66,7 +63,6 @@ namespace Tayra.API
 
                     return System.Threading.Tasks.Task.FromResult(identifier.FirstOrDefault());
                 });
-            
             
             services.AddDbContext<OrganizationDbContext>();
 
@@ -193,6 +189,9 @@ namespace Tayra.API
             {
                 endpoints.MapControllers();
             });
+            
+            Console.WriteLine("GITHUB");
+            Console.WriteLine(Configuration["Connectors:Github:AppName"]);
             
             app.UseSwaggerUI(c =>
             {

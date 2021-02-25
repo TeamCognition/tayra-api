@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,14 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Models.Organizations;
 using Tayra.Services._Models.Onboarding;
+using Result = System.Collections.Generic.Dictionary<string, bool>;
 
 namespace Tayra.API.Features.Onboarding
 {
     public partial class OnboardingController
     {
         [HttpGet("completedSteps")]
-        public async Task<GetCompletedSteps.Result> GetCompletedSteps()
-            => await _mediator.Send(new GetCompletedSteps.Query());
+        public async Task<Result> GetCompletedSteps()
+            => await _mediator.Send(new GetCompletedSteps.Query{ProfileId = CurrentUser.ProfileId, TenantIdentifier = CurrentUser.CurrentTenantIdentifier});
     }
     
     public class GetCompletedSteps
@@ -25,9 +25,7 @@ namespace Tayra.API.Features.Onboarding
             public Guid ProfileId { get; init; }
             public string TenantIdentifier { get; init; }
         }
-
-        public class Result : Dictionary<string, bool> { }
-
+        
         public class Handler : IRequestHandler<Query, Result>
         {
             private readonly OrganizationDbContext _db;
@@ -52,7 +50,7 @@ namespace Tayra.API.Features.Onboarding
                         IsInviteUsersCompleted = x.IsAppsOnboardingCompleted
                     }).FirstOrDefaultAsync(token);
                 
-                return (Result)new Dictionary<string, bool>
+                return new Result
                 {
                     {OnboardingStepIds.CreateProfile.ToString(), profileOnboarding.IsProfileOnboardingCompleted},
                     {OnboardingStepIds.CreateSegment.ToString(), tenantOnboarding.IsCreateSegmentCompleted},

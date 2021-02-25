@@ -15,11 +15,12 @@ namespace Tayra.Connectors.GitHub
 {
     public class GitHubConnector : BaseOAuthConnector
     {
-        private const string CONFIG_APP_ID = "Connectors.Github.AppId";
-        private const string CONFIG_APP_RSAKEY = "Connectors.Github.AppRsaKey";
-        private const string CONFIG_CLIENT_ID = "Connectors.Github.ClientId";
-        private const string CONFIG_CLIENT_SECRET = "Connectors.Github.ClientSecret";
-        private const string SEGMENT_AUTH_URL = "https://github.com/apps/tayra-app/installations/new";
+        private const string CONFIG_APP_ID = "Connectors:Github:AppId";
+        private const string CONFIG_APP_RSAKEY = "Connectors:Github:AppRsaKey";
+        private const string CONFIG_CLIENT_ID = "Connectors:Github:ClientId";
+        private const string CONFIG_CLIENT_SECRET = "Connectors:Github:ClientSecret";
+        private const string CONFIG_APP_NAME = "Connectors:Github:AppName";
+        private const string SEGMENT_AUTH_URL = "https://github.com/apps";
         private const string PROFILE_AUTH_URL = "https://github.com/login/oauth/authorize";
 
         public GitHubConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, dataContext, catalogDbContext, config)
@@ -37,7 +38,7 @@ namespace Tayra.Connectors.GitHub
         public override string GetAuthUrl(OAuthState state)
         {
             return state.IsSegmentAuth
-                ? $"{SEGMENT_AUTH_URL}?state={state}"
+                ? $"{SEGMENT_AUTH_URL}/{Config[CONFIG_APP_NAME]}/installations/new?state={state}"
                 : $"{PROFILE_AUTH_URL}?client_id={Config[CONFIG_CLIENT_ID]}&state={state}";
         }
 
