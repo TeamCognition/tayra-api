@@ -47,7 +47,8 @@ namespace Tayra.Services
         {
             var integration = ProfileIntegrationsScope(profileId, segmentId)
                                 .Include(x => x.Fields)
-                                .LastOrDefault(x => x.ProfileId == profileId && x.SegmentId == segmentId && x.Type == integrationType);
+                                .OrderByDescending(x => x.Created)
+                                .FirstOrDefault(x => x.ProfileId == profileId && x.SegmentId == segmentId && x.Type == integrationType);
 
             integration.EnsureNotNull(segmentId, integrationType);
 
@@ -101,7 +102,8 @@ namespace Tayra.Services
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
-                                .LastOrDefault(x => x.Type == IntegrationType.ATJ);
+                                .OrderByDescending(x => x.Created)
+                                .FirstOrDefault(x => x.Type == IntegrationType.ATJ);
 
             if (integration == null)
             {
@@ -139,7 +141,8 @@ namespace Tayra.Services
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
-                                .LastOrDefault(x => x.Type == IntegrationType.ATJ);
+                                .OrderByDescending(x => x.Created)
+                                .FirstOrDefault(x => x.Type == IntegrationType.ATJ);
 
             if (integration == null)
             {

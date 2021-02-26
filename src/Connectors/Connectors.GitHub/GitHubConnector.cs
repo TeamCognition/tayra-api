@@ -56,8 +56,8 @@ namespace Tayra.Connectors.GitHub
                 var userTokenData = GitHubService.GetUserAccessToken(Config[CONFIG_CLIENT_ID], Config[CONFIG_CLIENT_SECRET], code, GetCallbackUrl(state.ToString()))?.Data;
                 var loggedInUser = GitHubService.GetLoggedInUser(userTokenData.TokenType, userTokenData.AccessToken);
 
-                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
-                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
+                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).OrderByDescending(x => x.Created).FirstOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
+                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).OrderByDescending(x => x.Created).FirstOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
                 if (segmentIntegration == null && !state.IsSegmentAuth)
                 {
                     throw new CogSecurityException($"profileId: {state.ProfileId} tried to integrate {Type} before segment integration");

@@ -63,7 +63,8 @@ namespace Tayra.SyncServices
 
             var rewardStatusField = organizationDb
                                 .IntegrationFields
-                                .LastOrDefault(x => x.Key == ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + jiraProjectId);
+                                .OrderByDescending(x => x.Created)
+                                .FirstOrDefault(x => x.Key == ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + jiraProjectId);
 
             if (rewardStatusField == null)
             {
@@ -72,7 +73,8 @@ namespace Tayra.SyncServices
 
             var jiraSiteName = organizationDb
                             .IntegrationFields
-                            .LastOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
+                            .OrderByDescending(x => x.Created)
+                            .FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
 
             var jiraConnector = new AtlassianJiraConnector(null, organizationDb, null, config);
             var statusChangelogs = jiraConnector.GetIssueChangelog(rewardStatusField.IntegrationId, we.JiraIssue.Key, "status");

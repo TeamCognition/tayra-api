@@ -53,8 +53,8 @@ namespace Tayra.Connectors.Atlassian.Jira
                 var accResData = AtlassianJiraService.GetAccessibleResources(tokenData.TokenType, tokenData.AccessToken)?.Data?.FirstOrDefault();
                 var loggedInUser = AtlassianJiraService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
 
-                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
-                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
+                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).OrderByDescending(x => x.Created).FirstOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
+                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).OrderByDescending(x => x.Created).FirstOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
                 if (segmentIntegration == null && !state.IsSegmentAuth)
                 {
                     throw new CogSecurityException($"profileId: {state.ProfileId} tried to integrate {Type} before segment integration");
