@@ -18,7 +18,6 @@ namespace Tayra.API.Features.Teams
         [HttpPost("search")]
         public async Task<Result> Search([FromBody] Search.Query gridParams)
         {
-            gridParams.SegmentIds = CurrentUser.SegmentsIds;
             return await _mediator.Send(gridParams);
         }
     }
