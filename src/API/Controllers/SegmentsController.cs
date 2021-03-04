@@ -73,43 +73,6 @@ namespace Tayra.API.Controllers
             return SegmentsService.GetSegmentRankChart(segmentKey);
         }
 
-        [HttpPost]
-        public IActionResult Create([FromBody] SegmentCreateDTO dto)
-        {
-            SegmentsService.Create(CurrentUser.ProfileId, CurrentUser.Role, dto);
-            DbContext.SaveChanges();
-            return Ok();
-        }
-
-        [HttpPut]
-        public IActionResult Update([FromQuery] Guid segmentId, [FromBody] SegmentCreateDTO dto)
-        {
-            SegmentsService.Update(segmentId, dto);
-            DbContext.SaveChanges();
-            return Ok();
-        }
-
-        [HttpDelete]
-        public IActionResult Archive([FromQuery] Guid segmentId)
-        {
-            SegmentsService.Archive(segmentId);
-            DbContext.SaveChanges();
-            return Ok();
-        }
-
-        [HttpPost("addMember")]
-        public IActionResult AddMember([FromBody] SegmentMemberAddRemoveDTO[] dtos)
-        {
-            foreach (var dto in dtos)
-            {
-                SegmentsService.AddMember(dto);
-            }
-
-            DbContext.SaveChanges();
-            return Ok();
-        }
-
-
         [HttpGet, Route("{segmentKey}/integrations")]
         public ActionResult<List<IntegrationSegmentViewDTO>> GetSegmentIntegrations([FromRoute] string segmentKey)
         {
