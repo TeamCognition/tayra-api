@@ -93,7 +93,7 @@ namespace Tayra.API.Controllers
             var res = mailerService.SendSlackMessage("U01BP2UAUEP",
                 new GiftReceivedTemplateModel("U01BP2UAUEP", "https://github.com/toddams/RazorLight",
                     "You received a gift"));
-            mailerService.SendEmail("eficet89@gmail.com", "faykohamad@gmail.com",
+            mailerService.SendEmailWithAttachment("eficet89@gmail.com", "faykohamad@gmail.com",
                 new PraiseReceivedTemplateModel(" Received A Praise", "Fayiz",
                     "Bota","https://github.com/toddams/RazorLight",PraiseTypes.HardWorker));
             Console.WriteLine(res);

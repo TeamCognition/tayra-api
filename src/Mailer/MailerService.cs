@@ -33,6 +33,11 @@ namespace Tayra.Mailer
         {
             return EmailService.SendEmail(sender, recipient, subject, message);
         }
-        
+
+        public object SendEmailWithAttachment(string recipient, string sender, IEmailTemplate emailTemplate)
+        {
+            return EmailService.SendEmailWithAttachment(sender, recipient, emailTemplate.Subject,
+                emailTemplate.GetEmailTemplate());
+        }
     }
 }

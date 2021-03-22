@@ -8,5 +8,6 @@ namespace Tayra.Mailer.Contracts
         public object SendSlackMessage(string recipient, ISlackMessageTemplate slackMessageTemplate);
         public object SendEmail(string recipient,string sender, IEmailTemplate emailTemplate);
         public object SendEmail(string recipient, string sender, string subject, string message);
+        public object SendEmailWithAttachment(string recipient, string sender, IEmailTemplate emailTemplate);
     }
 }
