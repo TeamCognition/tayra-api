@@ -1,12 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Linq;
+using Cog.Core;
 using Cog.DAL;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Tayra.Analytics;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 
 namespace Tayra.API.Features.Teams
@@ -27,14 +31,8 @@ namespace Tayra.API.Features.Teams
 
         public record Result
         {
-            public int TasksCompleted { get; init; }
-            public int AssistsGained { get; init; }
-            public int TimeWorked { get; init; }
+            public Dictionary<int, MetricValue> Metrics { get; init; }
             public int DaysOnTayra { get; init; }
-            public float TokensEarned { get; init; }
-            public float TokensSpent { get; init; }
-            public int ItemsBought { get; init; }
-            public int QuestsCompleted { get; init; }
         }
 
         public class Handler : IRequestHandler<Query, Result>
@@ -47,20 +45,26 @@ namespace Tayra.API.Features.Teams
             {
                 var team = await _db.Teams.FirstOrDefaultAsync(x => x.Id == msg.TeamId, token);
                 team.EnsureNotNull(team,msg.TeamId);
-                return await (from r in _db.TeamReportsDaily
-                    where r.TeamId == msg.TeamId
-                    orderby r.DateId descending
-                    select new Result
+                
+                var metricTypes = new[] { MetricType.TasksCompleted, MetricType.Assists, MetricType.TimeWorked, MetricType.TokensEarned, MetricType.TokensSpent, MetricType.ItemsBought };
+                
+                var shards = await (from m in _db.SegmentMetrics
+                    where m.SegmentId == msg.TeamId
+                    where metricTypes.Contains(m.Type)
+                    select new MetricShard
                     {
-                        TasksCompleted = r.TasksCompletedTotal,
-                        AssistsGained = r.AssistsTotal,
-                        TimeWorked = r.TasksCompletionTimeTotal,
-                        TokensEarned = r.CompanyTokensEarnedTotal,
-                        TokensSpent = r.CompanyTokensSpentTotal,
-                        ItemsBought = r.ItemsBoughtTotal,
-                        QuestsCompleted = r.QuestsCompletedTotal,
-                        DaysOnTayra = (DateTime.UtcNow - team.Created).Days
-                    }).FirstOrDefaultAsync(token);
+                        Type = m.Type,
+                        Value = m.Value,
+                        DateId = m.DateId
+                    }).ToArrayAsync(token);
+
+                return new Result
+                {
+                    Metrics = metricTypes.ToDictionary(type => type.Value,
+                        type => new MetricValue(type, new DatePeriod(team.Created, DateTime.UtcNow), shards,
+                            EntityTypes.Segment)),
+                    DaysOnTayra = (DateTime.UtcNow - team.Created).Days
+                };
             }
         }
     }

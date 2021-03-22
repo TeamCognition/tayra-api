@@ -15,9 +15,9 @@ namespace Tayra.SyncServices.Metrics
         {
 
         }
-        public MetricShardWEntity Create(IEnumerable<Task> tasks, int dateId, Guid segmentId) => new MetricShardWEntity(tasks.Count(x => x.Status == TaskStatuses.Done), dateId, segmentId, this);
+        public MetricShardWEntity Create(IEnumerable<WorkUnit> tasks, int dateId, Guid segmentId) => new MetricShardWEntity(tasks.Count(x => x.Status == TaskStatuses.Done), dateId, segmentId, this);
 
-        public MetricShardWEntity[] CreateForEverySegment(IEnumerable<Task> tasks, int dateId)
+        public MetricShardWEntity[] CreateForEverySegment(IEnumerable<WorkUnit> tasks, int dateId)
         {
             return tasks
                 .Where(x => x.SegmentId.HasValue)

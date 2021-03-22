@@ -271,16 +271,16 @@ namespace Tayra.Services.webhooks
         private void UpdatePullRequestReview(PullRequsetReviewWebhookPayload prReviewPayload, Profile reviewerProfile,
             ILogsService logsService)
         {
-            PullRequsetReviewWebhookPayload.PullRequestReviewDTO pullRequestReviewDto =
-                prReviewPayload.PullRequestReview;
-            PullRequestReview pullRequestReview =
-                DbContext.PullRequestReviews.FirstOrDefault(x => x.ReviewExternalId == pullRequestReviewDto.Id);
+            var pullRequestReviewDto = prReviewPayload.PullRequestReview;
+            var pullRequestReview = DbContext.PullRequestReviews.FirstOrDefault(x => x.ReviewExternalId == pullRequestReviewDto.Id);
+            
             pullRequestReview.Body = pullRequestReviewDto.Body;
             pullRequestReview.State = pullRequestReviewDto.State;
             pullRequestReview.SubmittedAt = pullRequestReviewDto.SubmittedAt;
+            
             DbContext.Update(pullRequestReview);
             
-            CreateLog(LogsService, LogEvents.PullRequestReviewUpdated, reviewerProfile, pullRequestReviewDto.Title, "FIX ME FEZA",
+            CreateLog(LogsService, LogEvents.PullRequestReviewUpdated, reviewerProfile, pullRequestReviewDto.Title, prReviewPayload.PullRequest.Url,
                 new Dictionary<string, string>
                 {
                     {"externalReviewerUsername", pullRequestReviewDto.ReviewedBy.Username},
@@ -315,6 +315,7 @@ namespace Tayra.Services.webhooks
         {
             PullRequestWebhookPayload.PullRequestDTO pullRequestDto = prPayload.PullRequest;
             PullRequest pullRequest = DbContext.PullRequests.FirstOrDefault(x => x.ExternalId == pullRequestDto.Id);
+            
             pullRequest.Body = pullRequestDto.Body;
             pullRequest.Title = pullRequestDto.Title;
             pullRequest.ExternalUpdatedAt = pullRequestDto.UpdatedAt;
@@ -322,6 +323,7 @@ namespace Tayra.Services.webhooks
             pullRequest.MergedAt = pullRequestDto.MergedAt;
             pullRequest.ClosedAt = pullRequestDto.ClosedAt;
             pullRequest.State = pullRequestDto.State;
+            
             DbContext.Update(pullRequest);
             
             CreateLog(LogsService, LogEvents.PullRequestUpdated, authorProfile, pullRequestDto.Title, pullRequestDto.Url,

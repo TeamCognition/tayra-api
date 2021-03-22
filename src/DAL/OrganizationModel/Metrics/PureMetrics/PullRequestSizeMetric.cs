@@ -5,7 +5,6 @@ using Cog.Core;
 using Tayra.Analytics;
 using Tayra.Analytics.Metrics;
 using Tayra.Common;
-using Tayra.Models.Organizations.Metrics.GraphqlTypes;
 
 namespace Tayra.Models.Organizations.Metrics.PureMetrics
 {
@@ -18,16 +17,17 @@ namespace Tayra.Models.Organizations.Metrics.PureMetrics
         public MetricShard Create(MetricService metricService, IEnumerable<PullRequest> pullRequests, int dateId)
         {
             int pullRequestChanges = 0;
-            foreach (var pullRequest in pullRequests)
-            {
-                Guid integrationId = metricService.GetIntegrationId(IntegrationType.GH);
-                List<CommitType> commits = MetricService.GetCommitsByPUllRequest("bearer", metricService.ReadAccessToken(integrationId), pullRequest.ExternalNumber);
-               foreach (var commit in commits)
-               {
-                   pullRequestChanges = commit.Additions + commit.Deletions;
-               }
-            }
-            return new MetricShard(pullRequestChanges / pullRequests.Count(), dateId, this);
+            // foreach (var pullRequest in pullRequests)
+            // {
+            //     Guid integrationId = metricService.GetIntegrationId(IntegrationType.GH);
+            //     var commits = GitHubService.GetCommitsByPullRequest("bearer", metricService.ReadAccessToken(integrationId), pullRequest.ExternalNumber);
+            //    foreach (var commit in commits)
+            //    {
+            //        pullRequestChanges = commit.Additions + commit.Deletions;
+            //    }
+            // }
+            //return new MetricShard(pullRequestChanges / pullRequests.Count(), dateId, this);
+            return new MetricShard(0, dateId, this);
         }
         public override object[] GetRawMetrics(OrganizationDbContext db, DatePeriod period, Guid entityId, EntityTypes entityType)
         {

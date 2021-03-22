@@ -15,9 +15,9 @@ namespace Tayra.Models.Organizations
     public class OrganizationDbContext : CogDbContext, IMultiTenantDbContext
     {
         public ITenantInfo TenantInfo { get; }
-        public TenantMismatchMode TenantMismatchMode { get; } = TenantMismatchMode.Overwrite;
-        public TenantNotSetMode TenantNotSetMode { get; } = TenantNotSetMode.Throw;
-        
+        public TenantMismatchMode TenantMismatchMode => TenantMismatchMode.Overwrite;
+        public TenantNotSetMode TenantNotSetMode => TenantNotSetMode.Throw;
+
         #region Constructor
         
         public OrganizationDbContext(ITenantInfo tenantInfo, IHttpContextAccessor httpContext)
@@ -72,27 +72,20 @@ namespace Tayra.Models.Organizations
         public DbSet<ProfileLog> ProfileLogs { get; set; }
         public DbSet<ProfileMetric> ProfileMetrics { get; set; }
         public DbSet<ProfilePraise> ProfilePraises { get; set; }
-        public DbSet<ProfileReportDaily> ProfileReportsDaily { get; set; }
-        public DbSet<ProfileReportWeekly> ProfileReportsWeekly { get; set; }
         public DbSet<Repository> Repositories { get; set; }
         public DbSet<Segment> Segments { get; set; }
         public DbSet<SegmentArea> SegmentAreas { get; set; }
         public DbSet<SegmentMetric> SegmentMetrics { get; set; }
-        public DbSet<SegmentReportDaily> SegmentReportsDaily { get; set; }
-        public DbSet<SegmentReportWeekly> SegmentReportsWeekly { get; set; }
         public DbSet<Shop> Shops { get; set; }
         public DbSet<ShopItem> ShopItems { get; set; }
         public DbSet<ShopItemSegment> ShopItemSegments { get; set; }
         public DbSet<ShopLog> ShopLogs { get; set; }
         public DbSet<ShopPurchase> ShopPurchases { get; set; }
-        public DbSet<Task> Tasks { get; set; }
-        public DbSet<TaskCategory> TaskCategories { get; set; }
-        public DbSet<TaskLog> TaskLogs { get; set; }
-        public DbSet<TaskSync> TaskSyncs { get; set; }
+        public DbSet<WorkUnit> Tasks { get; set; }
+        public DbSet<WorkUnitLog> TaskLogs { get; set; }
+        
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMetric> TeamMetrics { get; set; }
-        public DbSet<TeamReportDaily> TeamReportsDaily { get; set; }
-        public DbSet<TeamReportWeekly> TeamReportsWeekly { get; set; }
         public DbSet<TokenTransaction> TokenTransactions { get; set; }
         public DbSet<WebhookEventLog> WebhookEventLogs { get; set; }
 
@@ -195,16 +188,6 @@ namespace Tayra.Models.Organizations
 
             modelBuilder.Entity<ProfilePraise>().HasKey(x => new { x.DateId, x.ProfileId, x.PraiserProfileId });
 
-            modelBuilder.Entity<ProfileReportDaily>(entity =>
-            {
-                entity.HasKey(x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId });
-            });
-
-            modelBuilder.Entity<ProfileReportWeekly>(entity =>
-            {
-                entity.HasKey(x => new { x.DateId, x.ProfileId, x.SegmentId, x.TaskCategoryId });
-            });
-
             modelBuilder.Entity<Segment>().HasIndex(nameof(Segment.Key), ArchivedAtProp).IsUnique();
             modelBuilder.Entity<SegmentArea>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<SegmentMetric>(entity =>
@@ -215,8 +198,6 @@ namespace Tayra.Models.Organizations
                         p => p.Value,
                         p => MetricType.FromValue(p));
             });
-            modelBuilder.Entity<SegmentReportDaily>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
-            modelBuilder.Entity<SegmentReportWeekly>().HasKey(x => new { x.DateId, x.SegmentId, x.TaskCategoryId });
 
             modelBuilder.Entity<ShopItem>(entity =>
             {
@@ -235,15 +216,13 @@ namespace Tayra.Models.Organizations
                 entity.HasIndex(x => new { x.ProfileId, x.Status });
             });
 
-            modelBuilder.Entity<Task>(entity =>
+            modelBuilder.Entity<WorkUnit>(entity =>
             {
                 entity.HasIndex(x => new { x.ExternalId, x.IntegrationType, x.SegmentId }).IsUnique();
                 entity.HasIndex(x => new { x.ExternalId, x.IntegrationType });
                 entity.HasIndex(x => x.AssigneeProfileId);
             });
-
-            modelBuilder.Entity<TaskCategory>().HasIndex(x => x.Name).IsUnique();
-
+            
             modelBuilder.Entity<Team>(entity =>
             {
                 entity.HasIndex(nameof(Team.SegmentId), nameof(Team.Key), ArchivedAtProp).IsUnique();
@@ -256,16 +235,6 @@ namespace Tayra.Models.Organizations
                     .HasConversion(
                         p => p.Value,
                         p => MetricType.FromValue(p));
-            });
-
-            modelBuilder.Entity<TeamReportDaily>(entity =>
-            {
-                entity.HasKey(x => new { x.DateId, x.TeamId, x.TaskCategoryId });
-            });
-
-            modelBuilder.Entity<TeamReportWeekly>(entity =>
-            {
-                entity.HasKey(x => new { x.DateId, x.TeamId, x.TaskCategoryId });
             });
 
             modelBuilder.Ignore<Date>();

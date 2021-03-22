@@ -31,7 +31,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
         public Segment[] Segments { get; set; }
         public Team[] Teams { get; set; }
         public ProfileAssignmentDemo[] ProfileAssignmentDemos { get; set; }
-        public Task[] Tasks { get; set; }
+        public WorkUnit[] Tasks { get; set; }
     }
 
     public static class DemoSeeds
@@ -349,6 +349,24 @@ namespace Tayra.Models.Seeder.DemoSeeds
                     InventoryService.Give(adminProfile.Id, new InventoryGiveDTO { ItemId = item.Id, ReceiverUsername = p.Username, ClaimRequired = false });
                 }
             }
+            
+            Console.WriteLine("Seeding Commits ...");
+            foreach (var profile in demoData.Profiles)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    organizationDb.GitCommits.Add(new GitCommit
+                    {
+                        Additions = rnd.Next(0, 100),
+                        Deletions = rnd.Next(0, 50),
+                        AuthorProfile = profile,
+                        Message = $"Commit message number {i}",
+                        SHA = $"random-sha-{i}",
+                        Created = GetRandomDateTimeInPast()
+                    });
+                }
+            }
+
 
             organizationDb.SaveChanges();
             foreach (var p in demoData.Profiles)
@@ -488,7 +506,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
             Console.WriteLine("Unlocking reporting");
             foreach (var segment in organizationDb.Segments.ToArray())
             {
-                new ReportsService(organizationDb).UnlockReporting(Seeder.DemoKey, segment.Id);
+                // new ReportsService(organizationDb).UnlockReporting(Seeder.DemoKey, segment.Id);
             }
             organizationDb.SaveChanges();
 

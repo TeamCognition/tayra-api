@@ -167,15 +167,12 @@ namespace Tayra.Services
 
             if (profile.Role != ProfileRoles.Admin)
             {
-                if (invitation.SegmentId.HasValue)
+                DbContext.Add(new ProfileAssignment
                 {
-                    DbContext.Add(new ProfileAssignment
-                    {
-                        Profile = profile,
-                        SegmentId = invitation.SegmentId.Value,
-                        TeamId = invitation.TeamId,
-                    });
-                }
+                    Profile = profile,
+                    SegmentId = invitation.SegmentId,
+                    TeamId = invitation.TeamId,
+                });
             }
 
             DbContext.SaveChanges();
@@ -183,22 +180,17 @@ namespace Tayra.Services
 
         public void CreateInvitation(string host, IdentityInviteDTO dto)
         {
-            if (dto.TeamId.HasValue && !dto.SegmentId.HasValue)
-            {
-                throw new CogSecurityException("If teamId is sent, you must also send segmentId");
-            }
-
             if (!IsEmailAddressUnique(dto.EmailAddress))
             {
                 throw new ApplicationException("Email address already used");
             }
 
-            if (dto.SegmentId.HasValue && !DbContext.Segments.Any(x => x.Id == dto.SegmentId))
+            if (!DbContext.Segments.Any(x => x.Id == dto.SegmentId))
             {
                 throw new EntityNotFoundException<Segment>(dto.SegmentId);
             }
 
-            if (dto.TeamId.HasValue && !DbContext.Teams.Any(x => x.Id == dto.TeamId))
+            if (!DbContext.Teams.Any(x => x.Id == dto.TeamId))
             {
                 throw new EntityNotFoundException<Team>(dto.TeamId);
             }

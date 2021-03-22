@@ -1,20 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <Import Project="..\..\..\build\deps.csproj.props" />
-    
-    <Target Name="CopySharedSettingsOnBuild" AfterTargets="Build" Condition="'$(AssemblyName)' != 'Tayra.Connectors.App'">
-    <ItemGroup>  
-        <SharedSettingsJson Include="$(ProjectDir)../../../build/sharedSettings.json" />
-    </ItemGroup>
-    <Copy SourceFiles="@(SharedSettingsJson)" DestinationFolder="$(OutDir)" />
-    </Target>
-    
-    <Target Name="CopySharedSettingsOnPublish" AfterTargets="Publish" Condition="'$(AssemblyName)' != 'Tayra.Connectors.App'">
-    <ItemGroup>  
-        <SharedSettingsJson Include="$(ProjectDir)../../../build/sharedSettings.json" />
-    </ItemGroup>
-    <Copy SourceFiles="@(SharedSettingsJson)" DestinationFolder="$(PublishDir)" />
-    </Target>
     
   <PropertyGroup>
     <OutputType>Exe</OutputType>

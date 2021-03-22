@@ -119,8 +119,8 @@ namespace Tayra.Services
                                   Key = s.Key,
                                   Avatar = s.Avatar,
                                   AssistantSummary = s.AssistantSummary,
-                                  TokensEarned = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensEarnedTotal).FirstOrDefault(), 2),
-                                  TokensSpent = Math.Round(s.ReportsDaily.OrderByDescending(x => x.DateId).Select(x => x.CompanyTokensSpentTotal).FirstOrDefault(), 2),
+                                  TokensEarned = -999,
+                                  TokensSpent = -999,
                                   QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),
                                   QuestsCompleted = s.Quests.Count(x => x.Status == QuestStatuses.Ended),
                                   ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
@@ -135,26 +135,26 @@ namespace Tayra.Services
         {
             var segment = DbContext.Segments.FirstOrDefault(x => x.Key == segmentKey);
             segment.EnsureNotNull(segmentKey);
-            Console.WriteLine((DateTime.UtcNow - segment.Created).Days);
-            var result = (from r in DbContext.SegmentReportsDaily
-                where r.SegmentId == segment.Id
-                orderby r.DateId descending
-                select new SegmentRawScoreDTO
+            
+            var metricTypes = new[] { MetricType.TasksCompleted, MetricType.Assists, MetricType.TimeWorked, MetricType.TokensEarned, MetricType.TokensSpent, MetricType.ItemsBought };
+                
+            var shards = (from m in DbContext.SegmentMetrics
+                where m.SegmentId == segment.Id
+                where metricTypes.Contains(m.Type)
+                select new MetricShard
                 {
-                    TasksCompleted = r.TasksCompletedTotal,
-                    AssistsGained = r.AssistsTotal,
-                    TimeWorked = r.TasksCompletionTimeTotal,
-                    TokensEarned = r.CompanyTokensEarnedTotal,
-                    TokensSpent = r.CompanyTokensSpentTotal,
-                    ItemsBought = r.ItemsBoughtTotal,
-                    QuestsCompleted = 0
-                }).FirstOrDefault();
-            if (result != null)
-            {
-                result.DaysOnTayra = (DateTime.UtcNow - segment.Created).Days;
-            }
+                    Type = m.Type,
+                    Value = m.Value,
+                    DateId = m.DateId
+                }).ToArray();
 
-            return result;
+            return new SegmentRawScoreDTO
+            {
+                Metrics = metricTypes.ToDictionary(type => type.Value,
+                    type => new MetricValue(type, new DatePeriod(segment.Created, DateTime.UtcNow), shards,
+                        EntityTypes.Segment)),
+                DaysOnTayra = (DateTime.UtcNow - segment.Created).Days
+            };
         }
 
         public Dictionary<int, MetricService.AnalyticsMetricWithIterationSplitDto> GetSegmentAverageMetrics(string segmentKey)
@@ -226,32 +226,15 @@ namespace Tayra.Services
             }
 
             Guid? segmentId, teamId;
-            if (dto.TeamId.HasValue)
-            {
-                var team = DbContext.Teams.FirstOrDefault(x => x.Id == dto.TeamId);
-                team.EnsureNotNull(dto.TeamId);
-                teamId = team.Id;
-                segmentId = team.SegmentId;
-            }
-            else if (dto.SegmentId.HasValue)
-            {
-                if (profile.Role != ProfileRoles.Manager)
-                    throw new ApplicationException("only managers can be added to segment without teams");
-
-                var segment = DbContext.Segments.FirstOrDefault(x => x.Id == dto.SegmentId);
-                segment.EnsureNotNull(dto.SegmentId);
-                segmentId = segment.Id;
-            }
-            else
-            {
-                throw new ApplicationException("you have to provide either segmentId or teamId");
-            }
-
+        
+            var team = DbContext.Teams.FirstOrDefault(x => x.Id == dto.TeamId);
+            team.EnsureNotNull(dto.TeamId);
+            
             DbContext.Add(new ProfileAssignment
             {
                 ProfileId = dto.ProfileId,
-                SegmentId = segmentId.Value,
-                TeamId = dto.TeamId
+                SegmentId = team.SegmentId,
+                TeamId = team.Id
             });
         }
 
@@ -265,24 +248,9 @@ namespace Tayra.Services
                 throw new ApplicationException("If you are removing a member you must provide a teamId");
             }
 
-            if (dto.TeamId.HasValue)
-            {
-                var team = DbContext.Teams.FirstOrDefault(x => x.Id == dto.TeamId);
-                team.EnsureNotNull(dto.TeamId);
-            }
-            else if (dto.SegmentId.HasValue)
-            {
-                if (profile.Role != ProfileRoles.Manager)
-                    throw new ApplicationException("only managers can be in segment without a team");
-
-                var segment = DbContext.Segments.FirstOrDefault(x => x.Id == dto.SegmentId);
-                segment.EnsureNotNull(dto.SegmentId);
-            }
-            else
-            {
-                throw new ApplicationException("you have to provide either segmentId or teamId");
-            }
-
+            var team = DbContext.Teams.FirstOrDefault(x => x.Id == dto.TeamId);
+            team.EnsureNotNull(dto.TeamId);
+            
             DbContext.Remove(DbContext.ProfileAssignments.FirstOrDefault(x => x.ProfileId == dto.ProfileId && x.TeamId == dto.TeamId));
         }
 

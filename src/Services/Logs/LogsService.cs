@@ -89,7 +89,7 @@ namespace Tayra.Services
             }
             if (gridParams.TeamIds.Length > 0)
             {
-                var tm = DbContext.ProfileAssignments.Where(x => gridParams.TeamIds.Contains(x.TeamId.Value)).Select(x => x.ProfileId).ToArray();
+                var tm = DbContext.ProfileAssignments.Where(x => gridParams.TeamIds.Contains(x.TeamId)).Select(x => x.ProfileId).ToArray();
  
                 query = from pl in query
                     where tm.Contains(pl.ProfileId)

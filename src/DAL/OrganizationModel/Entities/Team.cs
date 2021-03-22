@@ -23,8 +23,6 @@ namespace Tayra.Models.Organizations
         public string AssistantSummary { get; set; }
 
         public virtual ICollection<ProfileAssignment> Members { get; set; }
-        public virtual ICollection<TeamReportDaily> ReportsDaily { get; set; }
-        public virtual ICollection<TeamReportWeekly> ReportsWeekly { get; set; }
 
         #region IAuditedEntity
 

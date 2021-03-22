@@ -5,9 +5,9 @@ using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
-using Microsoft.Extensions.Configuration;
 using RestSharp;
 using Tayra.Connectors.Common;
+using Tayra.Connectors.GitHub.Common;
 using Tayra.Connectors.GitHub.Helper;
 using Tayra.Connectors.GitHub.ResponseModels;
 
@@ -28,6 +28,8 @@ namespace Tayra.Connectors.GitHub
         private const string GET_INSTALLATION_REPOSITORIES = "/installation/repositories";
         private const string CREATE_REPOSITORY_WEBHOOK = "/repos/{0}/{1}/hooks";
         private const string GET_LIST_ORGANIZATIONS = "/organizations";
+        #endregion
+        
         //developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#identifying-users-on-your-site
         public static IRestResponse<TokenResponse> GetUserAccessToken(string clientId, string clientSecret, string authorizationCode, string redirectUrl)
         {
@@ -278,7 +280,7 @@ namespace Tayra.Connectors.GitHub
 
             return client.Execute<List<GetOrganizationsResponse>>(request);
         }
-        #endregion
+        
 
         public static List<string> GetBranchesByRepository(string accessToken, string repositoryName, string repositoryOwner)
         {
@@ -318,6 +320,54 @@ namespace Tayra.Connectors.GitHub
                 branches.Add(edge.Node.Name);
             }
             return branches;
+        }
+        
+        public static List<CommitType> GetCommitsByPullRequest(string tokenType, string token, int pullRequestCount, string repositoryOwner, string repositoryName)
+        {
+            using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
+            graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
+            var commitsRequest = new GraphQLRequest
+            {
+                Query = @"
+                query CommitsByPullRequest($repositoryName : String!, $repositoryOwner : String!,$pullRequestCount : Int!) {
+                    repository(name:$repositoryName, owner:$repositoryOwner) {
+                        pullRequest(number:$pullRequestCount) {
+                            commits(first:100) {
+                                edges {
+                                    node {
+                                        commit {
+                                            oid,
+                                            author {
+                                                name,
+                                                email
+                                            },
+                                            message,
+                                            additions,
+                                            deletions
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }",
+                OperationName = "CommitsByPullRequest",
+                Variables = new {
+                    repositoryOwner = repositoryOwner,
+                    repositoryName = repositoryName,
+                    pullRequestCount = pullRequestCount
+                }
+            };
+            var gitGraphQlResponse =
+                graphQLClient.SendQueryAsync<GitCommitByPrResponse>(commitsRequest).GetAwaiter().GetResult();
+            List<Edge<GitCommitByPrResponse.PullRequestCommit>> responseCommits =
+                gitGraphQlResponse.Data.Repository.pullRequest.Commits.edges;
+            List<CommitType> commitsForRes = new List<CommitType>();
+            foreach (var edge in responseCommits)
+            {
+                commitsForRes.Add(edge.Node.Commit);
+            }
+            return commitsForRes;
         }
     }
 }

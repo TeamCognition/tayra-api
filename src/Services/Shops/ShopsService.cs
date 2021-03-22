@@ -78,13 +78,13 @@ namespace Tayra.Services
             }
             else
             {
-                IQueryable<SegmentReportDaily> rQuery = DbContext.SegmentReportsDaily;
-
-                if (role == ProfileRoles.Manager)
-                {
-                    var managersSegmentsIds = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId && x.TeamId == null).Select(x => x.SegmentId).ToArray();
-                    rQuery = rQuery.Where(x => managersSegmentsIds.Contains(x.SegmentId));
-                }
+                // IQueryable<SegmentReportDaily> rQuery = DbContext.SegmentReportsDaily;
+                //
+                // if (role == ProfileRoles.Manager)
+                // {
+                //     var managersSegmentsIds = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId && x.TeamId == null).Select(x => x.SegmentId).ToArray();
+                //     rQuery = rQuery.Where(x => managersSegmentsIds.Contains(x.SegmentId));
+                // }
 
                 // var stats = (from r in rQuery
                 //              group r by 1 into total
@@ -215,9 +215,7 @@ namespace Tayra.Services
         {
             return new ShopTokenAverageEarningsDTO
             {
-                AverageEarnings = DbContext.SegmentReportsWeekly.Select(x => x.CompanyTokensEarnedChange)
-                    .DefaultIfEmpty(0)
-                    .Average()
+                AverageEarnings = 0
             };
         }
 

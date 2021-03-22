@@ -1,14 +1,12 @@
+using System.Collections.Generic;
+using Tayra.Analytics;
+
 namespace Tayra.Services
 {
     public class SegmentRawScoreDTO
     {
-        public int TasksCompleted { get; set; }
-        public int AssistsGained { get; set; }
-        public int TimeWorked { get; set; }
-        public int DaysOnTayra { get; set; }
-        public float TokensEarned { get; set; }
-        public float TokensSpent { get; set; }
-        public int ItemsBought { get; set; }
-        public int QuestsCompleted { get; set; }
+        public Dictionary<int, MetricValue> Metrics { get; init; }
+        public int DaysOnTayra { get; init; }
+
     }
 }

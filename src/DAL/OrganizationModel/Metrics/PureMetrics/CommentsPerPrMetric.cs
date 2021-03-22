@@ -25,7 +25,10 @@ namespace Tayra.SyncServices.Metrics
                     pullRequestsIds.Add(comment.PullRequestId);
                 }
             }
-            return new MetricShard(comments.Count()/pullRequestsIds.Count, dateId, this);
+
+            return pullRequestsIds.Any()
+                ? new MetricShard(comments.Count()/pullRequestsIds.Count, dateId, this)
+                : new MetricShard(0, dateId, this);
         }
             
 

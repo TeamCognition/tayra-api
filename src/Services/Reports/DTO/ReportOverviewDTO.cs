@@ -21,7 +21,7 @@ namespace Tayra.Services
 
         public class MetricDTO
         {
-            public MetricTypes Id { get; set; }
+            public MetricTypesDelete Id { get; set; }
             public float AverageValue { get; set; }
             public float MaxValue { get; set; }
         }
@@ -33,7 +33,7 @@ namespace Tayra.Services
 
             public class MetricDTO
             {
-                public MetricTypes Id { get; set; }
+                public MetricTypesDelete Id { get; set; }
                 public float Value { get; set; }
             }
         }

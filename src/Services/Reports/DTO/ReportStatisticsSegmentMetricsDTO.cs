@@ -8,7 +8,7 @@ namespace Tayra.Services
 
         public class MetricDTO
         {
-            public MetricTypes MetricId { get; set; }
+            public MetricTypesDelete MetricId { get; set; }
             public DataDTO[] Data { get; set; }
 
             public class DataDTO

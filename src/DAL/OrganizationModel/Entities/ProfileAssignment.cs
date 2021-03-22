@@ -11,7 +11,7 @@ namespace Tayra.Models.Organizations
         public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
-        public Guid? TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public virtual Team Team { get; set; }
 
         #region ITimeAndIUser

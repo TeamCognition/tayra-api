@@ -23,33 +23,24 @@ namespace Tayra.API
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.ConfigureAppConfiguration(SharedAppConfiguration);
+                webBuilder.ConfigureAppConfiguration(LoadAppConfiguration);
                 webBuilder.UseStartup<Startup>();
             });
 
-        public static void SharedAppConfiguration(WebHostBuilderContext hostingContext, IConfigurationBuilder config)
+        public static void LoadAppConfiguration(WebHostBuilderContext hostingContext, IConfigurationBuilder config)
         {
             var env = hostingContext.HostingEnvironment;
 
             // find the shared folder in the parent folder
             var sharedFolder = Path.Combine(env.ContentRootPath, "../..", "build");
-            var connectorsFolder = Path.Combine(env.ContentRootPath, "..", "Connectors");
 
             //load the SharedSettings first, so that appsettings.json overrwrites it
             config
-                .AddJsonFile(Path.Combine(sharedFolder, "sharedSettings.json"), optional: true)
-                .AddJsonFile("sharedSettings.json", optional: true) // When app is published
+                .AddJsonFile(Path.Combine(sharedFolder, $"sharedSettings.Development.json"), optional: true)
+                .AddJsonFile($"sharedSettings.Production.json", optional: true) // When app is published
                 .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile(
-                    Path.Combine(connectorsFolder, "Connectors.Atlassian.Jira", $"appsettings.{env.EnvironmentName}.json"),
-                    optional: false)
-                .AddJsonFile(
-                    Path.Combine(connectorsFolder, "Connectors.GitHub", $"appsettings.{env.EnvironmentName}.json"),
-                    optional: false)
-                .AddJsonFile(
-                    Path.Combine(connectorsFolder, "Connectors.Slack", $"appsettings.{env.EnvironmentName}.json"),
-                    optional: false);
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+               
 
             config.AddEnvironmentVariables();
         }

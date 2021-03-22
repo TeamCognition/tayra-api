@@ -36,8 +36,6 @@ namespace Tayra.Models.Organizations
         public virtual ICollection<ProfileExternalId> MembersLinked { get; set; }
         public virtual ICollection<ShopPurchase> ShopPurchases { get; set; }
         public virtual ICollection<ActionPoint> ActionPoints { get; set; }
-        public virtual ICollection<SegmentReportDaily> ReportsDaily { get; set; }
-        public virtual ICollection<SegmentReportWeekly> ReportsWeekly { get; set; }
 
         #region IAuditedEntity
 

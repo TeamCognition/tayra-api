@@ -29,7 +29,7 @@ namespace Tayra.Connectors.App
 
             //load the SharedSettings first, so that appsettings.json overrwrites it
             config
-                .AddJsonFile(Path.Combine(sharedFolder, "sharedSettings.json"), optional: true)
+                .AddJsonFile(Path.Combine(sharedFolder, "sharedSettings.Development.json"), optional: true)
                             .AddJsonFile("sharedSettings.json", optional: true) // When app is published
                             .AddJsonFile("appsettings.json", optional: true)
                             .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);

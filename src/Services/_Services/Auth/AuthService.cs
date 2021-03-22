@@ -23,7 +23,7 @@ namespace Tayra.Services._Services.Auth
                 }
                 else //is non-admin and non-manager. Is Member
                 {
-                    var teamIds = dbContext.ProfileAssignments.Where(x => x.ProfileId == profileId && x.TeamId.HasValue).Select(x => x.TeamId).ToArray();
+                    var teamIds = dbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => x.TeamId).ToArray();
                     qt = qt.Where(x => teamIds.Contains(x.Id));
                 }
             }

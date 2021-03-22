@@ -117,15 +117,12 @@ namespace Tayra.API.Features.IdentityManaging
 
             if (profile.Role != ProfileRoles.Admin)
             {
-                if (invitation.SegmentId.HasValue)
+                _db.Add(new ProfileAssignment
                 {
-                    _db.Add(new ProfileAssignment
-                    {
-                        Profile = profile,
-                        SegmentId = invitation.SegmentId.Value,
-                        TeamId = invitation.TeamId,
-                    });
-                }
+                    Profile = profile,
+                    SegmentId = invitation.SegmentId,
+                    TeamId = invitation.TeamId,
+                });
             }
 
             await _db.SaveChangesAsync(token);

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Tayra.Connectors.Slack.DTOs;
 
+#nullable enable
 namespace Tayra.Connectors.Slack.ResponseModels
 {
     public class SlackBaseResponse

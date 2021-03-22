@@ -9,7 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{A0396DC8
 ProjectSection(SolutionItems) = preProject
 	build\shared.csproj.props = build\shared.csproj.props
 	build\deps.csproj.props = build\deps.csproj.props
-	build\sharedSettings.json = build\sharedSettings.json
+	build\sharedSettings.Development.json = build\sharedSettings.Development.json
+	build\sharedSettings.Production.json = build\sharedSettings.Production.json
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "src\API\API.csproj", "{368C12CB-4E7E-40F5-B7EF-35F63B123862}"
@@ -36,8 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "src\Common\Common
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "src\Services\Services.csproj", "{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncServices", "src\SyncServices\SyncServices.csproj", "{F0F6700C-862D-490B-9853-1EAB9A4A4082}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imager", "src\Imager\Imager.csproj", "{2B2ED690-D4AA-442B-B4A7-C82A5C64DED0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.GitHub", "src\Connectors\Connectors.GitHub\Connectors.GitHub.csproj", "{A9F3E000-11D6-46E7-862C-D90311F1DD49}"
@@ -49,6 +48,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cog.DAL", "cog\Cog.DAL\Cog.DAL.csproj", "{A5BEAEA8-DC9B-4E14-9576-804040D34DA8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.Slack", "src\Connectors\Connectors.Slack\Connectors.Slack.csproj", "{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Functions", "src\Functions\Functions.csproj", "{86960CB2-7CA6-466A-8212-79EFEC14CF77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,10 +105,6 @@ Global
 		{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F0F6700C-862D-490B-9853-1EAB9A4A4082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F0F6700C-862D-490B-9853-1EAB9A4A4082}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F0F6700C-862D-490B-9853-1EAB9A4A4082}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F0F6700C-862D-490B-9853-1EAB9A4A4082}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2B2ED690-D4AA-442B-B4A7-C82A5C64DED0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2B2ED690-D4AA-442B-B4A7-C82A5C64DED0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B2ED690-D4AA-442B-B4A7-C82A5C64DED0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -128,6 +125,10 @@ Global
 		{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86960CB2-7CA6-466A-8212-79EFEC14CF77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86960CB2-7CA6-466A-8212-79EFEC14CF77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86960CB2-7CA6-466A-8212-79EFEC14CF77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86960CB2-7CA6-466A-8212-79EFEC14CF77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{92F6BEEC-DFF8-4649-87D9-C0C91FED33EF} = {5E95A6E4-610B-481F-8AE0-932224E8F436}

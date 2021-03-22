@@ -59,20 +59,17 @@ namespace Tayra.API.Features.Teams
 
                 var scope = _db.ProfileAssignments
                     .Where(x => x.TeamId == team.Id);
-
-
+                
                 var query = from t in scope
-                    let ws = t.Profile.StatsWeekly.OrderByDescending(x => x.DateId)
-                        .Where(x => x.SegmentId == team.SegmentId)
                     select new ResultTeamProfilesDto
                     {
                         ProfileId = t.ProfileId,
                         Name = t.Profile.FirstName + " " + t.Profile.LastName,
                         Username = t.Profile.Username,
                         Avatar = t.Profile.Avatar,
-                        Speed = Math.Round(ws.Select(x => x.SpeedAverage).FirstOrDefault(), 2),
-                        Power = Math.Round(ws.Select(x => x.PowerAverage).FirstOrDefault(), 2),
-                        Impact = Math.Round(ws.Select(x => x.OImpactAverage).FirstOrDefault(), 2),
+                        Speed = -999,
+                        Power = -999,
+                        Impact = -999,
                         MemberFrom = t.Created
                     };
 

@@ -24,7 +24,7 @@ namespace Tayra.Services
 
             if (task == null)
             {
-                task = new Task
+                task = new WorkUnit
                 {
                     ExternalId = dto.ExternalId,
                     ExternalUrl = dto.ExternalUrl,

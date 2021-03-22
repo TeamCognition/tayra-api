@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cog.DAL
 {
-    public static class IMultiTenantDbContextExtensions
+    #pragma warning disable CS8073
+    public static class MultiTenantDbContextExtensions
     {
         /// <summary>
         /// Checks the TenantId on entities taking into account

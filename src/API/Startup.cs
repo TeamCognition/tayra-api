@@ -101,7 +101,6 @@ namespace Tayra.API
             services.AddTransient<IQuestsService, QuestsService>();
             services.AddTransient<ITokensService, TokensService>();
             services.AddTransient<ILookupsService, LookupsService>();
-            services.AddTransient<IReportsService, ReportsService>();
             services.AddTransient<ISegmentsService, SegmentsService>();
             services.AddTransient<IShopItemsService, ShopItemsService>();
             services.AddTransient<IAssistantService, AssistantService>();
@@ -192,9 +191,6 @@ namespace Tayra.API
             {
                 endpoints.MapControllers();
             });
-            
-            Console.WriteLine("GITHUB");
-            Console.WriteLine(Configuration["Connectors:Github:AppName"]);
             
             app.UseSwaggerUI(c =>
             {

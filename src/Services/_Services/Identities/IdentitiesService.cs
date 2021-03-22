@@ -16,22 +16,17 @@ namespace Tayra.Services._Models.Identities
     {
         public async Task SendInvitation(OrganizationDbContext db, CatalogDbContext catalogDb, string host, IdentityInviteDTO dto)
         {
-            if (dto.TeamId.HasValue && !dto.SegmentId.HasValue)
-            {
-                throw new CogSecurityException("If teamId is sent, you must also send segmentId");
-            }
-
             if (!await IsEmailAddressUnique(catalogDb, dto.EmailAddress))
             {
                 throw new ApplicationException("Email address already used");
             }
 
-            if (dto.SegmentId.HasValue && !db.Segments.Any(x => x.Id == dto.SegmentId))
+            if (!db.Segments.Any(x => x.Id == dto.SegmentId))
             {
                 throw new EntityNotFoundException<Segment>(dto.SegmentId);
             }
 
-            if (dto.TeamId.HasValue && !db.Teams.Any(x => x.Id == dto.TeamId))
+            if (!db.Teams.Any(x => x.Id == dto.TeamId))
             {
                 throw new EntityNotFoundException<Team>(dto.TeamId);
             }

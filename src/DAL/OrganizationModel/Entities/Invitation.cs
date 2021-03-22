@@ -20,10 +20,10 @@ namespace Tayra.Models.Organizations
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public Guid? SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public Segment Segment { get; set; }
 
-        public Guid? TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public Team Team { get; set; }
         
         public bool IsActive() => 
