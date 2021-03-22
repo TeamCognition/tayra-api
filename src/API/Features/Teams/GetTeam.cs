@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
 using System.Linq;
 using Cog.DAL;
 using MediatR;
@@ -14,7 +13,7 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpGet("{segmentKey}/{teamKey}")]
-        public async Task<GetTeam.Result> GetTeam([FromUri] string segmentKey, [FromUri] string teamKey)
+        public async Task<GetTeam.Result> GetTeam([FromQuery] string segmentKey, [FromQuery] string teamKey)
             => await _mediator.Send(new GetTeam.Query {SegmentKey = segmentKey, TeamKey = teamKey});
     }
 

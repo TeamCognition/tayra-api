@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Cog.Core;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +16,7 @@ namespace Tayra.API.Features.Profile
     public partial class ProfilesController
     {
         [HttpGet("heatStream/{profileId}")]
-        public async Task<GetHeatStream.Result> GetProfileHeatStream([FromUri]Guid profileId)
+        public async Task<GetHeatStream.Result> GetProfileHeatStream([FromQuery]Guid profileId)
             => await _mediator.Send(new GetHeatStream.Query { ProfileId = profileId});
     }
     

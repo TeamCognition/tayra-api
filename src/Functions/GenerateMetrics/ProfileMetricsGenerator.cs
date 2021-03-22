@@ -8,7 +8,7 @@ using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Models.Organizations.Metrics;
 using Tayra.Models.Organizations.Metrics.PureMetrics;
-using Tayra.SyncServices.Metrics;
+using Tayra.Metrics;
 
 namespace Tayra.Functions.GenerateMetrics
 {

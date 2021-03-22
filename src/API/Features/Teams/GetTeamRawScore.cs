@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
 using System.Linq;
 using Cog.Core;
 using Cog.DAL;
@@ -18,7 +17,7 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpGet("{teamId}/rawScore")]
-        public async Task<GetTeamRawScore.Result> GetTeamRawScore([FromUri] Guid teamId)
+        public async Task<GetTeamRawScore.Result> GetTeamRawScore([FromQuery] Guid teamId)
             => await _mediator.Send(new GetTeamRawScore.Query {TeamId = teamId});
     }
 

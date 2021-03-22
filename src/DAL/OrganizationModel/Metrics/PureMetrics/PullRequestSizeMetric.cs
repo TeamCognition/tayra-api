@@ -16,7 +16,7 @@ namespace Tayra.Models.Organizations.Metrics.PureMetrics
 
         public MetricShard Create(MetricService metricService, IEnumerable<PullRequest> pullRequests, int dateId)
         {
-            int pullRequestChanges = 0;
+            //int pullRequestChanges = 0;
             // foreach (var pullRequest in pullRequests)
             // {
             //     Guid integrationId = metricService.GetIntegrationId(IntegrationType.GH);

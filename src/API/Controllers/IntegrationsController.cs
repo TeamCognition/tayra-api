@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Cog.Core;
 using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
-using RestSharp;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
@@ -16,7 +12,6 @@ using Tayra.Connectors.Slack;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
-using Tayra.SyncServices;
 
 namespace Tayra.API.Controllers
 {

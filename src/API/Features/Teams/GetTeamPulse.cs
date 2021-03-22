@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Cog.Core;
 using Cog.DAL;
 using MediatR;
@@ -17,7 +16,7 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpGet("{teamId}/pulse")]
-        public async Task<GetTeamPulse.Result> GetTeamPulse([FromUri] Guid teamId)
+        public async Task<GetTeamPulse.Result> GetTeamPulse([FromQuery] Guid teamId)
         {
             return await _mediator.Send(new GetTeamPulse.Query {TeamId = teamId});
         }

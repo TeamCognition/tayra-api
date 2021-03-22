@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Cog.Core;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +17,7 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpGet("statsWidget/{teamId}")]
-        public async Task<GetTeamStatsData.Result> GetTeamStatsData([FromUri] Guid teamId)
+        public async Task<GetTeamStatsData.Result> GetTeamStatsData([FromQuery] Guid teamId)
         {
             return await _mediator.Send(new GetTeamStatsData.Query {TeamId = teamId});
         }

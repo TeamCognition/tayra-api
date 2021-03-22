@@ -6,7 +6,7 @@ using Tayra.Analytics.Metrics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 
-namespace Tayra.SyncServices.Metrics
+namespace Tayra.Metrics
 {
     public class PraisesReceivedMetric : PureMetric
     {
