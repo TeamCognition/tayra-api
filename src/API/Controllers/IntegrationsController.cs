@@ -103,15 +103,6 @@ namespace Tayra.API.Controllers
                 ExternalConfigurationUrl = externalConfigUrl
             });
         }
-
-        [HttpGet, Route("sl/users")]
-        [AllowAnonymous]
-        public ActionResult GetSlackUsers()
-        {
-            var integrationId = DbContext.Integrations.Where(x => x.Type == IntegrationType.GH && x.SegmentId == CurrentSegment.Id && x.ProfileId == null).Select(x => x.Id).FirstOrDefault();
-            var slackConnector =(SlackConnector) ConnectorResolver.Get<IOAuthConnector>(IntegrationType.SL);
-            return Ok(slackConnector.GetUsersList(integrationId));
-        }
         #endregion
     }
 }

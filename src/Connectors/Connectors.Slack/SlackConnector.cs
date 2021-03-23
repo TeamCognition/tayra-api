@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cog.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -50,9 +51,9 @@ namespace Tayra.Connectors.Slack
                     throw new ApplicationException(errorDescription);
                 }
 
-                var accessToken = SlackService.ExchangeCodeForAccessToken(Config[CONFIG_CLIENT_ID], Config[CONFIG_CLIENT_SECRET], code, GetCallbackUrl(state.ToString()))?.Data;
+                var botAccessToken = SlackService.ExchangeCodeForAccessToken(Config[CONFIG_CLIENT_ID], Config[CONFIG_CLIENT_SECRET], code, GetCallbackUrl(state.ToString()))?.Data;
 
-                if (accessToken == null)
+                if (botAccessToken == null)
                     return null;
 
                 var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).OrderByDescending(x => x.Created).FirstOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
@@ -64,7 +65,7 @@ namespace Tayra.Connectors.Slack
 
                 var profileFields = new Dictionary<string, string>
                 {
-                    [Constants.PROFILE_EXTERNAL_ID] = accessToken.AuthedUser.Id
+                    [Constants.PROFILE_EXTERNAL_ID] = botAccessToken.AuthedUser.Id
                 };
 
                 CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields, profileIntegration);
@@ -73,9 +74,9 @@ namespace Tayra.Connectors.Slack
                 {
                     var segmentFields = new Dictionary<string, string>
                     {
-                        [Constants.ACCESS_TOKEN] = accessToken.AccessToken,
-                        [Constants.ACCESS_TOKEN_TYPE] = accessToken.TokenType,
-                        [Constants.SCOPE] = accessToken.Scope,
+                        [Constants.ACCESS_TOKEN] = botAccessToken.AccessToken,
+                        [Constants.ACCESS_TOKEN_TYPE] = botAccessToken.TokenType,
+                        [Constants.SCOPE] = botAccessToken.Scope,
                     };
 
                     segmentIntegration = CreateSegmentIntegration(state.SegmentId, installationId: null, segmentFields, segmentIntegration);
@@ -88,42 +89,42 @@ namespace Tayra.Connectors.Slack
             return null;
         }
 
-        private void LinkSlackAccountsWithTayraProfileThroughEmailAddress(OrganizationDbContext dbContext, Guid integrationId)
+        // private void LinkSlackAccountsWithTayraProfileThroughEmailAddress(OrganizationDbContext dbContext, Guid integrationId)
+        // {
+        //     var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.Id == integrationId && x.ProfileId == null);
+        //     var botToken = segmentIntegration.Fields.FirstOrDefault(x => x.Key == Constants.ACCESS_TOKEN).Value;
+        //     var slackUsers = SlackService.GetUsersList(botToken)?.Data;
+        //
+        //     if (slackUsers == null || !slackUsers.Ok)
+        //     {
+        //         throw new ApplicationException("could not fetch slack users");
+        //     }
+        //
+        //     var tenantShardingKey = dbContext.CurrentTenantId;
+        //     var tenantIdentities = CatalogContext.TenantIdentities
+        //         .Where(x => TenantUtilities.ConvertShardingKeyToTenantId(tenantShardingKey) == x.TenantId)
+        //         .Select(x => x.IdentityId).ToArray();
+        //     
+        //     var identityEmails = CatalogContext.IdentityEmails.Where(x => tenantIdentities.Contains(x.IdentityId))
+        //         .AsNoTracking().ToArray();
+        //     
+        //     foreach (var u in slackUsers.Members)
+        //     {
+        //         if (u.Deleted == false && u.IsBot == false)
+        //         {
+        //             var identity = identityEmails.FirstOrDefault(x => x.Email.ToLower() == u.Profile.Email.ToLower());
+        //             // dbContext.Profiles.FirstOrDefault(x => x.IdentityId == i)
+        //             // CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields,
+        //             //     profileIntegration);
+        //         }
+        //     }
+        // }
+
+        public async Task<UsersListResponse> GetUsersList(Guid integrationId)
         {
-            var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.Id == integrationId && x.ProfileId == null);
-            var botToken = segmentIntegration.Fields.FirstOrDefault(x => x.Key == Constants.ACCESS_TOKEN).Value;
-            var slackUsers = SlackService.GetUsersList(botToken)?.Data;
-
-            if (slackUsers == null || !slackUsers.Ok)
-            {
-                throw new ApplicationException("could not fetch slack users");
-            }
-
-            // var tenantShardingKey = dbContext.CurrentTenantId;
-            // var tenantIdentities = CatalogContext.TenantIdentities
-            //     .Where(x => TenantUtilities.ConvertShardingKeyToTenantId(tenantShardingKey) == x.TenantId)
-            //     .Select(x => x.IdentityId).ToArray();
-            //
-            // var identityEmails = CatalogContext.IdentityEmails.Where(x => tenantIdentities.Contains(x.IdentityId))
-            //     .AsNoTracking().ToArray();
-            //
-            // foreach (var u in slackUsers.Members)
-            // {
-            //     if (u.Deleted == false && u.IsBot == false)
-            //     {
-            //         var identity = identityEmails.FirstOrDefault(x => x.Email.ToLower() == u.Profile.Email.ToLower());
-            //         // dbContext.Profiles.FirstOrDefault(x => x.IdentityId == i)
-            //         // CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields,
-            //         //     profileIntegration);
-            //     }
-            // }
-        }
-
-        public UsersListResponse GetUsersList(Guid integrationId)
-        {
-            var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefault(x => x.Id == integrationId && x.ProfileId == null);
-            var botToken = segmentIntegration.Fields.FirstOrDefault(x => x.Key == Constants.ACCESS_TOKEN).Value;
-            return SlackService.GetUsersList(botToken).Data;
+            var segmentIntegration = await OrganizationContext.Integrations.Include(x => x.Fields).FirstOrDefaultAsync(x => x.Id == integrationId && x.ProfileId == null);
+            var botToken = segmentIntegration?.Fields.FirstOrDefault(x => x.Key == Constants.ACCESS_TOKEN)?.Value;
+            return SlackService.GetUsersList(botToken)?.Data;
         }
 
         public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
