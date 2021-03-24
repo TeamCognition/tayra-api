@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RestSharp;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Mailer;
-using Tayra.Mailer.Contracts;
 using Tayra.Models.Catalog;
-using Tayra.Models.Organizations;
 
 namespace Tayra.API.Controllers
 {
@@ -87,7 +82,9 @@ namespace Tayra.API.Controllers
         {
             try
             {
-                EmailService.SendEmail(dto.Email, new EmailTryForFreeDTO());
+                MailerService.SendEmail("haris@tayra.io",
+                    "New Try Submitted (Landing Page Try for free)",
+                    JsonConvert.SerializeObject(dto));
 
                 _catalogContext.LandingPageTry.Add(new LandingPageTry
                 {
@@ -95,12 +92,6 @@ namespace Tayra.API.Controllers
                 });
 
                 _catalogContext.SaveChanges();
-
-                MailerService.SendEmail("haris.botic96@gmail.com",
-                    "haris@tayra.io",
-                    "New Try Submitted (Landing Page Try for free)",
-                    JsonConvert.SerializeObject(dto));
-
             }
             catch (Exception)
             {
@@ -109,15 +100,7 @@ namespace Tayra.API.Controllers
 
             return Ok();
         }
-
-        public class ContactFormDTO
-        {
-            public string Name { get; set; }
-            public string Email { get; set; }
-            public string PhoneNumber { get; set; }
-            public string Message { get; set; }
-        }
-
+        
         [HttpPost("landingForm")]
 
         public IActionResult LandingForm([FromBody] JObject jObject)
@@ -131,13 +114,11 @@ namespace Tayra.API.Controllers
 
             try
             {
-                MailerService.SendEmail("haris.botic96@gmail.com",
-                    "haris@tayra.io",
+                MailerService.SendEmail("haris@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));
 
-                MailerService.SendEmail("haris.botic96@gmail.com",
-                    "ejub@tayra.io",
+                MailerService.SendEmail("haris@tayra.io",
                     "New Company Signup",
                     JsonConvert.SerializeObject(jObject));
 

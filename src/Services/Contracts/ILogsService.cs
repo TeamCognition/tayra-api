@@ -2,7 +2,6 @@
 using Cog.Core;
 using Tayra.Common;
 using Tayra.Mailer;
-using Tayra.Mailer.Contracts;
 
 namespace Tayra.Services
 {

@@ -5,7 +5,7 @@ using Cog.Core;
 using Cog.DAL;
 using Tayra.Common;
 using Tayra.Mailer;
-using Tayra.Mailer.MailerTemplateModels;
+using Tayra.Mailer.Templates.PraiseReceived;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -92,7 +92,7 @@ namespace Tayra.Services
             ));
 
             LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, 
-                new PraiseReceivedTemplateModel("Praise Recieved",
+                new TemplateModelPraiseReceived("Praise Recieved",
                     praiseReceiver?.Username,
                     praiseGiver?.Username, "put link here",
                     dto.Type));

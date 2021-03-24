@@ -25,7 +25,6 @@ using Tayra.DAL;
 using Tayra.Helpers;
 using Tayra.Imager;
 using Tayra.Mailer;
-using Tayra.Mailer.Contracts;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;

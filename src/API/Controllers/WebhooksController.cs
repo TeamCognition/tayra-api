@@ -9,14 +9,12 @@ using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Connectors.Slack;
 using Tayra.Connectors.Slack.DTOs;
-using Tayra.Mailer.Contracts;
-using Tayra.Mailer.Enums;
-using Tayra.Mailer.MailerTemplateModels;
+using Tayra.Mailer;
 using Tayra.Models.Organizations;
 using Tayra.Services;
 using Tayra.Services.Contracts;
 using Tayra.Services.TaskConverters;
-using Tayra.Services.webhooks;
+using Tayra.Mailer.Templates.PraiseReceived;
 
 namespace Tayra.API.Controllers
 {
@@ -88,14 +86,14 @@ namespace Tayra.API.Controllers
         
         [HttpPost("testMailer")]
         [AllowAnonymous]
-        public ActionResult TestMailer([FromQuery] string id,[FromQuery]string firsName,[FromQuery] string sender,[FromServices]IMailerService mailerService)
+        public ActionResult TestMailer([FromServices] IMailerService mailerService)
         {
-            var res = mailerService.SendSlackMessage("U01BP2UAUEP",
-                new GiftReceivedTemplateModel("U01BP2UAUEP", "https://github.com/toddams/RazorLight",
-                    "You received a gift"));
-            mailerService.SendEmailWithAttachment("eficet89@gmail.com", "faykohamad@gmail.com",
-                new PraiseReceivedTemplateModel(" Received A Praise", "Fayiz",
-                    "Bota","https://github.com/toddams/RazorLight",PraiseTypes.HardWorker));
+            var res = mailerService.SendEmail("haris.botic96@gmail.com",
+                new TemplateModelPraiseReceived("You received a praise from someone",
+                    receiverFirstName: "Bota",
+                    senderFirstName: "Ejub",
+                    url: "https://github.com/toddams/RazorLight",
+                    PraiseTypes.HardWorker));
             Console.WriteLine(res);
             return Ok(res);
         }

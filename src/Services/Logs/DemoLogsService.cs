@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
 using Cog.Core;
-using Cog.DAL;
 using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Mailer;
-using Tayra.Mailer.Contracts;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services

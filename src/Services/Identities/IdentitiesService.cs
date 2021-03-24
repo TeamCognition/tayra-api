@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Tayra.Services.Models.Profiles;
 using Tayra.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.Templates.JoinTayra;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
@@ -14,12 +15,13 @@ namespace Tayra.Services
     public class IdentitiesService : BaseService<OrganizationDbContext>, IIdentitiesService
     {
         protected CatalogDbContext CatalogDb { get; set; }
-
+        private IMailerService MailerService { get; }
         #region Constructor
 
-        public IdentitiesService(CatalogDbContext catalogDb, OrganizationDbContext dbContext) : base(dbContext)
+        public IdentitiesService(CatalogDbContext catalogDb, OrganizationDbContext dbContext, IMailerService mailerService) : base(dbContext)
         {
             CatalogDb = catalogDb;
+            MailerService = mailerService;
         }
 
         #endregion
@@ -215,7 +217,8 @@ namespace Tayra.Services
             //invitation.TeamId = invitation.TeamId ?? DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
             //invitation.TeamId ??= DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
 
-            var resp = EmailService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            //var resp = EmailService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            var resp = MailerService.SendEmail(dto.EmailAddress, new TemplateModelJoinTayra("Join Tayra", dto.FirstName, host, invitation.Code.ToString(), dto.Role));
             if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 throw new ApplicationException(dto.EmailAddress + " email not sent");
@@ -235,7 +238,7 @@ namespace Tayra.Services
                 throw new ApplicationException("Invitation already accepted.");
             }
 
-            var resp = EmailService.SendEmail(invitation.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            var resp = MailerService.SendEmail(invitation.EmailAddress, new TemplateModelJoinTayra("Join Tayra", invitation.FirstName, host, invitation.Code.ToString(), invitation.Role));
             if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 throw new ApplicationException(invitation.EmailAddress + " email not sent");

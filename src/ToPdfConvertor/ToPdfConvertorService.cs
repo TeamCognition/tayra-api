@@ -1,11 +1,10 @@
-﻿using System;
-using DinkToPdf;
+﻿using DinkToPdf;
 
 namespace ToPdfConvertor
 {
-    public class ToPdfConvertorService
+    public static class ToPdfConvertorService
     {
-        public static byte[] ConvertHtmlToPdf(string htmlToConvert)
+        public static byte[] ConvertHtmlToPdf(string html)
         {
             var convertor = new SynchronizedConverter(new PdfTools());
             var doc = new HtmlToPdfDocument()
@@ -18,7 +17,7 @@ namespace ToPdfConvertor
                 Objects = {
                     new ObjectSettings() {
                         PagesCount = true,
-                        HtmlContent = htmlToConvert
+                        HtmlContent = html
                     }
                 }
             };

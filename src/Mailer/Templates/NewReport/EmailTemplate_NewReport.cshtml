@@ -1,5 +1,4 @@
-﻿@model Tayra.Mailer.MailerTemplateModels.JoinTayraTemplateModel
-
+@model Tayra.Mailer.Templates.NewReport.TemplateModelNewReport
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html
   xmlns="http://www.w3.org/1999/xhtml"
@@ -19,14 +18,13 @@
     <meta name="x-apple-disable-message-reformatting" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta content="telephone=no" name="format-detection" />
-    <title>Join Tayra</title>
+    <title>Tayra report email</title>
     <!--[if (mso 16)]>
       <style type="text/css">
         a {
           text-decoration: none;
         }
       </style>
-    <![endif]-->
    
       <xml>
         <o:OfficeDocumentSettings>
@@ -34,6 +32,7 @@
           <o:PixelsPerInch>96</o:PixelsPerInch>
         </o:OfficeDocumentSettings>
       </xml>
+    <![endif]-->
     <style type="text/css">
       #outlook a {
         padding: 0;
@@ -481,65 +480,29 @@
                                         color: #212b36;
                                       "
                                     >
-                                      Hi there,<br /><strong
-                                        >@Model.Sender</strong
-                                      >&nbsp;can't wait for you to
-                                      experience&nbsp;Tayra.<br />Click the
-                                      button below to join your colleagues.<br /><br />There
-                                      are a few simple steps to get you fully
-                                      ready:
+                                      Hi @Model.FirstName,<br />here is a
+                                      <strong>@Model.ReportType</strong> from your
+                                      Tayra assistant for the
+                                      <strong>@Model.SegmentName</strong>
+                                      segment.<br /><br />
                                     </p>
-                                    <ul>
-                                      <li
-                                        style="
-                                          margin-bottom: 15px;
-                                          -webkit-text-size-adjust: none;
-                                          -ms-text-size-adjust: none;
-                                          mso-line-height-rule: exactly;
-                                          font-size: 14px;
-                                          font-family: helvetica,
-                                            'helvetica neue', arial, verdana,
-                                            sans-serif;
-                                          line-height: 21px;
-                                          color: #212b36;
-                                        "
-                                      >
-                                        Setup your personal info
-                                      </li>
-                                      <li
-                                        style="
-                                          margin-bottom: 15px;
-                                          -webkit-text-size-adjust: none;
-                                          -ms-text-size-adjust: none;
-                                          mso-line-height-rule: exactly;
-                                          font-size: 14px;
-                                          font-family: helvetica,
-                                            'helvetica neue', arial, verdana,
-                                            sans-serif;
-                                          line-height: 21px;
-                                          color: #212b36;
-                                        "
-                                      >
-                                        Connect neccessary apps
-                                      </li>
-                                      <li
-                                        style="
-                                          margin-bottom: 15px;
-                                          -webkit-text-size-adjust: none;
-                                          -ms-text-size-adjust: none;
-                                          mso-line-height-rule: exactly;
-                                          font-size: 14px;
-                                          font-family: helvetica,
-                                            'helvetica neue', arial, verdana,
-                                            sans-serif;
-                                          line-height: 21px;
-                                          color: #212b36;
-                                        "
-                                      >
-                                        That's it! You just simplified your
-                                        workflow,... and much more.
-                                      </li>
-                                    </ul>
+                                    <p
+                                      style="
+                                        margin: 0;
+                                        -webkit-text-size-adjust: none;
+                                        -ms-text-size-adjust: none;
+                                        mso-line-height-rule: exactly;
+                                        font-size: 14px;
+                                        font-family: helvetica, 'helvetica neue',
+                                          arial, verdana, sans-serif;
+                                        line-height: 21px;
+                                        color: #212b36;
+                                      "
+                                    >
+                                      Download the file in the attachment or go
+                                      to Tayra reports history page to view te
+                                      report.
+                                    </p>
                                   </td>
                                 </tr>
                               </table>
@@ -604,7 +567,7 @@
                                         width: auto;
                                       "
                                       ><a
-                                        href="@Model.Link"
+                                        href="@Model.ReportLink"
                                         class="es-button"
                                         target="_blank"
                                         style="
@@ -630,44 +593,9 @@
                                           width: auto;
                                           text-align: center;
                                         "
-                                        >Setup your assistant now</a
+                                        >View report in Tayra</a
                                       ></span
                                     >
-                                  </td>
-                                </tr>
-                                <tr style="border-collapse: collapse">
-                                  <td
-                                    align="left"
-                                    style="
-                                      padding: 0;
-                                      margin: 0;
-                                      padding-top: 5px;
-                                    "
-                                  >
-                                    <p
-                                      style="
-                                        margin: 0;
-                                        -webkit-text-size-adjust: none;
-                                        -ms-text-size-adjust: none;
-                                        mso-line-height-rule: exactly;
-                                        font-size: 14px;
-                                        font-family: helvetica, 'helvetica neue',
-                                          arial, verdana, sans-serif;
-                                        line-height: 21px;
-                                        color: #212b36;
-                                      "
-                                    >
-                                      <em
-                                        ><span style="font-size: 12px"
-                                          >"Everyone does their job better with
-                                          the right assistant."</span
-                                        ><br /><br /><br />Tayra automates your
-                                        workflows, enhances employee engagement
-                                        and everyday work experience, saving
-                                        your time so you can focus on what is
-                                        important.</em
-                                      >
-                                    </p>
                                   </td>
                                 </tr>
                               </table>

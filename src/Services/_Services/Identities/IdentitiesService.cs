@@ -6,6 +6,7 @@ using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.Templates.JoinTayra;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Task = System.Threading.Tasks.Task;
@@ -14,7 +15,7 @@ namespace Tayra.Services._Models.Identities
 {
     public class IdentitiesService
     {
-        public async Task SendInvitation(OrganizationDbContext db, CatalogDbContext catalogDb, string host, IdentityInviteDTO dto)
+        public async Task SendInvitation(OrganizationDbContext db, CatalogDbContext catalogDb, string host, IdentityInviteDTO dto, IMailerService mailerService)
         {
             if (!await IsEmailAddressUnique(catalogDb, dto.EmailAddress))
             {
@@ -51,7 +52,9 @@ namespace Tayra.Services._Models.Identities
             //invitation.TeamId = invitation.TeamId ?? DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
             //invitation.TeamId ??= DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
 
-            var resp = EmailService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+  //          var resp = EmailService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            var resp = mailerService.SendEmail(dto.EmailAddress, new TemplateModelJoinTayra("Join Tayra", dto.FirstName, host, invitation.Code.ToString(), dto.Role));
+
             if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 throw new ApplicationException(dto.EmailAddress + " email not sent");

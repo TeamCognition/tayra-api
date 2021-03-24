@@ -1,4 +1,4 @@
-@model Tayra.Mailer.MailerTemplateModels.SendReportTemplateModel
+@model Tayra.Mailer.Templates.PraiseReceived.TemplateModelPraiseReceived
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html
   xmlns="http://www.w3.org/1999/xhtml"
@@ -18,21 +18,22 @@
     <meta name="x-apple-disable-message-reformatting" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta content="telephone=no" name="format-detection" />
-    <title>Tayra report email</title>
+    <title>You got praised</title>
     <!--[if (mso 16)]>
       <style type="text/css">
         a {
           text-decoration: none;
         }
       </style>
-   
+    <![endif]-->
+  
       <xml>
         <o:OfficeDocumentSettings>
           <o:AllowPNG></o:AllowPNG>
           <o:PixelsPerInch>96</o:PixelsPerInch>
         </o:OfficeDocumentSettings>
       </xml>
-    <![endif]-->
+    
     <style type="text/css">
       #outlook a {
         padding: 0;
@@ -480,28 +481,12 @@
                                         color: #212b36;
                                       "
                                     >
-                                      Hi @Model.FirstName,<br />here is a
-                                      <strong>@Model.ReportType</strong> from your
-                                      Tayra assistant for the
-                                      <strong>@Model.SegmentName</strong>
-                                      segment.<br /><br />
-                                    </p>
-                                    <p
-                                      style="
-                                        margin: 0;
-                                        -webkit-text-size-adjust: none;
-                                        -ms-text-size-adjust: none;
-                                        mso-line-height-rule: exactly;
-                                        font-size: 14px;
-                                        font-family: helvetica, 'helvetica neue',
-                                          arial, verdana, sans-serif;
-                                        line-height: 21px;
-                                        color: #212b36;
-                                      "
-                                    >
-                                      Download the file in the attachment or go
-                                      to Tayra reports history page to view te
-                                      report.
+                                      Hi
+                                      <strong>@Model.ReceiverFirstName</strong
+                                      >,<br />your actions are proof that we achieve much more together than alone.
+                                      <strong>@Model.SenderFirstName </strong>left a
+                                      praise note on the wall for others to see
+                                      as well.
                                     </p>
                                   </td>
                                 </tr>
@@ -567,7 +552,7 @@
                                         width: auto;
                                       "
                                       ><a
-                                        href="@Model.ReportLink"
+                                        href="{praiseWallLink}"
                                         class="es-button"
                                         target="_blank"
                                         style="
@@ -593,9 +578,42 @@
                                           width: auto;
                                           text-align: center;
                                         "
-                                        >View report in Tayra</a
+                                        >Go to praise wall page</a
                                       ></span
                                     >
+                                  </td>
+                                </tr>
+                                <tr style="border-collapse: collapse">
+                                  <td
+                                    align="left"
+                                    style="
+                                      padding: 0;
+                                      margin: 0;
+                                      padding-top: 5px;
+                                    "
+                                  >
+                                    <p
+                                      style="
+                                        margin: 0;
+                                        -webkit-text-size-adjust: none;
+                                        -ms-text-size-adjust: none;
+                                        mso-line-height-rule: exactly;
+                                        font-size: 14px;
+                                        font-family: helvetica, 'helvetica neue',
+                                          arial, verdana, sans-serif;
+                                        line-height: 21px;
+                                        color: #212b36;
+                                      "
+                                    >
+                                      <em
+                                        ><span style="font-size: 12px"
+                                          >"Recognition is not a scarce
+                                          resource. You can't use it up or run
+                                          out of it." --Susan M.
+                                          Heathfield</span
+                                        ><br
+                                      /></em>
+                                    </p>
                                   </td>
                                 </tr>
                               </table>

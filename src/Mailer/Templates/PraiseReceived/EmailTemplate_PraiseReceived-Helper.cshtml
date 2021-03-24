@@ -1,4 +1,4 @@
-@model Tayra.Mailer.MailerTemplateModels.PraiseReceivedTemplateModel
+@model Tayra.Mailer.Templates.PraiseReceived.TemplateModelPraiseReceived
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html
   xmlns="http://www.w3.org/1999/xhtml"
@@ -33,7 +33,6 @@
           <o:PixelsPerInch>96</o:PixelsPerInch>
         </o:OfficeDocumentSettings>
       </xml>
-    
     <style type="text/css">
       #outlook a {
         padding: 0;
@@ -482,9 +481,10 @@
                                       "
                                     >
                                       Hi
-                                      <strong>@Model.FirstName</strong
-                                      >,<br />your actions are proof that we achieve much more together than alone.
-                                      <strong>@Model.SenderName </strong>left a
+                                      <strong>@Model.ReceiverFirstName</strong>,<br />when
+                                      you truly help others, they see it, and
+                                      they are thankful for it.
+                                      <strong>@Model.SenderFirstName </strong>left a
                                       praise note on the wall for others to see
                                       as well.
                                     </p>
@@ -866,7 +866,7 @@
                                             "
                                             ><img
                                               title="Twitter"
-                                              src="https://tayrafiles.blob.core.windows.net/images/twitter-logo-black.png"
+                                              src="images/twitter-logo-black.png"
                                               alt="Tw"
                                               width="32"
                                               style="
@@ -899,7 +899,7 @@
                                             "
                                             ><img
                                               title="Instagram"
-                                              src="https://tayrafiles.blob.core.windows.net/images/instagram-logo-black.png"
+                                              src="https://tayrafiles.blob.core.windows.net/images/twitter-logo-black.png"
                                               alt="Ig"
                                               width="32"
                                               style="

@@ -8,6 +8,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Tayra.Common;
+using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Models.Seeder;
@@ -36,10 +37,12 @@ namespace Tayra.API.Features.Tenants
         public class Handler : AsyncRequestHandler<Command>
         {
             private readonly CatalogDbContext _catalogDb;
+            private readonly IMailerService _mailerService;
             private readonly IConfiguration _config;
-            public Handler(CatalogDbContext catalogDb, IConfiguration config)
+            public Handler(CatalogDbContext catalogDb, IMailerService mailerService, IConfiguration config)
             {
-                _catalogDb = catalogDb; 
+                _catalogDb = catalogDb;
+                _mailerService = mailerService;
                 _config = config;
             }
 
@@ -65,13 +68,13 @@ namespace Tayra.API.Features.Tenants
                     ConnectionString = newDbSqlConnection
                 };
                 
-                await EnsureTenantCreatedAndInvitedAsync(_catalogDb, newDbSqlConnection, tenant, msg.EmailAddress, token);
+                await EnsureTenantCreatedAndInvitedAsync(_catalogDb, newDbSqlConnection, tenant, msg.EmailAddress, _mailerService, token);
 
                 _catalogDb.Add(tenant);
                 await _catalogDb.SaveChangesAsync(token);
             }
 
-            private static async Task EnsureTenantCreatedAndInvitedAsync(CatalogDbContext catalogDb, string connectionString, Tenant tenant, string emailAddress, CancellationToken token)
+            private static async Task EnsureTenantCreatedAndInvitedAsync(CatalogDbContext catalogDb, string connectionString, Tenant tenant, string emailAddress, IMailerService mailerService, CancellationToken token)
             {
                 await using var newDb = new OrganizationDbContext(TenantModel.WithConnectionStringOnly(connectionString), null);
                 await newDb.Database.MigrateAsync(token);
@@ -105,7 +108,8 @@ namespace Tayra.API.Features.Tenants
                         EmailAddress = emailAddress,
                         SegmentId = segmentId,
                         TeamId = teamId
-                    });
+                    },
+                    mailerService);
 
                 await tenantDb.SaveChangesAsync(token);
             }

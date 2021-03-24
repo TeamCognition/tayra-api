@@ -1,43 +1,67 @@
 ﻿using System;
-using System.Text.Encodings.Web;
-using Tayra.Common;
+using System.IO;
+using RazorLight;
+using SendGrid;
 using Tayra.Connectors.Slack;
 using Tayra.Connectors.Slack.DTOs;
-using Tayra.Mailer.Contracts;
-using Tayra.Mailer.MailerTemplateModels;
-using System.Web;
 
 namespace Tayra.Mailer
 {
     public class MailerService : IMailerService
     {
-
-        public object SendSlackMessage(string recipient, ISlackMessageTemplate slackMessageTemplate)
+        public object SendSlackMessage(string botToken, string channel, ISlackMessageTemplate template)
         {
-            
-            var message = slackMessageTemplate.GetSlackTemplate();
-            return SlackService.SendSlackMessage("xoxb-698826045604-1117671360278-zB1nNQLCkjI3iR8qXuvZGM7E", new SlackMessageRequestDto{
+            var message = BuildSlackMessageFromTemplate(template);
+            return SlackService.SendSlackMessage(botToken, new SlackMessageRequestDto
+            {
                 Attachments = message,
-                Text = slackMessageTemplate.Subject,
-                Channel = recipient
+                Text = template.Subject,
+                Channel = channel
             });
         }
 
-        public object SendEmail(string recipient, string sender, IEmailTemplate emailTemplate)
+        public Response SendEmail(string recipient, IEmailTemplate emailTemplate)
         {
-           return EmailService.SendEmail(sender, recipient, emailTemplate.Subject,
-                emailTemplate.GetEmailTemplate());
+           return EmailService.SendEmail(recipient, emailTemplate.Subject,
+               BuildEmailFromTemplate(emailTemplate, emailTemplate.EmailTemplateFileName));
         }
 
-        public object SendEmail(string recipient, string sender,string subject, string message)
+        public Response SendEmail(string recipient, string subject, string message)
         {
-            return EmailService.SendEmail(sender, recipient, subject, message);
+            return EmailService.SendEmail(recipient, subject, message);
         }
 
-        public object SendEmailWithAttachment(string recipient, string sender, IEmailTemplate emailTemplate)
+        public Response SendEmailWithAttachment(string recipient, IEmailTemplate emailTemplate)
         {
-            return EmailService.SendEmailWithAttachment(sender, recipient, emailTemplate.Subject,
-                emailTemplate.GetEmailTemplate());
+            return EmailService.SendEmailWithAttachment(recipient, emailTemplate.Subject,
+                BuildEmailFromTemplate(emailTemplate, emailTemplate.EmailTemplateFileName));
+        }
+        
+        private static string BuildEmailFromTemplate<T>(T model,string templatePath) where T: IEmailTemplate
+        {
+            var rootPath = AppContext.BaseDirectory;
+            
+            // var folderPathh = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
+            //     $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
+            var engine = new RazorLightEngineBuilder()
+                .UseFileSystemProject(rootPath)
+                .UseMemoryCachingProvider()
+                .Build();
+            
+            return engine.CompileRenderAsync(templatePath, model).GetAwaiter().GetResult();
+        }
+
+        private static string BuildSlackMessageFromTemplate<T>(T model) where T: ISlackMessageTemplate
+        {
+            var rootPath = AppContext.BaseDirectory;
+            
+            var templateJson = File.ReadAllText(Path.Combine(rootPath, model.SlackTemplateFileName));
+            string template = $"[{templateJson}]";
+            var engine = new RazorLightEngineBuilder()
+                .UseEmbeddedResourcesProject(typeof(T))
+                .UseMemoryCachingProvider()
+                .Build();
+            return engine.CompileRenderStringAsync(model.TemplateKey, template, model).GetAwaiter().GetResult();
         }
     }
 }
