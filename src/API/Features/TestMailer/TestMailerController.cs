@@ -15,13 +15,12 @@ namespace Tayra.API.Features.TestMailer
         [AllowAnonymous]
         public ActionResult TestMailer([FromServices] IMailerService mailerService)
         {
-            var res = mailerService.SendEmail("haris.botic96@gmail.com",
+            var res = mailerService.SendEmail("ejub@tayra.io",
                 new TemplateModelPraiseReceived("You received a praise from someone",
                     receiverFirstName: "Bota",
                     senderFirstName: "Ejub",
                     url: "https://github.com/toddams/RazorLight",
                     PraiseTypes.HardWorker));
-            Console.WriteLine(res);
             return Ok(res);
         }
     }

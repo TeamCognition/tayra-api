@@ -5,7 +5,7 @@
         public string TemplateKey => "gift-received";
         public string SlackTemplateFileName => "SlackTemplate_GiftReceived.json";
         public string EmailTemplateFileName => "EmailTemplate_GiftReceived.cshtml";
-        public  string FirstName { get; set; }
+        public  string ReceiverName { get; set; }
         
         public string SenderName { get; set; }
         
@@ -15,12 +15,12 @@
         
         public string SlackUserId { get; set; }
 
-       public TemplateModelGiftReceived(string firstName, string senderName, string giftLink, string subject)
+       public TemplateModelGiftReceived(string receiverName, string senderName, string giftLink, string subject)
         {
-            FirstName = firstName;
+            ReceiverName = receiverName;
             SenderName = senderName;
             GiftLink = giftLink;
-            Subject =subject ;
+            Subject = subject;
         }
 
        public TemplateModelGiftReceived(string slackUserId, string giftLink, string subject)
