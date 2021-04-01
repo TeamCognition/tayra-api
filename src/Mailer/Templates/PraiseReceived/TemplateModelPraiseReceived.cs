@@ -7,16 +7,16 @@ namespace Tayra.Mailer.Templates.PraiseReceived
     {
         public string RecipientId { get; set; } // ?
         public string Subject { get; set; }
-        public string ReceiverFirstName { get; set; }
-        public string SenderFirstName { get; set; }
+        public string ReceiverName { get; set; }
+        public string SenderName { get; set; }
         public string Url { get; set; }
         public PraiseTypes PraiseType { get; set; }
 
-        public TemplateModelPraiseReceived(string subject, string receiverFirstName, string senderFirstName, string url, PraiseTypes praiseType)
+        public TemplateModelPraiseReceived(string subject, string receiverName, string senderName, string url, PraiseTypes praiseType)
         {
             Subject = subject;
-            ReceiverFirstName = receiverFirstName;
-            SenderFirstName = senderFirstName;
+            ReceiverName = receiverName;
+            SenderName = senderName;
             Url = url;
             PraiseType = praiseType;
         }

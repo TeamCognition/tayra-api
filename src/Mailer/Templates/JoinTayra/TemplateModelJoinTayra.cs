@@ -6,16 +6,16 @@ namespace Tayra.Mailer.Templates.JoinTayra
     {
         public string Subject { get; set; }
         
-        public string ReceiverFirstName { get; set; }
+        public string SenderName { get; set; }
         
         public string Url { get; set; }
         
         public ProfileRoles ProfileRole { get; set; }
         
-        public TemplateModelJoinTayra(string subject, string receiverFirstName, string host, string inviteCode, ProfileRoles profileRole)
+        public TemplateModelJoinTayra(string subject, string senderName, string host, string inviteCode, ProfileRoles profileRole)
         {
             Subject = subject;
-            ReceiverFirstName = receiverFirstName;
+            SenderName = senderName;
             ProfileRole = profileRole;
             
             var protocol = host.StartsWith("localhost:", System.StringComparison.Ordinal) || host.EndsWith("local") ? "http" : "https";

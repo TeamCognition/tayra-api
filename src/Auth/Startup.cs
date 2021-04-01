@@ -60,7 +60,7 @@ namespace Tayra.Auth
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-            dbContext.Database.Migrate();
+           // dbContext.Database.Migrate();
         }
     }
 }
