@@ -19,7 +19,7 @@ namespace Tayra.Services.Models.Profiles
             var yesterdayDateId = DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-1));
             var tasks = await (from t in db.Tasks
                          where t.AssigneeProfileId == profileId
-                         where t.Status == TaskStatuses.InProgress || (t.Status == TaskStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)
+                         where t.Status == WorkUnitStatuses.InProgress || (t.Status == WorkUnitStatuses.Done && t.LastModifiedDateId >= yesterdayDateId)
                          select new
                          {
                              DTO = new ProfilePulse.Task
@@ -49,8 +49,8 @@ namespace Tayra.Services.Models.Profiles
 
             return new ProfilePulse
             {
-                InProgress = tasks.Select(x => x.DTO).Where(x => x.Status == TaskStatuses.InProgress).ToArray(),
-                RecentlyDone = tasks.Select(x => x.DTO).Where(x => x.Status == TaskStatuses.Done).ToArray(),
+                InProgress = tasks.Select(x => x.DTO).Where(x => x.Status == WorkUnitStatuses.InProgress).ToArray(),
+                RecentlyDone = tasks.Select(x => x.DTO).Where(x => x.Status == WorkUnitStatuses.Done).ToArray(),
                 JiraBoardUrl = jiraBoardUrl
             };
         }

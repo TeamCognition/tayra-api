@@ -21,7 +21,7 @@ namespace Tayra.API.Features.Analytics
             var metricType = MetricType.FromValue(m) as PureMetric;
             var datePeriod = new DatePeriod(period);
             
-            return await _mediator.Send(new GetRawMetrics.Query() with {MetricType = metricType, Period = datePeriod, EntityId = entityId, EntityType = entityType});
+            return await _mediator.Send(new GetRawMetrics.Query() {MetricType = metricType, Period = datePeriod, EntityId = entityId, EntityType = entityType});
         }
     }
     

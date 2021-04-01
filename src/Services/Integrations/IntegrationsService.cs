@@ -117,13 +117,9 @@ namespace Tayra.Services
             {
                 x.Statuses = jiraConnector.GetIssueStatuses(integration.Id, x.Id);
             }
-
-            var jiraProjects = integration.Fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID);
-            var rewardStatus = integration.Fields.Where(x => x.Key.StartsWith(ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_, StringComparison.InvariantCulture));
-
-            var activeProjects = jiraProjects
-                .Select(p => new ActiveProject(p.Value, rewardStatus.FirstOrDefault(x => x.Key.Contains(p.Value)).Value));
-
+            
+            // var activeProjects = jiraProjects
+            //     .Select(p => new ActiveProject(p.Value, rewardStatus.FirstOrDefault(x => x.Key.Contains(p.Value)).Value));
 
             var atSiteName = integration.Fields.FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
             //TODO: check if data is valid with jira
@@ -132,8 +128,8 @@ namespace Tayra.Services
             {
                 JiraWebhookSettingsUrl = $"https://{atSiteName}.atlassian.net/plugins/servlet/webhooks",
                 WebhookUrl = $"https://{webhookServerUrl}/webhooks/atjissueupdate?tenant={tenantKey}",
-                AllProjects = allProjects,
-                ActiveProjects = activeProjects.ToList()
+                AllProjects = AppsProjectConfig.From(allProjects),
+                ActiveProjects = AppsProjectConfig.From(integration.Fields)
             };
         }
 
@@ -149,20 +145,19 @@ namespace Tayra.Services
                 throw new ApplicationException("No Jira integration associated with segment " + segmentId);
             }
 
-            var fields = integration.Fields
-                .Where(x => x.Key == ATConstants.ATJ_PROJECT_ID || x.Key.StartsWith(ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_, StringComparison.InvariantCulture));
+            var integrationFields = integration.Fields.Where(x => x.IntegrationId == integration.Id).ToArray();
+            
+            var newProjectIds = dto.ActiveProjects.ExceptBy(integrationFields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new AppsProjectConfig(x.Value)), e => e.ProjectId).Select(x => x.ProjectId).ToArray();
 
-            var newProjects = dto.ActiveProjects.ExceptBy(fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new ActiveProject(x.Value, string.Empty)), e => e.ProjectId).ToArray();
-
-            fields.ToList().ForEach(x => DbContext.Remove(x));
+            integrationFields.ForEach(x => DbContext.Remove(x));
 
             var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, config);
             var allProjects = jiraConnector.GetProjects(integration.Id);
 
-            foreach (var s in dto.ActiveProjects)
+            foreach (var activeProject in dto.ActiveProjects)
             {
-                var project = allProjects.FirstOrDefault(x => x.Id == s.ProjectId);
-                var rewardStatus = s.RewardStatusId;
+                var project = allProjects.FirstOrDefault(x => x.Id == activeProject.ProjectId);
+                var rewardStatus = activeProject.RewardStatusId;
                 if (project == null || rewardStatus == null)
                 {
                     throw new ApplicationException("projectId or rewardStatusId is null or invalid"); //use nameOf
@@ -170,6 +165,11 @@ namespace Tayra.Services
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_PROJECT_ID, Value = project.Id });
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_KEY_FOR_PROJECT_ + project.Id, Value = project.Key });
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + project.Id, Value = rewardStatus });
+
+                foreach (var statusIntegrationField in AtlassianJiraWkUnStatusesConfiguration.From(activeProject).ExportToIntegrationFields())
+                {
+                    integration.Fields.Add(statusIntegrationField);    
+                }
             }
 
             integration.Status = integration.Fields.Any(x => x.Key == ATConstants.ATJ_PROJECT_ID) ? IntegrationStatuses.Connected : IntegrationStatuses.NeedsConfiguration;
@@ -183,10 +183,10 @@ namespace Tayra.Services
                     client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");
                     client.DefaultRequestHeaders.Add("x-functions-key", "xLVyFfJSbfPl5S9XEuP5heqms1XxO4XzxCzZ81NYXFLy9ZZWOliKxg==");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    foreach (var p in newProjects)
+                    foreach (var pId in newProjectIds)
                     {
                         //TODO:make real class instead of anonymous object
-                        await client.PostAsync("api/SyncIssuesHttp", new StringContent(JsonConvert.SerializeObject(new { tenantKey = organizationKey, @params = new { jiraProjectId = p.ProjectId } }), Encoding.UTF8, "application/json"));
+                        await client.PostAsync("api/SyncIssuesHttp", new StringContent(JsonConvert.SerializeObject(new { tenantKey = organizationKey, @params = new { jiraProjectId = pId } }), Encoding.UTF8, "application/json"));
                     }
                 }
             }

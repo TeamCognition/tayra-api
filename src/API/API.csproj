@@ -10,10 +10,6 @@
 
   <ItemGroup>
     <TemplateFiles Include="../Mailer/Templates/**/*.*" />
-    <TemplateFiles Remove="..\Mailer\Templates\GiftReceived\**" />
-    <TemplateFiles Remove="..\Mailer\Templates\JoinTayra\**" />
-    <TemplateFiles Remove="..\Mailer\Templates\NewReport\**" />
-    <TemplateFiles Remove="..\Mailer\Templates\PraiseReceived\**" />
   </ItemGroup>
 
   <Target Name="CopyTemplatedOnBuild" AfterTargets="AfterBuild">

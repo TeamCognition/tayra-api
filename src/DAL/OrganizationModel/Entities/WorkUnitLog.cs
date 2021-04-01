@@ -10,7 +10,7 @@ namespace Tayra.Models.Organizations
 
         public IntegrationType IntegrationType { get; set; }
 
-        public TaskStatuses Status { get; set; }
+        public WorkUnitStatuses Status { get; set; }
 
         public int ReporterProfileId { get; set; }
 

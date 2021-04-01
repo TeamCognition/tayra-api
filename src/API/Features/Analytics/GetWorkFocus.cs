@@ -88,7 +88,7 @@ namespace Tayra.API.Features.Analytics
                     else { return 0.0; }
                 }
 
-                var tasks = await _db.Tasks.Where(x => x.Status == TaskStatuses.Done && x.SegmentId == msg.SegmentId && x.LastModifiedDateId >= msg.Period.FromId && x.LastModifiedDateId <= msg.Period.ToId)
+                var tasks = await _db.Tasks.Where(x => x.Status == WorkUnitStatuses.Done && x.SegmentId == msg.SegmentId && x.LastModifiedDateId >= msg.Period.FromId && x.LastModifiedDateId <= msg.Period.ToId)
                     .Select(x => new
                     {
                         AssigneeProfileId = x.AssigneeProfileId,
@@ -101,8 +101,8 @@ namespace Tayra.API.Features.Analytics
                 var userDoneTasks = tasks.Count(x => x.AssigneeProfileId == msg.ProfileId);
                 var teamDoneTasks = tasks.Count(x => x.TeamId == msg.SegmentId);
 
-                var userNewWorkBug = tasks.Count(x => x.Type != TaskTypes.Bug && x.AssigneeProfileId == msg.ProfileId);
-                var teamNewWorkBug = tasks.Count(x => x.Type != TaskTypes.Bug && x.TeamId == msg.SegmentId);
+                var userNewWorkBug = tasks.Count(x => x.Type != WorkUnitTypes.Bug && x.AssigneeProfileId == msg.ProfileId);
+                var teamNewWorkBug = tasks.Count(x => x.Type != WorkUnitTypes.Bug && x.TeamId == msg.SegmentId);
 
                 var userComplexityIndex = tasks.Count(x => x.Complexity <= 2 && x.AssigneeProfileId == msg.ProfileId) - tasks.Count(x => x.Complexity >= 3 && x.AssigneeProfileId == msg.ProfileId);
                 var teamComplexityIndex = tasks.Count(x => x.Complexity <= 2 && x.TeamId == msg.SegmentId) - tasks.Count(x => x.Complexity >= 3 && x.TeamId == msg.SegmentId);

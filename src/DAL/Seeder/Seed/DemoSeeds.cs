@@ -248,9 +248,9 @@ namespace Tayra.Models.Seeder.DemoSeeds
             {
                 taskCounter++;
                 t.LastModifiedDateId = DateHelper2.ToDateId(GetRandomDateTimeInPast());
-                t.Priority = TaskPriorities.Medium;
-                t.Status = TaskStatuses.Done;
-                t.Type = TaskTypes.Task;
+                t.Priority = WorkUnitPriorities.Medium;
+                t.Status = WorkUnitStatuses.Done;
+                t.Type = WorkUnitTypes.Task;
                 var team = demoData.Teams[rnd.Next(0, demoData.Teams.Length-1)];
                 t.TeamId = team.Id;
                 t.SegmentId = team.SegmentId;

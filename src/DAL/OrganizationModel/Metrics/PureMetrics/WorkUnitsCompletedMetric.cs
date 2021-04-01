@@ -15,7 +15,7 @@ namespace Tayra.Metrics
         {
 
         }
-        public MetricShardWEntity Create(IEnumerable<WorkUnit> tasks, int dateId, Guid segmentId) => new MetricShardWEntity(tasks.Count(x => x.Status == TaskStatuses.Done), dateId, segmentId, this);
+        public MetricShardWEntity Create(IEnumerable<WorkUnit> tasks, int dateId, Guid segmentId) => new MetricShardWEntity(tasks.Count(x => x.Status == WorkUnitStatuses.Done), dateId, segmentId, this);
 
         public MetricShardWEntity[] CreateForEverySegment(IEnumerable<WorkUnit> tasks, int dateId)
         {
@@ -30,7 +30,7 @@ namespace Tayra.Metrics
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from t in db.Tasks
-                    where t.Status == TaskStatuses.Done
+                    where t.Status == WorkUnitStatuses.Done
                     where t.SegmentId.HasValue
                     where profileIds.Contains(t.AssigneeProfileId.Value)
                     where t.LastModifiedDateId >= period.FromId && t.LastModifiedDateId <= period.ToId
@@ -56,7 +56,7 @@ namespace Tayra.Metrics
             public string Key { get; set; }
             public TableData.ExternalLink Summary { get; set; }
             public int Complexity { get; set; }
-            public TaskPriorities Priority { get; set; }
+            public WorkUnitPriorities Priority { get; set; }
             public TableData.TimeInMinutes TimeLogged { get; set; }
             public TableData.DateInSeconds LastModifiedAt { get; set; }
             public TableData.DateInSeconds CreatedAt { get; set; }

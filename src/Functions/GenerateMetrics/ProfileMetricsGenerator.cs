@@ -24,7 +24,7 @@ namespace Tayra.Functions.GenerateMetrics
             var profileIds = profiles.Select(x => x.Id);
 
             var tasks = (from t in organizationDb.Tasks
-                         where t.Status == TaskStatuses.Done
+                         where t.Status == WorkUnitStatuses.Done
                          where t.SegmentId.HasValue
                          where t.LastModifiedDateId == dateId
                          select t).ToArray();

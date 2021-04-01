@@ -30,7 +30,7 @@ namespace Tayra.Metrics
         {
             var profileIds = GetProfileIds(db, entityId, entityType);
             return (from t in db.Tasks
-                    where t.Status == TaskStatuses.Done
+                    where t.Status == WorkUnitStatuses.Done
                     where t.SegmentId.HasValue
                     where profileIds.Contains(t.AssigneeProfileId.Value)
                     where t.LastModifiedDateId >= period.FromId && t.LastModifiedDateId <= period.ToId
@@ -57,7 +57,7 @@ namespace Tayra.Metrics
             public string Key { get; set; }
             public TableData.ExternalLink Summary { get; set; }
             public int Complexity { get; set; }
-            public TaskPriorities Priority { get; set; }
+            public WorkUnitPriorities Priority { get; set; }
             public TableData.TimeInMinutes TimeLoggedByTayra { get; set; }
             public TableData.TimeInMinutes TimeLogged { get; set; }
             public TableData.DateInSeconds LastModifiedAt { get; set; }

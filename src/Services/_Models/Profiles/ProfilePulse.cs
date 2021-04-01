@@ -10,7 +10,7 @@ namespace Tayra.Services.Models.Profiles
 
         public class Task
         {
-            public TaskStatuses Status { get; set; }
+            public WorkUnitStatuses Status { get; set; }
             public string Summary { get; set; }
             public string ExternalUrl { get; set; }
         }

@@ -59,11 +59,11 @@ namespace Tayra.Services.TaskConverters
             return IntegrationType.ATJ;
         }
 
-        protected override IssueStatusCategories GetJiraStatusCategory()
+        protected override string GetJiraStatusId()
         {
-            return We.JiraIssue.Fields.Status.Category.Id;
+            return We.JiraIssue.Fields.Status.Id;
         }
-
+        
         protected override string GetExternalProjectId()
         {
             return We.JiraIssue.Fields.Project.Id;
@@ -94,7 +94,7 @@ namespace Tayra.Services.TaskConverters
             return We.JiraIssue.Fields.Labels;
         }
 
-        protected override TaskPriorities GetPriority()
+        protected override WorkUnitPriorities GetPriority()
         {
             return TaskHelpers.GetTaskPriority(We.JiraIssue.Fields.Priority.Id);
         }
@@ -104,7 +104,7 @@ namespace Tayra.Services.TaskConverters
             return 0;
         }
 
-        protected override TaskTypes GetTaskType()
+        protected override WorkUnitTypes GetTaskType()
         {
             return TaskHelpers.GetTaskType(We.JiraIssue.Fields.IssueType.Id);
         }

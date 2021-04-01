@@ -7,7 +7,7 @@ namespace Tayra.Services
     {
         public string JiraWebhookSettingsUrl { get; set; }
         public string WebhookUrl { get; set; }
-        public ICollection<JiraProject> AllProjects { get; set; }
-        public ICollection<ActiveProject> ActiveProjects { get; set; }
+        public ICollection<AppsProjectConfig> AllProjects { get; set; }
+        public ICollection<AppsProjectConfig> ActiveProjects { get; set; }
     }
 }

@@ -18,8 +18,8 @@ namespace Tayra.Models.Organizations
 
         public string Summary { get; set; }
 
-        public TaskStatuses Status { get; set; }
-        public TaskTypes Type { get; set; }
+        public WorkUnitStatuses Status { get; set; }
+        public WorkUnitTypes Type { get; set; }
 
         public int? AutoTimeSpentInMinutes { get; set; }
         public int? TimeSpentInMinutes { get; set; }
@@ -27,7 +27,7 @@ namespace Tayra.Models.Organizations
 
         public int? StoryPoints { get; set; }
         public int Complexity { get; set; }
-        public TaskPriorities Priority { get; set; }
+        public WorkUnitPriorities Priority { get; set; }
 
         public int? BugSeverity { get; set; }
         public float? BugPopulationAffect { get; set; } //population percentage affected by this bug 0-1

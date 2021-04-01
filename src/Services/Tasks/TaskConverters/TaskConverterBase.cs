@@ -51,7 +51,7 @@ namespace Tayra.Services.TaskConverters
                 ExternalUrl = GetIssueUrl(),
                 IntegrationType = GetIntegrationType(),
                 Summary = GetSummary(),
-                JiraStatusCategory = GetJiraStatusCategory(),
+                JiraStatusId = GetJiraStatusId(),
                 TimeSpentInMinutes = GetTimeSpentInMinutes(),
                 TimeOriginalEstimateInMinutes = GetTimeOriginalEstimateInMinutes(),
                 StoryPoints = GetStoryPoints(),
@@ -200,16 +200,13 @@ namespace Tayra.Services.TaskConverters
         }
         protected abstract string GetAssigneeExternalId();
         protected abstract string[] GetLabels();
-        protected abstract TaskTypes GetTaskType();
-        protected abstract TaskPriorities GetPriority();
+        protected abstract WorkUnitTypes GetTaskType();
+        protected abstract WorkUnitPriorities GetPriority();
         protected abstract string GetExternalId();
         protected abstract string GetExternalProjectId();
         protected abstract IntegrationType GetIntegrationType();
         protected abstract string GetSummary();
-        virtual protected IssueStatusCategories GetJiraStatusCategory()
-        {
-            return IssueStatusCategories.NoCategory;
-        }
+        protected abstract string GetJiraStatusId();
         protected abstract int? GetTimeOriginalEstimateInMinutes();
         protected abstract int? GetStoryPoints();
 

@@ -37,16 +37,14 @@ namespace Tayra.API.Features.Profile
             public float TokensSpent { get; set; }	
             public int ItemsBought { get; set; }	
             public int QuestsCompleted { get; set; }
-        }
-        
-                
+        }                
             
         public class Handler : IRequestHandler<Query, Result>
         {
             private readonly OrganizationDbContext _db;
 
             public Handler(OrganizationDbContext db) => _db = db;
-
+            
             public async Task<Result> Handle(Query msg, CancellationToken token)
             {
                 var profile = await _db.Profiles.FirstOrDefaultAsync(x => x.Username == msg.Username, token);	

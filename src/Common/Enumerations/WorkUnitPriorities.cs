@@ -1,6 +1,6 @@
 ﻿namespace Tayra.Common
 {
-    public enum TaskPriorities
+    public enum WorkUnitPriorities
     {
         Lowest = 1,
         Low = 2,

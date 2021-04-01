@@ -18,15 +18,15 @@ namespace Tayra.Services
 
         public string Summary { get; set; }
 
-        public IssueStatusCategories JiraStatusCategory { get; set; }
-        public TaskTypes Type { get; set; }
+        public string JiraStatusId { get; set; }
+        public WorkUnitTypes Type { get; set; }
 
         public int? AutoTimeSpentInMinutes { get; set; }
         public int? TimeSpentInMinutes { get; set; }
         public int? TimeOriginalEstimateInMinutes { get; set; }
 
         public int? StoryPoints { get; set; }
-        public TaskPriorities Priority { get; set; }
+        public WorkUnitPriorities Priority { get; set; }
 
         public double? EffortScore { get; set; }
 
