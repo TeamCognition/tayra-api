@@ -90,8 +90,8 @@ namespace Tayra.API.Controllers
         {
             var res = mailerService.SendEmail("haris.botic96@gmail.com",
                 new TemplateModelPraiseReceived("You received a praise from someone",
-                    receiverFirstName: "Bota",
-                    senderFirstName: "Ejub",
+                    receiverName: "Bota",
+                    senderName: "Ejub",
                     url: "https://github.com/toddams/RazorLight",
                     PraiseTypes.HardWorker));
             Console.WriteLine(res);

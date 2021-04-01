@@ -17,8 +17,8 @@ namespace Tayra.API.Features.TestMailer
         {
             var res = mailerService.SendEmail("ejub@tayra.io",
                 new TemplateModelPraiseReceived("You received a praise from someone",
-                    receiverFirstName: "Bota",
-                    senderFirstName: "Ejub",
+                    receiverName: "Bota",
+                    senderName: "Ejub",
                     url: "https://github.com/toddams/RazorLight",
                     PraiseTypes.HardWorker));
             return Ok(res);
