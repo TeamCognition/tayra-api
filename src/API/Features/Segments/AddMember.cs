@@ -46,13 +46,11 @@ namespace Tayra.API.Features.Segments
                     profile.EnsureNotNull(cmnd.ProfileId);
 
                     if (!SegmentRules.CanAddProfileToSegment(profile.Role, cmnd.TeamId))
-                    {
                         throw new ApplicationException("If you are adding a member you must provide a teamId");
-                    }
 
-                    var team =await _db.Teams.FirstOrDefaultAsync(x => x.Id == cmnd.TeamId,token);
+                    var team = await _db.Teams.FirstOrDefaultAsync(x => x.Id == cmnd.TeamId, token);
                     team.EnsureNotNull(cmnd.TeamId);
-                    
+
                     _db.Add(new ProfileAssignment
                     {
                         ProfileId = cmnd.ProfileId,
@@ -60,7 +58,7 @@ namespace Tayra.API.Features.Segments
                         TeamId = team.Id
                     });
                 }
-                
+
                 await _db.SaveChangesAsync(token);
             }
         }

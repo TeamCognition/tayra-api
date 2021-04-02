@@ -49,36 +49,6 @@ namespace Tayra.API.Controllers
             return SegmentsService.GetSegmentTeamsGridData(segmentKey, gridParams);
         }
 
-        [HttpGet]
-        public ActionResult<SegmentViewDTO> GetSegment([FromQuery] string segmentKey)
-        {
-            return SegmentsService.GetSegmnetViewDTO(segmentKey);
-        }
-
-        [HttpGet("{segmentKey}/averageMetrics")]
-        public ActionResult<Dictionary<int, MetricService.AnalyticsMetricWithIterationSplitDto>> GetSegmentAverageMetrics([FromRoute] string segmentKey)
-        {
-            return SegmentsService.GetSegmentAverageMetrics(segmentKey);
-        }
-
-        [HttpGet("{segmentKey}/rawScore")]
-        public ActionResult<SegmentRawScoreDTO> GetSegmentRowScore([FromRoute] string segmentKey)
-        {
-            return SegmentsService.GetSegmentRawScore(segmentKey);
-        }
-
-        [HttpGet("{segmentKey}/rankChart")]
-        public Dictionary<int, MetricsValueWEntity[]> GetSegmentRankChart([FromRoute] string segmentKey)
-        {
-            return SegmentsService.GetSegmentRankChart(segmentKey);
-        }
-
-        [HttpGet, Route("{segmentKey}/integrations")]
-        public ActionResult<List<IntegrationSegmentViewDTO>> GetSegmentIntegrations([FromRoute] string segmentKey)
-        {
-            return IntegrationsService.GetSegmentIntegrations(segmentKey);
-        }
-
         #endregion
     }
 }

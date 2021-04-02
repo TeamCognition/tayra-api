@@ -10,12 +10,11 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.API.Features.Segments
 {
-    
     public partial class SegmentsController
     {
         [HttpDelete]
-        public async Task<Unit> Archive([FromQuery] Guid segmentId)
-            => await _mediator.Send(new Archive.Command  {SegmentId =  segmentId});
+        public async Task<Unit> Archive([FromQuery] Guid segmentId) =>
+            await _mediator.Send(new Archive.Command {SegmentId = segmentId});
     }
 
     public class Archive
@@ -33,14 +32,12 @@ namespace Tayra.API.Features.Segments
 
             protected override async Task Handle(Command msg, CancellationToken token)
             {
-                var segment = await _db.Segments.Include(x => x.Teams).FirstOrDefaultAsync(x => x.Id == msg.SegmentId,token);
+                var segment = await _db.Segments.Include(x => x.Teams)
+                    .FirstOrDefaultAsync(x => x.Id == msg.SegmentId, token);
                 segment.EnsureNotNull(msg.SegmentId);
                 _db.Remove(segment);
 
-                foreach (var t in segment.Teams)
-                {
-                    _db.Remove(t);
-                }
+                foreach (var t in segment.Teams) _db.Remove(t);
                 await _db.SaveChangesAsync(token);
             }
         }
