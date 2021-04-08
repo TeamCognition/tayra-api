@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 
@@ -8,9 +9,10 @@ namespace Tayra.Connectors.Atlassian.Jira
 {
     public class AtlassianJiraWkUnStatusesConfiguration
     {
-        public AtlassianJiraWkUnStatusesConfiguration(string projectId )
+        public AtlassianJiraWkUnStatusesConfiguration(string projectId, List<WorkUnitStatusConfiguration> workUnitStatuses)
         {
             ProjectId = projectId;
+            WorkUnitStatuses = workUnitStatuses;
         }
         
         //todo: add rest of props
@@ -19,24 +21,16 @@ namespace Tayra.Connectors.Atlassian.Jira
 
         public static AtlassianJiraWkUnStatusesConfiguration From(string projectId, IEnumerable<IntegrationField> fields)
         {
-            AtlassianJiraWkUnStatusesConfiguration config = new(projectId);
-            
             var statusFields = fields.Where(x => x.Key == ATConstants.PM_WORK_UNIT_STATUS_FOR_PROJECT_ + projectId).ToArray();
-            
-            config.WorkUnitStatuses.AddRange(
-                statusFields.Select(x => new WorkUnitStatusConfiguration(x.Value)).ToArray());
-            
-            return config;
+
+            return new(projectId,
+                statusFields.Select(x => new WorkUnitStatusConfiguration(x.Value)).ToList());
         }
 
-        public static AtlassianJiraWkUnStatusesConfiguration From(AppsProjectConfig projectConfig)
+        public static AtlassianJiraWkUnStatusesConfiguration From(SetAppsProjectConfig projectConfig)
         {
-            AtlassianJiraWkUnStatusesConfiguration config = new(projectConfig.ProjectId);
-            
-            config.WorkUnitStatuses.AddRange(
-                projectConfig.Statuses.Select(x => new WorkUnitStatusConfiguration(x.ExternalStatusId, x.Status)).ToArray());
-
-            return config;
+            return new(projectConfig.ProjectId,
+                projectConfig.Statuses.Select(x => new WorkUnitStatusConfiguration(x.ExternalStatusId, x.Status)).ToList());
         }
 
         public IEnumerable<IntegrationField> ExportToIntegrationFields()
@@ -44,7 +38,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return WorkUnitStatuses.Select(status => 
                 new IntegrationField { Key = ATConstants.PM_WORK_UNIT_STATUS_FOR_PROJECT_ + ProjectId, Value = status.ToString() });
         }
-
+        
         public WorkUnitStatuses GetStatusByExternalStatusId(string externalStatusId)
         {
             return WorkUnitStatuses.First(x => x.ExternalStatusId == externalStatusId).Status;
@@ -52,8 +46,14 @@ namespace Tayra.Connectors.Atlassian.Jira
         
         public class WorkUnitStatusConfiguration
         {
+            [JsonProperty("externalId")]
             public string ExternalStatusId { get; set; }
             public WorkUnitStatuses Status { get; set; }
+
+            //for API
+            private WorkUnitStatusConfiguration()
+            {
+            }
 
             public WorkUnitStatusConfiguration(string externalStatusId, WorkUnitStatuses status)
             {

@@ -73,30 +73,6 @@ namespace Tayra.API.Controllers
             Request.Headers.TryGetValue("X-GitHub-Event", out StringValues ghEvent);
             return Ok(webhookService.HandleWebhook(jObject, ghEvent));
         }
-
-        [HttpPost("test")]
-        [AllowAnonymous]
-        public ActionResult TestMethods([FromQuery] string id, [FromBody] SlackMessageRequestDto requestDto)
-        { 
-            
-            var res = SlackService.SendSlackMessage("xoxb-698826045604-1117671360278-zB1nNQLCkjI3iR8qXuvZGM7E",requestDto);
-            Console.WriteLine(res);
-            return Ok(res);
-        }
-        
-        [HttpPost("testMailer")]
-        [AllowAnonymous]
-        public ActionResult TestMailer([FromServices] IMailerService mailerService)
-        {
-            var res = mailerService.SendEmail("haris.botic96@gmail.com",
-                new TemplateModelPraiseReceived("You received a praise from someone",
-                    receiverName: "Bota",
-                    senderName: "Ejub",
-                    url: "https://github.com/toddams/RazorLight",
-                    PraiseTypes.HardWorker));
-            Console.WriteLine(res);
-            return Ok(res);
-        }
         
         #endregion
     }

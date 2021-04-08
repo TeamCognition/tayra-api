@@ -7,6 +7,7 @@ using System.Text;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Configuration;
 using MoreLinq;
 using Newtonsoft.Json;
@@ -128,8 +129,7 @@ namespace Tayra.Services
             {
                 JiraWebhookSettingsUrl = $"https://{atSiteName}.atlassian.net/plugins/servlet/webhooks",
                 WebhookUrl = $"https://{webhookServerUrl}/webhooks/atjissueupdate?tenant={tenantKey}",
-                AllProjects = AppsProjectConfig.From(allProjects),
-                ActiveProjects = AppsProjectConfig.From(integration.Fields)
+                Projects = AppsProjectConfig.From(allProjects, integration.Fields)
             };
         }
 
@@ -145,14 +145,20 @@ namespace Tayra.Services
                 throw new ApplicationException("No Jira integration associated with segment " + segmentId);
             }
 
-            var integrationFields = integration.Fields.Where(x => x.IntegrationId == integration.Id).ToArray();
+            var integrationFields = integration.Fields.Where(x => x.IntegrationId == integration.Id && (
+                x.Key == ATConstants.ATJ_PROJECT_ID ||
+                x.Key.StartsWith(ATConstants.ATJ_KEY_FOR_PROJECT_) ||
+                x.Key.StartsWith(ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_) ||
+                x.Key.StartsWith(ATConstants.PM_WORK_UNIT_STATUS_FOR_PROJECT_)
+                )).ToArray();
             
-            var newProjectIds = dto.ActiveProjects.ExceptBy(integrationFields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new AppsProjectConfig(x.Value)), e => e.ProjectId).Select(x => x.ProjectId).ToArray();
-
-            integrationFields.ForEach(x => DbContext.Remove(x));
-
+            var newProjectIds = dto.ActiveProjects.ExceptBy(integrationFields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new SetAppsProjectConfig(x.Value)), e => e.ProjectId).Select(x => x.ProjectId).ToArray();
+            
             var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, config);
             var allProjects = jiraConnector.GetProjects(integration.Id);
+
+            //will remove all fields (incl. access token)
+            integrationFields.ForEach(x => DbContext.Remove(x));
 
             foreach (var activeProject in dto.ActiveProjects)
             {

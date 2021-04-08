@@ -5,7 +5,7 @@ namespace Tayra.Services
 {
     public class JiraSettingsUpdateDTO
     {
-        public ICollection<AppsProjectConfig> ActiveProjects { get; set; }
+        public ICollection<SetAppsProjectConfig> ActiveProjects { get; set; }
         public bool PullTasksForNewProjects { get; set; }
     }
 }
