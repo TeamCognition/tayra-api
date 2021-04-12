@@ -44,11 +44,11 @@ namespace Tayra.Services
 
 
             task.Status = wkConfig.GetStatusByExternalStatusId(dto.JiraStatusId);
-            if (task.Status == WorkUnitStatuses.Done || task.Status == WorkUnitStatuses.InProgress)
+            if (task.Status == WorkUnitStatuses.Done || task.Status == WorkUnitStatuses.Started)
             {
                 task.Status = dto.RewardStatusEnteredDateId.HasValue
                     ? WorkUnitStatuses.Done
-                    : WorkUnitStatuses.InProgress;
+                    : WorkUnitStatuses.Started;
             }
             task.Type = dto.Type;
             task.AutoTimeSpentInMinutes = dto.AutoTimeSpentInMinutes;

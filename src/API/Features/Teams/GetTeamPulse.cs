@@ -76,13 +76,13 @@ namespace Tayra.API.Features.Teams
 
                 return await (from t in _db.Tasks
                     where teamMembers.Contains(t.AssigneeProfileId.Value)
-                    where t.Status == WorkUnitStatuses.InProgress ||
+                    where t.Status == WorkUnitStatuses.Started ||
                           t.Status == WorkUnitStatuses.Done && t.LastModifiedDateId >= yesterdayDateId
                     group t by 1
                     into g
                     select new Result
                     {
-                        InProgress = g.Count(x => x.Status == WorkUnitStatuses.InProgress),
+                        InProgress = g.Count(x => x.Status == WorkUnitStatuses.Started),
                         RecentlyDone = g.Count(x => x.Status == WorkUnitStatuses.Done),
                         JiraBoardUrl = jiraBoardUrl
                     }).FirstOrDefaultAsync(token);

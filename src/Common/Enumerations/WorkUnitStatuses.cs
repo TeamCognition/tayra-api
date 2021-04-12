@@ -3,8 +3,8 @@
     public enum WorkUnitStatuses
     {
         Uncategorized = 0,
-        Open = 1,
-        InProgress = 2,
+        UnStarted = 1,
+        Started = 2,
         InReview = 3,
         Done = 4
     }
