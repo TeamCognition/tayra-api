@@ -21,7 +21,7 @@ namespace Tayra.Connectors.GitHub
             [JsonProperty("full_name")]
             public string FullName { get; set; }
 
-            [JsonProperty("url")]
+            [JsonProperty("html_url")]
             public string ExternalUrl { get; set; }
 
             [JsonProperty("owner")]

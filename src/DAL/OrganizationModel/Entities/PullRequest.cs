@@ -8,6 +8,8 @@ namespace Tayra.Models.Organizations
         public string ExternalId { get; set; }
         
         public int ExternalNumber { get; set; }
+        
+        public string ExternalRepositoryId { get; set; }
 
         public string State { get; set; }
 
@@ -28,10 +30,13 @@ namespace Tayra.Models.Organizations
         public DateTime? MergedAt { get; set; }
 
         public int CommitsCount { get; set; }
+        public int Additions { get; set; }
+        public int Deletions { get; set; }
 
+        public int ReviewsCount { get; set; }
         public int ReviewCommentsCount { get; set; }
-
-        public string ExternalAuthorId { get; set; }
+        
+        public string ExternalAuthorUsername { get; set; }
 
         public Guid? AuthorProfileId { get; set; }
 

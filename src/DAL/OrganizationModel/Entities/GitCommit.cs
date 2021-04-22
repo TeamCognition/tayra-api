@@ -5,7 +5,9 @@ namespace Tayra.Models.Organizations
 {
     public class GitCommit : EntityGuidId, ITimeStampedEntity
     {
-        public string SHA { get; set; }
+        public string ExternalRepositoryId { get; set; }
+        
+        public string Sha { get; set; }
 
         public string ExternalUrl { get; set; }
 

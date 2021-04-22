@@ -7,7 +7,6 @@ namespace Tayra.Connectors.GitHub.Helper
     {
         public static List<T> MapResponseToCommitType(List<Edge<T>> response)
         {
-
             var edges = response;
             List<T> mappedList = new List<T>();
             foreach (var edge in edges)

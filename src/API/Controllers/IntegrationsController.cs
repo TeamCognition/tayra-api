@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Finbuckle.MultiTenant;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
-using Tayra.Connectors.Slack;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
@@ -70,6 +69,7 @@ namespace Tayra.API.Controllers
             public Repository[] Repositories { get; set; }
             public class Repository
             {
+                public string ExternalId { get; set; }
                 public string ExternalUrl { get; set; }
                 public string Name { get; set; }
                 public string NameWithOwner { get; set; }
@@ -95,6 +95,7 @@ namespace Tayra.API.Controllers
             {
                 Repositories = repos.Select(x => new GithubSettingsViewDTO.Repository
                 {
+                    ExternalId = x.ExternalId,
                     Name = x.Name,
                     NameWithOwner = x.NameWithOwner,
                     ExternalUrl = x.ExternalUrl,
@@ -102,6 +103,32 @@ namespace Tayra.API.Controllers
                 }).ToArray(),
                 ExternalConfigurationUrl = externalConfigUrl
             });
+        }
+
+
+        public class GithubSetSettings
+        {
+            public Config[] Repositories { get; set; }
+            public class Config
+            {
+                public string RepositoryExternalId { get; set; }
+                public Guid TeamId { get; set; }
+            }
+        }
+
+        [HttpPost, Route("settings/gh")]
+        public async Task<IActionResult> SetGitHubSettings([FromBody] GithubSetSettings config)
+        {
+            var repos = DbContext.Repositories
+                .Where(x => config.Repositories.Select(r => r.RepositoryExternalId).Contains(x.ExternalId)).ToArray();
+
+            foreach (var repo in repos)
+            {
+                repo.TeamId = config.Repositories.First(x => x.RepositoryExternalId == repo.ExternalId).TeamId;
+            }
+
+            await DbContext.SaveChangesAsync();
+            return Ok();
         }
         #endregion
     }

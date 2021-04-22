@@ -97,45 +97,51 @@ namespace Tayra.Connectors.GitHub
                 .GetResult()?.Data?.Viewer;
         }
 
-        public static List<CommitType> GetCommitsByPeriod(string tokenType, string token, int days, string repositoryOwner, string repositoryName, string repositoryBranch)
+        public static List<CommitType> GetCommitsByPeriod(string tokenType, string token, DateTime since, string repositoryOwner, string repositoryName, string repositoryBranch)
         {
-            DateTime now = DateTime.UtcNow;
-            if (days == 0)
-            {
-                now = now.Date;
-            }
-            string preparePeriod = now.AddDays(-days).ToString("o");
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
             var commitsRequest = new GraphQLRequest
             {
                 Query = @"
-                    query CommitsByPeriod($commitPeriod : GitTimestamp!,$repositoryName : String!, $repositoryOwner : String!,$repositoryBranch : String! ) {
-                        repository(name: $repositoryName owner: $repositoryOwner) {
-                            ref(qualifiedName:$repositoryBranch) {
-                                target {
-                                    ... on Commit {
-                                        history(since:$commitPeriod) {
-                                            edges {
-                                                node {
-                                                    oid,
-                                                    author {
-                                                        name,email
-                                                    },
-                                                    message
-                                                }
-                                            }
-                                        }
+                    query GetCommitsSinceTimestamp($commitsSince: GitTimestamp!, $repositoryName: String!, $repositoryOwner: String!, $repositoryBranch: String!) {
+                      repository(name: $repositoryName, owner: $repositoryOwner) {
+                        ref(qualifiedName: $repositoryBranch) {
+                          target {
+                            ... on Commit {
+                              history(since: $commitsSince) {
+                                edges {
+                                  node {
+                                    oid
+                                    additions
+                                    deletions
+                                    commitUrl
+                                    url
+                                    committedDate
+                                    repository {
+                                      databaseId
+                                      nameWithOwner
                                     }
+                                    author {
+                                      name
+                                      email
+                                      user {
+                                        login
+                                      }
+                                    }
+                                    message
+                                  }
                                 }
+                              }
                             }
+                          }
                         }
-                    }
-                ",
-                OperationName = "CommitsByPeriod",
+                      }
+                    }",
+                OperationName = "GetCommitsSinceTimestamp",
                 Variables = new
                 {
-                    commitPeriod = preparePeriod,
+                    commitsSince = since.ToString("o"),
                     repositoryOwner = repositoryOwner,
                     repositoryName = repositoryName,
                     repositoryBranch = repositoryBranch
@@ -147,58 +153,68 @@ namespace Tayra.Connectors.GitHub
             return MapGQResponse<CommitType>.MapResponseToCommitType(gitGraphQlResponse.Data.Repository.Branch.Target.History.Edges);
         }
 
-        public static List<PullRequestType> GetPullRequestsByPeriod(string tokenType, string token, int days, string repositoryOwner)
+        public static GetPullRequestsResponse GetPullRequestsWithReviews(string tokenType, string token, string repositoryName, string repositoryOwner)
         {
-            DateTime now = DateTime.UtcNow;
-            if (days == 0)
-            {
-                now = now.Date;
-            }
-            string preparePeriod = now.AddDays(-days).ToString(("o"));
-
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
             var pullRequestsRequest = new GraphQLRequest
             {
-                Query = $@"
-                    {{
-                    search(query:"" org:{repositoryOwner} is:pr created:>{preparePeriod}"", type: ISSUE, last: 100) {{
-                      edges {{
-                          node {{
-                             ... on PullRequest {{
-                                      id
-                                      url
-                                      title
-                                      state
-                                      createdAt
-                                      updatedAt
-                                      merged
-                                      mergedAt
-                                      mergedBy{{
-                                            ... on User{{
-                                                login
-                                                id
-                                                 }}
-                                            }}
-                                      
-                                      author{{
-                                            ... on User {{
-                                                   id
-                                                   login
-              
-                                                 }}
-                                          }}
-        
-                                       }}
-                                   }}
-                               }}
-                          }}
-                     }} "
-
+                Query = @"
+                    query GetPullRequestsWithReviews($repositoryName: String!, $repositoryOwner: String!, $prCount: Int!) {
+                      repository(name: $repositoryName, owner: $repositoryOwner) {
+                        name
+                        pullRequests(first: $prCount, orderBy: {field: UPDATED_AT, direction: DESC}) {
+                          nodes {
+                            id
+                            number
+                            title
+                            bodyText
+                            url
+                            state
+                            additions
+                            deletions
+                            closedAt
+                            merged
+                            locked
+                            mergedAt
+                            closedAt
+                            createdAt
+                            updatedAt
+                            url
+                            repository {
+                              databaseId
+                              nameWithOwner
+                            }
+                            author {
+                              login    
+                            }
+                            commits {
+                              totalCount
+                            }
+                            reviews(last: 30) {
+                              totalCount
+                              nodes {
+                                author {
+                                  login
+                                }
+                                state
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }",
+                OperationName = "GetPullRequestsWithReviews",
+                Variables = new
+                {
+                    repositoryOwner = repositoryOwner,
+                    repositoryName = repositoryName,
+                    prCount = 30
+                }
             };
-            var gitGraphQlResponse =
-                graphQLClient.SendQueryAsync<GetPullRequestsResponse>(pullRequestsRequest).GetAwaiter().GetResult();
-            return MapGQResponse<PullRequestType>.MapResponseToCommitType(gitGraphQlResponse.Data.Search.Edges);
+            
+            
+            return graphQLClient.SendQueryAsync<GetPullRequestsResponse>(pullRequestsRequest).GetAwaiter().GetResult().Data;
         }
 
         public static CommitType GetCommitBySha(string sha, string token, string repositoryOwner, string repositoryName)
@@ -208,23 +224,22 @@ namespace Tayra.Connectors.GitHub
             var graphQlRequest = new GraphQLRequest
             {
                 Query = @"
-                     
-                query CommitsBySha($repoName : String!, $repoOwner : String!, $commitSha: GitObjectID!){
-                    repository(name: $repoName, owner: $repoOwner){
-                    object(oid: $commitSha){
-                ... on Commit{
-                oid,
-            additions,
-            deletions
-               }
-             }
-          }   
-        }   ",              
+                    query CommitsBySha($repoName : String!, $repoOwner : String!, $commitSha: GitObjectID!) {
+                        repository(name: $repoName, owner: $repoOwner) {
+                            object(oid: $commitSha) {
+                                ... on Commit {
+                                    oid,
+                                    additions,
+                                    deletions
+                                }
+                            }
+                        }   
+                    }",              
                 OperationName = "CommitsBySha",
                 Variables = new
                 {
                     commitSha = sha,
-                    repoOwner = repositoryName,
+                    repoOwner = repositoryOwner,
                     repoName = repositoryName
                 }
             };
@@ -285,21 +300,21 @@ namespace Tayra.Connectors.GitHub
         public static List<string> GetBranchesByRepository(string accessToken, string repositoryName, string repositoryOwner)
         {
             var graphQlClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
-            graphQlClient.HttpClient.DefaultRequestHeaders.Add("Authorization", accessToken);
+            graphQlClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
             var graphQlRequest = new GraphQLRequest
             {
                 Query = @"
-                        query BranchesByRepository($repoName: !String, $repoOwner: !String) { 
-                          repository(name:$repoName , owner:repoOwner ){
-                                        refs(first:100,refPrefix:""refs/heads/""){edges{
-                                        node{
-                                        name
-                                         }
-                                        }
-                                       }
-                                    }
-                                }
-                        ",
+                    query BranchesByRepository($repoName: String!, $repoOwner: String!) {
+                      repository(name: $repoName, owner: $repoOwner) {
+                        refs(first: 100, refPrefix: ""refs/heads/"") {
+                          edges {
+                            node {
+                              name
+                            }
+                          }
+                        }
+                      }
+                    }",
                 OperationName = "BranchesByRepository",
                 Variables = new
                 {

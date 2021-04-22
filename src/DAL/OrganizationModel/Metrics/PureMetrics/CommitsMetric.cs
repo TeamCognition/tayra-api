@@ -29,7 +29,7 @@ namespace Tayra.Metrics
                             c.AuthorProfile.Username),
                         Commit = new TableData.ExternalLink(c.Message, c.ExternalUrl),
                         Date = new TableData.DateInSeconds(c.Created),
-                        Sha = c.SHA
+                        Sha = c.Sha
                     }).ToArray<object>();
         }
 

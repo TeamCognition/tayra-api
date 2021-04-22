@@ -361,7 +361,7 @@ namespace Tayra.Models.Seeder.DemoSeeds
                         Deletions = rnd.Next(0, 50),
                         AuthorProfile = profile,
                         Message = $"Commit message number {i}",
-                        SHA = $"random-sha-{i}",
+                        Sha = $"random-sha-{i}",
                         Created = GetRandomDateTimeInPast()
                     });
                 }

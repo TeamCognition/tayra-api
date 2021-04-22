@@ -4,7 +4,7 @@ dotnet ef migrations remove --project="../DAL/CatalogModel" --context="CatalogDb
 dotnet ef database update --project="../DAL/CatalogModel" --context="CatalogDbContext"
 
 //ORGANIZATION DB 
-dotnet ef migrations add DeleteOldMetricTables --project="../DAL/OrganizationModel" --context="OrganizationDbContext"
+dotnet ef migrations add UpdateGithubTablesAgain --project="../DAL/OrganizationModel" --context="OrganizationDbContext"
 
 //AUTH DB
 dotnet ef database update --project="../Auth" --context="OpeniddictDbContext"

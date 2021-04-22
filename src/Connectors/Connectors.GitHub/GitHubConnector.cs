@@ -4,6 +4,7 @@ using System.Linq;
 using Cog.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Tayra.Common;
@@ -127,36 +128,42 @@ namespace Tayra.Connectors.GitHub
             OrganizationContext.SaveChanges();
         }
 
-        public  List<CommitType> GetCommitsByPeriod(Guid integrationId, int period,GetRepositoriesResponse.Repository repository)
+        public List<CommitType> GetCommitsByPeriodFromAllBranches(Guid integrationId, DateTime since, (string name, string owner) repository)
         {
             var accessToken = ReadAccessToken(integrationId);
             var accessTokenType = ReadAccessTokenType(integrationId);
-            var branches = GitHubService.GetBranchesByRepository(accessToken,repository.Name,repository.Owner.Login);
+            var branches = GitHubService.GetBranchesByRepository(accessToken, repository.name, repository.owner);
             List<CommitType> commitsFromAllBranches = new List<CommitType>();
             foreach (var branch in branches)
             {
-               commitsFromAllBranches.AddRange(GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, period,repository.Owner.Login,repository.Name,branch));
+               commitsFromAllBranches.AddRange(GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch));
             }
             return commitsFromAllBranches;
         }
-        public  List<PullRequestType> GetPullRequestsByPeriod(Guid integrationId, int period, string repository)
+        public GetPullRequestsResponse GetPullRequestsByPeriod(Guid integrationId, string repositoryName, string repositoryOwner)
         {
             var accessToken = ReadAccessToken(integrationId);
             var accessTokenType = ReadAccessTokenType(integrationId);
-            return GitHubService.GetPullRequestsByPeriod(accessTokenType, accessToken, period, repository);
+            return GitHubService.GetPullRequestsWithReviews(accessTokenType, accessToken, repositoryName, repositoryOwner);
         }
 
         #endregion
 
+        public GetRepositoriesResponse.Repository[] GetRepositories(string installationId)
+        {
+            var installationToken = GitHubService.GetInstallationAccessToken(installationId, Config[CONFIG_APP_ID], Config[CONFIG_APP_RSAKEY])?.Data.AccessToken; ;
+            
+            return GitHubService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
+        }
+        
         #region Private Methods
 
-
-        private void AddOrUpdateRepositoriesByIntegration(string installationId, GetRepositoriesResponse.Repository[] dto) //RepositoryAddOrUpdate
+        public void AddOrUpdateRepositoriesByIntegration(string installationId, GetRepositoriesResponse.Repository[] dto) //RepositoryAddOrUpdate
         {
             var repos = OrganizationContext.Repositories.Where(x => x.IntegrationInstallationId == installationId).ToArray();
 
-            var dtoIds = dto.Select(x => x.ExternalId);
-            OrganizationContext.RemoveRange(repos.Where(x => !dtoIds.Contains(x.ExternalId)));
+            var dtoRepoIds = dto.Select(x => x.ExternalId);
+            OrganizationContext.RemoveRange(repos.Where(x => !dtoRepoIds.Contains(x.ExternalId)));
 
             foreach (var r in dto)
             {

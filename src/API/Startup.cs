@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using AutoMapper;
 using Cog.Core;
@@ -12,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using MoreLinq.Extensions;
 using OpenIddict.Validation.AspNetCore;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using Tayra.API.Helpers;
@@ -28,8 +26,6 @@ using Tayra.Mailer;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
-using Tayra.Services.Contracts;
-using Tayra.Services.webhooks;
 
 namespace Tayra.API
 {
@@ -108,7 +104,6 @@ namespace Tayra.API
             services.AddTransient<IInventoriesService, InventoryService>();
             services.AddTransient<IClaimBundlesService, ClaimBundlesService>();
             services.AddTransient<IIntegrationsService, IntegrationsService>();
-            services.AddTransient<IGithubWebhookService, GithubWebhookServiceService>();
             services.AddTransient<IMailerService, MailerService>();
 
             services.AddScoped<IClaimsPrincipalProvider<TayraPrincipal>, TayraPrincipalProvider>();

@@ -36,7 +36,6 @@ namespace Tayra.Connectors.Slack
             var request = new RestRequest(GET_USERS_LIST, Method.GET);
             request.AddHeader("Authorization", $"Bearer {botToken}");
             request.AddHeader("Accept", "application/vnd.github.v3+json");
-            request.AddHeader("Accept", "application/vnd.github.v3+json");
 
             var client = new RestClient(BASE_REST_URL)
                 .UseSerializer(() => new JsonNetSerializer());

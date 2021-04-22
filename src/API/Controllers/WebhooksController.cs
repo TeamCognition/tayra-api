@@ -7,14 +7,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
-using Tayra.Connectors.Slack;
-using Tayra.Connectors.Slack.DTOs;
-using Tayra.Mailer;
 using Tayra.Models.Organizations;
 using Tayra.Services;
-using Tayra.Services.Contracts;
 using Tayra.Services.TaskConverters;
-using Tayra.Mailer.Templates.PraiseReceived;
 
 namespace Tayra.API.Controllers
 {
@@ -23,20 +18,17 @@ namespace Tayra.API.Controllers
     public class WebhooksController : BaseController
     {
         #region Constructor
-        public WebhooksController(IServiceProvider serviceProvider, IGithubWebhookService webhookService, OrganizationDbContext dbContext) : base(
+        public WebhooksController(IServiceProvider serviceProvider, OrganizationDbContext dbContext) : base(
 
             serviceProvider)
         {
             DbContext = dbContext;
-            this.webhookService = webhookService;
         }
 
         #endregion
 
         #region Properties
         
-        private IGithubWebhookService webhookService { get; }
-
         private OrganizationDbContext DbContext { get; }
 
         #endregion
@@ -64,14 +56,6 @@ namespace Tayra.API.Controllers
             }
 
             return Ok();
-        }
-
-        [HttpPost("gh")]
-        [AllowAnonymous]
-        public ActionResult GithubWebhook([FromBody] JObject jObject, [FromServices] ILogsService logsService)
-        {
-            Request.Headers.TryGetValue("X-GitHub-Event", out StringValues ghEvent);
-            return Ok(webhookService.HandleWebhook(jObject, ghEvent));
         }
         
         #endregion

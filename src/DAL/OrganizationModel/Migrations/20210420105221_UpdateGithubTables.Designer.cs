@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    partial class OrganizationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210420105221_UpdateGithubTables")]
+    partial class UpdateGithubTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,9 +243,6 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<int>("Deletions")
                         .HasColumnType("int");
 
-                    b.Property<string>("ExternalRepositoryId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ExternalUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -253,7 +252,7 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Sha")
+                    b.Property<string>("SHA")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id", "TenantId");
@@ -1095,9 +1094,6 @@ namespace Tayra.Models.Organizations.Migrations
 
                     b.Property<int>("ExternalNumber")
                         .HasColumnType("int");
-
-                    b.Property<string>("ExternalRepositoryId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ExternalUpdatedAt")
                         .HasColumnType("datetime2");
