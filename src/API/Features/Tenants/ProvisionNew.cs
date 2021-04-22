@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Tayra.API.Features.Segments;
 using Tayra.Common;
 using Tayra.Mailer;
 using Tayra.Models.Catalog;
@@ -90,11 +91,11 @@ namespace Tayra.API.Features.Tenants
                 }, token);
 
                 EssentialSeeds.AddEssentialSeeds(tenantDb);
-                new SegmentsService(tenantDb).Create(null, ProfileRoles.Admin, new SegmentCreateDTO
+                await new CreateSegment.Handler(tenantDb).HandleHack(new CreateSegment.Command
                 {
                     Name = "Segment 1",
                     Key = "S1"
-                });
+                }, token);
                 
                 await tenantDb.SaveChangesAsync(token);
 

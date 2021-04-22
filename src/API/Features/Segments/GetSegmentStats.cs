@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Cog.Core;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Tayra.Analytics;
 using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Models.Organizations.Metrics;
-using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.API.Features.Segments
 {
     public partial class SegmentsController
     {
         [HttpGet("statsWidget/{segmentId}")]
-        public async Task<GetSegmentStats.Result> GetSegmentStats([FromUri] Guid segmentId)
+        public async Task<GetSegmentStats.Result> GetSegmentStats([FromRoute] Guid segmentId)
         {
             return await _mediator.Send(new GetSegmentStats.Query {SegmentId = segmentId});
         }
@@ -61,10 +60,9 @@ namespace Tayra.API.Features.Segments
                     metricList, msg.SegmentId, EntityTypes.Segment,
                     new DatePeriod(DateTime.UtcNow.AddDays(-27), DateTime.UtcNow));
                 
-                await Task.Delay(1, token);
                 return new Result()
                 {
-                    LastRefreshAt = _db.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefault(),
+                    LastRefreshAt = await _db.ProfileMetrics.OrderByDescending(x => x.DateId).Select(x => x.Created).FirstOrDefaultAsync(token),
                     EntityMetrics = segmentMetrics,
                     ComparatorMetrics = null
                 };

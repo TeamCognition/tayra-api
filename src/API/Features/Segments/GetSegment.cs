@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Cog.DAL;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +14,7 @@ namespace Tayra.API.Features.Segments
     public partial class SegmentsController
     {
         [HttpGet]
-        public async Task<GetSegment.Result> GetSegment([FromUri] string segmentKey) =>
+        public async Task<GetSegment.Result> GetSegment([FromQuery] string segmentKey) =>
             await _mediator.Send(new GetSegment.Query {SegmentKey = segmentKey});
     }
 
@@ -49,30 +48,25 @@ namespace Tayra.API.Features.Segments
 
             public async Task<Result> Handle(Query msg, CancellationToken token)
             {
-                var segment = await _db.Segments
-                    .Where(x => x.Key == msg.SegmentKey)
-                    .Select(x => new Result
+                var segmentDto = await (from s in _db.Segments
+                    where s.Key == msg.SegmentKey
+                    select new Result
                     {
-                        SegmentId = x.Id,
-                        Name = x.Name,
-                        Key = x.Key,
-                        Avatar = x.Avatar,
-                        AssistantSummary = x.AssistantSummary,
-                        TokensEarned =
-                            Math.Round(
-                                x.ReportsDaily.OrderByDescending(r => r.DateId).Select(r => r.CompanyTokensEarnedTotal)
-                                    .FirstOrDefault(), 2),
-                        TokensSpent =
-                            Math.Round(
-                                x.ReportsDaily.OrderByDescending(r => r.DateId).Select(r => r.CompanyTokensSpentTotal)
-                                    .FirstOrDefault(), 2),
-                        QuestsActive = x.Quests.Count(r => r.Status == QuestStatuses.Active),
-                        QuestsCompleted = x.Quests.Count(r => r.Status == QuestStatuses.Ended),
-                        ShopItemsBought = x.ShopPurchases.Count(r => r.Status == ShopPurchaseStatuses.Fulfilled)
+                        SegmentId = s.Id,
+                        Name = s.Name,
+                        Key = s.Key,
+                        Avatar = s.Avatar,
+                        AssistantSummary = s.AssistantSummary,
+                        TokensEarned = 0,
+                        TokensSpent = 0,
+                        QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),
+                        QuestsCompleted = s.Quests.Count(x => x.Status == QuestStatuses.Ended),
+                        ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
                     }).FirstOrDefaultAsync(token);
-                segment.EnsureNotNull(msg.SegmentKey);
 
-                return segment;
+                segmentDto.EnsureNotNull(msg.SegmentKey);
+
+                return segmentDto;
             }
         }
     }

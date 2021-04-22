@@ -1,8 +1,6 @@
 using System;
-using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Cog.DAL;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +15,7 @@ namespace Tayra.API.Features.Segments
     public partial class SegmentsController
     {
         [HttpDelete("removeMember")]
-        public async Task<Unit> RemoveMember([FromUri] Guid profileId, [FromUri] Guid teamId, [FromUri] Guid segmentId)
+        public async Task<Unit> RemoveMember([FromQuery] Guid profileId, [FromQuery] Guid teamId, [FromQuery] Guid segmentId)
             => await _mediator.Send(new RemoveMember.Command  {ProfileId = profileId, TeamId = teamId , SegmentId =  segmentId});
     }
 

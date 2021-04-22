@@ -31,23 +31,6 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpPost("search")]
-        public ActionResult<GridData<SegmentGridDTO>> Search([FromBody] SegmentGridParams gridParams)
-        {
-            return SegmentsService.GetGridData(CurrentUser.SegmentsIds, gridParams);
-        }
-
-        [HttpPost("{segmentKey}/searchMembers")]
-        public ActionResult<GridData<SegmentMemberGridDTO>> SearchMembers([FromRoute] string segmentKey, [FromBody] SegmentMemberGridParams gridParams)
-        {
-            return SegmentsService.GetSegmentMembersGridData(segmentKey, gridParams);
-        }
-
-        [HttpPost("{segmentKey}/searchTeams")]
-        public ActionResult<GridData<SegmentTeamGridDTO>> SearchTeams([FromRoute] string segmentKey, [FromBody] SegmentTeamGridParams gridParams)
-        {
-            return SegmentsService.GetSegmentTeamsGridData(segmentKey, gridParams);
-        }
 
         #endregion
     }

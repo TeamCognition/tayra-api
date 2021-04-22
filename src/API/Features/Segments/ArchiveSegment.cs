@@ -14,10 +14,10 @@ namespace Tayra.API.Features.Segments
     {
         [HttpDelete]
         public async Task<Unit> Archive([FromQuery] Guid segmentId) =>
-            await _mediator.Send(new Archive.Command {SegmentId = segmentId});
+            await _mediator.Send(new ArchiveSegment.Command {SegmentId = segmentId});
     }
 
-    public class Archive
+    public class ArchiveSegment
     {
         public record Command : IRequest
         {
