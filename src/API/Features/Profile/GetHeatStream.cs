@@ -10,13 +10,13 @@ using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Models.Organizations.Metrics;
 using Task = System.Threading.Tasks.Task;
-
+using Result = System.Collections.Generic.Dictionary<int, Tayra.Models.Organizations.Metrics.MetricService.AnalyticsMetricWithIterationSplitDto>;
 namespace Tayra.API.Features.Profile
 {
     public partial class ProfilesController
     {
         [HttpGet("heatStream/{profileId}")]
-        public async Task<GetHeatStream.Result> GetProfileHeatStream([FromQuery]Guid profileId)
+        public async Task<Result> GetProfileHeatStream([FromQuery]Guid profileId)
             => await _mediator.Send(new GetHeatStream.Query { ProfileId = profileId});
     }
     
@@ -27,8 +27,6 @@ namespace Tayra.API.Features.Profile
             public Guid ProfileId { get; init; }
         }
 
-        public class Result : Dictionary<int, MetricService.AnalyticsMetricWithIterationSplitDto> {}
-        
         public class Handler : IRequestHandler<Query, Result>
         {
             private readonly OrganizationDbContext _db;
@@ -46,7 +44,7 @@ namespace Tayra.API.Features.Profile
                 await Task.Delay(1, token);
                 return metricService.GetMetricsWithIterationSplit(
                     metricList, msg.ProfileId, EntityTypes.Profile,
-                    new DatePeriod(DateTime.UtcNow.AddDays(-1 * (8 * 7 - 1)), DateTime.UtcNow)) as Result;
+                    new DatePeriod(DateTime.UtcNow.AddDays(-1 * (8 * 7 - 1)), DateTime.UtcNow));
             }
         }
     }
