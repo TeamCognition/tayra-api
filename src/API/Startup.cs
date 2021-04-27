@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using AutoMapper;
 using Cog.Core;
@@ -206,13 +207,13 @@ namespace Tayra.API
                 {
                     if (type.IsNested)
                     {
-                        return type.FullName?.Substring(type.FullName.LastIndexOf('.') + 1).Replace('+', '.');
+                        return string.Join(',', type.FullName?.Split('.').TakeLast(3));
                     }
                     if (type.IsGenericType)
                     {
                         return string.Format("{0}<{1}>",
                             type.Name.Substring(0, type.Name.Length - 2),
-                            string.Join(',', type.GenericTypeArguments.Select(x => x.Name)));
+                            string.Join(',', type.GenericTypeArguments.Select(x => x.FullName)));
                     }
                     return type.FullName;
                 });

@@ -19,11 +19,11 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpGet("{teamId}/swarmPlot")]
-        public async Task<GetTeamSwarmPlot.Result> GetTeamSwarmPlot([FromQuery] Guid teamId)
-            => await _mediator.Send(new GetTeamSwarmPlot.Query {TeamId = teamId});
+        public async Task<GetSwarmPlot.Result> GetTeamSwarmPlot([FromQuery] Guid teamId)
+            => await _mediator.Send(new GetSwarmPlot.Query {TeamId = teamId});
     }
 
-    public class GetTeamSwarmPlot
+    public class GetSwarmPlot
     {
         public record Query : IRequest<Result>
         {

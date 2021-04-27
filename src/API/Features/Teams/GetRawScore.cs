@@ -17,11 +17,11 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpGet("{teamId}/rawScore")]
-        public async Task<GetTeamRawScore.Result> GetTeamRawScore([FromQuery] Guid teamId)
-            => await _mediator.Send(new GetTeamRawScore.Query {TeamId = teamId});
+        public async Task<GetRawScore.Result> GetTeamRawScore([FromQuery] Guid teamId)
+            => await _mediator.Send(new GetRawScore.Query {TeamId = teamId});
     }
 
-    public class GetTeamRawScore
+    public class GetRawScore
     {
         public record Query : IRequest<Result>
         {

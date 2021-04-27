@@ -11,11 +11,11 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpPost("create")]
-        public async Task<Unit> CreateTeam([FromBody] CreateTeam.Command command)
+        public async Task<Unit> CreateTeam([FromBody] Create.Command command)
             => await _mediator.Send(command);
     }
 
-    public class CreateTeam
+    public class Create
     {
         public record Command : IRequest
         {

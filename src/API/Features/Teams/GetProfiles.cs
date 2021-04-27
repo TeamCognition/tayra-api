@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Models.Organizations;
-using Result = Cog.Core.GridData<Tayra.API.Features.Teams.GetTeamProfiles.ResultTeamProfilesDto>;
+using Result = Cog.Core.GridData<Tayra.API.Features.Teams.GetProfiles.ResultTeamProfilesDto>;
 
 
 namespace Tayra.API.Features.Teams
@@ -16,13 +16,13 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpPost("searchProfiles")]
-        public async Task<Result> GetTeamProfiles([FromBody] GetTeamProfiles.Query gridParams)
+        public async Task<Result> GetTeamProfiles([FromBody] GetProfiles.Query gridParams)
         {
             return await _mediator.Send(gridParams);
         }
     }
 
-    public class GetTeamProfiles
+    public class GetProfiles
     {
         public class Query : GridParams, IRequest<Result>
         {

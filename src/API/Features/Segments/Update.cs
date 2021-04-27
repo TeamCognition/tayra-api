@@ -13,11 +13,11 @@ namespace Tayra.API.Features.Segments
         public partial class SegmentsController
         {
             [HttpPut]
-            public async Task<Unit> UpdateSegment([FromRoute] Guid segmentId, [FromBody] UpdateSegment.Command command)
+            public async Task<Unit> UpdateSegment([FromRoute] Guid segmentId, [FromBody] Update.Command command)
                 => await _mediator.Send(command with {SegmentId =  segmentId});
         }
 
-        public class UpdateSegment
+        public class Update
         {
             public record Command : IRequest
             {

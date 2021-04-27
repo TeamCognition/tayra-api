@@ -23,7 +23,7 @@ namespace Tayra.API.Features.Teams
         }
     }
     
-    public class Search
+    public static class Search
     {
         public class Query : GridParams, IRequest<Result>
         {

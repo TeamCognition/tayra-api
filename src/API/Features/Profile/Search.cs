@@ -10,21 +10,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Models.Organizations;
-using Result = Cog.Core.GridData<Tayra.API.Features.Profile.SearchProfiles.ResultDto>;
+using Result = Cog.Core.GridData<Tayra.API.Features.Profile.Search.ResultDto>;
 
 namespace Tayra.API.Features.Profile
 {
     public partial class ProfilesController
     {
         [HttpPost("search")]
-        public async Task<Result> Search([FromBody] SearchProfiles.Query gridParams)
+        public async Task<Result> Search([FromBody] Search.Query gridParams)
         {
             gridParams.ProfileId = CurrentUser.ProfileId;
             return await _mediator.Send(gridParams);
         }
     }
     
-    public class SearchProfiles
+    public class Search
     {
         public class Query : GridParams, IRequest<Result>
         {

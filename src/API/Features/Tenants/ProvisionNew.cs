@@ -91,7 +91,7 @@ namespace Tayra.API.Features.Tenants
                 }, token);
 
                 EssentialSeeds.AddEssentialSeeds(tenantDb);
-                await new CreateSegment.Handler(tenantDb).HandleHack(new CreateSegment.Command
+                await new Create.Handler(tenantDb).HandleHack(new Create.Command
                 {
                     Name = "Segment 1",
                     Key = "S1"

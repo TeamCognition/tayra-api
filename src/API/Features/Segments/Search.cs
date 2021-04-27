@@ -8,21 +8,21 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-using Result = Cog.Core.GridData<Tayra.API.Features.Segments.SearchSegments.ResultDto>;
+using Result = Cog.Core.GridData<Tayra.API.Features.Segments.Search.ResultDto>;
 
 namespace Tayra.API.Features.Segments
 {
     public partial class SegmentsController
     {
         [HttpPost("search")]
-        public async Task<ActionResult<Result>> Search([FromBody] SearchSegments.Query gridParams)
+        public async Task<ActionResult<Result>> Search([FromBody] Search.Query gridParams)
         {
             gridParams.SegmentIds = CurrentUser.SegmentsIds;
             return await _mediator.Send(gridParams);
         }
     }
     
-    public class SearchSegments
+    public class Search
     {
         public class Query : GridParams, IRequest<Result>
         {

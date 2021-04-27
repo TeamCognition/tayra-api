@@ -20,7 +20,7 @@ namespace Tayra.API.Features.Apps
             => await _mediator.Send(new GetUsers.Query {AppType = appType, SegmentId = segmentId});
     }
 
-    public class GetUsers
+    public static class GetUsers
     {
         public record Query : IRequest<Result>
         {

@@ -13,11 +13,11 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpPut("{teamId}/update")]
-        public async Task<Unit> UpdateTeam([FromRoute] Guid teamId, [FromBody] UpdateTeam.Command command)
+        public async Task<Unit> UpdateTeam([FromRoute] Guid teamId, [FromBody] Update.Command command)
             => await _mediator.Send(command with {TeamId = teamId});
     }
 
-    public class UpdateTeam
+    public class Update
     {
         public record Command : IRequest
         {

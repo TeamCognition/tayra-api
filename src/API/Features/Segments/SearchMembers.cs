@@ -10,21 +10,21 @@ using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-using Result = Cog.Core.GridData<Tayra.API.Features.Segments.SearchSegmentsMembers.ResultDto>;
+using Result = Cog.Core.GridData<Tayra.API.Features.Segments.SearchMembers.ResultDto>;
 
 namespace Tayra.API.Features.Segments
 {
     public partial class SegmentsController
     {
         [HttpPost("{segmentKey}/searchMembers")]
-        public async Task<ActionResult<Result>> SearchMembers([FromRoute] string segmentKey, [FromBody] SearchSegmentsMembers.Query gridParams)
+        public async Task<ActionResult<Result>> SearchMembers([FromRoute] string segmentKey, [FromBody] SearchMembers.Query gridParams)
         {
             gridParams.SegmentKey = segmentKey;
             return await _mediator.Send(gridParams);
         }
     }
     
-    public class SearchSegmentsMembers
+    public class SearchMembers
     {
         public class Query : GridParams, IRequest<Result>
         {

@@ -14,10 +14,10 @@ namespace Tayra.API.Features.Teams
     {
         [HttpDelete("{teamId}")]
         public async Task<Unit> DeleteTeam([FromRoute] Guid teamId)
-            => await _mediator.Send(new DeleteTeam.Command  {TeamId = teamId, ProfileId = CurrentUser.ProfileId});
+            => await _mediator.Send(new Delete.Command  {TeamId = teamId, ProfileId = CurrentUser.ProfileId});
     }
 
-    public class DeleteTeam
+    public class Delete
     {
         public record Command : IRequest
         {

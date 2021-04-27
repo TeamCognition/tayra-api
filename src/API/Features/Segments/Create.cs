@@ -14,11 +14,11 @@ namespace Tayra.API.Features.Segments
     public partial class SegmentsController
     {
         [HttpPost]
-        public async Task<Unit> Create([FromBody] CreateSegment.Command command)
+        public async Task<Unit> Create([FromBody] Create.Command command)
             => await _mediator.Send(command with { ProfileRole = CurrentUser.Role , ProfileId =  CurrentUser.ProfileId});
     }
 
-    public class CreateSegment
+    public static class Create
     {
         public record Command : IRequest
         {

@@ -18,7 +18,7 @@ namespace Tayra.API.Features.Segments
             => await _mediator.Send(commands);
     }
 
-    public class AddMember
+    public static class AddMember
     {
         public record CommandDto
         {

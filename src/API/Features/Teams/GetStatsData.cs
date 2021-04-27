@@ -17,13 +17,13 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpGet("statsWidget/{teamId}")]
-        public async Task<GetTeamStatsData.Result> GetTeamStatsData([FromQuery] Guid teamId)
+        public async Task<GetStatsData.Result> GetTeamStatsData([FromQuery] Guid teamId)
         {
-            return await _mediator.Send(new GetTeamStatsData.Query {TeamId = teamId});
+            return await _mediator.Send(new GetStatsData.Query {TeamId = teamId});
         }
     }
 
-    public class GetTeamStatsData
+    public class GetStatsData
     {
         public record Query : IRequest<Result>
         {

@@ -16,13 +16,13 @@ namespace Tayra.API.Features.Teams
     public partial class TeamsController
     {
         [HttpGet("{teamId}/pulse")]
-        public async Task<GetTeamPulse.Result> GetTeamPulse([FromQuery] Guid teamId)
+        public async Task<GetPulse.Result> GetTeamPulse([FromQuery] Guid teamId)
         {
-            return await _mediator.Send(new GetTeamPulse.Query {TeamId = teamId});
+            return await _mediator.Send(new GetPulse.Query {TeamId = teamId});
         }
     }
 
-    public class GetTeamPulse
+    public class GetPulse
     {
         public record Query : IRequest<Result>
         {
