@@ -17,7 +17,7 @@ namespace Tayra.API.Features.Profile
         [HttpGet, Route("integrations")]
         public async Task<GetConnectedApps.Result[]> GetProfileIntegrations()
         {
-            return await _mediator.Send(new GetConnectedApps.Query { ProfileId = CurrentUser.ProfileId});
+            return await _mediator.Send(new GetConnectedApps.Query { ProfileId = CurrentUser.ProfileId, SegmentIds = CurrentUser.SegmentsIds });
         }
     }
     
