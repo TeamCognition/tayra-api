@@ -22,6 +22,7 @@ namespace Tayra.Connectors.GitHub
                 CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
             };
 
+            // Reduced -30 seconds in order to prevent "Expiration time' claim ('exp') is too far in the future" issue
             var now = DateTime.Now.AddSeconds(-30);
             var unixTimeSeconds = new DateTimeOffset(now).ToUnixTimeSeconds();
 
