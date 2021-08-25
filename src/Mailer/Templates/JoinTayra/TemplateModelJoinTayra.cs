@@ -19,7 +19,7 @@ namespace Tayra.Mailer.Templates.JoinTayra
             ProfileRole = profileRole;
             
             var protocol = host.StartsWith("localhost:", System.StringComparison.Ordinal) || host.EndsWith("local") ? "http" : "https";
-            Url = $"{protocol}://{host}/join?invitationCode={inviteCode}";
+            Url = $"{protocol}://{host}/onboarding?invitationCode={inviteCode}";
         }
         
         public string EmailTemplateFileName => 
