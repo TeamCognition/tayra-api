@@ -22,7 +22,8 @@ namespace Tayra.Connectors.GitHub
                 CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
             };
 
-            var now = DateTime.Now;
+            // Reduced -30 seconds in order to prevent "Expiration time' claim ('exp') is too far in the future" issue
+            var now = DateTime.Now.AddSeconds(-30);
             var unixTimeSeconds = new DateTimeOffset(now).ToUnixTimeSeconds();
 
             var jwt = new JwtSecurityToken(
@@ -40,7 +41,12 @@ namespace Tayra.Connectors.GitHub
 
         public static UserInstallationsResponse.Installation FindTayraAppInstallation(UserInstallationsResponse.Installation[] installations, string githubAppId)
         {
-            var installation = installations.LastOrDefault(x => x.AppId == githubAppId);
+            installations = installations.Where(x => x.AppId == githubAppId)
+                                         .ToArray();
+
+            var newestInstalationDate = installations.Max(x => x.UpdatedAt);
+
+            var installation = installations.FirstOrDefault(x => x.UpdatedAt == newestInstalationDate);
 
             if (installation == null)
             {

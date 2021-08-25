@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Models.Organizations;
@@ -17,7 +16,7 @@ namespace Tayra.API.Features.Profile
         [HttpGet, Route("integrations")]
         public async Task<GetConnectedApps.Result[]> GetProfileIntegrations()
         {
-            return await _mediator.Send(new GetConnectedApps.Query { ProfileId = CurrentUser.ProfileId});
+            return await _mediator.Send(new GetConnectedApps.Query { ProfileId = CurrentUser.ProfileId, SegmentIds = CurrentUser.SegmentsIds });
         }
     }
     
