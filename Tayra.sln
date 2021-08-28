@@ -1,55 +1,56 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31613.86
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{5E95A6E4-610B-481F-8AE0-932224E8F436}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", "{62CB41AF-42B6-405D-9E64-B29B0D197A54}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{A0396DC8-C7BC-4D1D-9BC6-8CF3594BAD7A}"
-ProjectSection(SolutionItems) = preProject
-	build\shared.csproj.props = build\shared.csproj.props
-	build\deps.csproj.props = build\deps.csproj.props
-	build\sharedSettings.Development.json = build\sharedSettings.Development.json
-	build\sharedSettings.Production.json = build\sharedSettings.Production.json
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		build\deps.csproj.props = build\deps.csproj.props
+		build\shared.csproj.props = build\shared.csproj.props
+		build\sharedSettings.Development.json = build\sharedSettings.Development.json
+		build\sharedSettings.Production.json = build\sharedSettings.Production.json
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "src\API\API.csproj", "{368C12CB-4E7E-40F5-B7EF-35F63B123862}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "src\API\API.csproj", "{368C12CB-4E7E-40F5-B7EF-35F63B123862}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizationModel", "src\DAL\OrganizationModel\OrganizationModel.csproj", "{92F6BEEC-DFF8-4649-87D9-C0C91FED33EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrganizationModel", "src\DAL\OrganizationModel\OrganizationModel.csproj", "{92F6BEEC-DFF8-4649-87D9-C0C91FED33EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogModel", "src\DAL\CatalogModel\CatalogModel.csproj", "{9F2A9189-7D01-4120-93D3-D21B39D4D409}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogModel", "src\DAL\CatalogModel\CatalogModel.csproj", "{9F2A9189-7D01-4120-93D3-D21B39D4D409}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seeder", "src\DAL\Seeder\Seeder.csproj", "{DBAD9992-F3D4-40A3-93BE-EEE52C9B21E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seeder", "src\DAL\Seeder\Seeder.csproj", "{DBAD9992-F3D4-40A3-93BE-EEE52C9B21E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.Common", "src\Connectors\Connectors.Common\Connectors.Common.csproj", "{D27B768F-8D46-476D-B5C9-76064D2A3F7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Connectors.Common", "src\Connectors\Connectors.Common\Connectors.Common.csproj", "{D27B768F-8D46-476D-B5C9-76064D2A3F7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.Atlassian", "src\Connectors\Connectors.Atlassian\Connectors.Atlassian.csproj", "{14BE51C4-B651-414D-A80F-33B8484F09CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Connectors.Atlassian", "src\Connectors\Connectors.Atlassian\Connectors.Atlassian.csproj", "{14BE51C4-B651-414D-A80F-33B8484F09CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.Atlassian.Jira", "src\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj", "{40E28A05-C109-4611-99C1-6C1FE1DCED39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Connectors.Atlassian.Jira", "src\Connectors\Connectors.Atlassian.Jira\Connectors.Atlassian.Jira.csproj", "{40E28A05-C109-4611-99C1-6C1FE1DCED39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth", "src\Auth\Auth.csproj", "{8F82F914-FBA7-46ED-A847-7B0B990878B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auth", "src\Auth\Auth.csproj", "{8F82F914-FBA7-46ED-A847-7B0B990878B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mailer", "src\Mailer\Mailer.csproj", "{C1C687B9-C4A3-4048-B278-CD61F1349A93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mailer", "src\Mailer\Mailer.csproj", "{C1C687B9-C4A3-4048-B278-CD61F1349A93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "src\Common\Common.csproj", "{6AFD8AED-8105-45EE-A3DC-DE24789B1F6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common\Common.csproj", "{6AFD8AED-8105-45EE-A3DC-DE24789B1F6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "src\Services\Services.csproj", "{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "src\Services\Services.csproj", "{B8BE4A21-BD39-4C82-A7A3-2B63E13A9373}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imager", "src\Imager\Imager.csproj", "{2B2ED690-D4AA-442B-B4A7-C82A5C64DED0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imager", "src\Imager\Imager.csproj", "{2B2ED690-D4AA-442B-B4A7-C82A5C64DED0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.GitHub", "src\Connectors\Connectors.GitHub\Connectors.GitHub.csproj", "{A9F3E000-11D6-46E7-862C-D90311F1DD49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Connectors.GitHub", "src\Connectors\Connectors.GitHub\Connectors.GitHub.csproj", "{A9F3E000-11D6-46E7-862C-D90311F1DD49}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cog", "Cog", "{AEC76C3B-996F-47DB-ADD7-95F28781150B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cog.Core", "cog\Cog.Core\Cog.Core.csproj", "{40283182-109C-4428-897B-78357BFF9381}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cog.Core", "cog\Cog.Core\Cog.Core.csproj", "{40283182-109C-4428-897B-78357BFF9381}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cog.DAL", "cog\Cog.DAL\Cog.DAL.csproj", "{A5BEAEA8-DC9B-4E14-9576-804040D34DA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cog.DAL", "cog\Cog.DAL\Cog.DAL.csproj", "{A5BEAEA8-DC9B-4E14-9576-804040D34DA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connectors.Slack", "src\Connectors\Connectors.Slack\Connectors.Slack.csproj", "{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Connectors.Slack", "src\Connectors\Connectors.Slack\Connectors.Slack.csproj", "{CA88D183-688D-40B0-8BFB-ED8A0B82B17D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Functions", "src\Functions\Functions.csproj", "{86960CB2-7CA6-466A-8212-79EFEC14CF77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Functions", "src\Functions\Functions.csproj", "{86960CB2-7CA6-466A-8212-79EFEC14CF77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToPdfConvertor", "src\ToPdfConvertor\ToPdfConvertor.csproj", "{C86B2BCB-714B-463F-97A5-CD5710EAF55C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToPdfConvertor", "src\ToPdfConvertor\ToPdfConvertor.csproj", "{C86B2BCB-714B-463F-97A5-CD5710EAF55C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,6 +131,9 @@ Global
 		{C86B2BCB-714B-463F-97A5-CD5710EAF55C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C86B2BCB-714B-463F-97A5-CD5710EAF55C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{92F6BEEC-DFF8-4649-87D9-C0C91FED33EF} = {5E95A6E4-610B-481F-8AE0-932224E8F436}
 		{9F2A9189-7D01-4120-93D3-D21B39D4D409} = {5E95A6E4-610B-481F-8AE0-932224E8F436}
@@ -141,5 +145,8 @@ Global
 		{40283182-109C-4428-897B-78357BFF9381} = {AEC76C3B-996F-47DB-ADD7-95F28781150B}
 		{A5BEAEA8-DC9B-4E14-9576-804040D34DA8} = {AEC76C3B-996F-47DB-ADD7-95F28781150B}
 		{CA88D183-688D-40B0-8BFB-ED8A0B82B17D} = {62CB41AF-42B6-405D-9E64-B29B0D197A54}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {596A4EA7-D95D-47E5-8234-0952E08D2DB9}
 	EndGlobalSection
 EndGlobal
