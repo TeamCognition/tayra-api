@@ -72,7 +72,7 @@ namespace Tayra.API.Features.Segments
                         MemberFrom = s.Created
                     };
 
-                GridData<ResultDto> gridData = query.GetGridData(msg);
+                var gridData = query.GetGridData(msg);
 
                 gridData.Records = MoreEnumerable.DistinctBy(gridData.Records, x => x.Username).ToList();
 
