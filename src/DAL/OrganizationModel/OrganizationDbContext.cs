@@ -150,6 +150,7 @@ namespace Tayra.Models.Organizations
             {
                 entity.HasIndex(x => x.IdentityId);
                 entity.HasIndex(x => x.Username).IsUnique();
+                entity.Ignore(x => x.FullName);
             });
 
             modelBuilder.Entity<ProfileAssignment>(entity =>
