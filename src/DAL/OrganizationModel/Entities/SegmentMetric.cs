@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using Cog.DAL;
 using Tayra.Analytics;
-using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
@@ -26,11 +24,6 @@ namespace Tayra.Models.Organizations
             Type = type;
             Value = value;
         }
-
-        // public static SegmentMetric[] CreateRange(Guid segmentId, Metric[] metric)
-        // {
-        //     return metric.Select(x => new SegmentMetric(segmentId, x)).ToArray();
-        // }
 
         #region ITimeStampedEntity
 

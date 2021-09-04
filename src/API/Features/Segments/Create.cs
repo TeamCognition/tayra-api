@@ -6,7 +6,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Tayra.Common;
 using Tayra.Models.Organizations;
-using Tayra.Services;
 using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.API.Features.Segments
@@ -25,7 +24,8 @@ namespace Tayra.API.Features.Segments
             public string Key { get; init; }
             public string Name { get; init; }
             public string Avatar { get; init; }
-            
+            public decimal? AllocatedBudget { get; init; }
+
             public Guid? ProfileId { get; init; }
 
             public ProfileRoles ProfileRole { get; init; }
@@ -54,7 +54,8 @@ namespace Tayra.API.Features.Segments
                 {
                     Name = msg.Name.Trim(),
                     Key = msg.Key.Trim(),
-                    Avatar = msg.Avatar
+                    Avatar = msg.Avatar,
+                    AllocatedBudget = msg.AllocatedBudget ?? 0m
                 }).Entity;
 
                 var team = _db.Add(new Team

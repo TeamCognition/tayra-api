@@ -60,7 +60,7 @@ namespace Tayra.API.Features.Segments
                         Created = t.Created
                     };
 
-                GridData<ResultDto> gridData = query.GetGridData(msg);
+                var gridData = query.GetGridData(msg);
 
                 return gridData;
             }

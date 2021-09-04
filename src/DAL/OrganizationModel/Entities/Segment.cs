@@ -16,6 +16,8 @@ namespace Tayra.Models.Organizations
         [MaxLength(2000)]
         public string Avatar { get; set; }
 
+        public decimal AllocatedBudget { get; set; }
+
         [MaxLength(50)]
         public string Timezone { get; set; }
 

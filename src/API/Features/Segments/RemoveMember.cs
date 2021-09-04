@@ -37,8 +37,9 @@ namespace Tayra.API.Features.Segments
             protected override async Task Handle(Command msg, CancellationToken token)
             {
                 var profile = await _db.Profiles.FirstOrDefaultAsync(x => x.Id == msg.ProfileId, token);
+
                 profile.EnsureNotNull(msg.ProfileId);
-                
+
                 if (!SegmentRules.CanRemoveProfileToSegment(profile.Role, msg.TeamId))
                 {
                     throw new ApplicationException("If you are removing a member you must provide a teamId");

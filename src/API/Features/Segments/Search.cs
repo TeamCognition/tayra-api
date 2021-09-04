@@ -35,6 +35,7 @@ namespace Tayra.API.Features.Segments
             public string Name { get; set; }
             public string Key { get; set; }
             public string Avatar { get; set; }
+            public decimal AllocatedBudget { get; set; }
             public DateTime Created { get; set; }
 
             public int QuestsActive { get; set; }
@@ -61,6 +62,7 @@ namespace Tayra.API.Features.Segments
                         Key = s.Key,
                         Avatar = s.Avatar,
                         Created = s.Created,
+                        AllocatedBudget = s.AllocatedBudget,
                         // QuestsActive = s.Quests.Count(x => x.Status == QuestStatuses.Active),
                         // QuestsCompleted = s.Quests.Count(x => x.Status == QuestStatuses.Ended),
                         ShopItemsBought = s.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.Fulfilled),
@@ -69,8 +71,8 @@ namespace Tayra.API.Features.Segments
                     };
 
                 await Task.Delay(1, token);
-                
-                GridData<ResultDto> gridData = query.GetGridData(msg);
+
+                var gridData = query.GetGridData(msg);
 
                 return gridData;
             }

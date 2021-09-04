@@ -10,50 +10,51 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.API.Features.Segments
 {
-        public partial class SegmentsController
+    public partial class SegmentsController
+    {
+        [HttpPut]
+        public async Task<Unit> UpdateSegment([FromRoute] Guid segmentId, [FromBody] Update.Command command)
+            => await _mediator.Send(command);
+    }
+
+    public class Update
+    {
+        public record Command : IRequest
         {
-            [HttpPut]
-            public async Task<Unit> UpdateSegment([FromRoute] Guid segmentId, [FromBody] Update.Command command)
-                => await _mediator.Send(command with {SegmentId =  segmentId});
+            public Guid SegmentId { get; init; }
+            public string Key { get; init; }
+            public string Name { get; init; }
+            public string Avatar { get; init; }
+            public decimal? AllocatedBudget { get; init; }
         }
 
-        public class Update
+        public class Handler : AsyncRequestHandler<Command>
         {
-            public record Command : IRequest
+            private readonly OrganizationDbContext _db;
+
+            public Handler(OrganizationDbContext db) => _db = db;
+
+            protected override async Task Handle(Command msg, CancellationToken token)
             {
-                public Guid SegmentId { get; init; }
-                public string Key { get; init; }
-                public string Name { get; init; }
+                var segment = await _db.Segments.FirstOrDefaultAsync(x => x.Id == msg.SegmentId, token);
+                segment.EnsureNotNull(msg.SegmentId);
 
-                public string Avatar { get; init; }
-            }
-
-            public class Handler : AsyncRequestHandler<Command>
-            {
-                private readonly OrganizationDbContext _db;
-
-                public Handler(OrganizationDbContext db) => _db = db;
-
-                protected override async Task Handle(Command msg, CancellationToken token)
+                if (segment.Key != msg.Key)
                 {
-                    var segment = await _db.Segments.FirstOrDefaultAsync(x => x.Id == msg.SegmentId, token);
-                    segment.EnsureNotNull(msg.SegmentId);
-
-                    if (segment.Key != msg.Key)
+                    var segmentKeyUniqueness  = !await _db.Segments.AnyAsync(x => x.Key == msg.Key, token);
+                    if (segmentKeyUniqueness is false)
                     {
-                        var  isSegmentKeyUnique  = !await _db.Segments.AnyAsync(x => x.Key == msg.Key, token);
-                        if (isSegmentKeyUnique)
-                        {
-                            throw new ApplicationException($"A segment exists with the same key");
-                        }
+                        throw new ApplicationException($"A segment exists with the same key");
                     }
-
-                    segment.Key = msg.Key.Trim();
-                    segment.Name = msg.Name.Trim();
-                    segment.Avatar = msg.Avatar;
-                    
-                    await _db.SaveChangesAsync(token);
                 }
+
+                segment.Key = msg.Key.Trim();
+                segment.Name = msg.Name.Trim();
+                segment.Avatar = msg.Avatar;
+                segment.AllocatedBudget = msg.AllocatedBudget ?? segment.AllocatedBudget;
+                    
+                await _db.SaveChangesAsync(token);
             }
         }
     }
+}

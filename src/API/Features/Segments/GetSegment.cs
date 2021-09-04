@@ -31,8 +31,8 @@ namespace Tayra.API.Features.Segments
             public string Name { get; init; }
             public string Key { get; init; }
             public string Avatar { get; init; }
+            public decimal AllocatedBudget { get; init; }
             public string AssistantSummary { get; init; }
-
             public double TokensEarned { get; init; }
             public double TokensSpent { get; init; }
             public int QuestsActive { get; init; }
@@ -56,6 +56,7 @@ namespace Tayra.API.Features.Segments
                         Name = s.Name,
                         Key = s.Key,
                         Avatar = s.Avatar,
+                        AllocatedBudget = s.AllocatedBudget,
                         AssistantSummary = s.AssistantSummary,
                         TokensEarned = 0,
                         TokensSpent = 0,
