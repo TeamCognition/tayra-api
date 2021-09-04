@@ -25,7 +25,7 @@ namespace Tayra.API.Features.Segments
             public string Key { get; init; }
             public string Name { get; init; }
             public string Avatar { get; init; }
-            public int? AllocatedBudget { get; init; }
+            public decimal? AllocatedBudget { get; init; }
         }
 
         public class Handler : AsyncRequestHandler<Command>

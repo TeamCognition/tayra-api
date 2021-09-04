@@ -24,7 +24,7 @@ namespace Tayra.API.Features.Segments
             public string Key { get; init; }
             public string Name { get; init; }
             public string Avatar { get; init; }
-            public int? AllocatedBudget { get; init; }
+            public decimal? AllocatedBudget { get; init; }
 
             public Guid? ProfileId { get; init; }
 
@@ -55,7 +55,7 @@ namespace Tayra.API.Features.Segments
                     Name = msg.Name.Trim(),
                     Key = msg.Key.Trim(),
                     Avatar = msg.Avatar,
-                    AllocatedBudget = msg.AllocatedBudget ?? 0
+                    AllocatedBudget = msg.AllocatedBudget ?? 0m
                 }).Entity;
 
                 var team = _db.Add(new Team
