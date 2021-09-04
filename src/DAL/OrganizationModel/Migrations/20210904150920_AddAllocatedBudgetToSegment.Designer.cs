@@ -10,8 +10,8 @@ using Tayra.Models.Organizations;
 namespace Tayra.Models.Organizations.Migrations
 {
     [DbContext(typeof(OrganizationDbContext))]
-    [Migration("20210828122012_AddAllocatedBudgetToSegments")]
-    partial class AddAllocatedBudgetToSegments
+    [Migration("20210904150920_AddAllocatedBudgetToSegment")]
+    partial class AddAllocatedBudgetToSegment
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1533,8 +1533,8 @@ namespace Tayra.Models.Organizations.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("AllocatedBudget")
-                        .HasColumnType("int");
+                    b.Property<decimal>("AllocatedBudget")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<long>("ArchivedAt")
                         .HasColumnType("bigint");

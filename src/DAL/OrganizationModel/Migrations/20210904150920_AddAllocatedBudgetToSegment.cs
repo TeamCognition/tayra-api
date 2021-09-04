@@ -2,16 +2,16 @@
 
 namespace Tayra.Models.Organizations.Migrations
 {
-    public partial class AddAllocatedBudgetToSegments : Migration
+    public partial class AddAllocatedBudgetToSegment : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
+            migrationBuilder.AddColumn<decimal>(
                 name: "AllocatedBudget",
                 table: "Segments",
-                type: "int",
+                type: "decimal(18,2)",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0m);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
