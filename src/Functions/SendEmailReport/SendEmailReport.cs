@@ -17,6 +17,7 @@ namespace Tayra.Functions.SendEmailReport
         private readonly CatalogDbContext _catalogDb;
         private readonly IMailerService _mailerService;
         private readonly string _emailSubject;
+        private ILogger _logger;
 
         public SendEmailReport(CatalogDbContext catalogDb)
         {
@@ -26,12 +27,12 @@ namespace Tayra.Functions.SendEmailReport
         }
 
         [Function(nameof(SendEmailReport))]
-        public async Task RunAsync([TimerTrigger("*/5 * * * *")] MyInfo myTimer, FunctionContext context)
+        public async Task RunAsync([TimerTrigger("*/10 * * * * *")] MyInfo myTimer, FunctionContext context)
         {
-            var logger = context.GetLogger(nameof(SendEmailReport));
-            logger.LogInformation($"C# Timer trigger function {nameof(SendEmailReport)} executed at: {DateTime.UtcNow} UTC.");
+            _logger = context.GetLogger(nameof(SendEmailReport));
+            _logger.LogInformation($"C# Timer trigger function {nameof(SendEmailReport)} executed at: {DateTime.UtcNow} UTC.");
 
-            List<Tenant> tenants = await GetAllTenants();
+            var tenants = await GetAllTenants();
 
             foreach (var tenant in tenants)
             {
@@ -55,6 +56,12 @@ namespace Tayra.Functions.SendEmailReport
                 foreach (var profile in adminAndManagerProfiles)
                 {
                     var identityEmail = GetIdentityForProfile(adminAndManagerIdentities, profile);
+
+                    if (identityEmail == null || string.IsNullOrEmpty(identityEmail.Email))
+                    {
+                        _logger.LogError($"{nameof(identityEmail)} for {nameof(profile)}.{nameof(profile.Id)} {profile.Id} not found. {nameof(tenant)}.{nameof(tenant.Id)}='{tenant.Id}'.");
+                        continue;
+                    }
 
                     bool isProfileSendingSuccessful = GenerateAndSendProfileEmails(segments, profile, identityEmail);
 
