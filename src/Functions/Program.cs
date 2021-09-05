@@ -40,7 +40,7 @@ namespace Tayra.Functions
             var env = context.HostingEnvironment;
             
             var sharedFolder = Path.Combine(env.ContentRootPath, "../../../..", "build");
-            
+
             config
                 .AddJsonFile(Path.Combine(sharedFolder, "sharedSettings.Development.json"), optional: true)
                 .AddJsonFile("sharedSettings.Production.json", optional: true) // When app is published

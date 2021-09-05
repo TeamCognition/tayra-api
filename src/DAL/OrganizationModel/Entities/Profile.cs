@@ -15,6 +15,8 @@ namespace Tayra.Models.Organizations
         [MaxLength(50)]
         public string LastName { get; set; }
 
+        public string FullName { get { return $"{FirstName} {LastName}"; } }
+
         /// <summary>
         /// unique
         /// </summary>
