@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,7 +50,7 @@ namespace Tayra.API.Features.Segments
                 {
                     throw new ApplicationException($"A segment exists with the same key");
                 }
-                
+
                 var segment = _db.Add(new Segment
                 {
                     Name = msg.Name.Trim(),
@@ -65,6 +66,9 @@ namespace Tayra.API.Features.Segments
                     Key = "T1"
                 }).Entity;
 
+                var integrations = CreateDefaultIntegrations(segment);
+                _db.AddRange(integrations);
+
                 if (msg.ProfileId != null && msg.ProfileRole != ProfileRoles.Admin)
                 {
                     _db.Add(new ProfileAssignment
@@ -74,11 +78,31 @@ namespace Tayra.API.Features.Segments
                         Team = team,
                     });
                 }
-                
+
                 await _db.SaveChangesAsync(token);
             }
         }
-        
+
+        private static List<Integration> CreateDefaultIntegrations(Segment segment)
+        {
+            var gitHubIntegration = CreateDefaultIntegration(segment, IntegrationType.GH);
+            var jiraIntegration = CreateDefaultIntegration(segment, IntegrationType.ATJ);
+            var slackIntegration = CreateDefaultIntegration(segment, IntegrationType.SL);
+
+            var integrations = new List<Integration> { gitHubIntegration, jiraIntegration, slackIntegration };
+            return integrations;
+        }
+
+        private static Integration CreateDefaultIntegration(Segment segment, IntegrationType integrationType)
+        {
+            return new Integration
+            {
+                Segment = segment,
+                Type = integrationType,
+                Status = IntegrationStatuses.NotConnected
+            };
+        }
+
         private static bool IsSegmentKeyUnique(OrganizationDbContext dbContext, string segmentKey)
         {
             return !dbContext.Segments.Any(x => x.Key == segmentKey);
