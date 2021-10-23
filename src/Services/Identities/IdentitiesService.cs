@@ -69,6 +69,7 @@ namespace Tayra.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Username = dto.Profile.Username,
+                EmailAddress = dto.Email,
                 Role = dto.Profile.Role,
                 Avatar = dto.Profile.Avatar,
                 IdentityId = identity.Id
@@ -154,6 +155,7 @@ namespace Tayra.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Username = dto.Username,
+                EmailAddress = invitation.EmailAddress,
                 JobPosition = dto.JobPosition,
                 Role = invitation.Role,
                 IdentityId = identity.Id,

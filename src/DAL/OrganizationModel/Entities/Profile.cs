@@ -20,8 +20,10 @@ namespace Tayra.Models.Organizations
         /// <summary>
         /// unique
         /// </summary>
-        [MaxLength(20)]
         public string Username { get; set; }
+
+        [EmailAddress]
+        public string EmailAddress { get; set; }
 
         [MaxLength(2000)]
         public string Avatar { get; set; }
