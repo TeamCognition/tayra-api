@@ -27,7 +27,7 @@ namespace Tayra.Functions.SendEmailReport
         }
 
         [Function(nameof(SendEmailReport))]
-        public async Task RunAsync([TimerTrigger("*/10 * * * * *")] MyInfo myTimer, FunctionContext context)
+        public async Task RunAsync([TimerTrigger("0 9 */7 * *")] MyInfo myTimer, FunctionContext context)
         {
             _logger = context.GetLogger(nameof(SendEmailReport));
             _logger.LogInformation($"C# Timer trigger function {nameof(SendEmailReport)} executed at: {DateTime.UtcNow} UTC.");
