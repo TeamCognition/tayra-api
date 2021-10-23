@@ -39,7 +39,7 @@ namespace Tayra.API.Features.Onboarding
                 var invitation = await _db.Invitations.FirstOrDefaultAsync(x => x.Code == msg.InvitationCode);
 
                 var profileOnboarding = await _db.Profiles
-                    .Where(x => x.Username == invitation.EmailAddress)
+                    .Where(x => x.EmailAddress == invitation.EmailAddress)
                     .Select(x => new
                     {
                         x.IsProfileOnboardingCompleted
