@@ -168,8 +168,7 @@ namespace Tayra.Functions.GithubDataPool
                         CommitsCount = pr.CommitNodes.TotalCount,
                         ReviewCommentsCount = 0,
                         ReviewsCount = pr.ReviewNodes.TotalCount
-                    });
-                    
+                    });                    
                     
                     CreateLog(logService, LogEvents.PullRequestCreated, authorProfile, pr.Title, pr.Url,
                         new Dictionary<string, string>
@@ -197,8 +196,9 @@ namespace Tayra.Functions.GithubDataPool
                             {"externalId", pr.ExternalId},
                             {"prState", pr.State},
                         });
-                    organizationDb.SaveChanges();
                 }
+
+                organizationDb.SaveChanges();
             }
         }
         
