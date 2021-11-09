@@ -140,6 +140,7 @@ namespace Tayra.Connectors.GitHub
             }
             return commitsFromAllBranches;
         }
+
         public GetPullRequestsResponse GetPullRequestsByPeriod(Guid integrationId, string repositoryName, string repositoryOwner)
         {
             var accessToken = ReadAccessToken(integrationId);

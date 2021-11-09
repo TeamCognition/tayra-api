@@ -118,6 +118,12 @@ namespace Tayra.Connectors.GitHub
                                     commitUrl
                                     url
                                     committedDate
+                                    associatedPullRequests (first: 10) {
+                                                      nodes {
+                                                        id
+                                                        mergedAt
+                                                      }
+                                                    }
                                     repository {
                                       databaseId
                                       nameWithOwner
