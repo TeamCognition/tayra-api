@@ -138,6 +138,7 @@ namespace Tayra.Connectors.GitHub
             {
                commitsFromAllBranches.AddRange(GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch));
             }
+
             return commitsFromAllBranches;
         }
 

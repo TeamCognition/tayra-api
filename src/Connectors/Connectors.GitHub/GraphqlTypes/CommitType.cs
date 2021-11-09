@@ -65,7 +65,7 @@ namespace Tayra.Connectors.GitHub
         public class AssociatedPullRequestsArray
         {
             [JsonProperty("nodes")]
-            public AssociatedPullRequest[] AssociatedPullRequest { get; set; }
+            public AssociatedPullRequest[] AssociatedPullRequests { get; set; }
         }
 
         public class AssociatedPullRequest
