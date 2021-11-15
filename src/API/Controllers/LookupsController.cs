@@ -14,7 +14,7 @@ namespace Tayra.API.Controllers
 
         public LookupsController(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-          //  OrganizationContext = context;
+            //  OrganizationContext = context;
         }
 
         #endregion
@@ -70,26 +70,19 @@ namespace Tayra.API.Controllers
 
         #region From Database
 
-        [HttpGet, Route(nameof(LookupTypes.Tokens))]
-        public IEnumerable<LookupDTO> GetTokens()
-        {
-            return LookupsService.GetFromOrganizationDb<Token>(x => new LookupDTO(x.Id, x.Name));
-        }
-
         #endregion
 
         #region Bulk Lookup
 
         [HttpGet, Route("")]
-        public Dictionary<LookupTypes, IEnumerable<LookupDTO>> Get([FromQuery(Name = "types")]IEnumerable<LookupTypes> types)
+        public Dictionary<LookupTypes, IEnumerable<LookupDTO>> Get([FromQuery(Name = "types")] IEnumerable<LookupTypes> types)
         {
             var result = new Dictionary<LookupTypes, IEnumerable<LookupDTO>>();
 
             foreach (var type in types)
             {
                 result[type] =
-                    (type == LookupTypes.Tokens) ? GetTokens()
-                    : (type == LookupTypes.ItemTypes) ? GetItemTypes()
+                    (type == LookupTypes.ItemTypes) ? GetItemTypes()
                     : (type == LookupTypes.TokenTypes) ? GetTokenTypes()
                     : (type == LookupTypes.ItemRarities) ? GetItemRarities()
                     : (type == LookupTypes.ProfileRoles) ? GetProfileRoles()

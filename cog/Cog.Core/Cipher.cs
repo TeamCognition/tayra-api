@@ -9,11 +9,16 @@ namespace Cog.Core
     //TODO: THIS IS NOT PRODUCTION READY YET, IV NEEDS TO BE RANDOMIZED
     public static class Cipher
     {
-        private static byte[] key = { 59, 72, 211, 92, 45, 249, 113, 147, 110, 240, 253, 242, 148, 61, 20, 29, 191, 122, 110, 155, 142, 9, 86, 22, 35, 96, 222, 218, 34, 26, 11, 76 };
+        private static readonly byte[] key =
+        {
+            59, 72, 211, 92, 45, 249, 113, 147, 110, 240, 253, 242, 148, 61, 20, 29, 191, 122, 110, 155, 142, 9, 86, 22,
+            35, 96, 222, 218, 34, 26, 11, 76
+        };
 
         // a hardcoded IV should not be used for production AES-CBC code
         // IVs should be unpredictable per ciphertext
-        private static byte[] vector = { 149, 227, 146, 176, 221, 225, 185, 18, 111, 156, 34, 81, 16, 211, 219, 156 };
+        private static readonly byte[] vector =
+            {149, 227, 146, 176, 221, 225, 185, 18, 111, 156, 34, 81, 16, 211, 219, 156};
 
         private static readonly ICryptoTransform encryptor, decryptor;
         private static readonly UTF8Encoding encoder;
@@ -21,12 +26,12 @@ namespace Cog.Core
         static Cipher()
         {
             using (var rm = new RijndaelManaged())
-		    {
-			    encryptor = rm.CreateEncryptor(key, vector);
-			    decryptor = rm.CreateDecryptor(key, vector);
-		    }
+            {
+                encryptor = rm.CreateEncryptor(key, vector);
+                decryptor = rm.CreateDecryptor(key, vector);
+            }
 
-		    encoder = new UTF8Encoding();
+            encoder = new UTF8Encoding();
         }
 
         public static string Encrypt(string unencrypted)
@@ -51,11 +56,12 @@ namespace Cog.Core
 
         private static byte[] Transform(byte[] buffer, ICryptoTransform transform)
         {
-            MemoryStream stream = new MemoryStream();
-            using (CryptoStream cs = new CryptoStream(stream, transform, CryptoStreamMode.Write))
+            var stream = new MemoryStream();
+            using (var cs = new CryptoStream(stream, transform, CryptoStreamMode.Write))
             {
                 cs.Write(buffer, 0, buffer.Length);
             }
+
             return stream.ToArray();
         }
 
@@ -93,6 +99,7 @@ namespace Cog.Core
             var bytes = Convert.FromBase64String(s); // Standard base64 decoder
             return Encoding.UTF8.GetString(bytes);
         }
+
         #endregion
     }
 }

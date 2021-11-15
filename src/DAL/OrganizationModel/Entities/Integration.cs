@@ -5,26 +5,25 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Integration : IAuditedEntity
+    public class Integration : EntityGuidId, ITimeStampedEntity, IUserStampedEntity
     {
-        public int Id { get; set; }
-
-        public int? ProfileId { get; set; }
+        public Guid? ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
-        public int SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public virtual Segment Segment { get; set; }
 
         public IntegrationType Type { get; set; }
+        public IntegrationStatuses Status { get; set; }
 
         public virtual ICollection<IntegrationField> Fields { get; set; }
 
-        #region IAuditedEntity
+        #region ITimeStampedEntity and IUserStampedEntity
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

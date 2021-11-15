@@ -21,8 +21,8 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpGet("{itemId:int}")]
-        public ActionResult<ShopItemViewDTO> GetShopItem([FromRoute]int itemId)
+        [HttpGet("{itemId}")]
+        public ActionResult<ShopItemViewDTO> GetShopItem([FromRoute] Guid itemId)
         {
             return Ok(ShopItemsService.GetShopItemViewDTO(itemId));
         }
@@ -60,8 +60,8 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpDelete("{itemId:int}")]
-        public IActionResult RemoveShopItem([FromRoute] int itemId)
+        [HttpDelete("{itemId}")]
+        public IActionResult RemoveShopItem([FromRoute] Guid itemId)
         {
             ShopItemsService.RemoveShopItem(itemId);
             OrganizationContext.SaveChanges();

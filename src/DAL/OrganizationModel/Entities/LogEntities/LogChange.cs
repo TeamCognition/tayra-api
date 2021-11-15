@@ -7,7 +7,7 @@ namespace Tayra.Models.Organizations
     {
         public int Id { get; set; }
 
-        public int LogId { get; set; }
+        public Guid LogId { get; set; }
         public Log Log { get; set; }
 
         //change template?
@@ -16,8 +16,8 @@ namespace Tayra.Models.Organizations
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

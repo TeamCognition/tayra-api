@@ -22,12 +22,13 @@ namespace Tayra.Connectors.GitHub
                 CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
             };
 
-            var now = DateTime.Now;
+            // Reduced -30 seconds in order to prevent "Expiration time' claim ('exp') is too far in the future" issue
+            var now = DateTime.Now.AddSeconds(-30);
             var unixTimeSeconds = new DateTimeOffset(now).ToUnixTimeSeconds();
 
             var jwt = new JwtSecurityToken(
                 issuer: githubAppId,
-                claims: new [] {
+                claims: new[] {
                     new Claim(JwtRegisteredClaimNames.Iat, unixTimeSeconds.ToString(), ClaimValueTypes.Integer64),
                 },
                 notBefore: now,
@@ -37,19 +38,24 @@ namespace Tayra.Connectors.GitHub
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
-        
+
         public static UserInstallationsResponse.Installation FindTayraAppInstallation(UserInstallationsResponse.Installation[] installations, string githubAppId)
         {
-            var installation = installations.LastOrDefault(x => x.AppId == githubAppId);
+            installations = installations.Where(x => x.AppId == githubAppId)
+                                         .ToArray();
+
+            var newestInstalationDate = installations.Max(x => x.UpdatedAt);
+
+            var installation = installations.FirstOrDefault(x => x.UpdatedAt == newestInstalationDate);
 
             if (installation == null)
             {
                 throw new ApplicationException("Github app Installation not found");
             }
-            
+
             return installation;
         }
-        
+
         public static string GetInstallationOrganizationName(string userToken, long organizationId)
         {
             var orgs = GitHubService.GetOrganizations(userToken, organizationId)?.Data;
@@ -59,7 +65,7 @@ namespace Tayra.Connectors.GitHub
             {
                 throw new ApplicationException("Organization by id not found");
             }
-            
+
             return org.Login;
         }
     }

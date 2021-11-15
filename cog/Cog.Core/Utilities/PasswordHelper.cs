@@ -10,7 +10,7 @@ namespace Cog.Core
     {
         private static Argon2i InitArgon(byte[] pwd, byte[] salt = null, byte[] data = null)
         {
-            return new Argon2i(pwd)
+            return new(pwd)
             {
                 DegreeOfParallelism = 2,
                 MemorySize = 1 << 13, //8192
@@ -30,8 +30,19 @@ namespace Cog.Core
             return Compare(password, Hash(toVerify, salt));
         }
 
-        public static byte[] GenerateSalt(int count = 8) => RandomGenerator.Default.GenerateBytes(count);
-        public static byte[] ToBytes(this string str) => Encoding.UTF8.GetBytes(str);
-        public static bool Compare(ReadOnlySpan<byte> a1, ReadOnlySpan<byte> a2) => a1.SequenceEqual(a2);
+        public static byte[] GenerateSalt(int count = 8)
+        {
+            return RandomGenerator.Default.GenerateBytes(count);
+        }
+
+        public static byte[] ToBytes(this string str)
+        {
+            return Encoding.UTF8.GetBytes(str);
+        }
+
+        public static bool Compare(ReadOnlySpan<byte> a1, ReadOnlySpan<byte> a2)
+        {
+            return a1.SequenceEqual(a2);
+        }
     }
 }

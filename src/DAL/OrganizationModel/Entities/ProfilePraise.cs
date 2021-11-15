@@ -5,13 +5,13 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class ProfilePraise : ITimeStampedEntity, IUserStampedEntity
+    public class ProfilePraise : EntityGuidId, ITimeStampedEntity, IUserStampedEntity
     {
         //Composite Key
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public virtual Profile Profile { get; set; }
 
-        public int PraiserProfileId { get; set; }
+        public Guid PraiserProfileId { get; set; }
         //public virtual Profile PraiserProfile { get; set; }
 
         public int DateId { get; set; }
@@ -26,8 +26,8 @@ namespace Tayra.Models.Organizations
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

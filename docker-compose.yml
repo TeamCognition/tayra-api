@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+  auth:
+    container_name: tayra-auth
+    build:
+      context: .
+      dockerfile: src/Auth/Dockerfile
+    ports:
+      - 4000:80
+    restart: on-failure
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings:OpeniddictDatabase: Data Source=tcp:mssql,1433;Initial Catalog=tayra-auth;User ID=sa;Password=strong!Password;Connect Timeout=10;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=true
+      CatalogServer: mssql
+      AuthRunOnDockerCompose: "true"
+    depends_on:
+      - mssql
+
+  mssql:
+    container_name: mssql
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    volumes:
+      - mssql-volume:/var/opt/mssql
+    environment:
+      SA_PASSWORD: "strong!Password"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+
+volumes:
+  mssql-volume:
+#Within the auth container, 
+#your connection string to db would look like ://mssql:5432,
+#and from the host machine, the connection string would look like ://{DOCKER_IP}:8001

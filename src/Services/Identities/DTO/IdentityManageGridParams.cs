@@ -1,9 +1,10 @@
-﻿using Cog.Core;
+﻿using System;
+using Cog.Core;
 
 namespace Tayra.Services
 {
     public class IdentityManageGridParams : GridParams
     {
-        public int? SegmentId { get; set; }
+        public Guid? SegmentId { get; set; }
     }
 }

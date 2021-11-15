@@ -1,78 +1,66 @@
-﻿using IdentityServer4.ResponseHandling;
-using IdentityServer4.Validation;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Tayra.Models.Catalog;
 using Microsoft.Extensions.Hosting;
-using Tayra.Models.Organizations;
-using Tayra.Services;
+using Microsoft.OpenApi.Models;
+using Tayra.Auth.Data;
+using Tayra.DAL;
+using Tayra.Models.Catalog;
 
 namespace Tayra.Auth
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment Environment { get; }
-
-        public Startup(IConfiguration config, IWebHostEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            Configuration = config;
-            Environment = env;
+            Configuration = configuration;
         }
 
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(GetCatalogConnectionString()));
-            services.AddDbContext<OrganizationDbContext>(options => { });
-
-            services.AddIdentityServerServices(Configuration);
-
-            //.AddConfigurationStore(options =>
-            //{
-            //    options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-            //})
-            //.AddOperationalStore(options =>
-            //{
-            //    options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
-            //    options.EnableTokenCleanup = false;
-            //}
-
-            services.AddHttpContextAccessor();
-
-            services.AddCors(c =>
-            {
-                c.AddPolicy("AllowAllOrigins", options => options.AllowAnyOrigin()
-                                                                 .AllowAnyHeader());
-            });
+            services.AddDbContext<CatalogDbContext>(options =>
+                options.UseSqlServer(ConnectionStringUtilities.GetCatalogDbConnStr(Configuration)));
+                        
+            services.AddControllers();
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Auth", Version = "v1"}); });
+            services.AddCors();
+            
+            services.AddTayraAuthServices(Configuration);
+            services.AddHostedService<OpenIdSeedWorker>();
         }
 
-        public void Configure(IApplicationBuilder app)
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, OpeniddictDbContext dbContext)
         {
-            if (Environment.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth v1"));
             }
+            else
+                app.UseHttpsRedirection();
 
-            app.UseCors("AllowAllOrigins");
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
-            app.UseIdentityServer();
-        }
+            
+            app.UseRouting();
 
-        /// <summary>
-        ///  Gets the catalog connection string using the app settings
-        /// </summary>
-        private string GetCatalogConnectionString()
-        {
-            var databasePassword = Configuration["DatabasePassword"];
-            var databaseUser = Configuration["DatabaseUser"];
-            var catalogDatabase = Configuration["CatalogDatabase"];
-            var catalogServer = Configuration["CatalogServer"];
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-            return
-                $"Server=tcp:{catalogServer},1433;Database={catalogDatabase};User ID={databaseUser};Password={databasePassword};Trusted_Connection=False;Encrypt=True;";
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+           // dbContext.Database.Migrate();
         }
     }
 }

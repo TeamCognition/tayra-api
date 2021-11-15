@@ -1,15 +1,16 @@
-﻿using Cog.Core;
+﻿using System;
+using Cog.Core;
 using Tayra.Common;
 
 namespace Tayra.Services
 {
     public interface IShopItemsService
     {
-        ShopItemViewDTO GetShopItemViewDTO(int itemId);
+        ShopItemViewDTO GetShopItemViewDTO(Guid itemId);
         GridData<ShopItemViewGridDTO> GetShopItemViewGridDTO(ProfileRoles profileRole, ShopItemViewGridParams gridParams);
-        void PurchaseShopItem(int profileId, ShopItemPurchaseDTO dto);
-        void EnableShopItem(int itemId);
-        void DisableShopItem(int itemId);
-        void RemoveShopItem(int itemId);
+        void PurchaseShopItem(Guid profileId, ShopItemPurchaseDTO dto);
+        void EnableShopItem(Guid itemId);
+        void DisableShopItem(Guid itemId);
+        void RemoveShopItem(Guid itemId);
     }
 }

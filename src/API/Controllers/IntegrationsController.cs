@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq;
-using Cog.Core;
+using System.Threading.Tasks;
+using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Configuration;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
+using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 using Tayra.Services;
-using Tayra.SyncServices;
 
 namespace Tayra.API.Controllers
 {
@@ -18,16 +18,14 @@ namespace Tayra.API.Controllers
     {
         #region Constructor
 
-        public IntegrationsController(IServiceProvider serviceProvider, IConnectorResolver connectorResolver, ITenantProvider tenantProvider, OrganizationDbContext context) : base(serviceProvider, context)
+        public IntegrationsController(IServiceProvider serviceProvider, IConnectorResolver connectorResolver, OrganizationDbContext context) : base(serviceProvider, context)
         {
             ConnectorResolver = connectorResolver;
             DbContext = context;
-            TenantProvider = tenantProvider;
         }
 
         #endregion
 
-        public ITenantProvider TenantProvider { get; set; }
         OrganizationDbContext DbContext { get; set; }
 
         public IConnectorResolver ConnectorResolver { get; }
@@ -36,27 +34,29 @@ namespace Tayra.API.Controllers
 
         [HttpGet, Route("connect/{type?}")]
         public IActionResult Connect([FromRoute] IntegrationType type, [FromQuery] string returnPath, [FromQuery] bool isSegmentAuth)
-        {   
-            if(string.IsNullOrEmpty(returnPath))
+        {
+            if (string.IsNullOrEmpty(returnPath))
             {
                 throw new ApplicationException("You have to provide returnPath");
             }
+
+            var tenantInfo = HttpContext.GetMultiTenantContext<Tenant>()?.TenantInfo;
             
             var connector = ConnectorResolver.Get<IOAuthConnector>(type);
             return Redirect(connector.GetAuthUrl(
-                new OAuthState(TenantProvider.GetTenant().Key, CurrentUser.ProfileId, CurrentSegment.Id, isSegmentAuth, returnPath)));
+                new OAuthState(tenantInfo.Identifier, CurrentUser.ProfileId, CurrentSegment.Id, isSegmentAuth, returnPath)));
         }
 
         [HttpGet, Route("settings/atj")]
-        public ActionResult<JiraSettingsViewDTO> GetJiraSettings()
+        public ActionResult<JiraSettingsViewDTO> GetJiraSettings([FromServices]IConfiguration config)
         {
-            return IntegrationsService.GetJiraSettingsViewDTO("api.tayra.io", CurrentUser.CurrentTenantKey, CurrentSegment.Id);
+            return IntegrationsService.GetJiraSettingsViewDTO("api.tayra.io", CurrentUser.CurrentTenantIdentifier, CurrentSegment.Id, config);
         }
 
         [HttpPost, Route("settings/atj")]
-        public ActionResult SetJiraSettings([FromBody]JiraSettingsUpdateDTO dto)
+        public ActionResult SetJiraSettings([FromBody] JiraSettingsUpdateDTO dto, [FromServices]IConfiguration config)
         {
-            IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantKey, dto);
+            IntegrationsService.UpdateJiraSettingsWithSaveChanges(CurrentSegment.Id, CurrentUser.CurrentTenantIdentifier, dto, config);
             // SyncIssuesLoader.PullIssuesNew(DbContext, DateTime.UtcNow, TasksService, ProfilesService,
             //     JObject.FromObject(new { tenantKey = CurrentUser.CurrentTenantKey, @params = new { jiraProjectId = dto.ActiveProjects.FirstOrDefault().ProjectId }}));
             DbContext.SaveChanges();
@@ -69,13 +69,14 @@ namespace Tayra.API.Controllers
             public Repository[] Repositories { get; set; }
             public class Repository
             {
+                public string ExternalId { get; set; }
                 public string ExternalUrl { get; set; }
                 public string Name { get; set; }
                 public string NameWithOwner { get; set; }
-                public int? TeamId { get; set; }
+                public Guid? TeamId { get; set; }
             }
         }
-        
+
         [HttpGet, Route("settings/gh")]
         public ActionResult<GithubSettingsViewDTO> GetGitHubSettings()
         {
@@ -87,13 +88,14 @@ namespace Tayra.API.Controllers
             var externalConfigUrl = targetType == "Organization"
                 ? $"https://github.com/organizations/{targetName}/settings/installations/{installationId}"
                 : $"https://github.com/settings/installations/{installationId}";
-            
+
             var repos = DbContext.Repositories.Where(x => x.IntegrationInstallationId == installationId).ToArray();
-            
+
             return Ok(new GithubSettingsViewDTO
             {
                 Repositories = repos.Select(x => new GithubSettingsViewDTO.Repository
                 {
+                    ExternalId = x.ExternalId,
                     Name = x.Name,
                     NameWithOwner = x.NameWithOwner,
                     ExternalUrl = x.ExternalUrl,
@@ -103,6 +105,31 @@ namespace Tayra.API.Controllers
             });
         }
 
+
+        public class GithubSetSettings
+        {
+            public Config[] Repositories { get; set; }
+            public class Config
+            {
+                public string RepositoryExternalId { get; set; }
+                public Guid TeamId { get; set; }
+            }
+        }
+
+        [HttpPost, Route("settings/gh")]
+        public async Task<IActionResult> SetGitHubSettings([FromBody] GithubSetSettings config)
+        {
+            var repos = DbContext.Repositories
+                .Where(x => config.Repositories.Select(r => r.RepositoryExternalId).Contains(x.ExternalId)).ToArray();
+
+            foreach (var repo in repos)
+            {
+                repo.TeamId = config.Repositories.First(x => x.RepositoryExternalId == repo.ExternalId).TeamId;
+            }
+
+            await DbContext.SaveChangesAsync();
+            return Ok();
+        }
         #endregion
     }
 }

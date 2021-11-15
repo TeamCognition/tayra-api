@@ -6,11 +6,8 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Invitation : IAuditedEntity
+    public class Invitation : EntityGuidId, IAuditedEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public Guid Code { get; set; }
 
@@ -23,29 +20,29 @@ namespace Tayra.Models.Organizations
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public int? SegmentId { get; set; }
+        public Guid SegmentId { get; set; }
         public Segment Segment { get; set; }
 
-        public int? TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public Team Team { get; set; }
+        
+        public bool IsActive() => 
+            Status != InvitationStatus.Accepted &&
+            Status != InvitationStatus.Cancelled &&
+            Status != InvitationStatus.Expired;
 
-        [NotMapped]
-        public bool IsActive
-        {
-            get
-            {
-                return Status != InvitationStatus.Accepted &&
-                       Status != InvitationStatus.Cancelled &&
-                       Status != InvitationStatus.Expired;
-            }
-        }
-
+        //Test if this works in LINQ queries
+        public static System.Linq.Expressions.Expression<Func<Invitation, bool>> IsActive2() =>
+            i => i.Status != InvitationStatus.Accepted &&
+                 i.Status != InvitationStatus.Cancelled &&
+                 i.Status != InvitationStatus.Expired;
+        
         #region IAuditedEntity
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

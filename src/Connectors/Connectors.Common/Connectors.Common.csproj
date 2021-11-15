@@ -1,14 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Tayra.Connectors.Common</AssemblyName>
     <RootNamespace>Tayra.Connectors.Common</RootNamespace>
   </PropertyGroup>
     
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="RestSharp" Version="106.6.9" />
+    <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="6.1.0" />
+    <PackageReference Include="RestSharp" Version="106.11.7" />
   </ItemGroup>
     
   <ItemGroup>
@@ -17,14 +18,4 @@
     <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\..\..\cog\Cog.DAL\Cog.DAL.csproj" />
   </ItemGroup>
-    
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <Policies>
-          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileFormatDefault" />
-        </Policies>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>

@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cog.Core;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Tayra.Services.Models.Profiles;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Models.Organizations;
@@ -14,31 +17,32 @@ namespace Tayra.Services.TaskConverters
         NORMAL,
         BULK
     }
-    
+
     public abstract class TaskConverterBase
     {
         protected TaskConverterMode Mode;
+        protected IConfiguration Config;
         protected OrganizationDbContext DbContext;
         protected ProfileAssignment CachedProfileAssignment;
-        protected int? IntegrationIdCache;
+        protected Guid? IntegrationIdCache;
         private IntegrationField[] _integrationFields;
-        
+
         public TaskAddOrUpdateDTO Data { get; protected set; }
-        protected IProfilesService ProfilesService;
         protected Profile AssigneeProfile;
         protected bool BasicTaskDataUpdated { get; private set; }
         protected double? EffortScoreDiff;
-        public TaskConverterBase(OrganizationDbContext dbContext, IProfilesService profilesService)
+        public TaskConverterBase(OrganizationDbContext dbContext)
         {
             DbContext = dbContext;
-            ProfilesService = profilesService;
         }
         public void UpdateBasicTaskData()
         {
             BasicTaskDataUpdated = true;
             if (GetAssigneeExternalId() != null)
             {
-                AssigneeProfile = ProfilesService.GetProfileByExternalId(GetAssigneeExternalId(), GetIntegrationType());
+                AssigneeProfile = new ProfilesService().GetProfileByExternalId(DbContext,
+                    GetAssigneeExternalId(),
+                    GetIntegrationType());
             }
             Data = new TaskAddOrUpdateDTO
             {
@@ -47,7 +51,7 @@ namespace Tayra.Services.TaskConverters
                 ExternalUrl = GetIssueUrl(),
                 IntegrationType = GetIntegrationType(),
                 Summary = GetSummary(),
-                JiraStatusCategory = GetJiraStatusCategory(),
+                JiraStatusId = GetJiraStatusId(),
                 TimeSpentInMinutes = GetTimeSpentInMinutes(),
                 TimeOriginalEstimateInMinutes = GetTimeOriginalEstimateInMinutes(),
                 StoryPoints = GetStoryPoints(),
@@ -63,7 +67,7 @@ namespace Tayra.Services.TaskConverters
         }
 
         public virtual bool ShouldBeProcessed() => true;
-        
+
         protected abstract int? GetTimeSpentInMinutes();
 
         public void EnsureBasicDataIsFilled()
@@ -73,7 +77,7 @@ namespace Tayra.Services.TaskConverters
                 UpdateBasicTaskData();
             }
         }
-        
+
         public void FillExtraDataIfCompleted()
         {
             EnsureBasicDataIsFilled();
@@ -114,7 +118,7 @@ namespace Tayra.Services.TaskConverters
         {
             if (tokensService == null)
                 return;
-            
+
             EnsureBasicDataIsFilled();
             if (Data.AssigneeProfileId.HasValue && IsCompleted())
             {
@@ -165,13 +169,13 @@ namespace Tayra.Services.TaskConverters
             return CachedProfileAssignment;
         }
 
-        protected int? GetCurrentSegmentId()
+        protected Guid? GetCurrentSegmentId()
         {
             return GetProfileAssignment()?.SegmentId;
         }
-        
+
         //not used beacuse there is a problem when profile is not assigned to any segment and gets wrong integrationid with no refresh token
-        protected int? GetIntegrationId()
+        protected Guid? GetIntegrationId()
         {
             if (IntegrationIdCache == null)
             {
@@ -184,28 +188,25 @@ namespace Tayra.Services.TaskConverters
             return IntegrationIdCache;
         }
 
-        protected int? GetTeamId()
+        protected Guid? GetTeamId()
         {
             return GetProfileAssignment()?.TeamId;
         }
 
         protected abstract int GetReporterProfileId();
-        protected int? GetAssigneeProfileId()
+        protected Guid? GetAssigneeProfileId()
         {
             return AssigneeProfile?.Id;
         }
         protected abstract string GetAssigneeExternalId();
         protected abstract string[] GetLabels();
-        protected abstract TaskTypes GetTaskType();
-        protected abstract TaskPriorities GetPriority();
+        protected abstract WorkUnitTypes GetTaskType();
+        protected abstract WorkUnitPriorities GetPriority();
         protected abstract string GetExternalId();
         protected abstract string GetExternalProjectId();
         protected abstract IntegrationType GetIntegrationType();
         protected abstract string GetSummary();
-        virtual protected IssueStatusCategories GetJiraStatusCategory()
-        {
-            return IssueStatusCategories.NoCategory;
-        }
+        protected abstract string GetJiraStatusId();
         protected abstract int? GetTimeOriginalEstimateInMinutes();
         protected abstract int? GetStoryPoints();
 
@@ -214,27 +215,27 @@ namespace Tayra.Services.TaskConverters
             if (AssigneeProfile != null && logsService != null)
             {
                 var timestamp = DateTime.UtcNow;
-                if(Mode == TaskConverterMode.TEST)
+                if (Mode == TaskConverterMode.TEST)
                 {
                     Random rnd = new Random();
                     timestamp = DateHelper2.ParseDate(Data.RewardStatusEnteredDateId.Value).AddHours(rnd.Next(23)).AddMinutes(59).AddSeconds(59);
                 }
                 LogEvents eventType = IsCompleted() ? LogEvents.StatusChangeToCompleted : LogEvents.IssueStatusChange;
                 var logData = new LogCreateDTO
-                {
-                    Event = eventType,
-                    Data = new Dictionary<string, string>
+                (
+                    eventType: eventType,
+                    timestamp: timestamp,
+                    description: GetSummary(),
+                    externalUrl: GetIssueUrl(),
+                    data: new Dictionary<string, string>
                     {
-                        { "timestamp", timestamp.ToString() },
-                        { "issueUrl", GetIssueUrl() },
-                        { "issueKey", GetExternalId() },
-                        { "issueSummary", GetSummary() },
-                        { "issueStatus", GetIssueStatusName() },
-                        { "profileUsername", AssigneeProfile.Username },
-                        { "timespent", TayraEffortCalculator.GetEffectiveTimeSpent(Data.TimeSpentInMinutes, Data.AutoTimeSpentInMinutes).ToString() }
+                        {"issueKey", GetExternalId()},
+                        {"issueStatus", GetIssueStatusName()},
+                        {"timespent", TayraEffortCalculator.GetEffectiveTimeSpent(Data.TimeSpentInMinutes, Data.AutoTimeSpentInMinutes).ToString()}
                     },
-                    ProfileId = AssigneeProfile.Id
-                };
+                    profileId: AssigneeProfile.Id
+                );
+
                 if (IsCompleted() && EffortScoreDiff.HasValue)
                 {
                     logData.Data.Add("effortScore", Math.Round(EffortScoreDiff.Value, 2).ToString());

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cog.DAL;
+using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 using Tayra.Common;
@@ -16,17 +18,19 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : this(logger, dataContext, catalogDbContext)
+        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : this(logger, dataContext, catalogDbContext, config)
         {
             HttpContext = httpContext?.HttpContext;
-            Tenant = tenantProvider.GetTenant();
+            TenantInfo = HttpContext.GetMultiTenantContext<Tenant>()?.TenantInfo;
         }
 
-        protected BaseConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext)
+        protected BaseConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config)
         {
             Logger = logger;
             OrganizationContext = dataContext;
             CatalogContext = catalogDbContext;
+            TenantInfo = dataContext.TenantInfo;
+            Config = config;
         }
 
         #endregion
@@ -38,9 +42,10 @@ namespace Tayra.Connectors.Common
         protected ILogger Logger { get; }
 
         protected HttpContext HttpContext { get; }
-        protected TenantDTO Tenant { get; }
+        protected ITenantInfo TenantInfo { get; }
         protected OrganizationDbContext OrganizationContext { get; }
         protected CatalogDbContext CatalogContext { get; }
+        protected IConfiguration Config { get; }
 
         #endregion
 
@@ -72,12 +77,12 @@ namespace Tayra.Connectors.Common
             //}
         }
 
-        protected Integration CreateSegmentIntegration(int segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
+        protected Integration CreateSegmentIntegration(Guid segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
             return CreateProfileIntegration(null, segmentId, installationId, fields, oldIntegration);
         }
 
-        protected Integration CreateProfileIntegration(int? profileId, int segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
+        protected Integration CreateProfileIntegration(Guid? profileId, Guid segmentId, string installationId, Dictionary<string, string> fields, Integration oldIntegration = null)
         {
             if (oldIntegration != null)
             {
@@ -86,8 +91,7 @@ namespace Tayra.Connectors.Common
                 if (oldIntegration.ProfileId == null)
                 {
                     var x = CatalogContext.TenantIntegrations.FirstOrDefault(x =>
-                        x.Type == oldIntegration.Type && x.SegmentId == oldIntegration.SegmentId && x.TenantId ==
-                        TenantUtilities.ConvertShardingKeyToTenantId(Tenant.ShardingKey));
+                        x.Type == oldIntegration.Type && x.SegmentId == oldIntegration.SegmentId && x.TenantId == TenantInfo.Id);
 
                     if (x != null) CatalogContext.TenantIntegrations.Remove(x);
                 }
@@ -124,7 +128,7 @@ namespace Tayra.Connectors.Common
             {
                 CatalogContext.TenantIntegrations.Add(new TenantIntegration
                 {
-                    TenantId = TenantUtilities.ConvertShardingKeyToTenantId(Tenant.ShardingKey),
+                    TenantId = TenantInfo.Id,
                     Type = Type,
                     SegmentId = segmentId,
                     InstallationId = installationId,
@@ -141,7 +145,7 @@ namespace Tayra.Connectors.Common
             }).Entity;
         }
 
-        protected string ReadField(int integrationId, string key, string errorMessage = null)
+        protected string ReadField(Guid integrationId, string key, string errorMessage = null)
         {
             var field = OrganizationContext.IntegrationFields.FirstOrDefault(a => a.IntegrationId == integrationId && a.Key == key);
 

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using Tayra.Connectors.Atlassian.Jira;
 
 namespace Tayra.Services
 {
     public class JiraSettingsUpdateDTO
     {
-        public ICollection<ActiveProject> ActiveProjects { get; set; }
+        public ICollection<SetAppsProjectConfig> ActiveProjects { get; set; }
         public bool PullTasksForNewProjects { get; set; }
     }
 }

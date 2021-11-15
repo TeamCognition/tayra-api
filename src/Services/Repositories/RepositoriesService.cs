@@ -15,6 +15,6 @@ namespace Tayra.Services.Repositories
         #region Public Methods
 
         #endregion
-        
+
     }
 }

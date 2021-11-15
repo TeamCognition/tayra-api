@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using Cog.Core;
 using Newtonsoft.Json;
 
@@ -8,27 +9,25 @@ namespace Tayra.Common
 {
     public partial class TableData
     {
-        protected Header[] Headers { get; }
-        private object[] Records { get; }
+        public Column[] Columns { get; }
 
-        public TableData(object[] records)
+        public object[] Records { get; }
+
+        public TableData(Type dataType, object[] records)
         {
             this.Records = records;
-                
-            Headers = records.FirstOrDefault().GetType().GetProperties().Select(p => 
-                    new Header((Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType).Name, p.Name))
-                .ToArray();
+            Columns = dataType.GetProperties().Select(p => new Column(p)).ToArray();
         }
 
-        protected class Header
+        public class Column
         {
-            private string Type { get; }
-            private string Accessor { get; }
+            public string Type { get; }
+            public string Accessor { get; }
 
-            public Header(string type, string accessor)
+            internal Column(PropertyInfo p)
             {
-                this.Type = type.ToLowerFirst();
-                this.Accessor = accessor.ToLowerFirst();
+                this.Type = (Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType).Name.ToLowerFirst();
+                this.Accessor = p.Name.ToLowerFirst();
             }
         }
     }
@@ -68,7 +67,7 @@ namespace Tayra.Common
             public override string ToString() => $"{Text}\0{Url}";
         }
     }
-    
+
     public partial class TableData
     {
         [JsonConverter(typeof(ToStringJsonConverter))]
@@ -82,6 +81,37 @@ namespace Tayra.Common
             }
 
             public override string ToString() => Minutes.ToString(CultureInfo.InvariantCulture);
+        }
+    }
+
+    public partial class TableData
+    {
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        public class MetricValue
+        {
+            public int MetricTypeId { get; }
+            public float Value { get; }
+            public MetricValue(int metricTypeId, float value)
+            {
+                this.MetricTypeId = metricTypeId;
+                this.Value = value;
+            }
+            public override string ToString() => $"{MetricTypeId}\0{Value}";
+        }
+    }
+
+    public partial class TableData
+    {
+        [JsonConverter(typeof(ToStringJsonConverter))]
+        public class DateInSeconds
+        {
+            public long Seconds { get; }
+            public DateInSeconds(DateTime date)
+            {
+                this.Seconds = ((DateTimeOffset)date).ToUnixTimeSeconds();
+            }
+
+            public override string ToString() => Seconds.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

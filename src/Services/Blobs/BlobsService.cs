@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Auth;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Configuration;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -27,23 +29,23 @@ namespace Tayra.Services
             _imageContainer = _storageClient.GetContainerReference("imgs");
         }
 
-        public Blob UploadToAzure(BlobUploadDTO dto)
+        public Blob UploadToAzure(BlobUpload msg)
         {
             var blob = new Blob
             {
                 Id = Guid.NewGuid(),
-                Filesize = dto.File.Length,
-                Extension = GetExtension(dto.File.FileName),
-                Filename = Path.GetFileNameWithoutExtension(dto.File.FileName),
-                Type = dto.BlobType,
-                Purpose = dto.BlobPurpose
+                Filesize = msg.File.Length,
+                Extension = GetExtension(msg.File.FileName),
+                Filename = Path.GetFileNameWithoutExtension(msg.File.FileName),
+                Type = msg.BlobType,
+                Purpose = msg.BlobPurpose
             };
 
             CloudBlockBlob blockBlob = _imageContainer.GetBlockBlobReference($"{blob.Id.ToString()}.{blob.Extension}");
-            blockBlob.Properties.ContentType = dto.File.ContentType;
-            blockBlob.Properties.ContentDisposition = $"attachment;filename=\"{dto.BlobPurpose}-{blob.Id}\"";
+            blockBlob.Properties.ContentType = msg.File.ContentType;
+            blockBlob.Properties.ContentDisposition = $"attachment;filename=\"{msg.BlobPurpose}-{blob.Id}\"";
 
-            using (Stream stream = dto.File.OpenReadStream())
+            using (Stream stream = msg.File.OpenReadStream())
             {
                 stream.Position = 0;
                 blockBlob.UploadFromStream(stream);

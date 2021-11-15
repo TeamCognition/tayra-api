@@ -7,6 +7,8 @@ using System.Text;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.Extensions.Configuration;
 using MoreLinq;
 using Newtonsoft.Json;
 using Tayra.Common;
@@ -27,8 +29,8 @@ namespace Tayra.Services
 
         #endregion
 
-        IQueryable<Integration> ProfileIntegrationsScope(int profileId, int segmentId) => DbContext.Integrations.Where(x => x.ProfileId == profileId && x.SegmentId == segmentId);
-        IQueryable<Integration> SegmentIntegrationsScope(int segmentId) => DbContext.Integrations.Where(x => x.ProfileId == null && x.SegmentId == segmentId);
+        IQueryable<Integration> ProfileIntegrationsScope(Guid profileId, Guid segmentId) => DbContext.Integrations.Where(x => x.ProfileId == profileId && x.SegmentId == segmentId);
+        IQueryable<Integration> SegmentIntegrationsScope(Guid segmentId) => DbContext.Integrations.Where(x => x.ProfileId == null && x.SegmentId == segmentId);
 
         #region Public Methods
 
@@ -37,16 +39,17 @@ namespace Tayra.Services
         /// </summary>
         /// <param name="externalId"></param>
         /// <returns></returns>
-        public int GetProfileIdByExternalId(string externalId)
+        public Guid GetProfileIdByExternalId(string externalId)
         {
             return DbContext.IntegrationFields.Where(x => x.Value == externalId).Select(x => x.Integration.SegmentId).FirstOrDefault();
         }
 
-        public void DeleteSegmentIntegration(int profileId, int segmentId, IntegrationType integrationType)
+        public void DeleteSegmentIntegration(Guid profileId, Guid segmentId, IntegrationType integrationType)
         {
             var integration = ProfileIntegrationsScope(profileId, segmentId)
                                 .Include(x => x.Fields)
-                                .LastOrDefault(x => x.ProfileId == profileId && x.SegmentId == segmentId && x.Type == integrationType);
+                                .OrderByDescending(x => x.Created)
+                                .FirstOrDefault(x => x.ProfileId == profileId && x.SegmentId == segmentId && x.Type == integrationType);
 
             integration.EnsureNotNull(segmentId, integrationType);
 
@@ -54,7 +57,7 @@ namespace Tayra.Services
             DbContext.Remove(integration);
         }
 
-        public List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(int[] segmentIds, int profileId)
+        public List<IntegrationProfileConfigDTO> GetProfileIntegrationsWithPending(Guid[] segmentIds, Guid profileId)
         {
             var integrations = DbContext.Integrations
                 .Where(x => (x.ProfileId == profileId || x.ProfileId == null) && segmentIds.Contains(x.SegmentId))
@@ -62,12 +65,13 @@ namespace Tayra.Services
                 {
                     Id = x.Id,
                     SegmentId = x.SegmentId,
+                    Status = x.Status,
                     Type = x.Type,
                     ExternalId = x.ProfileId != null ? x.Fields.Where(e => e.Key == Constants.PROFILE_EXTERNAL_ID).Select(e => e.Value).FirstOrDefault() : null
                 })
                 .ToList();
 
-            foreach(var i in integrations.Where(x => x.ExternalId == null).ToArray())
+            foreach (var i in integrations.Where(x => x.ExternalId == null).ToArray())
             {
                 if (integrations.Any(x => x.SegmentId == i.SegmentId && x.Type == i.Type && x.ExternalId != null))
                     integrations.Remove(i);
@@ -78,7 +82,7 @@ namespace Tayra.Services
         public List<IntegrationSegmentViewDTO> GetSegmentIntegrations(string segmentKey)
         {
             var segment = DbContext.Segments.Where(x => x.Key == segmentKey).FirstOrDefault();
-            
+
             segment.EnsureNotNull(segmentKey);
 
             return SegmentIntegrationsScope(segment.Id)
@@ -86,6 +90,7 @@ namespace Tayra.Services
                 {
                     Type = x.Type,
                     Created = x.Created,
+                    Status = x.Status,
                     LastModified = x.LastModified ?? x.Created,
                     MembersCount = DbContext.Integrations.Where(y => y.Type == x.Type && y.SegmentId == segment.Id && x.ProfileId != null).GroupBy(y => y.ProfileId).Count()
                 })
@@ -94,31 +99,28 @@ namespace Tayra.Services
                 .ToList();
         }
 
-        public JiraSettingsViewDTO GetJiraSettingsViewDTO(string webhookServerUrl, string tenantKey, int segmentId)
+        public JiraSettingsViewDTO GetJiraSettingsViewDTO(string webhookServerUrl, string tenantKey, Guid segmentId, IConfiguration config)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
-                                .LastOrDefault(x => x.Type == IntegrationType.ATJ);
+                                .OrderByDescending(x => x.Created)
+                                .FirstOrDefault(x => x.Type == IntegrationType.ATJ);
 
             if (integration == null)
             {
                 throw new ApplicationException("No Jira integration associated with segment " + segmentId);
             }
 
-            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, config);
 
             var allProjects = jiraConnector.GetProjects(integration.Id);
             foreach (var x in allProjects)
             {
                 x.Statuses = jiraConnector.GetIssueStatuses(integration.Id, x.Id);
             }
-
-            var jiraProjects = integration.Fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID);
-            var rewardStatus = integration.Fields.Where(x => x.Key.StartsWith(ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_, StringComparison.InvariantCulture));
-
-            var activeProjects = jiraProjects
-                .Select(p => new ActiveProject(p.Value, rewardStatus.FirstOrDefault(x => x.Key.Contains(p.Value)).Value));
-
+            
+            // var activeProjects = jiraProjects
+            //     .Select(p => new ActiveProject(p.Value, rewardStatus.FirstOrDefault(x => x.Key.Contains(p.Value)).Value));
 
             var atSiteName = integration.Fields.FirstOrDefault(x => x.Key == ATConstants.AT_SITE_NAME)?.Value;
             //TODO: check if data is valid with jira
@@ -127,58 +129,70 @@ namespace Tayra.Services
             {
                 JiraWebhookSettingsUrl = $"https://{atSiteName}.atlassian.net/plugins/servlet/webhooks",
                 WebhookUrl = $"https://{webhookServerUrl}/webhooks/atjissueupdate?tenant={tenantKey}",
-                AllProjects = allProjects,
-                ActiveProjects = activeProjects.ToList()
+                Projects = AppsProjectConfig.From(allProjects, integration.Fields)
             };
         }
 
-        public async void UpdateJiraSettingsWithSaveChanges(int segmentId, string organizationKey, JiraSettingsUpdateDTO dto)
+        public async void UpdateJiraSettingsWithSaveChanges(Guid segmentId, string organizationKey, JiraSettingsUpdateDTO dto, IConfiguration config)
         {
             var integration = SegmentIntegrationsScope(segmentId)
                                 .Include(x => x.Fields)
-                                .LastOrDefault(x => x.Type == IntegrationType.ATJ);
+                                .OrderByDescending(x => x.Created)
+                                .FirstOrDefault(x => x.Type == IntegrationType.ATJ);
 
             if (integration == null)
             {
                 throw new ApplicationException("No Jira integration associated with segment " + segmentId);
             }
 
-            var fields = integration.Fields
-                .Where(x => x.Key == ATConstants.ATJ_PROJECT_ID || x.Key.StartsWith(ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_, StringComparison.InvariantCulture));
-
-            var newProjects = dto.ActiveProjects.ExceptBy(fields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new ActiveProject(x.Value, string.Empty)), e => e.ProjectId).ToArray();
-
-            fields.ToList().ForEach(x => DbContext.Remove(x));
-
-            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
-            var allProjects = jiraConnector.GetProjects(integration.Id);
+            var integrationFields = integration.Fields.Where(x => x.IntegrationId == integration.Id && (
+                x.Key == ATConstants.ATJ_PROJECT_ID ||
+                x.Key.StartsWith(ATConstants.ATJ_KEY_FOR_PROJECT_) ||
+                x.Key.StartsWith(ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_) ||
+                x.Key.StartsWith(ATConstants.PM_WORK_UNIT_STATUS_FOR_PROJECT_)
+                )).ToArray();
             
-            foreach (var s in dto.ActiveProjects)
+            var newProjectIds = dto.ActiveProjects.ExceptBy(integrationFields.Where(x => x.Key == ATConstants.ATJ_PROJECT_ID).Select(x => new SetAppsProjectConfig(x.Value)), e => e.ProjectId).Select(x => x.ProjectId).ToArray();
+            
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, config);
+            var allProjects = jiraConnector.GetProjects(integration.Id);
+
+            //will remove all fields (incl. access token)
+            integrationFields.ForEach(x => DbContext.Remove(x));
+
+            foreach (var activeProject in dto.ActiveProjects)
             {
-                var project = allProjects.FirstOrDefault(x => x.Id == s.ProjectId);
-                var rewardStatus = s.RewardStatusId;
-                if (project == null || rewardStatus == null )
+                var project = allProjects.FirstOrDefault(x => x.Id == activeProject.ProjectId);
+                var rewardStatus = activeProject.RewardStatusId;
+                if (project == null || rewardStatus == null)
                 {
                     throw new ApplicationException("projectId or rewardStatusId is null or invalid"); //use nameOf
                 }
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_PROJECT_ID, Value = project.Id });
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_KEY_FOR_PROJECT_ + project.Id, Value = project.Key });
                 integration.Fields.Add(new IntegrationField { Key = ATConstants.ATJ_REWARD_STATUS_FOR_PROJECT_ + project.Id, Value = rewardStatus });
+
+                foreach (var statusIntegrationField in AtlassianJiraWkUnStatusesConfiguration.From(activeProject).ExportToIntegrationFields())
+                {
+                    integration.Fields.Add(statusIntegrationField);    
+                }
             }
 
+            integration.Status = integration.Fields.Any(x => x.Key == ATConstants.ATJ_PROJECT_ID) ? IntegrationStatuses.Connected : IntegrationStatuses.NeedsConfiguration;
+            
             DbContext.SaveChanges();
-
-            if(dto.PullTasksForNewProjects)
+            
+            if (dto.PullTasksForNewProjects)
             {
                 using (HttpClient client = new HttpClient())
                 {
                     client.BaseAddress = new Uri("https://tayra-sync.azurewebsites.net/");
                     client.DefaultRequestHeaders.Add("x-functions-key", "xLVyFfJSbfPl5S9XEuP5heqms1XxO4XzxCzZ81NYXFLy9ZZWOliKxg==");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    foreach (var p in newProjects)
+                    foreach (var pId in newProjectIds)
                     {
                         //TODO:make real class instead of anonymous object
-                        await client.PostAsync("api/SyncIssuesHttp", new StringContent(JsonConvert.SerializeObject(new { tenantKey = organizationKey, @params = new { jiraProjectId = p.ProjectId } }), Encoding.UTF8, "application/json"));
+                        await client.PostAsync("api/SyncIssuesHttp", new StringContent(JsonConvert.SerializeObject(new { tenantKey = organizationKey, @params = new { jiraProjectId = pId } }), Encoding.UTF8, "application/json"));
                     }
                 }
             }

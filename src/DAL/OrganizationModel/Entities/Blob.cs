@@ -4,10 +4,8 @@ using Tayra.Common;
 
 namespace Tayra.Models.Organizations
 {
-    public class Blob : ITimeStampedEntity, IUserStampedEntity
+    public class Blob : EntityGuidId, ITimeStampedEntity, IUserStampedEntity
     {
-        public Guid Id { get; set; }
-
         public BlobTypes Type { get; set; }
         public BlobPurposes Purpose { get; set; }
         public string Filename { get; set; }
@@ -18,8 +16,8 @@ namespace Tayra.Models.Organizations
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

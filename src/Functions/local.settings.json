@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=syncfuncstorageacc;AccountKey=NXAvxDt9EHXxlG2KnX8Wmgucrt13PxIfJwHeRTlaHj/lyWf3mF15UC3FzEpD8p0DCGaG9ZN6SNGc5SCiJpGbew==",
+    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=syncfuncstorageacc;AccountKey=NXAvxDt9EHXxlG2KnX8Wmgucrt13PxIfJwHeRTlaHj/lyWf3mF15UC3FzEpD8p0DCGaG9ZN6SNGc5SCiJpGbew==",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "DatabaseUser": "sa",
+    "DatabasePassword": "strong!Password",
+    "DatabaseServerPort": "1433",
+    "ConnectionTimeOut": "100",
+    "CatalogServer": "localhost",
+    "CatalogDatabase": "tayra-catalog"
+  },
+}

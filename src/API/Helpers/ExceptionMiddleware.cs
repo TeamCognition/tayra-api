@@ -36,7 +36,7 @@ namespace Tayra.API.Helpers
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            if(exception is PropertyValidationException)
+            if (exception is PropertyValidationException)
             {
                 var x = exception as PropertyValidationException;
                 return context.Response.WriteAsync(JsonConvert.SerializeObject(x.PropertyValidationErrors));
@@ -72,14 +72,14 @@ namespace Tayra.API.Helpers
                 && context.Request.ContentLength <= 1024
                 && (context.Request.ContentType.Contains("json")
                     || context.Request.ContentType.Contains("form-urlencoded")))
-                    
+
             {
                 context.Request.Body.Seek(0L, SeekOrigin.Begin);
                 using (StreamReader streamReader = new StreamReader(context.Request.Body))
                 {
                     e.Data.Add("RequestBody", streamReader.ReadToEnd());
                 }
-                
+
             }
         }
     }

@@ -1,8 +1,10 @@
-﻿namespace Tayra.Services
+﻿using System;
+
+namespace Tayra.Services
 {
     public class QuestCompleteDTO
     {
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public int QuestId { get; set; }
     }
 }

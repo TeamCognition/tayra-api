@@ -3,13 +3,13 @@
   <Import Project="..\..\build\shared.csproj.props" />
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
       <RootNamespace>Tayra.Imager</RootNamespace>
       <AssemblyName>Tayra.Imager</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="1.0.0-rc0002" />
+    <PackageReference Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="1.0.2" />
   </ItemGroup>
 
 </Project>

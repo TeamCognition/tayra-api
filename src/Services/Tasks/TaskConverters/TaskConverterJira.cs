@@ -1,13 +1,11 @@
-
 using System;
 using System.Linq;
 using Cog.Core;
-using Microsoft.Azure.SqlDatabase.ElasticScale.Query;
+using Microsoft.Extensions.Configuration;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Models.Organizations;
-using Task = System.Threading.Tasks.Task;
 
 namespace Tayra.Services.TaskConverters
 {
@@ -15,34 +13,32 @@ namespace Tayra.Services.TaskConverters
     {
         protected JiraWebhookEvent We;
         public TaskConverterJira(OrganizationDbContext dbContext,
-                                 IProfilesService profilesService,
                                  JiraWebhookEvent we,
+                                 IConfiguration config,
                                  TaskConverterMode mode = TaskConverterMode.NORMAL)
-                                 : base(dbContext, profilesService)
-        {
-            Init(we, mode);
-        }
-
-        public TaskConverterJira(OrganizationDbContext dbContext,
-                                 IProfilesService profilesService,
-                                 JiraIssue jiraIssue,
-                                 TaskConverterMode mode = TaskConverterMode.NORMAL)
-                                 : base(dbContext, profilesService)
-        {
-            Init(new JiraWebhookEvent { JiraIssue = jiraIssue }, mode);
-        }
-
-        private void Init(JiraWebhookEvent we, TaskConverterMode mode)
+                                 : base(dbContext)
         {
             We = we;
             Mode = mode;
+            Config = config;
         }
 
+        public TaskConverterJira(OrganizationDbContext dbContext,
+                                 JiraIssue jiraIssue,
+                                 IConfiguration config,
+                                 TaskConverterMode mode = TaskConverterMode.NORMAL)
+                                 : base(dbContext)
+        {
+            We = new JiraWebhookEvent { JiraIssue = jiraIssue };
+            Mode = mode;
+            Config = config;
+        }
+        
         public override bool ShouldBeProcessed()
         {
             if (Mode == TaskConverterMode.NORMAL)
             {
-                var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
+                var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, Config);
                 var issueChangelogs = jiraConnector.GetIssueChangelog(GetRewardStatus().IntegrationId, GetExternalId(), "status");
                 //maybe not needed anymore
                 if (issueChangelogs.Last().Created.ToUniversalTime() != DateTimeExtensions.ConvertUnixEpochTime(We.Timestamp))
@@ -63,11 +59,11 @@ namespace Tayra.Services.TaskConverters
             return IntegrationType.ATJ;
         }
 
-        protected override IssueStatusCategories GetJiraStatusCategory()
+        protected override string GetJiraStatusId()
         {
-            return We.JiraIssue.Fields.Status.Category.Id;
+            return We.JiraIssue.Fields.Status.Id;
         }
-
+        
         protected override string GetExternalProjectId()
         {
             return We.JiraIssue.Fields.Project.Id;
@@ -98,7 +94,7 @@ namespace Tayra.Services.TaskConverters
             return We.JiraIssue.Fields.Labels;
         }
 
-        protected override TaskPriorities GetPriority()
+        protected override WorkUnitPriorities GetPriority()
         {
             return TaskHelpers.GetTaskPriority(We.JiraIssue.Fields.Priority.Id);
         }
@@ -108,7 +104,7 @@ namespace Tayra.Services.TaskConverters
             return 0;
         }
 
-        protected override TaskTypes GetTaskType()
+        protected override WorkUnitTypes GetTaskType()
         {
             return TaskHelpers.GetTaskType(We.JiraIssue.Fields.IssueType.Id);
         }
@@ -133,8 +129,8 @@ namespace Tayra.Services.TaskConverters
             if (Mode == TaskConverterMode.TEST)
                 return (DateHelper2.ToDateId(We.JiraIssue.Fields.StatusCategoryChangeDate), (int?)null);
 
-            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null);
-            int? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
+            var jiraConnector = new AtlassianJiraConnector(null, DbContext, null, Config);
+            Guid? integrationId = IntegrationHelpers.GetIntegrationId(DbContext, GetExternalProjectId(), GetIntegrationType());
             if (!integrationId.HasValue)
             {
                 throw new ApplicationException($"Jira project with Id: {GetExternalProjectId()} is not connected to any tayra segments");
@@ -192,7 +188,7 @@ namespace Tayra.Services.TaskConverters
                 return (
                     rewardStatusEnteredDateId: fakeEnteredRewardStatus.HasValue
                         ? DateHelper2.ToDateId(fakeEnteredRewardStatus.Value)
-                        : (int?) null,
+                        : (int?)null,
                     autoTimeSpentInMinutes: null);
             }
 
@@ -208,7 +204,7 @@ namespace Tayra.Services.TaskConverters
             var days = (enteredRewardStatus.Value - enteredInProgress.Value).Days;
             var hours = (enteredRewardStatus.Value - enteredInProgress.Value).TotalHours;
 
-            return (rewardStatusEnteredDateId: fakeEnteredRewardStatus.HasValue ? DateHelper2.ToDateId(fakeEnteredRewardStatus.Value) : (int?)null, autoTimeSpentInMinutes:(int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes);
+            return (rewardStatusEnteredDateId: fakeEnteredRewardStatus.HasValue ? DateHelper2.ToDateId(fakeEnteredRewardStatus.Value) : (int?)null, autoTimeSpentInMinutes: (int)TimeSpan.FromHours((days * 8) + Math.Min(8, hours)).TotalMinutes);
         }
 
         protected override string GetIssueStatusName()

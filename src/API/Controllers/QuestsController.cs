@@ -39,7 +39,7 @@ namespace Tayra.API.Controllers
             return QuestsService.GetQuestCompletitionsGrid(CurrentUser.ProfileId, gridParams);
         }
 
-        [HttpGet("{questId:int}")]
+        [HttpGet("{questId}")]
         public ActionResult<QuestViewDTO> GetSegmentQuests([FromRoute] int questId)
         {
             return QuestsService.GetQuestViewDTO(CurrentUser.ProfileId, questId);
@@ -54,8 +54,8 @@ namespace Tayra.API.Controllers
             return Ok();
         }
 
-        [HttpPut("update/{questId:int}")]
-        public IActionResult UpdateQuest([FromRoute]int questId, [FromBody] QuestUpdateDTO dto)
+        [HttpPut("update/{questId}")]
+        public IActionResult UpdateQuest([FromRoute] int questId, [FromBody] QuestUpdateDTO dto)
         {
             QuestsService.Update(questId, dto);
             OrganizationContext.SaveChanges();
@@ -91,7 +91,7 @@ namespace Tayra.API.Controllers
         }
 
         [HttpPost("end/{questId}")]
-        public IActionResult EndQuest([FromRoute]int questId)
+        public IActionResult EndQuest([FromRoute] int questId)
         {
             QuestsService.EndQuest(CurrentUser.ProfileId, questId);
             OrganizationContext.SaveChanges();

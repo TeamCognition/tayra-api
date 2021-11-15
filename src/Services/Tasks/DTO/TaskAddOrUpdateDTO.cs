@@ -1,4 +1,5 @@
-﻿using Tayra.Common;
+﻿using System;
+using Tayra.Common;
 using Tayra.Connectors.Atlassian;
 
 namespace Tayra.Services
@@ -17,28 +18,28 @@ namespace Tayra.Services
 
         public string Summary { get; set; }
 
-        public IssueStatusCategories JiraStatusCategory { get; set; }
-        public TaskTypes Type { get; set; }
+        public string JiraStatusId { get; set; }
+        public WorkUnitTypes Type { get; set; }
 
         public int? AutoTimeSpentInMinutes { get; set; }
         public int? TimeSpentInMinutes { get; set; }
         public int? TimeOriginalEstimateInMinutes { get; set; }
 
         public int? StoryPoints { get; set; }
-        public TaskPriorities Priority { get; set; }
+        public WorkUnitPriorities Priority { get; set; }
 
         public double? EffortScore { get; set; }
 
         public string[] Labels { get; set; }
 
         public string AssigneeExternalId { get; set; }
-        public int? AssigneeProfileId { get; set; }
+        public Guid? AssigneeProfileId { get; set; }
 
         public int ReporterProfileId { get; set; }
 
-        public int? TeamId { get; set; }
+        public Guid? TeamId { get; set; }
 
-        public int? SegmentId { get; set; }
+        public Guid? SegmentId { get; set; }
 
         public int? RewardStatusEnteredDateId { get; set; }
     }

@@ -1,19 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
     
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Tayra.Services</RootNamespace>
     <AssemblyName>Tayra.Services</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="morelinq" Version="3.2.0" />
-    <PackageReference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client" Version="2.3.0" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Connectors\Connectors.GitHub\Connectors.GitHub.csproj" />
     <ProjectReference Include="..\DAL\CatalogModel\CatalogModel.csproj" />
     <ProjectReference Include="..\DAL\OrganizationModel\OrganizationModel.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />

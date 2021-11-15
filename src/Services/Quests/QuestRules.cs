@@ -25,7 +25,7 @@ namespace Tayra.Services
         public static bool IsCompletionLimitValid(int? completitionLimit)
         {
             return !completitionLimit.HasValue || completitionLimit > 0;
-                //&& (!itemRewardQuantity.HasValue || (!completitionLimit.HasValue && completitionLimit.Value >= itemRewardQuantity.Value));
+            //&& (!itemRewardQuantity.HasValue || (!completitionLimit.HasValue && completitionLimit.Value >= itemRewardQuantity.Value));
         }
 
         public static bool CanGoalBeCompleted(QuestStatuses status)

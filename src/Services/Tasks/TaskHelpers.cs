@@ -5,37 +5,37 @@ namespace Tayra.Services
 {
     public static class TaskHelpers
     {
-        public static TaskPriorities GetTaskPriority(string jiraIssuePriorityId)
+        public static WorkUnitPriorities GetTaskPriority(string jiraIssuePriorityId)
         {
             switch (jiraIssuePriorityId)
             {
                 case "1":
-                    return TaskPriorities.Highest;
+                    return WorkUnitPriorities.Highest;
 
                 case "2":
-                    return TaskPriorities.High;
+                    return WorkUnitPriorities.High;
 
                 case "3":
-                    return TaskPriorities.Medium;
+                    return WorkUnitPriorities.Medium;
 
                 case "4":
-                    return TaskPriorities.Low;
+                    return WorkUnitPriorities.Low;
 
                 case "5":
-                    return TaskPriorities.Lowest;
+                    return WorkUnitPriorities.Lowest;
 
-                default: return TaskPriorities.Medium;
+                default: return WorkUnitPriorities.Medium;
             }
         }
 
-        public static TaskTypes GetTaskType(string jiraIssueTypeId)
+        public static WorkUnitTypes GetTaskType(string jiraIssueTypeId)
         {
             switch (jiraIssueTypeId)
             {
                 case "10006":
-                    return TaskTypes.Bug;
+                    return WorkUnitTypes.Bug;
 
-                default: return TaskTypes.Task;
+                default: return WorkUnitTypes.Task;
             }
         }
 

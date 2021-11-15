@@ -8,8 +8,6 @@ namespace Tayra.Connectors.Atlassian.Jira
     public static class AtlassianJiraService
     {
         #region Constants
-        public const string APP_ID = "WTORmTncLPxiByA5UzO0DqMHvjwFBKat";
-        public const string APP_SECRET = "B5-DtqBFoexwA0MprGkRVCdp2XgEE6L8dxBoa5d4QLuVpu8CkyHr030WinYMv9wp";
         //NON-PRODUCTION KEYS
         //public const string APP_ID = "nWAFSvAyF83nkGYVtJZxpeutVjZA34gd";
         //public const string APP_SECRET = "bhCvqhHtcnnx-JMaHkpkUXZ2UsQvCnXhVFGOJyvVlFapdiHXQ_ETht0e6LdHzpvq";
@@ -34,11 +32,11 @@ namespace Tayra.Connectors.Atlassian.Jira
 
         #endregion
 
-        public static IRestResponse<TokenResponse> GetAccessToken(string authorizationCode, string redirectUrl)
+        public static IRestResponse<TokenResponse> GetAccessToken(string appId, string appSecret, string authorizationCode, string redirectUrl)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", APP_ID);
-            request.AddParameter("client_secret", APP_SECRET);
+            request.AddParameter("client_id", appId);
+            request.AddParameter("client_secret", appSecret);
             request.AddParameter("code", authorizationCode);
             request.AddParameter("redirect_uri", redirectUrl);
             request.AddParameter("grant_type", "authorization_code");
@@ -62,11 +60,11 @@ namespace Tayra.Connectors.Atlassian.Jira
             return resp;
         }
 
-        public static IRestResponse<TokenResponse> RefreshAccessToken(string refreshToken)
+        public static IRestResponse<TokenResponse> RefreshAccessToken(string appId, string appSecret, string refreshToken)
         {
             var request = new RestRequest(ACCESS_TOKEN_URL, Method.POST);
-            request.AddParameter("client_id", APP_ID);
-            request.AddParameter("client_secret", APP_SECRET);
+            request.AddParameter("client_id", appId);
+            request.AddParameter("client_secret", appSecret);
             request.AddParameter("refresh_token", refreshToken);
             request.AddParameter("grant_type", "refresh_token");
 
@@ -212,7 +210,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             request.AddParameter("application/json", JsonConvert.SerializeObject(new
             {
                 url = "https://tayra-dev.azurewebsites.net/webhooks/atjissueupdate",
-                webhooks = new []
+                webhooks = new[]
                 {
                     new { events = new string[] { "jira:issue_updated" } }
                 }

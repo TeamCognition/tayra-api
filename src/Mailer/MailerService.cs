@@ -1,33 +1,67 @@
-﻿using SendGrid;
-using SendGrid.Helpers.Mail;
+﻿using System;
+using System.IO;
+using RazorLight;
+using SendGrid;
+using Tayra.Connectors.Slack;
+using Tayra.Connectors.Slack.DTOs;
 
 namespace Tayra.Mailer
 {
-    public static class MailerService// : IEmailService
+    public class MailerService : IMailerService
     {
-        private static string noReplyAddress = "noreply@tayra.io";
-
-        //private const string apiKey = "e2b4ffc49b9667cc448decd2841058fa"; mailchimp
-        private const string apiKey = "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";
-
-        public static Response SendEmail(string recipient, ITemplateEmailDTO dto)
+        public object SendSlackMessage(string botToken, string channel, ISlackMessageTemplate template)
         {
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(noReplyAddress);
-            var to = new EmailAddress(recipient);
-            var msg = MailHelper.CreateSingleTemplateEmail(from, to, dto.TemplateId, dto.TemplateData);
-            return client.SendEmailAsync(msg).GetAwaiter().GetResult();
+            var message = BuildSlackMessageFromTemplate(template);
+            return SlackService.SendSlackMessage(botToken, new SlackMessageRequestDto
+            {
+                Attachments = message,
+                Text = template.Subject,
+                Channel = channel
+            });
         }
 
-        public static Response SendEmail(string sender, string recipient, string subject, string body)
+        public Response SendEmail(string recipient, IEmailTemplate emailTemplate)
         {
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(sender, "Tayra Admin");
-            var to = new EmailAddress(recipient, "CTO Haris");
-            var plainTextContent = body;
-            var htmlContent = $"<strong>{body}</strong>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            return client.SendEmailAsync(msg).GetAwaiter().GetResult();
+           return EmailService.SendEmail(recipient, emailTemplate.Subject,
+               BuildEmailFromTemplate(emailTemplate, emailTemplate.EmailTemplateFileName));
+        }
+
+        public Response SendEmail(string recipient, string subject, string message)
+        {
+            return EmailService.SendEmail(recipient, subject, message);
+        }
+
+        public Response SendEmailWithAttachment(string recipient, IEmailTemplate emailTemplate)
+        {
+            return EmailService.SendEmailWithAttachment(recipient, emailTemplate.Subject,
+                BuildEmailFromTemplate(emailTemplate, emailTemplate.EmailTemplateFileName));
+        }
+        
+        private static string BuildEmailFromTemplate<T>(T model,string templatePath) where T: IEmailTemplate
+        {
+            var rootPath = AppContext.BaseDirectory;
+            
+            // var folderPathh = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName,
+            //     $@"Mailer{Path.DirectorySeparatorChar}TemplatesFiles{Path.DirectorySeparatorChar}","EmailTemplates");
+            var engine = new RazorLightEngineBuilder()
+                .UseFileSystemProject(rootPath)
+                .UseMemoryCachingProvider()
+                .Build();
+            
+            return engine.CompileRenderAsync(templatePath, model).GetAwaiter().GetResult();
+        }
+
+        private static string BuildSlackMessageFromTemplate<T>(T model) where T: ISlackMessageTemplate
+        {
+            var rootPath = AppContext.BaseDirectory;
+            
+            var templateJson = File.ReadAllText(Path.Combine(rootPath, model.SlackTemplateFileName));
+            string template = $"[{templateJson}]";
+            var engine = new RazorLightEngineBuilder()
+                .UseEmbeddedResourcesProject(typeof(T))
+                .UseMemoryCachingProvider()
+                .Build();
+            return engine.CompileRenderStringAsync(model.TemplateKey, template, model).GetAwaiter().GetResult();
         }
     }
 }

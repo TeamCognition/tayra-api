@@ -12,5 +12,7 @@ namespace Tayra.Common
         [Description("Github")]
         GH = 2,
 
+        [Description("Slack")]
+        SL = 3,
     }
 }

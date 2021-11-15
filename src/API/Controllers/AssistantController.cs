@@ -26,25 +26,25 @@ namespace Tayra.API.Controllers
         #region Action Methods
 
         [HttpGet("overview")]
-        public ActionResult<AssistantOverviewDTO> GetActionPointOverview([FromQuery]int? segmentId)
+        public ActionResult<AssistantOverviewDTO> GetActionPointOverview([FromQuery] Guid? segmentId)
         {
             return Ok(AssistantService.GetActionPointOverview(segmentId));
         }
-        
-        [HttpPost("{profileId:int}/searchMemberActionPoints")]
-        public ActionResult<GridData<AssistantMemberGridDTO>> GetMemberActionPointGrid([FromRoute] int profileId, GridParams gridParams)
+
+        [HttpPost("{profileId}/searchMemberActionPoints")]
+        public ActionResult<GridData<AssistantMemberGridDTO>> GetMemberActionPointGrid([FromRoute] Guid profileId, GridParams gridParams)
         {
             return AssistantService.GetMemberActionPointGrid(gridParams, profileId);
         }
 
-        [HttpPost("{segmentId:int}/searchSegmentActionPoints")]
-        public ActionResult<GridData<AssistantSegmentGridDTO>> GetSegmentActionPointGrid([FromRoute] int segmentId, GridParams gridParams)
+        [HttpPost("{segmentId}/searchSegmentActionPoints")]
+        public ActionResult<GridData<AssistantSegmentGridDTO>> GetSegmentActionPointGrid([FromRoute] Guid segmentId, GridParams gridParams)
         {
             return AssistantService.GetSegmentActionPointGrid(gridParams, segmentId);
         }
 
-        [HttpPut("{segmentId:int}/concludeActionPoints")]
-        public IActionResult ConcludeActionPoints([FromRoute]int segmentId, [FromQuery] int[] apIds, [FromQuery] ActionPointTypes? apType)
+        [HttpPut("{segmentId}/concludeActionPoints")]
+        public IActionResult ConcludeActionPoints([FromRoute] Guid segmentId, [FromQuery] Guid[] apIds, [FromQuery] ActionPointTypes? apType)
         {
             AssistantService.ConcludeActionPoints(segmentId, apIds, apType);
             OrganizationContext.SaveChanges();

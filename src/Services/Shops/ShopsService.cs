@@ -25,84 +25,105 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public ShopViewDTO GetShopViewDTO(int profileId, ProfileRoles role)
+        public ShopViewDTO GetShopViewDTO(Guid profileId, ProfileRoles role)
         {
             var shopDto = (from s in DbContext.Shops
-                           //where s.Id == shopId
+                               //where s.Id == shopId
                            select new ShopViewDTO
                            {
                                Name = s.Name,
                                IsClosed = s.ClosedAt.HasValue,
-                               Created = s.Created,
-                               TotalRequests = DbContext.ShopPurchases.Count(x => x.Status == ShopPurchaseStatuses.PendingApproval || x.Status == ShopPurchaseStatuses.PendingApproval)
+                               Created = s.Created
                            }).FirstOrDefault();
 
             shopDto.EnsureNotNull();
+
+            shopDto.TotalRequests = DbContext.ShopPurchases.Count(x =>
+                x.Status == ShopPurchaseStatuses.PendingApproval || x.Status == ShopPurchaseStatuses.PendingApproval);
+            
             //some of this code can be shared when reports become more generic
             if (role == ProfileRoles.Member)
             {
-                var stats = (from r in DbContext.ProfileReportsDaily
-                            where r.ProfileId == profileId
-                            group r by 1 into total
-                            let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
-                            select new []
-                            {
-                                new ShopViewDTO.ShopStatisticDTO
-                                {
-                                    Last30 = last30.Sum(x => x.ItemsBoughtChange),
-                                    Total = total.Sum(x => x.ItemsBoughtChange)
-                                },
-                                new ShopViewDTO.ShopStatisticDTO
-                                {
-                                    Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
-                                    Total = total.Sum(x => x.CompanyTokensSpentChange)
-                                }
-                            }).FirstOrDefault();
+                // var stats = (from r in DbContext.ProfileReportsDaily
+                //              where r.ProfileId == profileId
+                //              group r by 1 into total
+                //              let last30 = total.Where(x => x.DateId >= DateHelper2.ToDateId(DateTime.UtcNow.AddDays(-30)))
+                //              select new[]
+                //              {
+                //                 new ShopViewDTO.ShopStatisticDTO
+                //                 {
+                //                     Last30 = last30.Sum(x => x.ItemsBoughtChange),
+                //                     Total = total.Sum(x => x.ItemsBoughtChange)
+                //                 },
+                //                 new ShopViewDTO.ShopStatisticDTO
+                //                 {
+                //                     Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                //                     Total = total.Sum(x => x.CompanyTokensSpentChange)
+                //                 }
+                //             }).FirstOrDefault();
 
-                if (stats != null)
-                {
-                    shopDto.ItemStats = stats[0];
-                    shopDto.TokenStats = stats[1];
-                }
+                // if (stats != null)
+                // {
+                    shopDto.ItemStats =  new ShopViewDTO.ShopStatisticDTO
+                    {
+                        Last30 = -1,
+                        Total = -1
+                    };
+                    shopDto.TokenStats = new ShopViewDTO.ShopStatisticDTO
+                    {
+                        Last30 = -1,
+                        Total = -1
+                    };
+                // }
             }
             else
             {
-                IQueryable<SegmentReportDaily> rQuery = DbContext.SegmentReportsDaily;
+                // IQueryable<SegmentReportDaily> rQuery = DbContext.SegmentReportsDaily;
+                //
+                // if (role == ProfileRoles.Manager)
+                // {
+                //     var managersSegmentsIds = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId && x.TeamId == null).Select(x => x.SegmentId).ToArray();
+                //     rQuery = rQuery.Where(x => managersSegmentsIds.Contains(x.SegmentId));
+                // }
 
-                if (role == ProfileRoles.Manager)
+                // var stats = (from r in rQuery
+                //              group r by 1 into total
+                //              let last30 = total.Where(x => x.DateId >= 100)
+                //              select new[]
+                //              {
+                //                 new ShopViewDTO.ShopStatisticDTO
+                //                 {
+                //                     Last30 = last30.Sum(x => x.ItemsBoughtChange),
+                //                     Total = total.Sum(x => x.ItemsBoughtChange)
+                //                 },
+                //                 new ShopViewDTO.ShopStatisticDTO
+                //                 {
+                //                     Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
+                //                     Total = total.Sum(x => x.CompanyTokensSpentChange)
+                //                 }
+                //             }).FirstOrDefault();
+                //
+                // if (stats != null)
+                // {
+                //     shopDto.ItemStats = stats[0];
+                //     shopDto.TokenStats = stats[1];
+                // }
+                shopDto.ItemStats =  new ShopViewDTO.ShopStatisticDTO
                 {
-                    var managersSegmentsIds = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId && x.TeamId == null).Select(x => x.SegmentId).ToArray();
-                    rQuery = rQuery.Where(x => managersSegmentsIds.Contains(x.SegmentId));
-                }
-
-                var stats = (from r in rQuery
-                            group r by 1 into total
-                            let last30 = total.Where(x => x.DateId >= 100)
-                            select new []
-                            {
-                                new ShopViewDTO.ShopStatisticDTO
-                                {
-                                    Last30 = last30.Sum(x => x.ItemsBoughtChange),
-                                    Total = total.Sum(x => x.ItemsBoughtChange)
-                                },
-                                new ShopViewDTO.ShopStatisticDTO
-                                {
-                                    Last30 = last30.Sum(x => x.CompanyTokensSpentChange),
-                                    Total = total.Sum(x => x.CompanyTokensSpentChange)
-                                }
-                            }).FirstOrDefault();
-
-                if (stats != null)
+                    Last30 = -1,
+                    Total = -1
+                };
+                shopDto.TokenStats = new ShopViewDTO.ShopStatisticDTO
                 {
-                    shopDto.ItemStats = stats[0];
-                    shopDto.TokenStats = stats[1];
-                }
+                    Last30 = -1,
+                    Total = -1
+                };
             }
 
             return shopDto;
         }
 
-        public GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(int profileId, ProfileRoles role, ShopPurchasesGridParams gridParams)
+        public GridData<ShopPurchasesGridDTO> GetShopPurchasesGridDTO(Guid profileId, ProfileRoles role, ShopPurchasesGridParams gridParams)
         {
             var scope = role == ProfileRoles.Member
                 ? DbContext.ShopPurchases.Where(x => x.ProfileId == profileId)
@@ -141,7 +162,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void UpdateShopPurchaseStatus(int profileId, int shopPurchaseId, ShopPurchaseStatuses newStatus)
+        public void UpdateShopPurchaseStatus(Guid profileId, Guid shopPurchaseId, ShopPurchaseStatuses newStatus)
         {
             var shopPurchase = DbContext.ShopPurchases.Include(x => x.Item).FirstOrDefault(x => x.Id == shopPurchaseId);
 
@@ -194,9 +215,7 @@ namespace Tayra.Services
         {
             return new ShopTokenAverageEarningsDTO
             {
-                AverageEarnings = DbContext.SegmentReportsWeekly.Select(x => x.CompanyTokensEarnedChange)
-                    .DefaultIfEmpty(0)
-                    .Average()
+                AverageEarnings = 0
             };
         }
 

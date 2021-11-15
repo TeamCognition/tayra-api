@@ -5,19 +5,19 @@ namespace Tayra.Connectors.Common
 {
     public class OAuthState
     {
-        public string TenantKey { get; }
-        public int ProfileId { get; }
-        public int SegmentId { get; }
+        public string TenantIdentifier { get; }
+        public Guid ProfileId { get; }
+        public Guid SegmentId { get; }
         public bool IsSegmentAuth { get; }
         public string ReturnPath { get; }
 
-        public OAuthState(string tenantKey, int profileId, int segmentId, bool isSegmentAuth, string returnPath)
+        public OAuthState(string tenantIdentifier, Guid profileId, Guid segmentId, bool isSegmentAuth, string returnPath)
         {
             ProfileId = profileId;
             SegmentId = segmentId;
             IsSegmentAuth = isSegmentAuth;
             ReturnPath = returnPath;
-            TenantKey = tenantKey;
+            TenantIdentifier = tenantIdentifier;
         }
 
         public OAuthState(string oAuthState)
@@ -25,10 +25,10 @@ namespace Tayra.Connectors.Common
             try
             {
                 var stateProps = SplitProps(Cipher.Decrypt(oAuthState.Base64UrlDecode()));
-                ProfileId = int.Parse(stateProps[0]);
-                SegmentId = int.Parse(stateProps[1]);
+                ProfileId = Guid.Parse(stateProps[0]);
+                SegmentId = Guid.Parse(stateProps[1]);
                 IsSegmentAuth = bool.Parse(stateProps[2]);
-                TenantKey = stateProps[3];
+                TenantIdentifier = stateProps[3];
                 ReturnPath = stateProps[4];
             }
             catch (Exception)
@@ -43,7 +43,7 @@ namespace Tayra.Connectors.Common
 
 
         private const char _separator = '|';
-        private string JoinProps() => string.Join(_separator, ProfileId, SegmentId, IsSegmentAuth, TenantKey, ReturnPath);
+        private string JoinProps() => string.Join(_separator, ProfileId, SegmentId, IsSegmentAuth, TenantIdentifier, ReturnPath);
         private string[] SplitProps(string joined) => joined.Split(_separator);
     }
 }

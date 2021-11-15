@@ -1,7 +1,7 @@
 ﻿namespace Cog.Core
 {
     /// <summary>
-    /// Set of frequently used claim types.
+    ///     Set of frequently used claim types.
     /// </summary>
     public static class CogClaimTypes
     {
@@ -10,6 +10,6 @@
 
         public const string EmailAddress = "http://Cog/Claims/EmailAddress";
 
-        public const string CurrentTenantKey = "http://Cog/Claims/CurrentTenantKey";
+        public const string CurrentTenantIdentifier = "http://Cog/Claims/CurrentTenantKey";
     }
 }

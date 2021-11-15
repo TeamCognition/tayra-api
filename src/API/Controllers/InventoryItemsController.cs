@@ -21,8 +21,8 @@ namespace Tayra.API.Controllers
 
         #region Action Methods
 
-        [HttpGet("{inventoryItemId:int}")]
-        public ActionResult<InventoryItemViewDTO> GetInventoryItem([FromRoute]int inventoryItemId)
+        [HttpGet("{inventoryItemId}")]
+        public ActionResult<InventoryItemViewDTO> GetInventoryItem([FromRoute] Guid inventoryItemId)
         {
             return Ok(InventoriesService.GetInventoryItemViewDTO(inventoryItemId));
         }
@@ -72,7 +72,7 @@ namespace Tayra.API.Controllers
         [HttpPost("give")]
         public IActionResult GiveInventoryItem([FromBody] InventoryGiveDTO dto)
         {
-            InventoriesService.Give(CurrentUser.ProfileId,dto);
+            InventoriesService.Give(CurrentUser.ProfileId, dto);
             OrganizationContext.SaveChanges();
 
             return Ok();

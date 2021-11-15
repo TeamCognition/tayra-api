@@ -25,12 +25,11 @@ namespace Tayra.Services
                     .ThenInclude(x => x.Item)
                 .Include(x => x.TokenTxns)
                     .ThenInclude(x => x.TokenTransaction)
-                    .ThenInclude(x => x.Token)
                 .Where(x => x.RewardClaimedAt == null);
 
         #region Public Methods
 
-        public GridData<ClaimBundleViewGridDTO> GetClaimBundlesGrid(int profileId, ClaimBundleViewGridParams gridParams)
+        public GridData<ClaimBundleViewGridDTO> GetClaimBundlesGrid(Guid profileId, ClaimBundleViewGridParams gridParams)
         {
             var query = from c in DbContext.ClaimBundles
                         where c.ProfileId == profileId
@@ -47,7 +46,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public ClaimBundle CreateClaimBundle(int profileId, ClaimBundleTypes type)
+        public ClaimBundle CreateClaimBundle(Guid profileId, ClaimBundleTypes type)
         {
             var claimBundle = new ClaimBundle
             {
@@ -59,7 +58,7 @@ namespace Tayra.Services
             return claimBundle;
         }
 
-        public ClaimBundleClaimRewardsDTO ShowAndClaimRewards(int profileId, int claimBundleId, bool claimRewards)
+        public ClaimBundleClaimRewardsDTO ShowAndClaimRewards(Guid profileId, Guid claimBundleId, bool claimRewards)
         {
             var claimBundle = ClaimBundleCommonScope()
                 .FirstOrDefault(x => x.Id == claimBundleId);
@@ -74,7 +73,7 @@ namespace Tayra.Services
             return MapClaimRewardsDTO(claimBundle);
         }
 
-        public ClaimBundleClaimRewardsDTO ShowAndClaimRewards(int profileId, ClaimBundleTypes type, bool claimRewards)
+        public ClaimBundleClaimRewardsDTO ShowAndClaimRewards(Guid profileId, ClaimBundleTypes type, bool claimRewards)
         { //TODO: merge claimRewards and this method
             var claimBundles = ClaimBundleCommonScope()
                 .Where(x => x.ProfileId == profileId)
@@ -93,7 +92,7 @@ namespace Tayra.Services
 
         #region Private Methods
 
-        private static void Claim(int profileId, DateTime claimedAt, params ClaimBundle[] claimBundles)
+        private static void Claim(Guid profileId, DateTime claimedAt, params ClaimBundle[] claimBundles)
         {
             foreach (var cBundle in claimBundles)
             {
@@ -130,15 +129,15 @@ namespace Tayra.Services
 
                 ClaimedTokens = claimBundles
                     .SelectMany(x => x.TokenTxns)
-                    .GroupBy(x => x.TokenTransaction.Token.Type)
+                    .GroupBy(x => x.TokenTransaction.TokenType)
                     .Select(x => new ClaimBundleClaimRewardsDTO.Token
-                {
-                    Type = x.Key,
-                    Value = x.Sum(s => s.TokenTransaction.Value)
-                }).ToList()
+                    {
+                        Type = x.Key,
+                        Value = x.Sum(s => s.TokenTransaction.Value)
+                    }).ToList()
             };
         }
-            
+
 
         #endregion
     }

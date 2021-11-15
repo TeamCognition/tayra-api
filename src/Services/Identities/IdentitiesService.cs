@@ -3,8 +3,10 @@ using System.Linq;
 using Cog.Core;
 using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
+using Tayra.Services.Models.Profiles;
 using Tayra.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.Templates.JoinTayra;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
 
@@ -13,12 +15,13 @@ namespace Tayra.Services
     public class IdentitiesService : BaseService<OrganizationDbContext>, IIdentitiesService
     {
         protected CatalogDbContext CatalogDb { get; set; }
-
+        private IMailerService MailerService { get; }
         #region Constructor
 
-        public IdentitiesService(CatalogDbContext catalogDb, OrganizationDbContext dbContext) : base(dbContext)
+        public IdentitiesService(CatalogDbContext catalogDb, OrganizationDbContext dbContext, IMailerService mailerService) : base(dbContext)
         {
             CatalogDb = catalogDb;
+            MailerService = mailerService;
         }
 
         #endregion
@@ -51,11 +54,11 @@ namespace Tayra.Services
                 IsPrimary = true,
                 Identity = identity
             });
-            
+
             CatalogDb.Add(new TenantIdentity
             {
                 Identity = identity,
-                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(DbContext.CurrentTenantId)
+                TenantId = DbContext.TenantInfo.Id
             });
 
             //get identity Id
@@ -66,6 +69,7 @@ namespace Tayra.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Username = dto.Profile.Username,
+                EmailAddress = dto.Email,
                 Role = dto.Profile.Role,
                 Avatar = dto.Profile.Avatar,
                 IdentityId = identity.Id
@@ -91,18 +95,23 @@ namespace Tayra.Services
 
         public void InvitationJoinWithSaveChanges(IdentityJoinDTO dto)
         {
-            var invitation = DbContext.Invitations.FirstOrDefault(x => x.Code == Guid.Parse(dto.InvitationCode) && x.IsActive);
+            var invitation = DbContext.Invitations.FirstOrDefault(x => x.Code == Guid.Parse(dto.InvitationCode));
 
             invitation.EnsureNotNull(dto.InvitationCode);
 
+            if (!invitation.IsActive())
+            {
+                throw new ApplicationException("Invitation already accepted.");
+            }
+            
             ValidateInvitationWithSaveChanges(invitation);
 
-            if (!invitation.IsActive)
+            if (!invitation.IsActive())
             {
                 throw new ApplicationException($"The invitation expired or is not valid anymore");
             }
-
-            if (!ProfilesService.IsUsernameUnique(DbContext, dto.Username))
+            
+            if (!new ProfilesService().IsUsernameUniqueNonAsync(DbContext, dto.Username))
             {
                 throw new ApplicationException($"Username already exists");
             }
@@ -133,7 +142,7 @@ namespace Tayra.Services
             CatalogDb.Add(new TenantIdentity
             {
                 Identity = identity,
-                TenantId = TenantUtilities.ConvertShardingKeyToTenantId(DbContext.CurrentTenantId)
+                TenantId = DbContext.TenantInfo.Id
             });
 
             invitation.Status = InvitationStatus.Accepted;
@@ -146,6 +155,7 @@ namespace Tayra.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Username = dto.Username,
+                EmailAddress = invitation.EmailAddress,
                 JobPosition = dto.JobPosition,
                 Role = invitation.Role,
                 IdentityId = identity.Id,
@@ -161,47 +171,39 @@ namespace Tayra.Services
 
             if (profile.Role != ProfileRoles.Admin)
             {
-                if (invitation.SegmentId.HasValue)
+                DbContext.Add(new ProfileAssignment
                 {
-                    DbContext.Add(new ProfileAssignment
-                    {
-                        Profile = profile,
-                        SegmentId = invitation.SegmentId.Value,
-                        TeamId = invitation.TeamId,
-                    });
-                }
+                    Profile = profile,
+                    SegmentId = invitation.SegmentId,
+                    TeamId = invitation.TeamId,
+                });
             }
 
             DbContext.SaveChanges();
         }
 
-        public void CreateInvitation(int profileId, string host, IdentityInviteDTO dto)
+        public void CreateInvitation(string host, IdentityInviteDTO dto)
         {
-            if(dto.TeamId.HasValue && !dto.SegmentId.HasValue)
-            {
-                throw new CogSecurityException("If teamId is sent, you must also send segmentId");
-            }
-
             if (!IsEmailAddressUnique(dto.EmailAddress))
             {
                 throw new ApplicationException("Email address already used");
             }
 
-            if (dto.SegmentId.HasValue && !DbContext.Segments.Any(x => x.Id == dto.SegmentId))
+            if (!DbContext.Segments.Any(x => x.Id == dto.SegmentId))
             {
                 throw new EntityNotFoundException<Segment>(dto.SegmentId);
             }
 
-            if (dto.TeamId.HasValue && !DbContext.Teams.Any(x => x.Id == dto.TeamId))
+            if (!DbContext.Teams.Any(x => x.Id == dto.TeamId))
             {
                 throw new EntityNotFoundException<Team>(dto.TeamId);
             }
-            
+
             if (DbContext.Invitations.Any(x => x.EmailAddress == dto.EmailAddress))
             {
                 throw new ApplicationException("Active invitation with this email address already exists");
             }
-            
+
             var invitation = new Invitation
             {
                 Code = Guid.NewGuid(),
@@ -217,7 +219,8 @@ namespace Tayra.Services
             //invitation.TeamId = invitation.TeamId ?? DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
             //invitation.TeamId ??= DbContext.Teams.Where(x => x.SegmentId == invitation.SegmentId && x.Key == null).Select(x => x.Id).FirstOrDefault();
 
-            var resp = MailerService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            //var resp = EmailService.SendEmail(dto.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            var resp = MailerService.SendEmail(dto.EmailAddress, new TemplateModelJoinTayra("Join Tayra", dto.FirstName, host, invitation.Code.ToString(), dto.Role));
             if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 throw new ApplicationException(dto.EmailAddress + " email not sent");
@@ -226,18 +229,18 @@ namespace Tayra.Services
             DbContext.Add(invitation);
         }
 
-        public void ResendInvitation(string host, int invitationId)
+        public void ResendInvitation(string host, Guid invitationId)
         {
             var invitation = DbContext.Invitations.FirstOrDefault(x => x.Id == invitationId);
-            
+
             invitation.EnsureNotNull(invitationId);
 
-            if (!invitation.IsActive)
+            if (!invitation.IsActive())
             {
                 throw new ApplicationException("Invitation already accepted.");
             }
 
-            var resp = MailerService.SendEmail(invitation.EmailAddress, new EmailInviteDTO(host, invitation.Code.ToString()));
+            var resp = MailerService.SendEmail(invitation.EmailAddress, new TemplateModelJoinTayra("Join Tayra", invitation.FirstName, host, invitation.Code.ToString(), invitation.Role));
             if (resp.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 throw new ApplicationException(invitation.EmailAddress + " email not sent");
@@ -245,42 +248,48 @@ namespace Tayra.Services
 
             invitation.Status = InvitationStatus.Sent;
             invitation.LastModified = DateTime.Now;
-            
+
             CatalogDb.SaveChanges();
         }
 
-        public IdentityInvitationViewDTO GetInvitation(string InvitationCode)
+        public IdentityInvitationViewDTO GetInvitation(string invitationCode)
         {
-            var invitation = DbContext.Invitations.Where(x => x.Code == Guid.Parse(InvitationCode) && x.IsActive)
-                        .Select(x => new IdentityInvitationViewDTO
-                        {
-                            EmailAddress = x.EmailAddress,
-                            Role = x.Role,
-                            FirstName = x.FirstName,
-                            LastName = x.LastName,
-                            Status = x.Status
-                        }).FirstOrDefault();
+            var invitation = DbContext.Invitations.FirstOrDefault(x => x.Code == Guid.Parse(invitationCode));
 
-            invitation.EnsureNotNull(InvitationCode);
+            if (!invitation.IsActive())
+            {
+                throw new ApplicationException("invitation not active");
+            }
 
+            var invDto = new IdentityInvitationViewDTO
+            {
+                EmailAddress = invitation.EmailAddress,
+                Role = invitation.Role,
+                FirstName = invitation.FirstName,
+                LastName = invitation.LastName,
+                Status = invitation.Status
+            };
+
+            invitation.EnsureNotNull(invitationCode);
+            
             if (invitation.Status == InvitationStatus.Sent)
             {
                 invitation.Status = InvitationStatus.Viewed;
             }
 
-            return invitation;
+            return invDto;
         }
 
-        public void DeleteInvitation(int invitationId)
+        public void DeleteInvitation(Guid invitationId)
         {
-            var invitation = DbContext.Invitations.Where(x => x.Id == invitationId).FirstOrDefault();
+            var invitation = DbContext.Invitations.FirstOrDefault(x => x.Id == invitationId);
 
             invitation.EnsureNotNull(invitationId);
 
             DbContext.Remove(invitation);
         }
 
-        public GridData<IdentityManageGridDTO> GetIdentityManageGridData(int profileId, ProfileRoles role, IdentityManageGridParams gridParams)
+        public GridData<IdentityManageGridDTO> GetIdentityManageGridData(Guid profileId, ProfileRoles role, IdentityManageGridParams gridParams)
         {
             IQueryable<Profile> scope = DbContext.Profiles.Where(x => x.Id != profileId);
 
@@ -307,40 +316,40 @@ namespace Tayra.Services
                                                                 Type = x.Type
                                                             }).ToArray(),
                                                           Segments = p.Assignments.Select(x => new IdentityManageGridDTO.SegmentDataDTO
-                                                            {
-                                                                SegmentKey = x.Segment.Key,
-                                                                Name = x.Segment.Name,
-                                                            }).ToArray(),
-                                                          Teams = p.Assignments.Select(x => new IdentityManageGridDTO.TeamDataDTO 
-                                                            {  
-                                                                TeamKey = x.Team.Key,
-                                                                Name = x.Team.Name,
-                                                            }).ToArray()  
+                                                          {
+                                                              SegmentKey = x.Segment.Key,
+                                                              Name = x.Segment.Name,
+                                                          }).ToArray(),
+                                                          Teams = p.Assignments.Select(x => new IdentityManageGridDTO.TeamDataDTO
+                                                          {
+                                                              TeamKey = x.Team.Key,
+                                                              Name = x.Team.Name,
+                                                          }).ToArray()
                                                       };
 
-            GridData < IdentityManageGridDTO > gridData = query.GetGridData(gridParams);
+            GridData<IdentityManageGridDTO> gridData = query.GetGridData(gridParams);
             return gridData;
         }
 
-        public IdentityManageAssignsDTO GetIdentityManageAssignsData(int[] segmentIds, int memberProfileId)
+        public IdentityManageAssignsDTO GetIdentityManageAssignsData(Guid[] segmentIds, Guid memberProfileId)
         {
             var memberTeamIds = (from a in DbContext.ProfileAssignments
-                               where a.ProfileId == memberProfileId
-                               select new IdentityManageAssignsDTO.CurrentAssignDTO
-                               {
-                                   SegmentId = a.SegmentId,
-                                   SegmentName = a.Segment.Name,
-                                   TeamId = a.TeamId,
-                                   TeamName = a.Team.Name
-                               }).ToArray();
+                                 where a.ProfileId == memberProfileId
+                                 select new IdentityManageAssignsDTO.CurrentAssignDTO
+                                 {
+                                     SegmentId = a.SegmentId,
+                                     SegmentName = a.Segment.Name,
+                                     TeamId = a.TeamId,
+                                     TeamName = a.Team.Name
+                                 }).ToArray();
 
             var allSegments = (from s in DbContext.Segments
-                                where segmentIds.Contains(s.Id)
-                                select new IdentityManageAssignsDTO.AvailableAssignDTO
-                                {
-                                    SegmentId = s.Id,
-                                    Teams = s.Teams.Where(x => !memberTeamIds.Select(c => c.TeamId).Contains(x.Id) && x.Key != null).Select(x => new IdentityManageAssignsDTO.AvailableAssignDTO.TeamDTO{ TeamId = x.Id, Name = x.Name }).ToArray()
-                                }).ToList();
+                               where segmentIds.Contains(s.Id)
+                               select new IdentityManageAssignsDTO.AvailableAssignDTO
+                               {
+                                   SegmentId = s.Id,
+                                   Teams = s.Teams.Where(x => !memberTeamIds.Select(c => c.TeamId).Contains(x.Id)).Select(x => new IdentityManageAssignsDTO.AvailableAssignDTO.TeamDTO { TeamId = x.Id, Name = x.Name }).ToArray()
+                               }).ToList();
 
             return new IdentityManageAssignsDTO
             {
@@ -352,7 +361,9 @@ namespace Tayra.Services
         public GridData<IdentityInvitationGridDTO> GetInvitationsGridData(IdentityInvitationGridParams gridParams)
         {
             IQueryable<IdentityInvitationGridDTO> query = from i in DbContext.Invitations
-                                                          where i.IsActive == gridParams.ActiveStatusesOnly
+                                                          where (i.Status != InvitationStatus.Accepted && //isActive
+                                                                 i.Status != InvitationStatus.Cancelled &&
+                                                                 i.Status != InvitationStatus.Expired) == gridParams.ActiveStatusesOnly
                                                           select new IdentityInvitationGridDTO
                                                           {
                                                               InvitationId = i.Id,
@@ -367,7 +378,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(int profileId, IdentityEmailsGridParams gridParams)
+        public GridData<IdentityEmailsGridDTO> GetIdentityEmailsGridData(Guid profileId, IdentityEmailsGridParams gridParams)
         {
             var identityId = DbContext.Profiles
                 .Where(x => x.Id == profileId)
@@ -389,20 +400,20 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void ChangePasswordWithSaveChange(int identityId, IdentityChangePasswordDTO dto)
+        public void ChangePasswordWithSaveChange(Guid identityId, IdentityChangePasswordDTO dto)
         {
             var identity = CatalogDb.Identities.FirstOrDefault(x => x.Id == identityId);
-            
+
             identity.EnsureNotNull(identityId);
 
-            if(!PasswordHelper.Verify(identity.Password, identity.Salt, dto.OldPassword))
+            if (!PasswordHelper.Verify(identity.Password, identity.Salt, dto.OldPassword))
             {
                 throw new ApplicationException("Old password is incorrect");
             }
 
             identity.Salt = PasswordHelper.GenerateSalt();
             identity.Password = PasswordHelper.Hash(dto.NewPassword, identity.Salt);
-            
+
             CatalogDb.SaveChanges();
         }
 
@@ -413,7 +424,7 @@ namespace Tayra.Services
             return !CatalogDb.IdentityEmails.Any(x => x.Email == email && x.DeletedAt == null);
         }
 
-        public void AddEmail(int identityId, int profileId, string email)
+        public void AddEmail(Guid identityId, Guid profileId, string email)
         {
             var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt == null);
 
@@ -430,7 +441,7 @@ namespace Tayra.Services
                 Created = DateTime.UtcNow
             };
 
-            if(emailEntry.IsPrimary)
+            if (emailEntry.IsPrimary)
             {
                 DbContext.Add(new LogDevice
                 {
@@ -444,7 +455,7 @@ namespace Tayra.Services
             CatalogDb.SaveChanges();
         }
 
-        public void SetPrimaryEmail(int identityId, int profileId, string email)
+        public void SetPrimaryEmail(Guid identityId, Guid profileId, string email)
         {
             var scope = CatalogDb.IdentityEmails.Where(x => x.DeletedAt == null);
 
@@ -477,7 +488,7 @@ namespace Tayra.Services
             CatalogDb.SaveChanges();
         }
 
-        public bool RemoveEmail(int identityId, string email)
+        public bool RemoveEmail(Guid identityId, string email)
         {
             var scope = CatalogDb.IdentityEmails.Where(x => x.IdentityId == identityId && x.DeletedAt == null);
             var identityEmail = scope.Where(x => x.Email == email).FirstOrDefault();
@@ -497,7 +508,7 @@ namespace Tayra.Services
             return affectedRecords > 0;
         }
 
-        public void ChangeProfileRole(ProfileRoles role, int memberProfileId, ProfileRoles toRole)
+        public void ChangeProfileRole(ProfileRoles role, Guid memberProfileId, ProfileRoles toRole)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == memberProfileId);
 
@@ -511,13 +522,13 @@ namespace Tayra.Services
             profile.Role = toRole;
         }
 
-        public void ArchiveProfile(ProfileRoles role, int memberProfileId)
+        public void ArchiveProfile(ProfileRoles role, Guid memberProfileId)
         {
             var profile = DbContext.Profiles.FirstOrDefault(x => x.Id == memberProfileId);
 
             profile.EnsureNotNull(memberProfileId);
 
-            if(!IdentityRules.CanArchiveProfile(role, profile.Role))
+            if (!IdentityRules.CanArchiveProfile(role, profile.Role))
             {
                 throw new CogSecurityException("You don't have permissions to archive this profile");
             }
@@ -531,7 +542,7 @@ namespace Tayra.Services
 
         private bool ValidateInvitationWithSaveChanges(Invitation invitation)
         {
-            if (!invitation.IsActive)
+            if (!invitation.IsActive())
                 return false;
 
             if (!IsEmailAddressUnique(invitation.EmailAddress))

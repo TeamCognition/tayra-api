@@ -4,7 +4,7 @@ namespace Tayra.Services
 {
     public class QuestCompletitionsGridDTO
     {
-        public int ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public string Username { get; set; }
         public string Avatar { get; set; }
         public DateTime CompletedAt { get; set; }

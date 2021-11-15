@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Tayra.Common;
 using Tayra.Models.Catalog;
@@ -11,11 +12,11 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseOAuthConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
+        protected BaseOAuthConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, httpContext, dataContext, catalogDbContext, config)
         {
         }
 
-        protected BaseOAuthConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, dataContext, catalogDbContext)
+        protected BaseOAuthConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, dataContext, catalogDbContext, config)
         {
         }
 
@@ -28,15 +29,15 @@ namespace Tayra.Connectors.Common
         public abstract Integration Authenticate(OAuthState state);
         public abstract void UpdateAuthentication(string installationId);
 
-        public virtual  Integration RefreshToken(int integrationId)
+        public virtual Integration RefreshToken(Guid integrationId)
         {
             throw new NotImplementedException("Not supported by this network");
         }
 
         public virtual string GetAuthDoneUrl(string returnPath, bool isSuccessful)
         {
-            string protocol = Tenant.Key.StartsWith("localhost:", StringComparison.InvariantCulture) || Tenant.Key.EndsWith("local") ? "http" : "https";
-            return $"{protocol}://{Tenant.Key}/{returnPath}/?i={Type.ToString().ToLower()}&success={isSuccessful}";
+            string protocol = TenantInfo.Identifier.StartsWith("localhost:", StringComparison.InvariantCulture) || TenantInfo.Identifier.EndsWith("local") ? "http" : "https";
+            return $"{protocol}://{TenantInfo.Identifier}/{returnPath}/?i={Type.ToString().ToLower()}&success={isSuccessful}";
         }
 
         #endregion
@@ -48,12 +49,12 @@ namespace Tayra.Connectors.Common
             return $"https://{HttpContext.Request.Host}/external/callback/{Type.ToString().ToLower()}";
         }
 
-        protected string ReadAccessToken(int integrationId)
+        protected string ReadAccessToken(Guid integrationId)
         {
             return ReadField(integrationId, Constants.ACCESS_TOKEN, "Unable to access the integration account, access token is missing or has expired");
         }
 
-        protected string ReadAccessTokenType(int integrationId)
+        protected string ReadAccessTokenType(Guid integrationId)
         {
             return ReadField(integrationId, Constants.ACCESS_TOKEN_TYPE) ?? "Bearer";
         }

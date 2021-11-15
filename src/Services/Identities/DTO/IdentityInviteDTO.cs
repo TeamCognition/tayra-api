@@ -1,4 +1,5 @@
-﻿using Tayra.Common;
+﻿using System;
+using Tayra.Common;
 
 namespace Tayra.Services
 {
@@ -10,7 +11,7 @@ namespace Tayra.Services
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public int? SegmentId { get; set; }
-        public int? TeamId { get; set; }
+        public Guid SegmentId { get; set; }
+        public Guid TeamId { get; set; }
     }
 }

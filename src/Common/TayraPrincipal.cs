@@ -12,8 +12,8 @@ namespace Tayra.Common
         }
 
         public ProfileRoles Role => Enum.Parse<ProfileRoles>(this.FindFirstOrDefault(TayraClaimTypes.Role).DefaultIfEmpty(ProfileRoles.Member.ToString()));
-        
-        public int[] SegmentsIds => this.FindAll(TayraClaimTypes.Segment).Select(x => int.Parse(x.Value)).ToArray();
-        public int[] TeamsIds => this.FindAll(TayraClaimTypes.Team).Select(x => int.Parse(x.Value)).ToArray();
+
+        public Guid[] SegmentsIds => this.FindAll(TayraClaimTypes.Segment).Select(x => Guid.Parse(x.Value)).ToArray();
+        public Guid[] TeamsIds => this.FindAll(TayraClaimTypes.Team).Select(x => Guid.Parse(x.Value)).ToArray();
     }
 }

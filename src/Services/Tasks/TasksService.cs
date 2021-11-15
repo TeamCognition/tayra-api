@@ -2,6 +2,8 @@
 using System.Linq;
 using Cog.Core;
 using Tayra.Common;
+using Tayra.Connectors.Atlassian;
+using Tayra.Connectors.Atlassian.Jira;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -22,9 +24,9 @@ namespace Tayra.Services
         {
             var task = DbContext.Tasks.FirstOrDefault(x => x.ExternalId == dto.ExternalId && x.IntegrationType == dto.IntegrationType);
 
-            if(task == null)
+            if (task == null)
             {
-                task = new Task
+                task = new WorkUnit
                 {
                     ExternalId = dto.ExternalId,
                     ExternalUrl = dto.ExternalUrl,
@@ -37,12 +39,16 @@ namespace Tayra.Services
 
             task.Summary = dto.Summary;
             task.LastModifiedDateId = dto.RewardStatusEnteredDateId ?? DateHelper2.ToDateId(DateTime.UtcNow);
-            task.Status = TayraPersonalPerformance.MapJiraIssueCategoryToTaskStatus(dto.JiraStatusCategory);
-            if (task.Status == TaskStatuses.Done || task.Status == TaskStatuses.InProgress)
+            var integrationId = DbContext.IntegrationFields.FirstOrDefault(x => x.Key == ATConstants.ATJ_PROJECT_ID && x.Value == task.ExternalProjectId)?.IntegrationId;
+            var wkConfig = AtlassianJiraWkUnStatusesConfiguration.From(task.ExternalProjectId, DbContext.IntegrationFields.Where(x => x.IntegrationId == integrationId));
+
+
+            task.Status = wkConfig.GetStatusByExternalStatusId(dto.JiraStatusId);
+            if (task.Status == WorkUnitStatuses.Done || task.Status == WorkUnitStatuses.Started)
             {
                 task.Status = dto.RewardStatusEnteredDateId.HasValue
-                    ? TaskStatuses.Done
-                    : TaskStatuses.InProgress;
+                    ? WorkUnitStatuses.Done
+                    : WorkUnitStatuses.Started;
             }
             task.Type = dto.Type;
             task.AutoTimeSpentInMinutes = dto.AutoTimeSpentInMinutes;
@@ -50,7 +56,7 @@ namespace Tayra.Services
             task.TimeOriginalEstimatInMinutes = dto.TimeOriginalEstimateInMinutes;
             task.StoryPoints = dto.StoryPoints;
             task.Complexity = TayraPersonalPerformance.MapSPToComplexity(dto.StoryPoints);
-            task.BugSeverity = dto.Type == TaskTypes.Task ? (int?)null : TayraPersonalPerformance.MapPriorityToSeverity(dto.Priority);
+            task.BugSeverity = dto.Type == WorkUnitTypes.Task ? (int?)null : TayraPersonalPerformance.MapPriorityToSeverity(dto.Priority);
             task.IsProductionBugFixing = task.BugSeverity > 3; //jira workaround
             task.Priority = dto.Priority;
             task.Labels = string.Join(',', dto.Labels);
@@ -59,7 +65,7 @@ namespace Tayra.Services
             task.TeamId = dto.TeamId;
             task.SegmentId = dto.SegmentId;
 
-            if(dto.EffortScore.HasValue)
+            if (dto.EffortScore.HasValue)
             {
                 task.EffortScore = (float?)dto.EffortScore;
             }

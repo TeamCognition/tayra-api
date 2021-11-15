@@ -1,6 +1,5 @@
 <Project>
     <PropertyGroup>
-        <SignalRVersion>1.0.0-alpha-*</SignalRVersion>
-        <XYVersion>1.0.0-alpha-*</XYVersion>
+        <DotnetPackagesVersion>5.0.0</DotnetPackagesVersion>
     </PropertyGroup>
 </Project>

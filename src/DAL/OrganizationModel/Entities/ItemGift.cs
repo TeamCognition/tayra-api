@@ -4,17 +4,15 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class ItemGift : ITimeStampedEntity
+    public class ItemGift : EntityGuidId, ITimeStampedEntity
     {
-        public int Id { get; set; }
-
-        public int ItemId { get; set; }
+        public Guid ItemId { get; set; }
         public virtual Item Item { get; set; }
 
-        public int SenderId { get; set; }
+        public Guid SenderId { get; set; }
         public virtual Profile Sender { get; set; }
 
-        public int ReceiverId { get; set; }
+        public Guid ReceiverId { get; set; }
         public virtual Profile Receiver { get; set; }
 
         [MaxLength(250)]

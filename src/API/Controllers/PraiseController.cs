@@ -44,7 +44,7 @@ namespace Tayra.API.Controllers
         {
             return PraiseService.SearchProfiles(gridParams);
         }
-        
+
         #endregion
     }
 }

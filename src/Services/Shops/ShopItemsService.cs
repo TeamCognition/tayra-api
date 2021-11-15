@@ -26,7 +26,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public ShopItemViewDTO GetShopItemViewDTO(int itemId)
+        public ShopItemViewDTO GetShopItemViewDTO(Guid itemId)
         {
             var shopItemDto = (from si in DbContext.ShopItems
                                where si.ItemId == itemId
@@ -85,15 +85,13 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void PurchaseShopItem(int profileId, ShopItemPurchaseDTO dto)
+        public void PurchaseShopItem(Guid profileId, ShopItemPurchaseDTO dto)
         {
             var shop = DbContext.Shops.FirstOrDefault();
-            var token = DbContext.Tokens.FirstOrDefault(x => x.Type == TokenType.CompanyToken);
             var shopItem = DbContext.ShopItems.Include(x => x.Item /*for logs and price*/).FirstOrDefault(x => x.ItemId == dto.ItemId);
-            var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == token.Id).Sum(x => x.Value);
-            var segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => (int?)x.SegmentId).FirstOrDefault();
-
-            shop.EnsureNotNull(shop.Id);
+            var profileTokenBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenType == TokenType.CompanyToken).Sum(x => x.Value);
+            var segmentId = DbContext.ProfileAssignments.Where(x => x.ProfileId == profileId).Select(x => (Guid?)x.SegmentId).FirstOrDefault();
+            
             shopItem.EnsureNotNull(shop.Id, dto.ItemId);
 
             if (!dto.DemoDate.HasValue && !ShopRules.CanPurchaseItem(shop.ClosedAt.HasValue, profileTokenBalance, shopItem.Item.Price, shopItem.Item.ShopQuantityRemaining))
@@ -103,7 +101,7 @@ namespace Tayra.Services
 
             shopItem.Item.ShopQuantityRemaining--;
 
-            TokensService.CreateTransaction(token.Id, profileId, shopItem.Item.Price * -1, TransactionReason.ShopItemPurchase, null, dto.DemoDate);
+            TokensService.CreateTransaction(TokenType.CompanyToken, profileId, shopItem.Item.Price * -1, TransactionReason.ShopItemPurchase, null, dto.DemoDate);
 
             var purchaseStatus = ItemRules.IsItemTypeTayra(shopItem.Item.Type) ? ShopPurchaseStatuses.Fulfilled : ShopPurchaseStatuses.PendingApproval;
             DbContext.Add(new ShopPurchase
@@ -133,27 +131,26 @@ namespace Tayra.Services
                     Created = dto.DemoDate ?? DateTime.UtcNow
                 });
             }
-
-            var buyerUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
+            
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.ShopItemPurchased,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.ShopItemPurchased,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", buyerUsername },
                     { "itemPrice", shopItem.DiscountPrice?.ToString() ?? shopItem.Item.Price.ToString() },
                     { "itemId", shopItem.ItemId.ToString() },
+                    { "itemName", shopItem.Item.Name },
                     { "purchaseStatus", purchaseStatus.ToString() },
-                    { "segmentId", segmentId.ToString()},
-                    { "itemName", shopItem.Item.Name }
                 },
-                ProfileId = profileId,
-                ShopId = shop.Id
-            });
+                profileId: profileId,
+                shopId: shop.Id
+            ));
         }
 
-        public void EnableShopItem(int itemId)
+        public void EnableShopItem(Guid itemId)
         {
             var shopItem = DbContext.ShopItems.FirstOrDefault(x => x.ItemId == itemId);
 
@@ -162,7 +159,7 @@ namespace Tayra.Services
             shopItem.DisabledAt = null;
         }
 
-        public void DisableShopItem(int itemId)
+        public void DisableShopItem(Guid itemId)
         {
             var shopItem = DbContext.ShopItems.FirstOrDefault(x => x.ItemId == itemId);
 
@@ -172,8 +169,8 @@ namespace Tayra.Services
         }
 
 
-        public void RemoveShopItem(int itemId)
-        {   
+        public void RemoveShopItem(Guid itemId)
+        {
             var shopItem = DbContext.ShopItems.FirstOrDefault(x => x.ItemId == itemId);
             shopItem.EnsureNotNull(itemId);
 

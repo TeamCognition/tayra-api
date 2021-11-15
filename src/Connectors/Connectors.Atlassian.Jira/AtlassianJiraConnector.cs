@@ -4,6 +4,7 @@ using System.Linq;
 using Cog.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Tayra.Common;
 using Tayra.Connectors.Common;
@@ -14,15 +15,17 @@ namespace Tayra.Connectors.Atlassian.Jira
 {
     public class AtlassianJiraConnector : BaseOAuthConnector
     {
+        private const string CONFIG_APP_ID = "Connectors:Atlassian:Jira:ClientId";
+        private const string CONFIG_APP_SECRET = "Connectors:Atlassian:Jira:ClientSecret";
         private const string AUTH_URL = "https://auth.atlassian.com/authorize";
         private const string AUDIENCE = "api.atlassian.com";
         private const string SCOPE = "read%3Ajira-user%20read%3Ajira-work%20offline_access";
 
-        public AtlassianJiraConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, dataContext, catalogDbContext)
+        public AtlassianJiraConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, dataContext, catalogDbContext, config)
         {
         }
 
-        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
+        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, httpContext, dataContext, catalogDbContext, config)
         {
         }
 
@@ -32,7 +35,7 @@ namespace Tayra.Connectors.Atlassian.Jira
 
         public override string GetAuthUrl(OAuthState state)
         {
-            return $"{AUTH_URL}?audience={AUDIENCE}&client_id={AtlassianJiraService.APP_ID}&state={state}&scope={SCOPE}&redirect_uri={GetCallbackUrl(state.ToString())}&response_type=code&prompt=consent";
+            return $"{AUTH_URL}?audience={AUDIENCE}&client_id={Config[CONFIG_APP_ID]}&state={state}&scope={SCOPE}&redirect_uri={GetCallbackUrl(state.ToString())}&response_type=code&prompt=consent";
         }
 
         public override Integration Authenticate(OAuthState state)
@@ -46,12 +49,12 @@ namespace Tayra.Connectors.Atlassian.Jira
                     throw new ApplicationException(errorDescription);
                 }
 
-                var tokenData = AtlassianJiraService.GetAccessToken(code, GetCallbackUrl(state.ToString()))?.Data;
+                var tokenData = AtlassianJiraService.GetAccessToken(Config[CONFIG_APP_ID], Config[CONFIG_APP_SECRET], code, GetCallbackUrl(state.ToString()))?.Data;
                 var accResData = AtlassianJiraService.GetAccessibleResources(tokenData.TokenType, tokenData.AccessToken)?.Data?.FirstOrDefault();
                 var loggedInUser = AtlassianJiraService.GetLoggedInUser(accResData.CloudId, tokenData.TokenType, tokenData.AccessToken)?.Data;
 
-                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
-                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
+                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).OrderByDescending(x => x.Created).FirstOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
+                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).OrderByDescending(x => x.Created).FirstOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
                 if (segmentIntegration == null && !state.IsSegmentAuth)
                 {
                     throw new CogSecurityException($"profileId: {state.ProfileId} tried to integrate {Type} before segment integration");
@@ -64,7 +67,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                         [Constants.PROFILE_EXTERNAL_ID] = loggedInUser.AccountId
                     };
 
-                    CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId:null, profileFields, profileIntegration);
+                    CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields, profileIntegration);
                 }
 
                 if (state.IsSegmentAuth && tokenData != null && accResData != null)
@@ -100,7 +103,7 @@ namespace Tayra.Connectors.Atlassian.Jira
         }
 
         public override void UpdateAuthentication(string installationId) => throw new NotImplementedException();
-        public override Integration RefreshToken(int integrationId)
+        public override Integration RefreshToken(Guid integrationId)
         {
             var account = OrganizationContext
                 .Integrations
@@ -118,7 +121,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                 throw new ApplicationException("Unable to refresh this account because it does not have a refresh token.");
             }
 
-            var response = AtlassianJiraService.RefreshAccessToken(refreshCode.Value);
+            var response = AtlassianJiraService.RefreshAccessToken(Config[CONFIG_APP_ID], Config[CONFIG_APP_SECRET], refreshCode.Value);
             if (response?.Data != null)
             {
                 void Update(string key, string value)
@@ -150,7 +153,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return account;
         }
 
-        public ICollection<JiraProject> GetProjects(int integrationId)
+        public ICollection<JiraProject> GetProjects(Guid integrationId)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -165,7 +168,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return AtlassianJiraService.GetProjects(cloudId, accessTokenType, accessToken).Data.Values;
         }
 
-        public ICollection<JiraIssueType> GetIssueTypesWithStatuses(int integrationId, string jiraProjectId)
+        public ICollection<JiraIssueType> GetIssueTypesWithStatuses(Guid integrationId, string jiraProjectId)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -180,7 +183,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return AtlassianJiraService.GetProjectStatuses(cloudId, accessTokenType, accessToken, jiraProjectId).Data;
         }
 
-        public ICollection<JiraStatus> GetIssueStatuses(int integrationId, string jiraProjectId, string jiraIssueTypeId = "")
+        public ICollection<JiraStatus> GetIssueStatuses(Guid integrationId, string jiraProjectId, string jiraIssueTypeId = "")
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -204,7 +207,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             }
         }
 
-        public JiraIssue GetIssue(int integrationId, string issueIdOrKey, string expand = "")
+        public JiraIssue GetIssue(Guid integrationId, string issueIdOrKey, string expand = "")
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -219,7 +222,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return AtlassianJiraService.GetIssue(cloudId, accessTokenType, accessToken, issueIdOrKey, expand).Data;
         }
 
-        public List<TaskChangelog> GetIssueChangelog(int integrationId, string issueIdOrKey, string fieldFilter = "")
+        public List<TaskChangelog> GetIssueChangelog(Guid integrationId, string issueIdOrKey, string fieldFilter = "")
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -234,9 +237,9 @@ namespace Tayra.Connectors.Atlassian.Jira
             var jiraChangelogs = AtlassianJiraService.GetIssueChangelog(cloudId, accessTokenType, accessToken, issueIdOrKey).Data.Values;
 
             var changelogs = new List<TaskChangelog>();
-            foreach(var cl in jiraChangelogs)
+            foreach (var cl in jiraChangelogs)
             {
-                cl.Items.Where(x => string.IsNullOrEmpty(fieldFilter) || x.Field == fieldFilter).ToList().ForEach(x => 
+                cl.Items.Where(x => string.IsNullOrEmpty(fieldFilter) || x.Field == fieldFilter).ToList().ForEach(x =>
                 changelogs.Add(new TaskChangelog
                 {
                     Created = cl.Created,
@@ -255,7 +258,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return changelogs;
         }
 
-        public List<JiraUser> GetUsers(int integrationId)
+        public List<JiraUser> GetUsers(Guid integrationId)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -270,11 +273,11 @@ namespace Tayra.Connectors.Atlassian.Jira
             var jiraUsers = AtlassianJiraService.GetUsers(cloudId, accessTokenType, accessToken).Data;
 
             jiraUsers.RemoveAll(x => x.AccountType != "atlassian");
-           
+
             return jiraUsers;
         }
 
-        public List<JiraIssueType> GetIssueTypes(int integrationId)
+        public List<JiraIssueType> GetIssueTypes(Guid integrationId)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -291,7 +294,7 @@ namespace Tayra.Connectors.Atlassian.Jira
             return issueTypes;
         }
 
-        public List<JiraIssue> GetBulkIssuesWithChangelog(int integrationId, string fieldFilter = "status", params string[] jiraProjects)
+        public List<JiraIssue> GetBulkIssuesWithChangelog(Guid integrationId, string fieldFilter = "status", params string[] jiraProjects)
         {
             var integration = RefreshToken(integrationId);
             if (integration == null)
@@ -327,7 +330,7 @@ namespace Tayra.Connectors.Atlassian.Jira
                 }
                 issue.TaskChangelogs = changelogs;
             }
-            
+
             return issueSearch.Issues;
         }
 
@@ -335,7 +338,7 @@ namespace Tayra.Connectors.Atlassian.Jira
 
         #region Private Methods
 
-        private string ReadCloudId(int integrationId)
+        private string ReadCloudId(Guid integrationId)
         {
             return ReadField(integrationId, ATConstants.AT_CLOUD_ID, "Unknown cloud id for integration " + integrationId);
         }

@@ -5,6 +5,7 @@ using Cog.Core;
 using Cog.DAL;
 using Tayra.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.Templates.PraiseReceived;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -26,7 +27,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public void PraiseProfile(int profileId, PraiseProfileDTO dto)
+        public void PraiseProfile(Guid profileId, PraiseProfileDTO dto)
         {
             int? lastPraisedAt = (from u in DbContext.ProfilePraises
                                   where u.CreatedBy == profileId
@@ -36,11 +37,18 @@ namespace Tayra.Services
                                 ).FirstOrDefault();
 
 
-            if (!ProfileRules.CanPraiseProfile(profileId, dto.ProfileId, lastPraisedAt, dto.Message))
+            if (!CanPraiseProfile(profileId, dto.ProfileId, lastPraisedAt, dto.Message))
             {
                 throw new ApplicationException("Profile already praised by same user today");
             }
 
+            bool CanPraiseProfile(Guid upperId, Guid profileToUpId, int? lastUppedAt, string message)
+            {
+                return upperId != profileToUpId
+                       && (!lastUppedAt.HasValue || DateHelper2.ToDateId(DateTime.UtcNow) > lastUppedAt)
+                       && (string.IsNullOrEmpty(message) || message.Length <= 140);
+            }
+            
             DbContext.Add(new ProfilePraise
             {
                 PraiserProfileId = profileId,
@@ -50,38 +58,46 @@ namespace Tayra.Services
                 Message = dto.Message
             });
 
-            var praiseGiverUsername = DbContext.Profiles.Where(x => x.Id == profileId).Select(x => x.Username).FirstOrDefault();
-            var praiseReceiverUsername = DbContext.Profiles.Where(x => x.Id == dto.ProfileId).Select(x => x.Username).FirstOrDefault();
-
+            var praiseGiver = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);
+            var praiseReceiver = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ProfileId);
+            
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.ProfilePraiseGiven,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.ProfilePraiseGiven,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", praiseGiverUsername },
-                    { "receiverUsername", praiseReceiverUsername },
-                    { "type", dto.Type.ToString() }
+                    { "receiverUsername", praiseReceiver?.Username },
+                    { "receiverName", praiseReceiver?.FirstName + " " + praiseReceiver?.LastName},
+                    { "praiseType", dto.Type.ToString() }
                 },
-                ProfileId = profileId,
-            });
-
+                profileId: profileId
+            ));
+            
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.ProfilePraiseReceived,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.ProfilePraiseReceived,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", praiseReceiverUsername },
-                    { "giverUsername", praiseGiverUsername },
-                    { "type", dto.Type.ToString() }
+                    { "giverUsername", praiseGiver?.Username },
+                    { "giverName", praiseGiver?.FirstName + " " + praiseGiver?.LastName},
+                    { "praiseType", dto.Type.ToString() }
                 },
-                ProfileId = dto.ProfileId,
-            });
+                profileId: profileId
+            ));
 
-            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, new EmailPraiseReceivedDTO(praiseGiverUsername));
+            LogsService.SendLog(dto.ProfileId, LogEvents.ProfilePraiseReceived, 
+                new TemplateModelPraiseReceived("Praise Recieved",
+                    praiseReceiver?.Username,
+                    praiseGiver?.Username, "put link here",
+                    dto.Type));
         }
-        
+
         public GridData<PraiseSearchGridDTO> SearchPraises(PraiseGridParams gridParams)
         {
             IQueryable<ProfilePraise> scope;
@@ -90,7 +106,7 @@ namespace Tayra.Services
                 scope = DbContext.ProfilePraises.Where(x => x.ProfileId == gridParams.ProfileId);
             else
                 scope = DbContext.ProfilePraises;
-            
+
             var query = from pp in scope
                         select new PraiseSearchGridDTO
                         {
@@ -111,15 +127,15 @@ namespace Tayra.Services
         {
 
             var query = from p in DbContext.Profiles
-                where p.Username.Contains(gridParams.UsernameQuery) ||(p.FirstName + p.LastName).Contains(gridParams.NameQuery)
+                        where p.Username.Contains(gridParams.UsernameQuery) || (p.FirstName + p.LastName).Contains(gridParams.NameQuery)
 
-                select new PraiseSearchProfilesDTO
-                {
-                    ProfileId = p.Id,
-                    Name = p.FirstName + " " + p.LastName,
-                    Username = p.Username,
-                    Avatar = p.Avatar
-                };
+                        select new PraiseSearchProfilesDTO
+                        {
+                            ProfileId = p.Id,
+                            Name = p.FirstName + " " + p.LastName,
+                            Username = p.Username,
+                            Avatar = p.Avatar
+                        };
 
             GridData<PraiseSearchProfilesDTO> gridData = query.GetGridData(gridParams);
 

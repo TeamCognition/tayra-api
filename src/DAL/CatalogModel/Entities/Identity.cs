@@ -5,11 +5,8 @@ using Cog.DAL;
 
 namespace Tayra.Models.Catalog
 {
-    public class Identity : IAuditedEntity
+    public class Identity: EntityGuidId, IAuditedEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [MaxLength(50)]
         public string FirstName { get; set; }
         [MaxLength(50)]
@@ -27,8 +24,8 @@ namespace Tayra.Models.Catalog
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

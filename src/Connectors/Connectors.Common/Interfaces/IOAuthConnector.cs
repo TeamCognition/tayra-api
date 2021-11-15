@@ -1,4 +1,4 @@
-﻿using Tayra.Common;
+﻿using System;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Connectors.Common
@@ -13,6 +13,6 @@ namespace Tayra.Connectors.Common
 
         void UpdateAuthentication(string installationId);
 
-        Integration RefreshToken(int segmentId);
+        Integration RefreshToken(Guid segmentId);
     }
 }

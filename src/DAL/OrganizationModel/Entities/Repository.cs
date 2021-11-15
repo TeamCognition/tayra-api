@@ -5,28 +5,26 @@ using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
-    public class Repository : IAuditedEntity
+    public class Repository : EntityGuidId, IAuditedEntity
     {
-        public int Id { get; set; }
-
-        public int? TeamId { get; set; }
+        public Guid? TeamId { get; set; }
         public virtual Team Team { get; set; }
-        
+
         public string ExternalId { get; set; }
         [Required]
         public string IntegrationInstallationId { get; set; }
         public string Name { get; set; }
-        
+
         public string NameWithOwner { get; set; }
         public string PrimaryLanguage { get; set; }
         public string ExternalUrl { get; set; }
-        
+
         #region IAuditedEntity
 
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
-        public int CreatedBy { get; set; }
-        public int? LastModifiedBy { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? LastModifiedBy { get; set; }
 
         #endregion
     }

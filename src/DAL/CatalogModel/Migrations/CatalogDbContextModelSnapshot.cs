@@ -15,35 +15,43 @@ namespace Tayra.Models.Catalog.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("Tayra.Models.Catalog.Identity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FirstName")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("LastModifiedBy");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LastName")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<byte[]>("Password")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<byte[]>("Salt")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("Id");
 
@@ -52,18 +60,24 @@ namespace Tayra.Models.Catalog.Migrations
 
             modelBuilder.Entity("Tayra.Models.Catalog.IdentityEmail", b =>
                 {
-                    b.Property<int>("IdentityId");
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsPrimary");
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("IdentityId", "Email");
 
@@ -77,15 +91,20 @@ namespace Tayra.Models.Catalog.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<string>("EmailAddress");
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Message");
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -96,9 +115,11 @@ namespace Tayra.Models.Catalog.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<string>("EmailAddress");
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -107,16 +128,21 @@ namespace Tayra.Models.Catalog.Migrations
 
             modelBuilder.Entity("Tayra.Models.Catalog.Tenant", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(128);
+                    b.Property<string>("Id")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
-                    b.Property<string>("DisplayName")
-                        .HasMaxLength(100);
+                    b.Property<string>("ConnectionString")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Key")
+                    b.Property<string>("Identifier")
                         .IsRequired()
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ServicePlan")
                         .IsRequired()
@@ -125,24 +151,30 @@ namespace Tayra.Models.Catalog.Migrations
                         .HasDefaultValueSql("'standard'");
 
                     b.Property<string>("Timezone")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Key");
+                    b.HasIndex("Identifier")
+                        .IsUnique();
 
                     b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("Tayra.Models.Catalog.TenantIdentity", b =>
                 {
-                    b.Property<byte[]>("TenantId");
+                    b.Property<string>("TenantId")
+                        .HasColumnType("nvarchar(64)");
 
-                    b.Property<int>("IdentityId");
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("TenantId", "IdentityId");
 
@@ -153,16 +185,21 @@ namespace Tayra.Models.Catalog.Migrations
 
             modelBuilder.Entity("Tayra.Models.Catalog.TenantIntegration", b =>
                 {
-                    b.Property<byte[]>("TenantId");
+                    b.Property<string>("TenantId")
+                        .HasColumnType("nvarchar(64)");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SegmentId");
+                    b.Property<Guid>("SegmentId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("InstallationId")
-                        .HasMaxLength(125);
+                        .HasMaxLength(125)
+                        .HasColumnType("nvarchar(125)");
 
                     b.HasKey("TenantId", "Type", "SegmentId");
 
@@ -176,7 +213,10 @@ namespace Tayra.Models.Catalog.Migrations
                     b.HasOne("Tayra.Models.Catalog.Identity", "Identity")
                         .WithMany("Emails")
                         .HasForeignKey("IdentityId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Identity");
                 });
 
             modelBuilder.Entity("Tayra.Models.Catalog.TenantIdentity", b =>
@@ -184,12 +224,18 @@ namespace Tayra.Models.Catalog.Migrations
                     b.HasOne("Tayra.Models.Catalog.Identity", "Identity")
                         .WithMany()
                         .HasForeignKey("IdentityId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Tayra.Models.Catalog.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Identity");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Tayra.Models.Catalog.TenantIntegration", b =>
@@ -197,7 +243,15 @@ namespace Tayra.Models.Catalog.Migrations
                     b.HasOne("Tayra.Models.Catalog.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Tayra.Models.Catalog.Identity", b =>
+                {
+                    b.Navigation("Emails");
                 });
 #pragma warning restore 612, 618
         }

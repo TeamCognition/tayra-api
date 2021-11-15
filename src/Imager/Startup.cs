@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -49,68 +50,7 @@ namespace Tayra.Imager
 
             services.AddControllers();
         }
-
-        private void ConfigureDefaultServicesAndCustomOptions(IServiceCollection services)
-        {
-            services.AddImageSharp(
-                options =>
-                    {
-                        options.Configuration = Configuration.Default;
-                        options.MaxBrowserCacheDays = 7;
-                        options.MaxCacheDays = 365;
-                        options.CachedNameLength = 8;
-                        options.OnParseCommands = _ => { };
-                        options.OnBeforeSave = _ => { };
-                        options.OnProcessed = _ => { };
-                        options.OnPrepareResponse = _ => { };
-                    });
-        }
-
-        private void ConfigureCustomServicesAndDefaultOptions(IServiceCollection services)
-        {
-            services.AddImageSharp()
-                    .RemoveProcessor<FormatWebProcessor>()
-                    .RemoveProcessor<BackgroundColorWebProcessor>();
-        }
-
-        private void ConfigureCustomServicesAndCustomOptions(IServiceCollection services)
-        {
-            services.AddImageSharpCore(
-                options =>
-                    {
-                        options.Configuration = Configuration.Default;
-                        options.MaxBrowserCacheDays = 7;
-                        options.MaxCacheDays = 365;
-                        options.CachedNameLength = 8;
-                        options.OnParseCommands = _ => { };
-                        options.OnBeforeSave = _ => { };
-                        options.OnProcessed = _ => { };
-                        options.OnPrepareResponse = _ => { };
-                    })
-                .SetRequestParser<QueryCollectionRequestParser>()
-                .SetMemoryAllocator(provider => ArrayPoolMemoryAllocator.CreateWithMinimalPooling())
-                .Configure<PhysicalFileSystemCacheOptions>(options =>
-                {
-                    options.CacheFolder = "different-cache";
-                })
-                .SetCache(provider =>
-                {
-                    return new PhysicalFileSystemCache(
-                        provider.GetRequiredService<IOptions<PhysicalFileSystemCacheOptions>>(),
-#pragma warning disable CS0618 // Type or member is obsolete
-                        provider.GetRequiredService<IWebHostEnvironment>(),
-#pragma warning restore CS0618 // Type or member is obsolete
-                        provider.GetRequiredService<IOptions<ImageSharpMiddlewareOptions>>(),
-                        provider.GetRequiredService<FormatUtilities>());
-                })
-                .SetCacheHash<CacheHash>()
-                .AddProvider<PhysicalFileSystemProvider>()
-                .AddProcessor<ResizeWebProcessor>()
-                .AddProcessor<FormatWebProcessor>()
-                .AddProcessor<BackgroundColorWebProcessor>();
-        }
-
-
+        
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

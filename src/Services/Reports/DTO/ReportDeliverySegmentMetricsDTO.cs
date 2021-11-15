@@ -1,4 +1,6 @@
-﻿namespace Tayra.Services
+﻿using System;
+
+namespace Tayra.Services
 {
     public class ReportDeliverySegmentMetricsDTO
     {
@@ -13,7 +15,7 @@
 
         public class TeamDTO
         {
-            public int TeamId { get; set; }
+            public Guid TeamId { get; set; }
             public int[] AverageTaskCompletionTime { get; set; }
             public int TaskCompletedCount { get; set; }
         }

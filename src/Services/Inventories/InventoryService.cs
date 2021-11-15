@@ -6,6 +6,7 @@ using Cog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Tayra.Common;
 using Tayra.Mailer;
+using Tayra.Mailer.Templates.GiftReceived;
 using Tayra.Models.Organizations;
 
 namespace Tayra.Services
@@ -27,7 +28,7 @@ namespace Tayra.Services
 
         #region Public Methods
 
-        public InventoryItemViewDTO GetInventoryItemViewDTO(int inventoryItemId)
+        public InventoryItemViewDTO GetInventoryItemViewDTO(Guid inventoryItemId)
         {
             var invItemDto = (from pi in DbContext.ProfileInventoryItems
                               where pi.Id == inventoryItemId
@@ -85,7 +86,7 @@ namespace Tayra.Services
                             IsDisenchantable = i.Item.IsDisenchantable,
                             IsGiftable = i.Item.IsGiftable,
                             Price = i.Item.Price,
-                            AcquireMethod=i.AcquireMethod
+                            AcquireMethod = i.AcquireMethod
                         };
 
             GridData<InventoryItemGridDTO> gridData = query.GetGridData(gridParams);
@@ -93,7 +94,7 @@ namespace Tayra.Services
             return gridData;
         }
 
-        public void Activate(int profileId, InventoryItemActivateToggleDTO dto)
+        public void Activate(Guid profileId, InventoryItemActivateToggleDTO dto)
         {
             var itemToActivate = DbContext.ProfileInventoryItems.Include(x => x.Item).FirstOrDefault(x => x.Id == dto.InventoryItemId && x.ProfileId == profileId);
 
@@ -126,7 +127,7 @@ namespace Tayra.Services
             }
         }
 
-        public void Deactivate(int profileId, InventoryItemActivateToggleDTO dto)
+        public void Deactivate(Guid profileId, InventoryItemActivateToggleDTO dto)
         {
             var invItem = DbContext.ProfileInventoryItems.FirstOrDefault(x => x.ProfileId == profileId && x.Id == dto.InventoryItemId);
 
@@ -135,7 +136,7 @@ namespace Tayra.Services
             invItem.IsActive = false;
         }
 
-        public void Gift(int profileId, InventoryItemGiftDTO dto)
+        public void Gift(Guid profileId, InventoryItemGiftDTO dto)
         {
             var invItem = DbContext.ProfileInventoryItems.Include(x => x.Item).FirstOrDefault(x => x.Id == dto.InventoryItemId);
 
@@ -170,38 +171,43 @@ namespace Tayra.Services
                 DbContext.GetTrackedClaimBundle(dto.ReceiverId, ClaimBundleTypes.Gift).AddItems(giftedItem);
             }
 
-            var gifterUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId).Username;
-            var receiverUsername = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId).Username;
+            var gifter = DbContext.Profiles.FirstOrDefault(x => x.Id == profileId);
+            var receiver = DbContext.Profiles.FirstOrDefault(x => x.Id == dto.ReceiverId);
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.InventoryItemGifted,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.InventoryItemGifted,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", gifterUsername },
-                    { "receiverUsername", receiverUsername },
+                    { "receiverUsername", receiver?.Username },
+                    { "receiverName", receiver?.FirstName + " " + receiver?.LastName },
                     { "itemName", invItem.Item.Name }
                 },
-                ProfileId = profileId,
-            });
+                profileId: profileId
+            ));
 
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.InventoryItemGiftReceived,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.InventoryItemGiftReceived,
+                timestamp: dto.DemoDate ?? DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "timestamp", (dto.DemoDate ?? DateTime.UtcNow).ToString() },
-                    { "profileUsername", receiverUsername },
-                    { "gifterUsername", gifterUsername },
+                    { "gifterUsername", gifter?.Username },
+                    { "gifterName", gifter?.FirstName + " " + gifter?.LastName },
                     { "itemName", invItem.Item.Name }
                 },
-                ProfileId = dto.ReceiverId,
-            });
-
-            LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername));
+                profileId: dto.ReceiverId
+            ));
+            //gift link is missing
+            LogsService.SendLog(dto.ReceiverId, LogEvents.InventoryItemGifted,
+                new TemplateModelGiftReceived(receiver?.Username, gifter?.Username, "Gift Link", "You received a Gift"));
         }
 
-        public void Disenchant(int profileId, InventoryItemDisenchantDTO dto)
+        public void Disenchant(Guid profileId, InventoryItemDisenchantDTO dto)
         {
             var invItem = DbContext.ProfileInventoryItems.Include(x => x.Item).Include(x => x.Profile).FirstOrDefault(x => x.ProfileId == profileId && x.Id == dto.InventoryItemId);
             var claimBundleItem =
@@ -219,20 +225,19 @@ namespace Tayra.Services
 
             var disenchantValue = Math.Round(invItem.Item.Price * 0.90, 2);
             LogsService.LogEvent(new LogCreateDTO
-            {
-                Event = LogEvents.InventoryItemDisenchanted,
-                Data = new Dictionary<string, string>
+            (
+                eventType: LogEvents.InventoryItemDisenchanted,
+                timestamp: DateTime.UtcNow,
+                description: null,
+                externalUrl: null,
+                data: new Dictionary<string, string>
                 {
-                    { "profileId", profileId.ToString() },
-                    { "profileUsername", invItem.Profile.Username },
                     { "itemId", invItem.ItemId.ToString() },
                     { "ItemName", invItem.Item.Name},
                     { "disenchantValue", disenchantValue.ToString() },
-                    { "timestamp", DateTime.UtcNow.ToString() }
                 },
-
-                ProfileId = profileId,
-            });
+                profileId: profileId
+            ));
 
             DbContext.Remove(claimBundleItem);
             DbContext.Remove(invItem);
@@ -240,7 +245,7 @@ namespace Tayra.Services
             TokensService.CreateTransaction(TokenType.CompanyToken, profileId, disenchantValue, TransactionReason.ItemDisenchant, null);
         }
 
-        public void Give(int profileId, InventoryGiveDTO dto)
+        public void Give(Guid profileId, InventoryGiveDTO dto)
         {
             var item = DbContext.Items.FirstOrDefault(x => x.Id == dto.ItemId);
             var receiverId = DbContext.Profiles.Where(x => x.Username == dto.ReceiverUsername).Select(x => x.Id).FirstOrDefault();
@@ -261,7 +266,9 @@ namespace Tayra.Services
             {
                 DbContext.GetTrackedClaimBundle(receiverId, ClaimBundleTypes.GiftFromAdmin).AddItems(givenItem);
             }
-            LogsService.SendLog(receiverId, LogEvents.InventoryItemGifted, new EmailGiftReceivedDTO(gifterUsername));
+            LogsService.SendLog(receiverId, LogEvents.InventoryItemGifted,
+                new TemplateModelGiftReceived(dto.ReceiverUsername,gifterUsername,
+                    "gif link","You received a gift"));
         }
         #endregion
     }

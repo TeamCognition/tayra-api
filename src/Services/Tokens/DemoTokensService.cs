@@ -18,55 +18,37 @@ namespace Tayra.Services
         #endregion
 
         #region Public Methods
-
-        public List<TokenLookupDTO> GetTokenLookupDTO()
+        
+        public double CreateTransaction(TokenType tokenType, Guid profileId, double valueToTransfer, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
         {
-            return DbContext.Tokens
-                .Select(x => new TokenLookupDTO
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Symbol = x.Symbol,
-                    Type = x.Type
-                })
-                .ToList();
-        }
+            var currentBalance = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenType == tokenType).Sum(x => x.Value);
+            var finalBalance = currentBalance + valueToTransfer;
 
-        public double CreateTransaction(TokenType tokenType, int profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
-        {
-            var tokenId = DbContext.Tokens.FirstOrDefault(x => x.Type == tokenType);
-            if (tokenId == null)
-            {
-                throw new ApplicationException("No token of type " + tokenType);
-            }
-
-            return CreateTransaction(tokenId.Id, profileId, value, reason, claimBundleType, date);
-        }
-
-        public double CreateTransaction(int tokenId, int profileId, double value, TransactionReason reason, ClaimBundleTypes? claimBundleType, DateTime? date = null)
-        {
-            var scope = DbContext.TokenTransactions.Where(x => x.ProfileId == profileId && x.TokenId == tokenId);
             var txn = new TokenTransaction
             {
                 ProfileId = profileId,
                 Reason = reason,
-                TokenId = tokenId,
+                TokenType = tokenType,
                 TxnHash = string.Empty,
-                Value = value,
-                FinalBalance = scope.Sum(x => x.Value) + value,
+                Value = valueToTransfer,
                 ClaimRequired = false,
                 DateId = DateHelper2.ToDateId(date ?? DateTime.UtcNow)
             };
 
-            if (txn.FinalBalance < 0)
+            DbContext.TokenTransactions.AddAsync(txn);
+
+            if (valueToTransfer > 0 && reason == TransactionReason.JiraIssueCompleted)
             {
-                txn.Value -= txn.FinalBalance;
-                txn.FinalBalance = 0;
+                //UpdateCompetitorsTokenValue(txn);
             }
 
-            DbContext.TokenTransactions.Add(txn);
+            if (claimBundleType.HasValue)
+            {
+                txn.ClaimRequired = true;
+                DbContext.GetTrackedClaimBundle(profileId, claimBundleType.Value).AddTokenTxns(txn);
+            }
 
-            return txn.FinalBalance;
+            return finalBalance;
         }
 
         #endregion

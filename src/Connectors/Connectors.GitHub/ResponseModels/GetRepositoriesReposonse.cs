@@ -17,13 +17,13 @@ namespace Tayra.Connectors.GitHub
 
             [JsonProperty("name")]
             public string Name { get; set; }
-            
+
             [JsonProperty("full_name")]
             public string FullName { get; set; }
-            
-            [JsonProperty("url")]
+
+            [JsonProperty("html_url")]
             public string ExternalUrl { get; set; }
-            
+
             [JsonProperty("owner")]
             public OwnerDTO Owner { get; set; }
         }

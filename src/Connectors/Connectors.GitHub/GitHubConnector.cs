@@ -4,6 +4,8 @@ using System.Linq;
 using Cog.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Tayra.Common;
 using Tayra.Connectors.Common;
@@ -14,16 +16,19 @@ namespace Tayra.Connectors.GitHub
 {
     public class GitHubConnector : BaseOAuthConnector
     {
-        private const string SEGMENT_AUTH_URL = "https://github.com/apps/tayra-app/installations/new";
+        private const string CONFIG_APP_ID = "Connectors:Github:AppId";
+        private const string CONFIG_APP_RSAKEY = "Connectors:Github:AppRsaKey";
+        private const string CONFIG_CLIENT_ID = "Connectors:Github:ClientId";
+        private const string CONFIG_CLIENT_SECRET = "Connectors:Github:ClientSecret";
+        private const string CONFIG_APP_NAME = "Connectors:Github:AppName";
+        private const string SEGMENT_AUTH_URL = "https://github.com/apps";
         private const string PROFILE_AUTH_URL = "https://github.com/login/oauth/authorize";
-        
-        private const string GHAPP_RSA_KEY = "MIIEpAIBAAKCAQEAuX4G+VnktB8RG+1NW8mwR5HTdqyHHUAKL6ZakGRZ2ysS2J9vW8IzS3yJuE74bDuGxSHXXVVdRvs5ezbUFR7gF6hkqvrKw6J5oxOVblvZcQl/lG5VWVuwshJvowa8E6E0ihpNZ+xvyfDvNzXgdqwi44hWnw5U3p6bORc/5gK6i9C5h3vDoM2QLNh6K1RyVp5fPftN126v5OZxbZUTGreqmdjQQCQklgrxqSqD/yB8p54z17t125yU2yX6kEhP0//OlqxblZVBqXf0/j3FOWX1EupFLvF4vXbYjmXus5yoKwLUEnvmkOmEKhyPvR2Q0kQGTlCMY/5bKc3Px1U1StTI1QIDAQABAoIBAFO5c9Jm5dj7UNCnKsysW5niU210cEQenLpnPud/tCM97PLD/BKRtG91FgCP/Id10t316WyiVEjuqkJYPCAQYJutEUsviggFtRuLgl5erOXdoK1Ro8qCnV2y/pq6NngxwjI3rwqiaM7gpkjoU5mdFt5Wsqp2YI5fTrbVLK1YO/VRCzmFUbzYxdQrYdVj93GRlBFuptxXE92TS6DsH60TETWZdV45qntsx0YJcHBZpTDzDrjNvVJJqVaH8jYfLC90wo3p2cENxV23fWNd+ac+jeQMEndX4AV1xAvG883snLxTTvSDbKBGC9DUr1a/73uQcEI7qMEQqACjDYd31VXOIeECgYEA3p1P0SYqSS3d+81SN5geuGXREzDOHbfW5HlmqBFuc5ckh6yMDbJwH3GwQ5Z7vewF9lsyJ6Pu1kXu1R1c8AW2cqP9jsacgM2UHffAqFzaI3+EWwdszNcl6zxndQt+l0o+JdpviSia5d7lj+JXxx6XrfLlwJGjxJw5kxwMgB3Cme0CgYEA1U+B971HhzyWAEBg4cY3zsQiBbsCJ23uZzpwM8KZxj/J2Z11qChi2S9YVx6FAWHf2RB1asawhpRxVuGRmf3BXe7AE6Kj69TdMU6nKdCgpe1rYTKwGFnruqL2eUSxwLthudfT3EE10sG0MI6CZ31Xwq98HQSP3xcM8/pYfqPw7YkCgYEAhzOttU3jorxLtNGXnJI0HjQgTfJ3TI9J4UtmMK8dkPB7zDbcfLkh5ccLkZEEqG1/lYb/qBmlRdgFXMPPnSsrCudUaPFxPb0dtzGwfdCe365juVGCH8qPihYOk4Seps39fsnysa/Km8/LRp7mRtXqs0fxiAosF432XcVMRkdM2GUCgYEAiwT+V09sxp6dxBwxB/P/eyooYkO266uhrHVRmupA/gukqccNX0Ky6YkJsf2aAYSgNv+bBrPnaE5mb5EjK5FN7MIlPKbK3nAkmHYCTCZEDN/nE7nNOpGgKEr9B5vVnR6CWnRnBy0YvvqvTNYT9w6hm6hy4xaODX8gWgHWmvKNmsECgYAvOi9AI4g0tu6U/eJYTkimdeWRpo1RJIKqwm37lOFBMmU1kHu/mFTKIEkHlJYckYgzufLcThT2zeRrl7OtMC8pZMOhsDi0L5pCk/x9ruFsiIPkxHq6b7eRjioj/hy8buQwz2J66Yoj8hpV36gOwFj7dpr7wwpbqqypvQee97oJpg==";
-        private const string GHAPP_ID = "63108";
-        public GitHubConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, dataContext, catalogDbContext)
+
+        public GitHubConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, dataContext, catalogDbContext, config)
         {
         }
 
-        public GitHubConnector(ILogger logger, IHttpContextAccessor httpContext, ITenantProvider tenantProvider, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext) : base(logger, httpContext, tenantProvider, dataContext, catalogDbContext)
+        public GitHubConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, httpContext, dataContext, catalogDbContext, config)
         {
         }
 
@@ -34,8 +39,8 @@ namespace Tayra.Connectors.GitHub
         public override string GetAuthUrl(OAuthState state)
         {
             return state.IsSegmentAuth
-                ? $"{SEGMENT_AUTH_URL}?state={state}"
-                : $"{PROFILE_AUTH_URL}?client_id={GitHubService.CLIENT_ID}&state={state}";
+                ? $"{SEGMENT_AUTH_URL}/{Config[CONFIG_APP_NAME]}/installations/new?state={state}"
+                : $"{PROFILE_AUTH_URL}?client_id={Config[CONFIG_CLIENT_ID]}&state={state}";
         }
 
         public override Integration Authenticate(OAuthState state)
@@ -49,11 +54,11 @@ namespace Tayra.Connectors.GitHub
                     throw new ApplicationException(errorDescription);
                 }
 
-                var userTokenData = GitHubService.GetUserAccessToken(code, GetCallbackUrl(state.ToString()))?.Data;
+                var userTokenData = GitHubService.GetUserAccessToken(Config[CONFIG_CLIENT_ID], Config[CONFIG_CLIENT_SECRET], code, GetCallbackUrl(state.ToString()))?.Data;
                 var loggedInUser = GitHubService.GetLoggedInUser(userTokenData.TokenType, userTokenData.AccessToken);
-                
-                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
-                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).LastOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
+
+                var profileIntegration = OrganizationContext.Integrations.Include(x => x.Fields).OrderByDescending(x => x.Created).FirstOrDefault(x => x.ProfileId == state.ProfileId && x.Type == Type);
+                var segmentIntegration = OrganizationContext.Integrations.Include(x => x.Fields).OrderByDescending(x => x.Created).FirstOrDefault(x => x.SegmentId == state.SegmentId && x.ProfileId == null && x.Type == Type);
                 if (segmentIntegration == null && !state.IsSegmentAuth)
                 {
                     throw new CogSecurityException($"profileId: {state.ProfileId} tried to integrate {Type} before segment integration");
@@ -65,16 +70,16 @@ namespace Tayra.Connectors.GitHub
                     {
                         [Constants.PROFILE_EXTERNAL_ID] = loggedInUser.Login
                     };
-                
+
                     CreateProfileIntegration(state.ProfileId, state.SegmentId, installationId: null, profileFields, profileIntegration);
                 }
-                
+
                 if (state.IsSegmentAuth && userTokenData != null)
                 {
                     var installations = GitHubService.GetUserInstallations(userTokenData.TokenType, userTokenData.AccessToken);
-                    var installation = Utils.FindTayraAppInstallation(installations?.Data.Installations, GHAPP_ID);
+                    var installation = Utils.FindTayraAppInstallation(installations?.Data.Installations, Config[CONFIG_APP_ID]);
                     var installationId = installation.Id;
-                    var installationToken = GitHubService.GetInstallationAccessToken(installationId, GHAPP_ID, GHAPP_RSA_KEY)?.Data.AccessToken;;
+                    var installationToken = GitHubService.GetInstallationAccessToken(installationId, Config[CONFIG_APP_ID], Config[CONFIG_APP_RSAKEY])?.Data.AccessToken;
 
                     var repositories = GitHubService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
 
@@ -84,7 +89,7 @@ namespace Tayra.Connectors.GitHub
                     var targetName = installation.TargetType == "Organization"
                         ? Utils.GetInstallationOrganizationName(userTokenData.AccessToken, installation.TargetId)
                         : loggedInUser?.Login;
-                    
+
                     var segmentFields = new Dictionary<string, string>
                     {
                         [Constants.ACCESS_TOKEN] = userTokenData.AccessToken,
@@ -94,7 +99,7 @@ namespace Tayra.Connectors.GitHub
                         [GHConstants.GH_INSTALLATION_TARGET_TYPE] = installation.TargetType,
                         [GHConstants.GH_INSTALLATION_TARGET_NAME] = targetName
                     };
-                
+
                     segmentIntegration = CreateSegmentIntegration(state.SegmentId, installationId, segmentFields, segmentIntegration);
                 }
 
@@ -113,7 +118,7 @@ namespace Tayra.Connectors.GitHub
 
         public override void UpdateAuthentication(string installationId)
         {
-            var installationToken = GitHubService.GetInstallationAccessToken(installationId, GHAPP_ID, GHAPP_RSA_KEY)?.Data.AccessToken;;
+            var installationToken = GitHubService.GetInstallationAccessToken(installationId, Config[CONFIG_APP_ID], Config[CONFIG_APP_RSAKEY])?.Data.AccessToken; ;
 
             var repositories = GitHubService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
 
@@ -122,23 +127,49 @@ namespace Tayra.Connectors.GitHub
 
             OrganizationContext.SaveChanges();
         }
-        
+
+        public List<CommitType> GetCommitsByPeriodFromAllBranches(Guid integrationId, DateTime since, (string name, string owner) repository)
+        {
+            var accessToken = ReadAccessToken(integrationId);
+            var accessTokenType = ReadAccessTokenType(integrationId);
+            var branches = GitHubService.GetBranchesByRepository(accessToken, repository.name, repository.owner);
+            List<CommitType> commitsFromAllBranches = new List<CommitType>();
+            foreach (var branch in branches)
+            {
+               commitsFromAllBranches.AddRange(GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch));
+            }
+            return commitsFromAllBranches;
+        }
+        public GetPullRequestsResponse GetPullRequestsByPeriod(Guid integrationId, string repositoryName, string repositoryOwner)
+        {
+            var accessToken = ReadAccessToken(integrationId);
+            var accessTokenType = ReadAccessTokenType(integrationId);
+            return GitHubService.GetPullRequestsWithReviews(accessTokenType, accessToken, repositoryName, repositoryOwner);
+        }
+
         #endregion
 
+        public GetRepositoriesResponse.Repository[] GetRepositories(string installationId)
+        {
+            var installationToken = GitHubService.GetInstallationAccessToken(installationId, Config[CONFIG_APP_ID], Config[CONFIG_APP_RSAKEY])?.Data.AccessToken; ;
+            
+            return GitHubService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
+        }
+        
         #region Private Methods
 
-        private void AddOrUpdateRepositoriesByIntegration(string installationId, GetRepositoriesResponse.Repository[] dto) //RepositoryAddOrUpdate
+        public void AddOrUpdateRepositoriesByIntegration(string installationId, GetRepositoriesResponse.Repository[] dto) //RepositoryAddOrUpdate
         {
             var repos = OrganizationContext.Repositories.Where(x => x.IntegrationInstallationId == installationId).ToArray();
 
-            var dtoIds = dto.Select(x => x.ExternalId);
-            OrganizationContext.RemoveRange(repos.Where(x => !dtoIds.Contains(x.ExternalId)));
+            var dtoRepoIds = dto.Select(x => x.ExternalId);
+            OrganizationContext.RemoveRange(repos.Where(x => !dtoRepoIds.Contains(x.ExternalId)));
 
             foreach (var r in dto)
             {
                 var repo = repos.FirstOrDefault(x => x.ExternalId == r.ExternalId);
-                
-                if(repo == null)
+
+                if (repo == null)
                 {
                     repo = new Repository
                     {
@@ -146,15 +177,15 @@ namespace Tayra.Connectors.GitHub
                         ExternalId = r.ExternalId,
                         ExternalUrl = r.ExternalUrl
                     };
-                    
+
                     OrganizationContext.Add(repo);
                 }
-                
+
                 repo.Name = r.Name;
                 repo.NameWithOwner = r.FullName;
             }
         }
-        
+
         private void AddOrUpdateWebhooks(string installationId, string installationToken, GetRepositoriesResponse.Repository[] dto)
         {
             var repos = OrganizationContext.Repositories.Where(x => x.IntegrationInstallationId == installationId).ToArray();
@@ -165,17 +196,17 @@ namespace Tayra.Connectors.GitHub
             foreach (var r in dto)
             {
                 var repo = repos.FirstOrDefault(x => x.ExternalId == r.ExternalId);
-                
-                if(repo == null)
+
+                if (repo == null)
                 {
-                    GitHubService.CreateRepositoryWebhook(installationToken, r.Owner.Login, r.Name, Tenant.Key);
+                    GitHubService.CreateRepositoryWebhook(installationToken, r.Owner.Login, r.Name, TenantInfo.Identifier);
                 }
-                
+
                 //update here if needed
             }
         }
-        
+
         #endregion
-        
+
     }
 }

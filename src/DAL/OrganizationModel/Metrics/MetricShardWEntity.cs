@@ -1,17 +1,16 @@
+using System;
+
 namespace Tayra.Analytics
 {
-    public class MetricShardWEntity //MetricValueShard
+    public class MetricShardWEntity : MetricShard//MetricValueShard
     {
-        public int EntityId { get; set; }
-        public MetricType Type { get; set; }
-        public float Value { get; set; }
-        public int DateId { get; set; }
+        public Guid EntityId { get; set; }
 
         public MetricShardWEntity()
         {
         }
 
-        public MetricShardWEntity(float value, int dateId, int entityId, MetricType metricType)
+        public MetricShardWEntity(float value, int dateId, Guid entityId, MetricType metricType)
         {
             this.Value = value;
             this.DateId = dateId;

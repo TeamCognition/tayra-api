@@ -10,7 +10,7 @@ namespace Tayra.Services
         public ShopStatisticDTO ItemStats { get; set; }
         public ShopStatisticDTO TokenStats { get; set; }
 
-        public class ShopStatisticDTO 
+        public class ShopStatisticDTO
         {
             public float Last30 { get; set; }
             public float Total { get; set; }
