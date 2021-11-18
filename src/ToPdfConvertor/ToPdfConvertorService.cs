@@ -1,4 +1,4 @@
-﻿using DinkToPdf;
+﻿using WkHtmlToPdfDotNet;
 
 namespace ToPdfConvertor
 {
