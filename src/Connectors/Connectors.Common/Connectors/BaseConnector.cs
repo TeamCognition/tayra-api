@@ -18,13 +18,13 @@ namespace Tayra.Connectors.Common
     {
         #region Constructor
 
-        protected BaseConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : this(logger, dataContext, catalogDbContext, config)
+        protected BaseConnector(ILogger<BaseConnector> logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : this(logger, dataContext, catalogDbContext, config)
         {
             HttpContext = httpContext?.HttpContext;
             TenantInfo = HttpContext.GetMultiTenantContext<Tenant>()?.TenantInfo;
         }
 
-        protected BaseConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config)
+        protected BaseConnector(ILogger<BaseConnector> logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config)
         {
             Logger = logger;
             OrganizationContext = dataContext;
@@ -39,7 +39,7 @@ namespace Tayra.Connectors.Common
 
         public abstract IntegrationType Type { get; }
 
-        protected ILogger Logger { get; }
+        protected ILogger<BaseConnector> Logger { get; }
 
         protected HttpContext HttpContext { get; }
         protected ITenantInfo TenantInfo { get; }

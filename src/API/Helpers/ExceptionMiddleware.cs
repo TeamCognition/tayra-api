@@ -5,17 +5,20 @@ using System.Security;
 using System.Threading.Tasks;
 using Cog.Core;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Tayra.API.Helpers
 {
     public class ExceptionMiddleware
     {
+        private ILogger<ExceptionMiddleware> _logger;
         private readonly RequestDelegate _next;
 
-        public ExceptionMiddleware(RequestDelegate next)
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -26,7 +29,7 @@ namespace Tayra.API.Helpers
             }
             catch (Exception ex)
             {
-                //_logger.LogError($"Something went wrong: {ex}");
+                _logger.LogError(ex, ex.Message);
                 await HandleExceptionAsync(httpContext, ex);
             }
         }
