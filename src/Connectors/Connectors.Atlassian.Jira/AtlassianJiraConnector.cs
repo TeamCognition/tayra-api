@@ -21,11 +21,11 @@ namespace Tayra.Connectors.Atlassian.Jira
         private const string AUDIENCE = "api.atlassian.com";
         private const string SCOPE = "read%3Ajira-user%20read%3Ajira-work%20offline_access";
 
-        public AtlassianJiraConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, dataContext, catalogDbContext, config)
+        public AtlassianJiraConnector(ILogger<BaseConnector> logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, dataContext, catalogDbContext, config)
         {
         }
 
-        public AtlassianJiraConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, httpContext, dataContext, catalogDbContext, config)
+        public AtlassianJiraConnector(ILogger<BaseConnector> logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, httpContext, dataContext, catalogDbContext, config)
         {
         }
 

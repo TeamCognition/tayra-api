@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Cog.Core;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -10,10 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using System.IO;
+using System.Linq;
 using Tayra.API.Helpers;
 using Tayra.Common;
 using Tayra.Connectors.Atlassian.Jira;
@@ -21,7 +19,6 @@ using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub;
 using Tayra.Connectors.Slack;
 using Tayra.DAL;
-using Tayra.Helpers;
 using Tayra.Imager;
 using Tayra.Mailer;
 using Tayra.Models.Catalog;
@@ -113,7 +110,6 @@ namespace Tayra.API
             services.AddTransient<IOAuthConnector, AtlassianJiraConnector>();
             services.AddTransient<IOAuthConnector, GitHubConnector>();
             services.AddTransient<IOAuthConnector, SlackConnector>();
-            services.AddTransient<ILogger, DebugLogger>();
 
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();

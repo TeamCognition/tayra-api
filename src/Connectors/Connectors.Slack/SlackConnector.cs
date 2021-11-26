@@ -23,11 +23,11 @@ namespace Tayra.Connectors.Slack
         private const string AUTH_URL = "https://slack.com/oauth/v2/authorize";
         private const string SCOPE = "commands,incoming-webhook,app_mentions:read,channels:history,channels:join,channels:read,chat:write,chat:write.public,chat:write.customize,groups:history,groups:read,groups:write,im:history,im:read,im:write,mpim:history,mpim:read,mpim:write,usergroups:read,users.profile:read,users:read,users:read.email";
 
-        public SlackConnector(ILogger logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, dataContext, catalogDbContext, config)
+        public SlackConnector(ILogger<BaseConnector> logger, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, dataContext, catalogDbContext, config)
         {
         }
 
-        public SlackConnector(ILogger logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, httpContext, dataContext, catalogDbContext, config)
+        public SlackConnector(ILogger<BaseConnector> logger, IHttpContextAccessor httpContext, OrganizationDbContext dataContext, CatalogDbContext catalogDbContext, IConfiguration config) : base(logger, httpContext, dataContext, catalogDbContext, config)
         {
         }
 
