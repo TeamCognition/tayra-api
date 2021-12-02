@@ -27,15 +27,17 @@ namespace Tayra.Models.Organizations
         public Team Team { get; set; }
         
         public bool IsActive() => 
-            Status != InvitationStatus.Accepted &&
+            Status != InvitationStatus.Completed &&
             Status != InvitationStatus.Cancelled &&
             Status != InvitationStatus.Expired;
 
         //Test if this works in LINQ queries
         public static System.Linq.Expressions.Expression<Func<Invitation, bool>> IsActive2() =>
-            i => i.Status != InvitationStatus.Accepted &&
+            i => i.Status != InvitationStatus.Completed &&
                  i.Status != InvitationStatus.Cancelled &&
                  i.Status != InvitationStatus.Expired;
+
+        public bool IsCompleted() => Status == InvitationStatus.Completed;
         
         #region IAuditedEntity
 
