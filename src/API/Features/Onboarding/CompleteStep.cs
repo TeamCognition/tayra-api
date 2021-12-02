@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Tayra.Common;
 using Tayra.Models.Organizations;
 using Tayra.Services._Models.Onboarding;
 
@@ -49,6 +51,7 @@ namespace Tayra.API.Features.Onboarding
                         break;
                     case OnboardingStepIds.InviteMembers:
                         o.IsMembersOnboardingCompleted = true;
+                        await SetInvitationAsCompleted(p);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -56,6 +59,22 @@ namespace Tayra.API.Features.Onboarding
                 
                 await _db.SaveChangesAsync(token);
             }
+
+            #region Private methods
+
+            private async Task SetInvitationAsCompleted(Models.Organizations.Profile p)
+            {
+                var invitation = await _db.Invitations.FirstOrDefaultAsync(x => x.EmailAddress == p.EmailAddress);
+
+                if (invitation == null)
+                {
+                    throw new ApplicationException($"Invitation not found. {p.EmailAddress}='{p.EmailAddress}'.");
+                }
+
+                invitation.Status = InvitationStatus.Completed;
+            }
+
+            #endregion
         }
     }
 }
