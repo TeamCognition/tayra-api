@@ -120,19 +120,23 @@ namespace Tayra.Functions.GithubDataPool
                                                                       .ToList();
 
             AddNewCommits(organizationDb, commits, firstPullRequests, pullRequestsInTheDatabase, commitsShaAlreadyInDatabase);
-            UpdateCommitsAlreadyInDatabase(firstPullRequests, pullRequestsInTheDatabase, commitsAlreadyInDatabase);
+            UpdateCommitsAlreadyInDatabase(commits, firstPullRequests, pullRequestsInTheDatabase, commitsAlreadyInDatabase);
         }
 
-        private void UpdateCommitsAlreadyInDatabase(Dictionary<string, AssociatedPullRequest> firstPullRequests, List<PullRequest> pullRequestsInTheDatabase, List<GitCommit> commitsAlreadyInDatabase)
+        private void UpdateCommitsAlreadyInDatabase(CommitType[] commits, Dictionary<string, AssociatedPullRequest> firstPullRequests, List<PullRequest> pullRequestsInTheDatabase, List<GitCommit> commitsAlreadyInDatabase)
         {
-            var commitsWithoutPullRequest = commitsAlreadyInDatabase.Where(x => !x.FirstPullRequestId.HasValue)
-                                                                    .ToList();
-
-            foreach (var commit in commitsWithoutPullRequest)
+            foreach (var commit in commitsAlreadyInDatabase)
             {
-                PullRequest firstPullRequest = GetFirstPullRequestForCommit(commit.Sha, firstPullRequests, pullRequestsInTheDatabase);
+                var commitDto = commits.FirstOrDefault(x => x.Sha == commit.Sha); 
 
-                commit.FirstPullRequest = firstPullRequest;
+                if (!commit.FirstPullRequestId.HasValue)
+                {
+                    PullRequest firstPullRequest = GetFirstPullRequestForCommit(commit.Sha, firstPullRequests, pullRequestsInTheDatabase);
+
+                    commit.FirstPullRequest = firstPullRequest;
+                }
+
+                commit.CommittedAt = commitDto.CommittedAt;
             }
         }
 
@@ -158,6 +162,7 @@ namespace Tayra.Functions.GithubDataPool
                     ExternalUrl = commit.Url,
                     Additions = commit.Additions,
                     Deletions = commit.Deletions,
+                    CommittedAt = commit.CommittedAt,
                     ExternalRepositoryId = commit.Repository.ExternalId,
                     FirstPullRequest = firstPullRequest
                 });

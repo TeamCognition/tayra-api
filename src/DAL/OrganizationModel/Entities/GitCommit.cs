@@ -19,6 +19,8 @@ namespace Tayra.Models.Organizations
         
         public int Deletions { get; set; }
 
+        public DateTime CommittedAt { get; set; }
+
         /// <summary>
         /// Database Id of the first repository pull request that contained the commit
         /// </summary>
