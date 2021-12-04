@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Cog.Core;
+﻿using Cog.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Models.Catalog;
@@ -133,13 +132,21 @@ namespace Tayra.Connectors.GitHub
             var accessToken = ReadAccessToken(integrationId);
             var accessTokenType = ReadAccessTokenType(integrationId);
             var branches = GitHubService.GetBranchesByRepository(accessToken, repository.name, repository.owner);
+
             List<CommitType> commitsFromAllBranches = new List<CommitType>();
+                                     
             foreach (var branch in branches)
             {
-               commitsFromAllBranches.AddRange(GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch));
+                var commitsByPeriod = GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch);
+               commitsFromAllBranches.AddRange(commitsByPeriod);
             }
-            return commitsFromAllBranches;
+
+            var uniqueCommitsFromAllBranches = commitsFromAllBranches.GroupBy(x => x.Sha).Select(x => x.FirstOrDefault())
+                                                                     .ToList();
+
+            return uniqueCommitsFromAllBranches;
         }
+
         public GetPullRequestsResponse GetPullRequestsByPeriod(Guid integrationId, string repositoryName, string repositoryOwner)
         {
             var accessToken = ReadAccessToken(integrationId);

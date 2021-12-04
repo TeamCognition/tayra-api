@@ -1,5 +1,5 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace Tayra.Connectors.GitHub
 {
@@ -28,7 +28,10 @@ namespace Tayra.Connectors.GitHub
         
         [JsonProperty("repository")] 
         public GHRepository Repository { get; set; }
-        
+
+        [JsonProperty("associatedPullRequests")]
+        public AssociatedPullRequestsArray AssociatedPullRequests { get; set; }
+
         [JsonProperty("author")] 
         public GitHubUser Author { get; set; }
 
@@ -57,6 +60,21 @@ namespace Tayra.Connectors.GitHub
             
             [JsonProperty("nameWithOwner")]
             public string NameWithOwner { get; set; }
+        }
+
+        public class AssociatedPullRequestsArray
+        {
+            [JsonProperty("nodes")]
+            public AssociatedPullRequest[] AssociatedPullRequests { get; set; }
+        }
+
+        public class AssociatedPullRequest
+        {
+            [JsonProperty("id")]
+            public string Id { get; set; }
+
+            [JsonProperty("mergedAt")]
+            public DateTime MergedAt { get; set; }
         }
     }
 }
