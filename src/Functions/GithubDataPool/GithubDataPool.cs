@@ -196,7 +196,7 @@ namespace Tayra.Functions.GithubDataPool
 
         private PullRequest GetFirstPullRequestForCommit(string commitSha, Dictionary<string, AssociatedPullRequest> firstPullRequests, List<PullRequest> pullRequestsInTheDatabase)
         {
-            var firstAssociatedPullRequest = firstPullRequests[commitSha];
+            var firstAssociatedPullRequest = firstPullRequests.GetValueOrDefault(commitSha);
 
             if (firstAssociatedPullRequest == null)
             {
