@@ -91,13 +91,15 @@ namespace Tayra.Functions.GithubDataPool
                         githubConnector.AddOrUpdateRepositoriesByIntegration(installationId, repositories);
                         foreach (var repo in repositories)
                         {
+                            var prs = githubConnector.GetPullRequestsByPeriod(integration.Id, repo.Name, repo.Owner.Login);
+                            AddOrUpdatePullRequests(organizationDb, prs.Repository.PullRequestsNodes.PullRequests);
+
+                            organizationDb.SaveChanges();
+
                             var commits = githubConnector.GetCommitsByPeriodFromAllBranches(integration.Id, command.Since, (repo.Name, repo.Owner.Login));
                             AddOrUpdateCommits(organizationDb, commits.ToArray());
 
                             organizationDb.SaveChanges();
-                            var prs = githubConnector.GetPullRequestsByPeriod(integration.Id, repo.Name,
-                                repo.Owner.Login);
-                            AddOrUpdatePullRequests(organizationDb, prs.Repository.PullRequestsNodes.PullRequests);
                         }   
                     }
                 }    
@@ -106,23 +108,46 @@ namespace Tayra.Functions.GithubDataPool
         
         private void AddOrUpdateCommits(OrganizationDbContext organizationDb, CommitType[] commits)
         {
-            var commitsShaAlreadyInDatabase = organizationDb.GitCommits.Where(x => commits.Select(c => c.Sha).Contains(x.Sha)).Select(x => x.Sha).ToArray();
-
             var firstPullRequests = GetFirstPullRequests(commits);
 
             var pullRequestsInTheDatabase = organizationDb.PullRequests.Where(x => firstPullRequests.Select(y => y.Value.Id).Contains(x.ExternalId))
-                                                                             .ToList();
+                                                                       .ToList();
 
-            foreach (var commit in commits.Where(x => !commitsShaAlreadyInDatabase.Contains(x.Sha)))
+            var commitsAlreadyInDatabase = organizationDb.GitCommits.Where(x => commits.Select(c => c.Sha).Contains(x.Sha))
+                                                                    .ToList();
+
+            var commitsShaAlreadyInDatabase = commitsAlreadyInDatabase.Select(x => x.Sha)
+                                                                      .ToList();
+
+            AddNewCommits(organizationDb, commits, firstPullRequests, pullRequestsInTheDatabase, commitsShaAlreadyInDatabase);
+            UpdateCommitsAlreadyInDatabase(firstPullRequests, pullRequestsInTheDatabase, commitsAlreadyInDatabase);
+        }
+
+        private void UpdateCommitsAlreadyInDatabase(Dictionary<string, AssociatedPullRequest> firstPullRequests, List<PullRequest> pullRequestsInTheDatabase, List<GitCommit> commitsAlreadyInDatabase)
+        {
+            var commitsWithoutPullRequest = commitsAlreadyInDatabase.Where(x => !x.FirstPullRequestId.HasValue)
+                                                                    .ToList();
+
+            foreach (var commit in commitsWithoutPullRequest)
+            {
+                PullRequest firstPullRequest = GetFirstPullRequestForCommit(commit.Sha, firstPullRequests, pullRequestsInTheDatabase);
+
+                commit.FirstPullRequest = firstPullRequest;
+            }
+        }
+
+        private void AddNewCommits(OrganizationDbContext organizationDb, CommitType[] commits, Dictionary<string, AssociatedPullRequest> firstPullRequests, List<PullRequest> pullRequestsInTheDatabase, List<string> commitsShaAlreadyInDatabase)
+        {
+            var newCommits = commits.Where(x => !commitsShaAlreadyInDatabase.Contains(x.Sha))
+                                    .ToList();
+
+            foreach (var commit in newCommits)
             {
                 var authorProfile = commit.Author.User != null
                     ? new ProfilesService().GetProfileByExternalId(organizationDb, commit.Author.User.Username, IntegrationType.GH)
                     : null;
 
-                var firstAssociatedPullRequest = firstPullRequests[commit.Sha];
-                var firstPullRequest = firstAssociatedPullRequest != null
-                    ? pullRequestsInTheDatabase.FirstOrDefault(x => x.ExternalId == firstAssociatedPullRequest.Id)
-                    : null;
+                PullRequest firstPullRequest = GetFirstPullRequestForCommit(commit.Sha, firstPullRequests, pullRequestsInTheDatabase);
 
                 organizationDb.Add(new GitCommit
                 {
@@ -167,6 +192,20 @@ namespace Tayra.Functions.GithubDataPool
             }
 
             return firstPullRequests;
+        }
+
+        private PullRequest GetFirstPullRequestForCommit(string commitSha, Dictionary<string, AssociatedPullRequest> firstPullRequests, List<PullRequest> pullRequestsInTheDatabase)
+        {
+            var firstAssociatedPullRequest = firstPullRequests[commitSha];
+
+            if (firstAssociatedPullRequest == null)
+            {
+                return null;
+            }
+
+            var firstPullRequest = pullRequestsInTheDatabase.FirstOrDefault(x => x.ExternalId == firstAssociatedPullRequest.Id);
+
+            return firstPullRequest;
         }
 
         private void AddOrUpdatePullRequests(OrganizationDbContext organizationDb, Tayra.Connectors.GitHub.GetPullRequestsResponse.PullRequest[] pullRequests)
