@@ -55,8 +55,8 @@ namespace Tayra.API.Features.Teams
                 var team = await _db.Teams.FirstOrDefaultAsync(x => x.Id == msg.TeamId, token);
                 team.EnsureNotNull(msg.TeamId);
 
-                var pullRequests = await GetPullRequests(team, token);
-                var commits = await GetCommits(pullRequests, token);
+                var pullRequests = await GetPullRequestsAsync(team, token);
+                var commits = await GetCommitsAsync(pullRequests, token);
 
                 var dateTimeUtcNow = DateTime.UtcNow;
 
@@ -129,17 +129,17 @@ namespace Tayra.API.Features.Teams
                 return duration;
             }
 
-            private async Task<List<GitCommit>> GetCommits(List<PullRequest> pullRequests, CancellationToken token)
+            private async Task<List<GitCommit>> GetCommitsAsync(List<PullRequest> pullRequests, CancellationToken token)
             {
                 var pullRequestIds = pullRequests.Select(x => x.Id)
-                                                                 .ToList();
+                                                 .ToList();
 
                 var commits = await _db.GitCommits.Where(x => x.FirstPullRequestId.HasValue && pullRequestIds.Contains(x.FirstPullRequestId.Value))
                                                   .ToListAsync(token);
                 return commits;
             }
 
-            private async Task<List<PullRequest>> GetPullRequests(Team team, CancellationToken token)
+            private async Task<List<PullRequest>> GetPullRequestsAsync(Team team, CancellationToken token)
             {
                 var teamRepositoryExternalIds = await _db.Repositories.Where(x => x.TeamId == team.Id)
                                                                       .Select(x => x.ExternalId)

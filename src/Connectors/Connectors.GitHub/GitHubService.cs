@@ -99,17 +99,43 @@ namespace Tayra.Connectors.GitHub
 
         public static List<CommitType> GetCommitsByPeriod(string tokenType, string token, DateTime since, string repositoryOwner, string repositoryName, string repositoryBranch)
         {
+            var branchCommitsByPeriod = new List<CommitType>();
+
+            var pageInfo = new PageInfoType
+            {
+                EndCursor = null,
+                HasNextPage = true
+            };
+
+            do
+            {
+                var commitPage = GetCommitsPageByPeriod(tokenType, token, since, pageInfo.EndCursor, repositoryOwner, repositoryName, repositoryBranch);
+                branchCommitsByPeriod.AddRange(commitPage.Commits);
+
+                pageInfo = commitPage.PageInfo;
+
+            } while (pageInfo.HasNextPage);
+
+            return branchCommitsByPeriod;
+        }
+
+        public static GetCommitsPageResponse GetCommitsPageByPeriod(string tokenType, string token, DateTime since, string endCursor, string repositoryOwner, string repositoryName, string repositoryBranch)
+        {
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
             var commitsRequest = new GraphQLRequest
             {
                 Query = @"
-                    query GetCommitsSinceTimestamp($commitsSince: GitTimestamp!, $repositoryName: String!, $repositoryOwner: String!, $repositoryBranch: String!) {
+                    query GetCommitsSinceTimestamp($endCursor: String, $commitsSince: GitTimestamp!, $repositoryName: String!, $repositoryOwner: String!, $repositoryBranch: String!) {
                       repository(name: $repositoryName, owner: $repositoryOwner) {
                         ref(qualifiedName: $repositoryBranch) {
                           target {
                             ... on Commit {
-                              history(since: $commitsSince) {
+                              history(after: $endCursor, since: $commitsSince) {
+                                pageInfo {
+                                  endCursor
+                                  hasNextPage
+                                }
                                 edges {
                                   node {
                                     oid
@@ -148,15 +174,22 @@ namespace Tayra.Connectors.GitHub
                 Variables = new
                 {
                     commitsSince = since.ToString("o"),
+                    endCursor = endCursor,
                     repositoryOwner = repositoryOwner,
                     repositoryName = repositoryName,
                     repositoryBranch = repositoryBranch
-
                 }
             };
             var gitGraphQlResponse =
-                graphQLClient.SendQueryAsync<GetCommitsResponse>(commitsRequest).GetAwaiter().GetResult();
-            return MapGQResponse<CommitType>.MapResponseToCommitType(gitGraphQlResponse.Data.Repository.Branch.Target.History.Edges);
+                graphQLClient.SendQueryAsync<GetCommitsResponse>(commitsRequest).GetAwaiter().GetResult().Data.Repository.Branch.Target.History;
+
+            var commitsPage = new GetCommitsPageResponse
+            {
+                PageInfo = gitGraphQlResponse.PageInfo,
+                Commits = MapGQResponse<CommitType>.MapResponseToCommitType(gitGraphQlResponse.Edges)
+            };
+
+            return commitsPage;
         }
 
         public static GetPullRequestsResponse GetPullRequestsWithReviews(string tokenType, string token, string repositoryName, string repositoryOwner)

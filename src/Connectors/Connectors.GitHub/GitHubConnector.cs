@@ -133,12 +133,12 @@ namespace Tayra.Connectors.GitHub
             var accessTokenType = ReadAccessTokenType(integrationId);
             var branches = GitHubService.GetBranchesByRepository(accessToken, repository.name, repository.owner);
 
-            List<CommitType> commitsFromAllBranches = new List<CommitType>();
+            var commitsFromAllBranches = new List<CommitType>();
                                      
             foreach (var branch in branches)
             {
-                var commitsByPeriod = GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch);
-               commitsFromAllBranches.AddRange(commitsByPeriod);
+                var branchCommitsByPeriod = GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch);
+                commitsFromAllBranches.AddRange(branchCommitsByPeriod);
             }
 
             var uniqueCommitsFromAllBranches = commitsFromAllBranches.GroupBy(x => x.Sha).Select(x => x.FirstOrDefault())
