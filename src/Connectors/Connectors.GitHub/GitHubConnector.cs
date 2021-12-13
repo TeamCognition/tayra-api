@@ -137,7 +137,7 @@ namespace Tayra.Connectors.GitHub
                                      
             foreach (var branch in branches)
             {
-                var branchCommitsByPeriod = GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch);
+                var branchCommitsByPeriod = GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch);
                 commitsFromAllBranches.AddRange(branchCommitsByPeriod);
             }
 
@@ -163,8 +163,6 @@ namespace Tayra.Connectors.GitHub
             
             return GitHubService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
         }
-        
-        #region Private Methods
 
         public void AddOrUpdateRepositoriesByIntegration(string installationId, GetRepositoriesResponse.Repository[] dto) //RepositoryAddOrUpdate
         {
@@ -194,6 +192,8 @@ namespace Tayra.Connectors.GitHub
             }
         }
 
+        #region Private Methods
+
         private static List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest> GetPullRequestsWithReviews(string tokenType, string token, string repositoryName, string repositoryOwner)
         {
             var pullRequests = new List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest>();
@@ -214,6 +214,28 @@ namespace Tayra.Connectors.GitHub
             } while (pageInfo.HasNextPage);
 
             return pullRequests;
+        }
+
+        private static List<CommitType> GetCommitsByPeriod(string tokenType, string token, DateTime since, string repositoryOwner, string repositoryName, string repositoryBranch)
+        {
+            var branchCommitsByPeriod = new List<CommitType>();
+
+            var pageInfo = new PageInfoType
+            {
+                EndCursor = null,
+                HasNextPage = true
+            };
+
+            do
+            {
+                var commitPage = GitHubService.GetCommitsPageByPeriod(tokenType, token, since, pageInfo.EndCursor, repositoryOwner, repositoryName, repositoryBranch);
+                branchCommitsByPeriod.AddRange(commitPage.Commits);
+
+                pageInfo = commitPage.PageInfo;
+
+            } while (pageInfo.HasNextPage);
+
+            return branchCommitsByPeriod;
         }
 
         private void AddOrUpdateWebhooks(string installationId, string installationToken, GetRepositoriesResponse.Repository[] dto)

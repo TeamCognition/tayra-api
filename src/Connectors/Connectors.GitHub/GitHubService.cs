@@ -97,28 +97,6 @@ namespace Tayra.Connectors.GitHub
                 .GetResult()?.Data?.Viewer;
         }
 
-        public static List<CommitType> GetCommitsByPeriod(string tokenType, string token, DateTime since, string repositoryOwner, string repositoryName, string repositoryBranch)
-        {
-            var branchCommitsByPeriod = new List<CommitType>();
-
-            var pageInfo = new PageInfoType
-            {
-                EndCursor = null,
-                HasNextPage = true
-            };
-
-            do
-            {
-                var commitPage = GetCommitsPageByPeriod(tokenType, token, since, pageInfo.EndCursor, repositoryOwner, repositoryName, repositoryBranch);
-                branchCommitsByPeriod.AddRange(commitPage.Commits);
-
-                pageInfo = commitPage.PageInfo;
-
-            } while (pageInfo.HasNextPage);
-
-            return branchCommitsByPeriod;
-        }
-
         public static GetCommitsPageResponse GetCommitsPageByPeriod(string tokenType, string token, DateTime since, string endCursor, string repositoryOwner, string repositoryName, string repositoryBranch)
         {
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
