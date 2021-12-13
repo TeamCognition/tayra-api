@@ -190,19 +190,23 @@ namespace Tayra.Connectors.GitHub
             };
 
             return commitsPage;
-        }
+        }       
 
-        public static GetPullRequestsResponse GetPullRequestsWithReviews(string tokenType, string token, string repositoryName, string repositoryOwner)
+        public static GetPullRequestsPageResponse GetPullRequestsWithReviewsPage(string tokenType, string token, string endCursor, string repositoryName, string repositoryOwner)
         {
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"{tokenType} {token}");
             var pullRequestsRequest = new GraphQLRequest
             {
                 Query = @"
-                    query GetPullRequestsWithReviews($repositoryName: String!, $repositoryOwner: String!, $prCount: Int!) {
+                    query GetPullRequestsWithReviews($endCursor: String, $repositoryName: String!, $repositoryOwner: String!, $prCount: Int!) {
                       repository(name: $repositoryName, owner: $repositoryOwner) {
                         name
-                        pullRequests(first: $prCount, orderBy: {field: UPDATED_AT, direction: DESC}) {
+                        pullRequests(after: $endCursor, first: $prCount, orderBy: {field: UPDATED_AT, direction: DESC}) { 
+                          pageInfo {
+                            endCursor
+                            hasNextPage
+                          }
                           nodes {
                             id
                             number
@@ -248,12 +252,12 @@ namespace Tayra.Connectors.GitHub
                 {
                     repositoryOwner = repositoryOwner,
                     repositoryName = repositoryName,
+                    endCursor = endCursor,
                     prCount = 30
                 }
-            };
+            };            
             
-            
-            return graphQLClient.SendQueryAsync<GetPullRequestsResponse>(pullRequestsRequest).GetAwaiter().GetResult().Data;
+            return graphQLClient.SendQueryAsync<GetPullRequestsPageResponse>(pullRequestsRequest).GetAwaiter().GetResult().Data;
         }
 
         public static CommitType GetCommitBySha(string sha, string token, string repositoryOwner, string repositoryName)

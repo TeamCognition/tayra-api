@@ -2,7 +2,7 @@
 
 namespace Tayra.Connectors.GitHub
 {
-    public class GetPullRequestsResponse
+    public class GetPullRequestsPageResponse
     {
         [JsonProperty("repository")]
         public GithubRepository Repository { get; set; }
@@ -93,6 +93,9 @@ namespace Tayra.Connectors.GitHub
         
         public class PullRequestNodes
         {
+            [JsonProperty("pageInfo")]
+            public PageInfoType PageInfo { get; set; }
+
             [JsonProperty("nodes")]
             public PullRequest[] PullRequests { get; set; }
         }

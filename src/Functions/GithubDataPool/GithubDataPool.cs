@@ -92,7 +92,7 @@ namespace Tayra.Functions.GithubDataPool
                         foreach (var repo in repositories)
                         {
                             var prs = githubConnector.GetPullRequestsByPeriod(integration.Id, repo.Name, repo.Owner.Login);
-                            AddOrUpdatePullRequests(organizationDb, prs.Repository.PullRequestsNodes.PullRequests);
+                            AddOrUpdatePullRequests(organizationDb, prs);
 
                             organizationDb.SaveChanges();
 
@@ -213,7 +213,7 @@ namespace Tayra.Functions.GithubDataPool
             return firstPullRequest;
         }
 
-        private void AddOrUpdatePullRequests(OrganizationDbContext organizationDb, Tayra.Connectors.GitHub.GetPullRequestsResponse.PullRequest[] pullRequests)
+        private void AddOrUpdatePullRequests(OrganizationDbContext organizationDb, List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest> pullRequests)
         {
             var prAlreadyInDatabase = organizationDb.PullRequests.Where(x => pullRequests.Select(p => p.ExternalId).Contains(x.ExternalId)).ToArray();
             var prExternalIdsAlreadyInDatabase = prAlreadyInDatabase.Select(x => x.ExternalId).ToArray();

@@ -147,12 +147,13 @@ namespace Tayra.Connectors.GitHub
             return uniqueCommitsFromAllBranches;
         }
 
-        public GetPullRequestsResponse GetPullRequestsByPeriod(Guid integrationId, string repositoryName, string repositoryOwner)
+        public List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest> GetPullRequestsByPeriod(Guid integrationId, string repositoryName, string repositoryOwner)
         {
             var accessToken = ReadAccessToken(integrationId);
             var accessTokenType = ReadAccessTokenType(integrationId);
-            return GitHubService.GetPullRequestsWithReviews(accessTokenType, accessToken, repositoryName, repositoryOwner);
-        }
+
+            return GetPullRequestsWithReviews(accessTokenType, accessToken, repositoryName, repositoryOwner);
+        }        
 
         #endregion
 
@@ -191,6 +192,28 @@ namespace Tayra.Connectors.GitHub
                 repo.Name = r.Name;
                 repo.NameWithOwner = r.FullName;
             }
+        }
+
+        private static List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest> GetPullRequestsWithReviews(string tokenType, string token, string repositoryName, string repositoryOwner)
+        {
+            var pullRequests = new List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest>();
+
+            var pageInfo = new PageInfoType
+            {
+                EndCursor = null,
+                HasNextPage = true
+            };
+
+            do
+            {
+                var pullRequestsPage = GitHubService.GetPullRequestsWithReviewsPage(tokenType, token, pageInfo.EndCursor, repositoryName, repositoryOwner);
+                pullRequests.AddRange(pullRequestsPage.Repository.PullRequestsNodes.PullRequests);
+
+                pageInfo = pullRequestsPage.Repository.PullRequestsNodes.PageInfo;
+
+            } while (pageInfo.HasNextPage);
+
+            return pullRequests;
         }
 
         private void AddOrUpdateWebhooks(string installationId, string installationToken, GetRepositoriesResponse.Repository[] dto)
