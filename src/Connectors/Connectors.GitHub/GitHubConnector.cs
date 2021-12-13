@@ -10,6 +10,7 @@ using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
+using static Tayra.Connectors.GitHub.GetBranchesByRepositoryPageResponse;
 
 namespace Tayra.Connectors.GitHub
 {
@@ -131,13 +132,13 @@ namespace Tayra.Connectors.GitHub
         {
             var accessToken = ReadAccessToken(integrationId);
             var accessTokenType = ReadAccessTokenType(integrationId);
-            var branches = GitHubService.GetBranchesByRepository(accessToken, repository.name, repository.owner);
+            var branches = GetBranchesByRepository(accessToken, repository.name, repository.owner);
 
             var commitsFromAllBranches = new List<CommitType>();
                                      
             foreach (var branch in branches)
             {
-                var branchCommitsByPeriod = GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch);
+                var branchCommitsByPeriod = GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch.Name);
                 commitsFromAllBranches.AddRange(branchCommitsByPeriod);
             }
 
@@ -193,6 +194,28 @@ namespace Tayra.Connectors.GitHub
         }
 
         #region Private Methods
+
+        private static List<Branch> GetBranchesByRepository(string accessToken, string repositoryName, string repositoryOwner)
+        {
+            var branches = new List<Branch>();
+
+            var pageInfo = new PageInfoType
+            {
+                EndCursor = null,
+                HasNextPage = true
+            };
+
+            do
+            {
+                var branchesPage = GitHubService.GetBranchesByRepositoryPage(accessToken, pageInfo.EndCursor, repositoryName, repositoryOwner);
+                branches.AddRange(branchesPage.Repository.Refs.Nodes);
+
+                pageInfo = branchesPage.Repository.Refs.PageInfo;
+
+            } while (pageInfo.HasNextPage);
+
+            return branches;
+        }
 
         private static List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest> GetPullRequestsWithReviews(string tokenType, string token, string repositoryName, string repositoryOwner)
         {

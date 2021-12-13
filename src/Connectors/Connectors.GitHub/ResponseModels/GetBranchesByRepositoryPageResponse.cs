@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
-using Tayra.Connectors.GitHub.Common;
-namespace Tayra.Connectors.GitHub.ResponseModels
+﻿using Newtonsoft.Json;
+
+namespace Tayra.Connectors.GitHub
 {
-    public class GetBranchesByRepository
+    public class GetBranchesByRepositoryPageResponse
     {
         [JsonProperty("repository")]
         public GithubRepository Repository { get; set; }
@@ -15,8 +14,11 @@ namespace Tayra.Connectors.GitHub.ResponseModels
         }
         public class Refs
         {
-            [JsonProperty("edges")]
-            public List<Edge<Branch>> Edges { get; set; }
+            [JsonProperty("pageInfo")]
+            public PageInfoType PageInfo { get; set; }
+
+            [JsonProperty("nodes")]
+            public Branch[] Nodes { get; set; }
         }
         public class Branch
         {

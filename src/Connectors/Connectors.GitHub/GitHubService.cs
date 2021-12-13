@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using Cog.Core;
 using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using RestSharp;
+using System;
+using System.Collections.Generic;
 using Tayra.Connectors.Common;
 using Tayra.Connectors.GitHub.Common;
 using Tayra.Connectors.GitHub.Helper;
-using Tayra.Connectors.GitHub.ResponseModels;
 
 namespace Tayra.Connectors.GitHub
 {
@@ -315,23 +313,24 @@ namespace Tayra.Connectors.GitHub
                 .UseSerializer(() => new JsonNetSerializer());
 
             return client.Execute<List<GetOrganizationsResponse>>(request);
-        }
-        
+        }        
 
-        public static List<string> GetBranchesByRepository(string accessToken, string repositoryName, string repositoryOwner)
+        public static GetBranchesByRepositoryPageResponse GetBranchesByRepositoryPage(string accessToken, string endCursor, string repositoryName, string repositoryOwner)
         {
             var graphQlClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
             graphQlClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
             var graphQlRequest = new GraphQLRequest
             {
                 Query = @"
-                    query BranchesByRepository($repoName: String!, $repoOwner: String!) {
+                    query BranchesByRepository($endCursor: String, $repoName: String!, $repoOwner: String!) {
                       repository(name: $repoName, owner: $repoOwner) {
-                        refs(first: 100, refPrefix: ""refs/heads/"") {
-                          edges {
-                            node {
-                              name
-                            }
+                        refs(after: $endCursor, first: 100, refPrefix: ""refs/heads/"") { 
+                          pageInfo {
+                            endCursor
+                            hasNextPage
+                          }                          
+                          nodes{
+                            name
                           }
                         }
                       }
@@ -340,24 +339,28 @@ namespace Tayra.Connectors.GitHub
                 Variables = new
                 {
                     repoOwner = repositoryOwner,
-                    repoName = repositoryName
+                    repoName = repositoryName,
+                    endCursor = endCursor
                 }
             };
-            var graphQlResponse = graphQlClient.SendQueryAsync<GetBranchesByRepository>(graphQlRequest).GetAwaiter()
-                .GetResult();
-            var graphQlBranches = graphQlResponse.Data?.Repository?.Refs?.Edges;
-            List<string> branches = new List<string>();
-            if (graphQlBranches.IsNullOrEmpty())
-            {
-                return branches;
-            }
-            foreach (var edge in graphQlBranches)
-            {
-                branches.Add(edge.Node.Name);
-            }
-            return branches;
+
+            var graphQlResponse = graphQlClient.SendQueryAsync<GetBranchesByRepositoryPageResponse>(graphQlRequest)
+                                               .GetAwaiter()
+                                               .GetResult()
+                                               .Data;
+
+            return graphQlResponse;
         }
         
+        /// <summary>
+        /// Gets the first 100 commits associated to a specific number of pull requests given by the pullRequestCount method parameter
+        /// </summary>
+        /// <param name="tokenType"></param>
+        /// <param name="token"></param>
+        /// <param name="pullRequestCount"></param>
+        /// <param name="repositoryOwner"></param>
+        /// <param name="repositoryName"></param>
+        /// <returns></returns>
         public static List<CommitType> GetCommitsByPullRequest(string tokenType, string token, int pullRequestCount, string repositoryOwner, string repositoryName)
         {
             using var graphQLClient = new GraphQLHttpClient(GRAPHQL_URL, new NewtonsoftJsonSerializer());
