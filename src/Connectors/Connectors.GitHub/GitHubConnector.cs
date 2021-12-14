@@ -10,6 +10,7 @@ using Tayra.Common;
 using Tayra.Connectors.Common;
 using Tayra.Models.Catalog;
 using Tayra.Models.Organizations;
+using static Tayra.Connectors.GitHub.GetBranchesByRepositoryPageResponse;
 
 namespace Tayra.Connectors.GitHub
 {
@@ -131,14 +132,14 @@ namespace Tayra.Connectors.GitHub
         {
             var accessToken = ReadAccessToken(integrationId);
             var accessTokenType = ReadAccessTokenType(integrationId);
-            var branches = GitHubService.GetBranchesByRepository(accessToken, repository.name, repository.owner);
+            var branches = GetBranchesByRepository(accessToken, repository.name, repository.owner);
 
-            List<CommitType> commitsFromAllBranches = new List<CommitType>();
+            var commitsFromAllBranches = new List<CommitType>();
                                      
             foreach (var branch in branches)
             {
-                var commitsByPeriod = GitHubService.GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch);
-               commitsFromAllBranches.AddRange(commitsByPeriod);
+                var branchCommitsByPeriod = GetCommitsByPeriod(accessTokenType, accessToken, since, repository.owner, repository.name, branch.Name);
+                commitsFromAllBranches.AddRange(branchCommitsByPeriod);
             }
 
             var uniqueCommitsFromAllBranches = commitsFromAllBranches.GroupBy(x => x.Sha).Select(x => x.FirstOrDefault())
@@ -147,12 +148,13 @@ namespace Tayra.Connectors.GitHub
             return uniqueCommitsFromAllBranches;
         }
 
-        public GetPullRequestsResponse GetPullRequestsByPeriod(Guid integrationId, string repositoryName, string repositoryOwner)
+        public List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest> GetPullRequestsByPeriod(Guid integrationId, string repositoryName, string repositoryOwner)
         {
             var accessToken = ReadAccessToken(integrationId);
             var accessTokenType = ReadAccessTokenType(integrationId);
-            return GitHubService.GetPullRequestsWithReviews(accessTokenType, accessToken, repositoryName, repositoryOwner);
-        }
+
+            return GetPullRequestsWithReviews(accessTokenType, accessToken, repositoryName, repositoryOwner);
+        }        
 
         #endregion
 
@@ -162,8 +164,6 @@ namespace Tayra.Connectors.GitHub
             
             return GitHubService.GetInstallationRepositories(installationToken)?.Data?.Repositories;
         }
-        
-        #region Private Methods
 
         public void AddOrUpdateRepositoriesByIntegration(string installationId, GetRepositoriesResponse.Repository[] dto) //RepositoryAddOrUpdate
         {
@@ -191,6 +191,74 @@ namespace Tayra.Connectors.GitHub
                 repo.Name = r.Name;
                 repo.NameWithOwner = r.FullName;
             }
+        }
+
+        #region Private Methods
+
+        private static List<Branch> GetBranchesByRepository(string accessToken, string repositoryName, string repositoryOwner)
+        {
+            var branches = new List<Branch>();
+
+            var pageInfo = new PageInfoType
+            {
+                EndCursor = null,
+                HasNextPage = true
+            };
+
+            do
+            {
+                var branchesPage = GitHubService.GetBranchesByRepositoryPage(accessToken, pageInfo.EndCursor, repositoryName, repositoryOwner);
+                branches.AddRange(branchesPage.Repository.Refs.Nodes);
+
+                pageInfo = branchesPage.Repository.Refs.PageInfo;
+
+            } while (pageInfo.HasNextPage);
+
+            return branches;
+        }
+
+        private static List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest> GetPullRequestsWithReviews(string tokenType, string token, string repositoryName, string repositoryOwner)
+        {
+            var pullRequests = new List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest>();
+
+            var pageInfo = new PageInfoType
+            {
+                EndCursor = null,
+                HasNextPage = true
+            };
+
+            do
+            {
+                var pullRequestsPage = GitHubService.GetPullRequestsWithReviewsPage(tokenType, token, pageInfo.EndCursor, repositoryName, repositoryOwner);
+                pullRequests.AddRange(pullRequestsPage.Repository.PullRequestsNodes.PullRequests);
+
+                pageInfo = pullRequestsPage.Repository.PullRequestsNodes.PageInfo;
+
+            } while (pageInfo.HasNextPage);
+
+            return pullRequests;
+        }
+
+        private static List<CommitType> GetCommitsByPeriod(string tokenType, string token, DateTime since, string repositoryOwner, string repositoryName, string repositoryBranch)
+        {
+            var branchCommitsByPeriod = new List<CommitType>();
+
+            var pageInfo = new PageInfoType
+            {
+                EndCursor = null,
+                HasNextPage = true
+            };
+
+            do
+            {
+                var commitPage = GitHubService.GetCommitsPageByPeriod(tokenType, token, since, pageInfo.EndCursor, repositoryOwner, repositoryName, repositoryBranch);
+                branchCommitsByPeriod.AddRange(commitPage.Commits);
+
+                pageInfo = commitPage.PageInfo;
+
+            } while (pageInfo.HasNextPage);
+
+            return branchCommitsByPeriod;
         }
 
         private void AddOrUpdateWebhooks(string installationId, string installationToken, GetRepositoriesResponse.Repository[] dto)

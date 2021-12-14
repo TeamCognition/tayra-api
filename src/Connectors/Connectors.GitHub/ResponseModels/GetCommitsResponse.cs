@@ -24,6 +24,9 @@ namespace Tayra.Connectors.GitHub
         }
         public class History
         {
+            [JsonProperty("pageInfo")]
+            public PageInfoType PageInfo { get; set; }
+
             [JsonProperty("edges")]
             public List<Edge<CommitType>> Edges { get; set; }
         }
