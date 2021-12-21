@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
     public class PullRequest : EntityGuidId, ITimeStampedEntity
     {
+        public PullRequest()
+        {
+            Reviews = new List<PullRequestReview>();
+        }
+
         public string ExternalId { get; set; }
         
         public int ExternalNumber { get; set; }
@@ -41,6 +47,8 @@ namespace Tayra.Models.Organizations
         public Guid? AuthorProfileId { get; set; }
 
         public Profile AuthorProfile { get; set; }
+
+        public ICollection<PullRequestReview> Reviews { get; set; }
 
         #region ITimeStampedEntity
 

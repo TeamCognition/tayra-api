@@ -89,10 +89,11 @@ namespace Tayra.Functions.GithubDataPool
                         
                         var repositories = githubConnector.GetRepositories(installationId);
                         githubConnector.AddOrUpdateRepositoriesByIntegration(installationId, repositories);
+
                         foreach (var repo in repositories)
                         {
                             var prs = githubConnector.GetPullRequestsByPeriod(integration.Id, repo.Name, repo.Owner.Login);
-                            AddOrUpdatePullRequests(organizationDb, prs);
+                            AddOrUpdatePullRequestsWithReviewsAndComments(organizationDb, prs);
 
                             organizationDb.SaveChanges();
 
@@ -100,12 +101,12 @@ namespace Tayra.Functions.GithubDataPool
                             AddOrUpdateCommits(organizationDb, commits.ToArray());
 
                             organizationDb.SaveChanges();
-                        }   
+                        }
                     }
                 }    
             }
         }
-        
+
         private void AddOrUpdateCommits(OrganizationDbContext organizationDb, CommitType[] commits)
         {
             var firstPullRequests = GetFirstPullRequests(commits);
@@ -213,19 +214,19 @@ namespace Tayra.Functions.GithubDataPool
             return firstPullRequest;
         }
 
-        private void AddOrUpdatePullRequests(OrganizationDbContext organizationDb, List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest> pullRequests)
+        private void AddOrUpdatePullRequestsWithReviewsAndComments(OrganizationDbContext organizationDb, List<Tayra.Connectors.GitHub.GetPullRequestsPageResponse.PullRequest> pullRequests)
         {
             var prAlreadyInDatabase = organizationDb.PullRequests.Where(x => pullRequests.Select(p => p.ExternalId).Contains(x.ExternalId)).ToArray();
             var prExternalIdsAlreadyInDatabase = prAlreadyInDatabase.Select(x => x.ExternalId).ToArray();
             var logService = new LogsService(organizationDb, new MailerService());
-            
+
             foreach (var pr in pullRequests.Where(x => !prExternalIdsAlreadyInDatabase.Contains(x.ExternalId)))
             {
                 var authorProfile = new ProfilesService().GetProfileByExternalId(organizationDb, pr.Author.Username, IntegrationType.GH);
-                
+
                 if (!prExternalIdsAlreadyInDatabase.Contains(pr.ExternalId)) //new
                 {
-                    organizationDb.Add(new PullRequest
+                    var pullRequest = new PullRequest
                     {
                         AuthorProfile = authorProfile,
                         ExternalRepositoryId = pr.Repository.ExternalId,
@@ -246,8 +247,27 @@ namespace Tayra.Functions.GithubDataPool
                         CommitsCount = pr.CommitNodes.TotalCount,
                         ReviewCommentsCount = 0,
                         ReviewsCount = pr.ReviewNodes.TotalCount
-                    });                    
-                    
+                    };
+
+                    pullRequest.Reviews = pr.ReviewNodes.Reviews.Select(x => new PullRequestReview
+                    {
+                        Body = x.Body,
+                        State = x.State,
+                        SubmittedAt = x.SubmittedAt,
+                        CommitId = x.Commit?.Sha,
+                        Comments = x.CommentNodes.Comments.Select(y => new PullRequestReviewComment
+                        {
+                            Body = y.Body,
+                            ExternalCreatedAt = y.CreatedAt,
+                            ExternalUpdatedAt = y.UpdatedAt,
+                            ExternalUrl = y.Url,
+                            ExternalId = y.ExternalId,
+                            PullRequest = pullRequest
+                        }).ToList()
+                    }).ToList();
+
+                    organizationDb.Add(pullRequest);
+
                     CreateLog(logService, LogEvents.PullRequestCreated, authorProfile, pr.Title, pr.Url,
                         new Dictionary<string, string>
                         {
@@ -258,7 +278,7 @@ namespace Tayra.Functions.GithubDataPool
                 else //already exists in db
                 {
                     var prInDb = prAlreadyInDatabase.First(x => x.ExternalId == pr.ExternalId);
-                    
+
                     prInDb.Body = pr.BodyText;
                     prInDb.Title = pr.Title;
                     prInDb.ExternalUpdatedAt = DateTime.Parse(pr.UpdatedAt);
@@ -266,7 +286,7 @@ namespace Tayra.Functions.GithubDataPool
                     prInDb.MergedAt = string.IsNullOrEmpty(pr.MergedAt) ? null : DateTime.Parse(pr.MergedAt);
                     prInDb.ClosedAt = string.IsNullOrEmpty(pr.ClosedAt) ? null : DateTime.Parse(pr.ClosedAt);
                     prInDb.State = pr.State;
-                    
+
                     CreateLog(logService, LogEvents.PullRequestUpdated, authorProfile, pr.Title, pr.Url,
                         new Dictionary<string, string>
                         {
@@ -275,11 +295,45 @@ namespace Tayra.Functions.GithubDataPool
                             {"prState", pr.State},
                         });
                 }
+            }
 
-                organizationDb.SaveChanges();
+            UpdateReviewsAndComments(organizationDb, pullRequests);
+
+            organizationDb.SaveChanges();
+        }
+
+        private void UpdateReviewsAndComments(OrganizationDbContext organizationDb, List<GetPullRequestsPageResponse.PullRequest> pullRequests)
+        {
+            var allGitHubReviews = pullRequests.SelectMany(x => x.ReviewNodes.Reviews)
+                                               .ToList();
+
+            var allReviewsExternalIds = allGitHubReviews.Select(x => x.ExternalId)
+                                                        .ToList();
+
+            var allGitHubComments = allGitHubReviews.SelectMany(x => x.CommentNodes.Comments)
+                                                    .ToList();
+
+            var reviewsAlreadyInDatabase = organizationDb.PullRequestReviews.Include(x => x.Comments)
+                                                                            .Where(x => allReviewsExternalIds.Contains(x.ReviewExternalId))
+                                                                            .ToList();
+
+            foreach (var review in reviewsAlreadyInDatabase)
+            {
+                var gitHubReview = allGitHubReviews.FirstOrDefault(x => x.ExternalId == review.ReviewExternalId);
+
+                review.Body = gitHubReview.Body;
+                review.State = gitHubReview.State;
+
+                foreach (var reviewComment in review.Comments)
+                {
+                    var gitHubComment = allGitHubComments.FirstOrDefault(x => x.ExternalId == reviewComment.ExternalId);
+
+                    reviewComment.Body = gitHubComment.Body;
+                    reviewComment.ExternalUpdatedAt = gitHubComment.UpdatedAt;
+                }
             }
         }
-        
+
         private void CreateLog(ILogsService logsService, LogEvents eventType, Profile profile, string description, string externalUrl, Dictionary<string, string> data, DateTime? timestamp = null)
         {
             logsService.LogEvent(new LogCreateDTO

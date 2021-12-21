@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace Tayra.Connectors.GitHub
 {
@@ -75,11 +76,32 @@ namespace Tayra.Connectors.GitHub
 
         public class Review
         {
+            [JsonProperty("id")]
+            public string ExternalId { get; set; }
+
+            [JsonProperty("body")]
+            public string Body { get; set; }
+
             [JsonProperty("state")]
             public string State { get; set; }
-            
+
+            [JsonProperty("submittedAt")]
+            public DateTime SubmittedAt { get; set; }
+
+            [JsonProperty("commit")]
+            public Commit Commit { get; set; }
+
             [JsonProperty("author")]
             public Author Author { get; set; }
+
+            [JsonProperty("comments")]
+            public ReviewCommentNodes CommentNodes { get; set; }
+        }
+
+        public class Commit
+        {
+            [JsonProperty("oid")]
+            public string Sha { get; set; }
         }
         
         public class Author
@@ -89,6 +111,27 @@ namespace Tayra.Connectors.GitHub
 
             [JsonProperty("Id")]
             public string Id { get; set; }
+        }
+
+        public class ReviewComment
+        {
+            [JsonProperty("id")]
+            public string ExternalId { get; set; }
+
+            [JsonProperty("body")]
+            public string Body { get; set; }
+
+            [JsonProperty("url")]
+            public string Url { get; set; }
+
+            [JsonProperty("createdAt")]
+            public DateTime CreatedAt { get; set; }
+
+            [JsonProperty("updatedAt")]
+            public DateTime UpdatedAt { get; set; }
+
+            [JsonProperty("author")]
+            public Author Author { get; set; }
         }
         
         public class PullRequestNodes
@@ -106,7 +149,16 @@ namespace Tayra.Connectors.GitHub
             public int TotalCount { get; set; }
             
             [JsonProperty("nodes")]
-            public Review[] PullRequests { get; set; }
+            public Review[] Reviews { get; set; }
+        }
+
+        public class ReviewCommentNodes
+        {
+            [JsonProperty("totalCount")]
+            public int TotalCount { get; set; }
+
+            [JsonProperty("nodes")]
+            public ReviewComment[] Comments { get; set; }
         }
 
         public class CommitNodes
