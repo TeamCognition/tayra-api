@@ -86,7 +86,7 @@ namespace Tayra.Connectors.GitHub
             public string State { get; set; }
 
             [JsonProperty("submittedAt")]
-            public DateTime SubmittedAt { get; set; }
+            public DateTime? SubmittedAt { get; set; }
 
             [JsonProperty("commit")]
             public Commit Commit { get; set; }
