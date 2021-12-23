@@ -35,6 +35,10 @@ namespace Tayra.Models.Organizations
 
         public DateTime? MergedAt { get; set; }
 
+        public DateTime? FirstReviewCreatedAt { get; set; }
+
+        public DateTime? ApprovedAt { get; set; }
+
         public int CommitsCount { get; set; }
         public int Additions { get; set; }
         public int Deletions { get; set; }
