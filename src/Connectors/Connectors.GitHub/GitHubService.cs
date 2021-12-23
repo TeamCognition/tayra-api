@@ -210,13 +210,32 @@ namespace Tayra.Connectors.GitHub
                             commits {
                               totalCount
                             }
-                            reviews(last: 30) {
+                            reviews(last: 100) {
                               totalCount
                               nodes {
+                                id
+                                body
+                                state
+                                submittedAt
+                                commit {
+                                  oid
+                                }
                                 author {
                                   login
                                 }
-                                state
+                                comments (last: 100) {
+                                  totalCount
+                                  nodes {
+                                    id
+                                    body
+                                    url
+                                    createdAt
+                                    updatedAt
+                                    author{
+                                      login
+                                    }
+                                  }
+                                }
                               }
                             }
                           }

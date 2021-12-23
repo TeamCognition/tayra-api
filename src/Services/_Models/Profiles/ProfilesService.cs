@@ -100,5 +100,15 @@ namespace Tayra.Services.Models.Profiles
             var pe = dbContext.ProfileExternalIds.Include(x => x.Profile).FirstOrDefault(x => x.ExternalId == externalId && x.IntegrationType == integrationType);
             return pe?.Profile;
         }
+
+        public List<ProfileExternalId> GetAllProfileExternalIds(OrganizationDbContext dbContext, IntegrationType integrationType)
+        {
+            var profileExternalIds = dbContext.ProfileExternalIds.AsNoTracking()
+                                                                 .Include(x => x.Profile)
+                                                                 .Where(x => x.IntegrationType == integrationType)
+                                                                 .ToList();
+
+            return profileExternalIds;
+        }
     }
 }
