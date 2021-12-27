@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using Cog.DAL;
 
 namespace Tayra.Models.Organizations
 {
     public class PullRequestReview : EntityGuidId, ITimeStampedEntity
     {
+        public PullRequestReview()
+        {
+            Comments = new List<PullRequestReviewComment>();
+        }
+
         public string Body { get; set; }
 
         public string State { get; set; }
@@ -27,6 +33,8 @@ namespace Tayra.Models.Organizations
         public DateTime Created { get; set; }
 
         public DateTime? LastModified { get; set; }
+
+        public ICollection<PullRequestReviewComment> Comments { get; set; }
 
         #endregion
     }
