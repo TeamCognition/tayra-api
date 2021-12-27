@@ -74,7 +74,7 @@ namespace Tayra.Connectors.GitHub
             public string Id { get; set; }
 
             [JsonProperty("mergedAt")]
-            public DateTime MergedAt { get; set; }
+            public DateTime? MergedAt { get; set; }
         }
     }
 }
