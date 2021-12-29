@@ -28,10 +28,10 @@ namespace Tayra.Connectors.GitHub
             public string TargetType { get; set; }
 
             [JsonProperty("created_at")]
-            public DateTime CreatedAt { get; set; }
+            public DateTime? CreatedAt { get; set; }
 
             [JsonProperty("updated_at")]
-            public DateTime UpdatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         }
     }
 }
