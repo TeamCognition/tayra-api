@@ -44,7 +44,7 @@ namespace Tayra.Connectors.GitHub
              public int Deletions { get; set; }
              
              [JsonProperty("createdAt")]
-             public string CreatedAt { get; set; }
+             public DateTime CreatedAt { get; set; }
              
              [JsonProperty("merged")]
              public bool IsMerged { get; set; }
@@ -53,13 +53,13 @@ namespace Tayra.Connectors.GitHub
              public bool IsLocked { get; set; }
              
              [JsonProperty("updatedAt")]
-             public string UpdatedAt { get; set; }
+             public DateTime UpdatedAt { get; set; }
 
              [JsonProperty("closedAt")]
-             public string ClosedAt { get; set; }
+             public DateTime? ClosedAt { get; set; }
              
              [JsonProperty("mergedAt")]
-             public string MergedAt { get; set; }
+             public DateTime? MergedAt { get; set; }
              
              [JsonProperty("repository")] 
              public GHRepository Repository { get; set; }

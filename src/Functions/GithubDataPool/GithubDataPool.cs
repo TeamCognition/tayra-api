@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -222,71 +223,77 @@ namespace Tayra.Functions.GithubDataPool
             var prExternalIdsAlreadyInDatabase = prAlreadyInDatabase.Select(x => x.ExternalId).ToArray();
             var logService = new LogsService(organizationDb, new MailerService());
 
-            foreach (var pr in pullRequests.Where(x => !prExternalIdsAlreadyInDatabase.Contains(x.ExternalId)))
+            var newPullRequests = pullRequests.Where(x => !prExternalIdsAlreadyInDatabase.Contains(x.ExternalId))
+                                              .ToList();
+
+            var existingPullRequests = pullRequests.Where(x => !newPullRequests.Select(y => y.ExternalId).Contains(x.ExternalId))
+                                                   .ToList();
+
+            foreach (var pr in newPullRequests)
             {
                 var authorProfile = profileExternalIds.FirstOrDefault(x => x.ExternalId == pr.Author.Username);
 
-                if (!prExternalIdsAlreadyInDatabase.Contains(pr.ExternalId)) //new
+                var pullRequest = new PullRequest
                 {
-                    var pullRequest = new PullRequest
+                    AuthorProfileId = authorProfile?.ProfileId,
+                    ExternalRepositoryId = pr.Repository.ExternalId,
+                    ExternalCreatedAt = pr.CreatedAt,
+                    MergedAt = pr.MergedAt,
+                    IsLocked = pr.IsLocked,
+                    ExternalUpdatedAt = pr.UpdatedAt,
+                    Title = pr.Title,
+                    Body = pr.BodyText,
+                    ExternalUrl = pr.Url,
+                    ExternalAuthorUsername = pr.Author.Username,
+                    ClosedAt = pr.ClosedAt,
+                    FirstReviewCreatedAt = GetFirstReviewCreatedAt(pr),
+                    ApprovedAt = GetApprovedAt(pr),
+                    ExternalId = pr.ExternalId,
+                    ExternalNumber = pr.Number,
+                    State = pr.State,
+                    Additions = pr.Additions,
+                    Deletions = pr.Deletions,
+                    CommitsCount = pr.CommitNodes.TotalCount,
+                    ReviewCommentsCount = GetReviewCommentsCount(pr),
+                    ReviewsCount = pr.ReviewNodes.TotalCount
+                };
+
+                organizationDb.Add(pullRequest);
+
+                CreateLog(logService, LogEvents.PullRequestCreated, authorProfile?.Profile, pr.Title, pr.Url,
+                    new Dictionary<string, string>
                     {
-                        AuthorProfileId = authorProfile?.ProfileId,
-                        ExternalRepositoryId = pr.Repository.ExternalId,
-                        ExternalCreatedAt = DateTime.Parse(pr.CreatedAt),
-                        MergedAt = string.IsNullOrEmpty(pr.MergedAt) ? null : global::System.DateTime.Parse(pr.MergedAt),
-                        IsLocked = pr.IsLocked,
-                        ExternalUpdatedAt = DateTime.Parse(pr.UpdatedAt),
-                        Title = pr.Title,
-                        Body = pr.BodyText,
-                        ExternalUrl = pr.Url,
-                        ExternalAuthorUsername = pr.Author.Username,
-                        ClosedAt = string.IsNullOrEmpty(pr.ClosedAt) ? null : global::System.DateTime.Parse(pr.ClosedAt),
-                        FirstReviewCreatedAt = GetFirstReviewCreatedAt(pr),
-                        ApprovedAt = GetApprovedAt(pr),
-                        ExternalId = pr.ExternalId,
-                        ExternalNumber = pr.Number,
-                        State = pr.State,
-                        Additions = pr.Additions,
-                        Deletions = pr.Deletions,
-                        CommitsCount = pr.CommitNodes.TotalCount,
-                        ReviewCommentsCount = GetReviewCommentsCount(pr),
-                        ReviewsCount = pr.ReviewNodes.TotalCount
-                    };
+                        {"externalAuthorUsername", pr.Author.Username},
+                        {"externalId", pr.ExternalId}
+                    });
+            }
 
-                    organizationDb.Add(pullRequest);
+            foreach (var pr in existingPullRequests)
+            {
+                var authorProfile = profileExternalIds.FirstOrDefault(x => x.ExternalId == pr.Author.Username);
 
-                    CreateLog(logService, LogEvents.PullRequestCreated, authorProfile?.Profile, pr.Title, pr.Url,
-                        new Dictionary<string, string>
-                        {
-                            {"externalAuthorUsername", pr.Author.Username},
-                            {"externalId", pr.ExternalId}
-                        });
-                }
-                else //already exists in db
-                {
-                    var prInDb = prAlreadyInDatabase.First(x => x.ExternalId == pr.ExternalId);
+                var prInDb = prAlreadyInDatabase.First(x => x.ExternalId == pr.ExternalId);
 
-                    prInDb.Body = pr.BodyText;
-                    prInDb.Title = pr.Title;
-                    prInDb.ExternalUpdatedAt = DateTime.Parse(pr.UpdatedAt);
-                    prInDb.IsLocked = pr.IsLocked;
-                    prInDb.MergedAt = string.IsNullOrEmpty(pr.MergedAt) ? null : DateTime.Parse(pr.MergedAt);
-                    prInDb.ClosedAt = string.IsNullOrEmpty(pr.ClosedAt) ? null : DateTime.Parse(pr.ClosedAt);
-                    prInDb.FirstReviewCreatedAt = GetFirstReviewCreatedAt(pr);
-                    prInDb.ApprovedAt = GetApprovedAt(pr);
-                    prInDb.State = pr.State;
-                    prInDb.ReviewCommentsCount = GetReviewCommentsCount(pr);
-                    prInDb.ReviewsCount = pr.ReviewNodes.TotalCount;
+                prInDb.Body = pr.BodyText;
+                prInDb.Title = pr.Title;
+                prInDb.ExternalUpdatedAt = pr.UpdatedAt;
+                prInDb.IsLocked = pr.IsLocked;
+                prInDb.MergedAt = pr.MergedAt;
+                prInDb.ClosedAt = pr.ClosedAt;
+                prInDb.FirstReviewCreatedAt = GetFirstReviewCreatedAt(pr);
+                prInDb.ApprovedAt = GetApprovedAt(pr);
+                prInDb.State = pr.State;
+                prInDb.ReviewCommentsCount = GetReviewCommentsCount(pr);
+                prInDb.ReviewsCount = pr.ReviewNodes.TotalCount;
 
-                    CreateLog(logService, LogEvents.PullRequestUpdated, authorProfile?.Profile, pr.Title, pr.Url,
-                        new Dictionary<string, string>
-                        {
+                CreateLog(logService, LogEvents.PullRequestUpdated, authorProfile?.Profile, pr.Title, pr.Url,
+                    new Dictionary<string, string>
+                    {
                             {"externalAuthorUsername", pr.Author.Username},
                             {"externalId", pr.ExternalId},
                             {"prState", pr.State},
-                        });
-                }
-            }
+                    });
+            }            
 
             organizationDb.SaveChanges();
         }

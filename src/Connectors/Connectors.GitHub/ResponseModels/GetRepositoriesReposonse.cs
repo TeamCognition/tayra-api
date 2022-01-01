@@ -32,6 +32,7 @@ namespace Tayra.Connectors.GitHub
         {
             [JsonProperty("login")]
             public string Login { get; set; }
+
             [JsonProperty("id")]
             public string Id { get; set; }
         }
