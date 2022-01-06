@@ -14,14 +14,14 @@ namespace Tayra.API.Features.Teams
 {
     public partial class TeamsController
     {
-        [HttpGet("{teamId}/getMetrics")]
-        public async Task<GetMetrics.Result> GetMetrics(Guid teamId, [FromQuery] GetMetrics.Query query)
+        [HttpGet("{teamId}/getCycleMetrics")]
+        public async Task<GetCycleMetrics.Result> GetMetrics(Guid teamId, [FromQuery] GetCycleMetrics.Query query)
         {
-            return await _mediator.Send(new GetMetrics.Query { DaysTrailing = query.DaysTrailing, TeamId = teamId });
+            return await _mediator.Send(new GetCycleMetrics.Query { DaysTrailing = query.DaysTrailing, TeamId = teamId });
         }
     }
 
-    public class GetMetrics
+    public class GetCycleMetrics
     {
 
         public class Query : IRequest<Result>
