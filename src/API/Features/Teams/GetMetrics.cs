@@ -34,8 +34,8 @@ namespace Tayra.API.Features.Teams
         {
             public int DaysTrailing { get; set; }
             public double? AverageCycleTimeHours { get; set; }
-            public IList<TrailingIntervalCycleTimeMetrics> TrailingIntervalsMetrics { get; set; }
-            public LatestIntervalCycleTimeMetrics LatestTrailingIntervalMetrics { get; set; }
+            public IList<TrailingIntervalCycleTimeMetrics> IntervalsMetrics { get; set; }
+            public LatestIntervalCycleTimeMetrics LatestIntervalMetrics { get; set; }
         }
 
         public class TrailingIntervalCycleTimeMetrics
@@ -55,8 +55,12 @@ namespace Tayra.API.Features.Teams
 
         public class TimeToAverageValue
         {
-            public double AverageHoursValue { get; set; }
-            public double DifferenceValue { get; set; }
+            public double AverageHours { get; set; }
+
+            /// <summary>
+            /// Increase since the previous interval
+            /// </summary>
+            public double Difference { get; set; }
         }
 
         private class TimeToAveragesDto
@@ -81,27 +85,34 @@ namespace Tayra.API.Features.Teams
                 var team = await _db.Teams.FirstOrDefaultAsync(x => x.Id == msg.TeamId, token);
                 team.EnsureNotNull(msg.TeamId);
 
-                var result = new Result
-                {
-                    DaysTrailing = msg.DaysTrailing                  
-                };
-
                 var pullRequests = await GetMergedPullRequestsAsync(team, token);
                 var commits = await GetCommitsAsync(pullRequests, token);
 
-                if (pullRequests == null || pullRequests.Count == 0)
+                var result = new Result
+                {
+                    DaysTrailing = msg.DaysTrailing
+                };
+
+                if (!ValidatePullRequestsAndCommits(pullRequests, commits))
                 {
                     return result;
                 }
 
-                if (commits == null || commits.Count == 0)
-                {
-                    return result;
-                }
+                var dateTimeUtcNow = DateTime.UtcNow;
 
-                // var dateTimeUtcNow = DateTime.UtcNow;
-                var dateTimeUtcNow = new DateTime(2020, 9, 21, 14, 29, 29);
+                var intervalEndDates = GetIntervalEndDates(msg, dateTimeUtcNow);
 
+                result.AverageCycleTimeHours = CalculateAverageCycleTimeHours(pullRequests, commits);
+                result.IntervalsMetrics = CalculateTrailingIntervalsMetrics(pullRequests, commits, intervalEndDates, msg.DaysTrailing);
+                result.LatestIntervalMetrics = CalculateLatestIntervalMetrics(pullRequests, commits, result.IntervalsMetrics, dateTimeUtcNow);
+
+                return result;
+            }
+
+            #region Private methods
+
+            private List<DateTime> GetIntervalEndDates(Query msg, DateTime dateTimeUtcNow)
+            {
                 var intervalEndDates = new List<DateTime> { dateTimeUtcNow };
                 var dateTimeCalculationTemp = dateTimeUtcNow;
 
@@ -111,59 +122,56 @@ namespace Tayra.API.Features.Teams
                     intervalEndDates.Add(dateTimeCalculationTemp);
                 }
 
-                double? averageDurationHours = CalculateAverageCycleTimeHours(pullRequests, commits);
-
-                var trailingIntervalsMetrics = new List<TrailingIntervalCycleTimeMetrics>();
-
-                foreach (var endDate in intervalEndDates)
-                {
-                    var startDate = endDate.AddDays(-msg.DaysTrailing);
-                    var intervalCycleTimeMetrics = CalculateAverageTrailingIntervalCycleTime(pullRequests, commits, startDate, endDate);
-                    trailingIntervalsMetrics.Add(intervalCycleTimeMetrics);
-                }
-
-                var latestIntervalMetrics = GetLatestIntervalMetrics(pullRequests, commits, trailingIntervalsMetrics, dateTimeUtcNow);
-
-                result.AverageCycleTimeHours = averageDurationHours;
-                result.TrailingIntervalsMetrics = trailingIntervalsMetrics;
-                result.LatestTrailingIntervalMetrics = latestIntervalMetrics;
-                
-                return result;
+                return intervalEndDates;
             }
 
-            #region Private methods
+            private double? CalculateAverageCycleTimeHours(ICollection<PullRequest> pullRequests, ICollection<GitCommit> commits)
+            {
+                var averageDurationHours = pullRequests.Average(x => GetPullRequestDurationHours(commits, x));
 
-            private LatestIntervalCycleTimeMetrics GetLatestIntervalMetrics(ICollection<PullRequest> pullRequests, IList<GitCommit> commits, ICollection<TrailingIntervalCycleTimeMetrics> trailingIntervalsMetrics, DateTime dateTimeUtcNow)
+                return averageDurationHours;
+            }
+
+            private List<TrailingIntervalCycleTimeMetrics> CalculateTrailingIntervalsMetrics(ICollection<PullRequest> pullRequests, ICollection<GitCommit> commits, ICollection<DateTime> intervalEndDates, int daysTrailing)
+            {
+                return intervalEndDates.Select(x => CalculateAverageTrailingIntervalCycleTime(pullRequests, commits, x.AddDays(-daysTrailing), x))
+                                                               .ToList();
+            }
+
+            private LatestIntervalCycleTimeMetrics CalculateLatestIntervalMetrics(ICollection<PullRequest> pullRequests, IList<GitCommit> commits, ICollection<TrailingIntervalCycleTimeMetrics> trailingIntervalsMetrics, DateTime dateTimeUtcNow)
             {
                 var latestInterval = trailingIntervalsMetrics.FirstOrDefault(x => x.EndedAt == dateTimeUtcNow);
-
-                var latestIntervalTimeToAverages = CalculateTimeToAverages(pullRequests, commits, latestInterval);
+                var latestTimeToAverages = CalculateTimeToAverages(pullRequests, commits, latestInterval);
 
                 var secondLatestInterval = trailingIntervalsMetrics.FirstOrDefault(x => x.EndedAt == latestInterval.StartedAt);
+                var secondLatestTimeToAverages = CalculateTimeToAverages(pullRequests, commits, secondLatestInterval);
 
-                var secondLatestIntervalTimeToAverages = CalculateTimeToAverages(pullRequests, commits, secondLatestInterval);
+                LatestIntervalCycleTimeMetrics latestIntervalMetrics = CalculateIntervalDifferencesAndCreateModel(latestInterval, latestTimeToAverages, secondLatestTimeToAverages);
 
-                var latestIntervalMetrics = new LatestIntervalCycleTimeMetrics
+                return latestIntervalMetrics;
+            }
+
+            private LatestIntervalCycleTimeMetrics CalculateIntervalDifferencesAndCreateModel(TrailingIntervalCycleTimeMetrics latestInterval, TimeToAveragesDto latestTimeToAverages, TimeToAveragesDto secondLatestTimeToAverages)
+            {
+                return new LatestIntervalCycleTimeMetrics
                 {
                     LatestIntervalMetrics = latestInterval,
-                    TimeToOpen = new TimeToAverageValue 
+                    TimeToOpen = new TimeToAverageValue
                     {
-                        AverageHoursValue = latestIntervalTimeToAverages.TimeToOpenHours,
-                        DifferenceValue = latestIntervalTimeToAverages.TimeToOpenHours - secondLatestIntervalTimeToAverages.TimeToOpenHours 
+                        AverageHours = latestTimeToAverages.TimeToOpenHours,
+                        Difference = latestTimeToAverages.TimeToOpenHours - secondLatestTimeToAverages.TimeToOpenHours
                     },
                     TimeToPickUp = new TimeToAverageValue
                     {
-                        AverageHoursValue = latestIntervalTimeToAverages.TimeToPickUpHours,
-                        DifferenceValue = latestIntervalTimeToAverages.TimeToPickUpHours - secondLatestIntervalTimeToAverages.TimeToPickUpHours
+                        AverageHours = latestTimeToAverages.TimeToPickUpHours,
+                        Difference = latestTimeToAverages.TimeToPickUpHours - secondLatestTimeToAverages.TimeToPickUpHours
                     },
                     TimeToReview = new TimeToAverageValue
                     {
-                        AverageHoursValue = latestIntervalTimeToAverages.TimeToReviewHours,
-                        DifferenceValue = latestIntervalTimeToAverages.TimeToReviewHours - secondLatestIntervalTimeToAverages.TimeToReviewHours
+                        AverageHours = latestTimeToAverages.TimeToReviewHours,
+                        Difference = latestTimeToAverages.TimeToReviewHours - secondLatestTimeToAverages.TimeToReviewHours
                     }
                 };
-
-                return latestIntervalMetrics;
             }
 
             private TimeToAveragesDto CalculateTimeToAverages(ICollection<PullRequest> pullRequests, IList<GitCommit> commits, TrailingIntervalCycleTimeMetrics intervalMetrics)
@@ -193,13 +201,6 @@ namespace Tayra.API.Features.Teams
                 };
 
                 return timeToAverages;
-            }
-
-            private double? CalculateAverageCycleTimeHours(ICollection<PullRequest> pullRequests, ICollection<GitCommit> commits)
-            {
-                var averageDurationHours = pullRequests.Average(x => GetPullRequestDurationHours(commits, x));
-
-                return averageDurationHours;
             }
 
             private TrailingIntervalCycleTimeMetrics CalculateAverageTrailingIntervalCycleTime(ICollection<PullRequest> pullRequests, ICollection<GitCommit> commits, DateTime intervalStartedAt, DateTime intervalEndedAt)
@@ -271,6 +272,21 @@ namespace Tayra.API.Features.Teams
                                                                   && teamRepositoryExternalIds.Contains(x.ExternalRepositoryId))
                                                          .ToListAsync(token);
                 return pullRequests;
+            }
+
+            private bool ValidatePullRequestsAndCommits(ICollection<PullRequest> pullRequests, ICollection<GitCommit> commits)
+            {
+                if (pullRequests == null || pullRequests.Count == 0)
+                {
+                    return false;
+                }
+
+                if (commits == null || commits.Count == 0)
+                {
+                    return false;
+                }
+
+                return true;
             }
 
             #endregion
