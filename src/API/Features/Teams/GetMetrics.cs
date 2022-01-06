@@ -42,7 +42,7 @@ namespace Tayra.API.Features.Teams
         {
             public DateTime StartedAt { get; set; }
             public DateTime EndedAt { get; set; }
-            public double AverageCycleTimeHours { get; set; }
+            public double? AverageCycleTimeHours { get; set; }
         }
 
         public class LatestIntervalCycleTimeMetrics
@@ -111,7 +111,7 @@ namespace Tayra.API.Features.Teams
                     intervalEndDates.Add(dateTimeCalculationTemp);
                 }
 
-                double averageDurationHours = CalculateAverageCycleTimeHours(pullRequests, commits);
+                double? averageDurationHours = CalculateAverageCycleTimeHours(pullRequests, commits);
 
                 var trailingIntervalsMetrics = new List<TrailingIntervalCycleTimeMetrics>();
 
@@ -173,9 +173,9 @@ namespace Tayra.API.Features.Teams
                                                       && intervalPullRequests.Select(y => y.Id).Contains(x.FirstPullRequestId.Value))
                                              .ToList();
 
-                var averageTimeToOpen = intervalPullRequests.Select(x => x.ExternalCreatedAt - intervalCommits.Where(y => y.FirstPullRequestId.Value == x.Id)
-                                                                                                              .Min(y => y.CommittedAt))
-                                                            .Average(x => x.TotalHours);
+                var averageTimeToOpen = intervalPullRequests.Select(x => x.ExternalCreatedAt - GetPullRequestFirstCommitTime(intervalCommits, x))
+                                                            .Where(x => x.HasValue)
+                                                            .Average(x => x.Value.TotalHours);
 
                 var pullRequestsWithReviews = intervalPullRequests.Where(x => x.FirstReviewCreatedAt.HasValue)
                                                                   .ToList();
@@ -195,7 +195,7 @@ namespace Tayra.API.Features.Teams
                 return timeToAverages;
             }
 
-            private double CalculateAverageCycleTimeHours(ICollection<PullRequest> pullRequests, ICollection<GitCommit> commits)
+            private double? CalculateAverageCycleTimeHours(ICollection<PullRequest> pullRequests, ICollection<GitCommit> commits)
             {
                 var averageDurationHours = pullRequests.Average(x => GetPullRequestDurationHours(commits, x));
 
@@ -226,19 +226,24 @@ namespace Tayra.API.Features.Teams
                 return trailingIntervalPullRequests;
             }
 
-            private DateTime GetPullRequestFirstCommitTime(ICollection<GitCommit> commits, PullRequest pullRequest)
+            private DateTime? GetPullRequestFirstCommitTime(ICollection<GitCommit> commits, PullRequest pullRequest)
             {
                 var pullRequestCommits = commits.Where(x => x.FirstPullRequestId == pullRequest.Id);
 
-                var firstCommittedAt = pullRequestCommits.Min(x => x.CommittedAt);
+                var firstCommittedAt = pullRequestCommits?.Min(x => x.CommittedAt);
                 return firstCommittedAt;
             }
 
-            private double GetPullRequestDurationHours(ICollection<GitCommit> commits, PullRequest pullRequest)
+            private double? GetPullRequestDurationHours(ICollection<GitCommit> commits, PullRequest pullRequest)
             {
-                DateTime firstCommittedAt = GetPullRequestFirstCommitTime(commits, pullRequest);
+                DateTime? firstCommittedAt = GetPullRequestFirstCommitTime(commits, pullRequest);
 
-                TimeSpan duration = pullRequest.MergedAt.Value - firstCommittedAt;
+                if (!firstCommittedAt.HasValue)
+                {
+                    return null;
+                }
+
+                TimeSpan duration = pullRequest.MergedAt.Value - firstCommittedAt.Value;
 
                 return duration.TotalHours;
             }
@@ -248,18 +253,21 @@ namespace Tayra.API.Features.Teams
                 var pullRequestIds = pullRequests.Select(x => x.Id)
                                                  .ToList();
 
-                var commits = await _db.GitCommits.Where(x => x.FirstPullRequestId.HasValue && pullRequestIds.Contains(x.FirstPullRequestId.Value))
+                var commits = await _db.GitCommits.AsNoTracking()
+                                                  .Where(x => x.FirstPullRequestId.HasValue && pullRequestIds.Contains(x.FirstPullRequestId.Value))
                                                   .ToListAsync(token);
                 return commits;
             }
 
             private async Task<List<PullRequest>> GetMergedPullRequestsAsync(Team team, CancellationToken token)
             {
-                var teamRepositoryExternalIds = await _db.Repositories.Where(x => x.TeamId == team.Id)
+                var teamRepositoryExternalIds = await _db.Repositories.AsNoTracking()
+                                                                      .Where(x => x.TeamId == team.Id)
                                                                       .Select(x => x.ExternalId)
                                                                       .ToListAsync(token);
 
-                var pullRequests = await _db.PullRequests.Where(x => x.MergedAt.HasValue 
+                var pullRequests = await _db.PullRequests.AsNoTracking()
+                                                         .Where(x => x.MergedAt.HasValue 
                                                                   && teamRepositoryExternalIds.Contains(x.ExternalRepositoryId))
                                                          .ToListAsync(token);
                 return pullRequests;
